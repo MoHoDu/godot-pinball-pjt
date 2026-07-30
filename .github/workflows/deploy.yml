@@ -1,0 +1,54 @@
+name: "Godot 4.7.1 Web Deploy to GitHub Pages"
+
+# deploy 브랜치에 코드가 push 될 때 자동으로 실행됩니다.
+on:
+  push:
+    branches:
+      - deploy
+
+# GitHub Pages 배포를 위한 권한 설정
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  export-web:
+    name: Web Export
+    runs-on: ubuntu-latest
+
+    # 여기서 Godot 버전을 4.7.1로 지정합니다.
+    container:
+      image: barichello/godot-ci:4.7.1
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Export Templates
+        run: |
+          mkdir -v -p ~/.local/share/godot/export_templates
+          mv /root/.local/share/godot/export_templates/4.7.1.stable ~/.local/share/godot/export_templates/4.7.1.stable
+
+      - name: Web Build
+        run: |
+          mkdir -v -p build/web
+          # 🚨 중요: "Web" 부분은 Godot 엔진의 [프로젝트] -> [내보내기] 에 설정된 웹 프리셋 이름과 정확히 같아야 합니다.
+          godot --headless --export-release "Web" build/web/index.html
+
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+
+  deploy:
+    name: Deploy to GitHub Pages
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: export-web
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

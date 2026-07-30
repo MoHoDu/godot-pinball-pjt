@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://boehobmrxkjlb"]
+
+[ext_resource type="Script" uid="uid://lj3ocu4ruejo" path="res://Test/flipper_controller.gd" id="1_bev62"]
+[ext_resource type="PackedScene" uid="uid://ris3ga3vl6ci" path="res://Test/flippers/normal_flipper_left.tscn" id="2_palup"]
+[ext_resource type="PackedScene" uid="uid://u4e8s8havfkw" path="res://Test/flippers/normal_flipper_right.tscn" id="3_4jh4a"]
+
+[node name="FlipperController" type="Node2D" unique_id=1981825440]
+scale = Vector2(0.5, 0.5)
+script = ExtResource("1_bev62")
+
+[node name="LeftFlipper" parent="." unique_id=1915782774 instance=ExtResource("2_palup")]
+position = Vector2(-1500, 0)
+
+[node name="RightFlipper" parent="." unique_id=2137998633 instance=ExtResource("3_4jh4a")]
+position = Vector2(1500, 0)

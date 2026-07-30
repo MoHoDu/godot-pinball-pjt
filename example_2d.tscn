@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://dc8g6dg77hl0f"]
+
+[node name="Node2D" type="Node2D" unique_id=43104223]
+
+[node name="Label" type="Label" parent="." unique_id=1560947220]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "Hello Github Page!!!"
