@@ -7,7 +7,7 @@ const EXPECTED_DEFAULT_MASS := 1.0
 const EXPECTED_DEFAULT_ELASTICITY := 0.8
 const EXPECTED_DEFAULT_INITIAL_SPEED := 700.0
 const EXPECTED_DEFAULT_MINIMUM_SPEED := 200.0
-const EXPECTED_DEFAULT_MAXIMUM_SPEED := 2500.0
+const EXPECTED_DEFAULT_MAXIMUM_SPEED := 2000.0
 const EXPECTED_DEFAULT_GRAVITY_SCALE := 1.0
 
 var _failures: Array[String] = []
@@ -109,7 +109,7 @@ func _test_default_physics_values(ball: Pinball) -> void:
 	_expect_float(ball.stats.minimum_speed, EXPECTED_DEFAULT_MINIMUM_SPEED, \
 		"공의 기본 최소 속력은 200px/s이어야 한다.")
 	_expect_float(ball.stats.maximum_speed, EXPECTED_DEFAULT_MAXIMUM_SPEED, \
-		"공의 기본 최대 속력은 2500px/s이어야 한다.")
+		"공의 기본 최대 속력은 2000px/s이어야 한다.")
 	_expect_float(ball.stats.gravity_scale, EXPECTED_DEFAULT_GRAVITY_SCALE, \
 		"공의 기본 중력 배율은 1배여야 한다.")
 
@@ -223,8 +223,8 @@ func _test_velocity_limit_rules(ball: Pinball) -> void:
 		"속력 범위 안의 공은 변경하지 않아야 한다.")
 
 	var fast := ball.call(&"get_limited_velocity", Vector2(3000.0, 4000.0)) as Vector2
-	_expect_vector(fast, Vector2(1500.0, 2000.0), \
-		"최대 속력을 넘으면 방향을 유지한 채 2500px/s로 제한해야 한다.")
+	_expect_vector(fast, Vector2(1200.0, 1600.0), \
+		"최대 속력을 넘으면 방향을 유지한 채 2000px/s로 제한해야 한다.")
 
 
 func _test_runtime_velocity_limits(ball: Pinball) -> void:

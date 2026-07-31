@@ -7,12 +7,26 @@ signal state_changed(previous_state: int, current_state: int)
 signal rotation_sweep_resolved(ball: RigidBody2D)
 
 
+enum ContactZone {
+	A,
+	B,
+	C,
+	D,
+}
+
+
 const FlipperStateClass := preload("res://scripts/flipper_system/flipper_state.gd")
 const FlipperStateMachineClass := preload(
 	"res://scripts/flipper_system/flipper_state_machine.gd"
 )
+const FlipperContactZoneOverlayClass := preload(
+	"res://scripts/flipper_system/flipper_contact_zone_overlay.gd"
+)
 const DEFAULT_STATE_RULES: Resource = preload(
 	"res://settings/flippers/FlipperStateRules.tres"
+)
+const DEFAULT_PARRY_RULES: Resource = preload(
+	"res://settings/flippers/FlipperParryRules.tres"
 )
 
 const MIN_FLIPPER_LENGTH: float = 64.0
@@ -24,9 +38,18 @@ const MIN_SWEEP_INTERVAL: float = 1.0
 const MAX_SWEEP_INTERVAL: float = 64.0
 const DEFAULT_SWEEP_INTERVAL: float = 8.0
 const MAX_ROTATION_SWEEP_STEPS: int = 128
+const CONTACT_ZONE_COLORS: Array[Color] = [
+	Color(0.3, 0.75, 1.0, 0.9),
+	Color(0.35, 1.0, 0.45, 0.9),
+	Color(1.0, 0.8, 0.2, 0.9),
+	Color(1.0, 0.3, 0.3, 0.9),
+]
+const CONTACT_ZONE_OVERLAY_NAME: StringName = &"_ContactZoneOverlay"
+const CONTACT_ZONE_OVERLAY_PATH: NodePath = ^"_ContactZoneOverlay"
 
 
 var _state_rules: Resource = DEFAULT_STATE_RULES
+var _parry_rules: Resource = DEFAULT_PARRY_RULES
 var _state_machine: RefCounted
 var _is_selected: bool = false
 @export_storage var _source_collision_polygon := PackedVector2Array()
@@ -42,6 +65,13 @@ var _has_last_applied_collision_position := false
 var state_rules: Resource:
 	get:
 		return _state_rules
+
+
+## 모든 플리퍼가 공유하는 접촉 구역 및 패링 설정입니다.
+## 개별 Inspector에서는 교체하지 않고 settings의 .tres를 편집합니다.
+var parry_rules: Resource:
+	get:
+		return _parry_rules if _parry_rules != null else DEFAULT_PARRY_RULES
 
 
 @export_category("플리퍼 설정")
@@ -102,12 +132,29 @@ var cooldown_time: float = 0.15:
 	set(value):
 		cooldown_time = clampf(value, 0.0, 5.0)
 
-## 접촉 위치에 따른 반사 배율입니다.
-## 위치 판정 방식이 정해질 때까지 값만 보관하며 현재 충돌 계산에는 사용하지 않습니다.
-@export_range(0.0, 5.0, 0.05, "suffix:x")
-var contact_position_reflection_multiplier: float = 1.0:
+## 공용 A 구역 속도 배율에 곱하는 이 플리퍼만의 보정값입니다.
+@export_range(0.0, 5.0, 0.01, "suffix:x")
+var contact_zone_a_speed_multiplier: float = 1.0:
 	set(value):
-		contact_position_reflection_multiplier = clampf(value, 0.0, 5.0)
+		contact_zone_a_speed_multiplier = clampf(value, 0.0, 5.0)
+
+## 공용 B 구역 속도 배율에 곱하는 이 플리퍼만의 보정값입니다.
+@export_range(0.0, 5.0, 0.01, "suffix:x")
+var contact_zone_b_speed_multiplier: float = 1.0:
+	set(value):
+		contact_zone_b_speed_multiplier = clampf(value, 0.0, 5.0)
+
+## 공용 C 구역 속도 배율에 곱하는 이 플리퍼만의 보정값입니다.
+@export_range(0.0, 5.0, 0.01, "suffix:x")
+var contact_zone_c_speed_multiplier: float = 1.0:
+	set(value):
+		contact_zone_c_speed_multiplier = clampf(value, 0.0, 5.0)
+
+## 공용 D 구역 속도 배율에 곱하는 이 플리퍼만의 보정값입니다.
+@export_range(0.0, 5.0, 0.01, "suffix:x")
+var contact_zone_d_speed_multiplier: float = 1.0:
+	set(value):
+		contact_zone_d_speed_multiplier = clampf(value, 0.0, 5.0)
 
 
 @export_group("상태")
@@ -125,6 +172,8 @@ var is_flipping: bool:
 
 
 func _enter_tree() -> void:
+	_connect_parry_rules_changed()
+	call_deferred(&"_ensure_contact_zone_overlay")
 	# @tool 인스턴스가 에디터 씬 트리에 들어온 뒤 자식 노드까지 구성된 시점에 적용합니다.
 	call_deferred(&"refresh_flipper_size")
 
@@ -138,6 +187,8 @@ func _ready() -> void:
 	rotation = deg_to_rad(initial_angle_degrees)
 	refresh_flipper_size()
 	_refresh_selection_visual()
+	_ensure_contact_zone_overlay()
+	_queue_contact_zone_overlay_redraw()
 
 
 func _physics_process(delta: float) -> void:
@@ -189,6 +240,7 @@ func refresh_flipper_size() -> void:
 
 	if is_inside_tree():
 		update_configuration_warnings()
+		_queue_contact_zone_overlay_redraw()
 
 
 ## 현재 폴리곤과 Scale이 만드는 실제 모양을 원본 길이 기준 점으로 환산합니다.
@@ -333,11 +385,197 @@ func find_rotation_sweep_hit(
 				&"progress": progress,
 			}
 			if not contact.is_empty():
-				hit[&"point"] = contact.get(&"point")
+				var contact_point: Vector2 = contact.get(&"point")
+				var contact_percent := calculate_contact_position_percent(
+					contact_point,
+					sample_rotation
+				)
+				hit[&"point"] = contact_point
 				hit[&"normal"] = contact.get(&"normal")
+				hit[&"contact_percent"] = contact_percent
+				hit[&"contact_zone"] = get_contact_zone(contact_percent)
 			return hit
 
 	return {}
+
+
+## 회전축을 0%, 중앙 갭을 향하는 플리퍼 끝을 100%로 접촉 위치를 환산합니다.
+## 전역 X축 대신 실제 충돌 폴리곤의 길이축을 사용해 좌우 반전과 회전을 함께 처리합니다.
+func calculate_contact_position_percent(
+	contact_point: Vector2,
+	test_rotation: float = rotation
+) -> float:
+	var polygon := _get_world_collision_polygon(test_rotation)
+	if polygon.size() < 2:
+		return 0.0
+
+	var pivot := global_position
+	var polygon_center := Vector2.ZERO
+	for point: Vector2 in polygon:
+		polygon_center += point
+	polygon_center /= float(polygon.size())
+
+	var length_axis := polygon_center - pivot
+	if length_axis.is_zero_approx():
+		for point: Vector2 in polygon:
+			var radial_vector := point - pivot
+			if radial_vector.length_squared() > length_axis.length_squared():
+				length_axis = radial_vector
+
+	if length_axis.is_zero_approx():
+		return 0.0
+
+	length_axis = length_axis.normalized()
+	var tip_distance := 0.0
+	for point: Vector2 in polygon:
+		tip_distance = maxf(
+			tip_distance,
+			(point - pivot).dot(length_axis)
+		)
+
+	if tip_distance <= MIN_SOURCE_SIZE:
+		return 0.0
+
+	var contact_distance := (contact_point - pivot).dot(length_axis)
+	return clampf(contact_distance / tip_distance * 100.0, 0.0, 100.0)
+
+
+## 공용 패링 설정의 접촉 위치 경계로 A/B/C/D 구역을 판정합니다.
+func get_contact_zone(contact_percent: float) -> ContactZone:
+	var clamped_percent := clampf(contact_percent, 0.0, 100.0)
+	if clamped_percent < float(parry_rules.get(&"zone_a_end_percent")):
+		return ContactZone.A
+	if clamped_percent < float(parry_rules.get(&"zone_b_end_percent")):
+		return ContactZone.B
+	if clamped_percent < float(parry_rules.get(&"zone_c_end_percent")):
+		return ContactZone.C
+	return ContactZone.D
+
+
+## 개별 플리퍼에 설정된 접촉 구역의 속도 배율을 반환합니다.
+func get_contact_zone_speed_multiplier(contact_zone: ContactZone) -> float:
+	match contact_zone:
+		ContactZone.A:
+			return (
+				float(parry_rules.get(&"zone_a_speed_multiplier"))
+				* contact_zone_a_speed_multiplier
+			)
+		ContactZone.B:
+			return (
+				float(parry_rules.get(&"zone_b_speed_multiplier"))
+				* contact_zone_b_speed_multiplier
+			)
+		ContactZone.C:
+			return (
+				float(parry_rules.get(&"zone_c_speed_multiplier"))
+				* contact_zone_c_speed_multiplier
+			)
+		ContactZone.D:
+			return (
+				float(parry_rules.get(&"zone_d_speed_multiplier"))
+				* contact_zone_d_speed_multiplier
+			)
+
+	return 1.0
+
+
+## 물리 반사 방향은 유지하고 접촉 구역에 따라 속력만 조절합니다.
+func apply_contact_zone_speed_multiplier(
+	physical_reflection_velocity: Vector2,
+	contact_zone: ContactZone
+) -> Vector2:
+	return physical_reflection_velocity * get_contact_zone_speed_multiplier(
+		contact_zone
+	)
+
+
+func is_contact_zone_visualization_enabled() -> bool:
+	return bool(parry_rules.get(&"show_contact_zones_in_editor"))
+
+
+## 전면 오버레이가 그릴 A/B/C/D 구역 선분 정보를 반환합니다.
+func get_contact_zone_visualization_segments() -> Array[Dictionary]:
+	var segments: Array[Dictionary] = []
+	if not is_contact_zone_visualization_enabled():
+		return segments
+	var axis_data := _get_local_contact_zone_axis_data()
+	if axis_data.is_empty():
+		return segments
+
+	var axis: Vector2 = axis_data.get(&"axis")
+	var tip_distance := float(axis_data.get(&"tip_distance"))
+	var normal := axis.orthogonal()
+	var offset := normal * flipper_length * -0.1
+	var line_width := maxf(8.0, flipper_length * 0.025)
+	var boundaries := PackedFloat32Array([
+		0.0,
+		float(parry_rules.get(&"zone_a_end_percent")),
+		float(parry_rules.get(&"zone_b_end_percent")),
+		float(parry_rules.get(&"zone_c_end_percent")),
+		100.0,
+	])
+
+	for zone_index in ContactZone.size():
+		var start_distance := tip_distance * boundaries[zone_index] / 100.0
+		var end_distance := tip_distance * boundaries[zone_index + 1] / 100.0
+		segments.append({
+			&"start": offset + axis * start_distance,
+			&"end": offset + axis * end_distance,
+			&"color": CONTACT_ZONE_COLORS[zone_index],
+			&"width": line_width,
+		})
+
+	return segments
+
+
+func _ensure_contact_zone_overlay() -> void:
+	if not Engine.is_editor_hint() or not is_inside_tree():
+		return
+
+	var overlay := get_node_or_null(CONTACT_ZONE_OVERLAY_PATH) as Node2D
+	if overlay == null:
+		overlay = FlipperContactZoneOverlayClass.new() as Node2D
+		overlay.name = CONTACT_ZONE_OVERLAY_NAME
+		add_child(overlay, false, Node.INTERNAL_MODE_FRONT)
+
+	overlay.queue_redraw()
+
+
+func _queue_contact_zone_overlay_redraw() -> void:
+	if not Engine.is_editor_hint():
+		return
+
+	var overlay := get_node_or_null(CONTACT_ZONE_OVERLAY_PATH) as Node2D
+	if overlay != null:
+		overlay.queue_redraw()
+
+
+func _get_local_contact_zone_axis_data() -> Dictionary:
+	var collision := get_node_or_null(
+		"CollisionPolygon2D"
+	) as CollisionPolygon2D
+	if collision == null or collision.polygon.size() < 2:
+		return {}
+
+	var local_polygon := collision.transform * collision.polygon
+	var polygon_center := Vector2.ZERO
+	for point: Vector2 in local_polygon:
+		polygon_center += point
+	polygon_center /= float(local_polygon.size())
+	if polygon_center.is_zero_approx():
+		return {}
+
+	var axis := polygon_center.normalized()
+	var tip_distance := 0.0
+	for point: Vector2 in local_polygon:
+		tip_distance = maxf(tip_distance, point.dot(axis))
+	if tip_distance <= MIN_SOURCE_SIZE:
+		return {}
+
+	return {
+		&"axis": axis,
+		&"tip_distance": tip_distance,
+	}
 
 
 ## 움직이는 플리퍼 표면을 기준으로 공의 상대속도를 물리 반사합니다.
@@ -409,10 +647,15 @@ func resolve_rotation_sweep(
 
 		var hit_point: Vector2 = hit.get(&"point", ball_collision.global_position)
 		var hit_normal: Vector2 = hit.get(&"normal", Vector2.UP)
+		var contact_zone: ContactZone = int(hit.get(
+			&"contact_zone",
+			ContactZone.B
+		))
 		_resolve_swept_ball(
 			ball,
 			hit_point,
 			hit_normal,
+			contact_zone,
 			previous_rotation,
 			target_rotation,
 			delta
@@ -427,6 +670,7 @@ func _resolve_swept_ball(
 	ball: RigidBody2D,
 	hit_point: Vector2,
 	hit_normal: Vector2,
+	contact_zone: ContactZone,
 	previous_rotation: float,
 	target_rotation: float,
 	delta: float
@@ -447,6 +691,10 @@ func _resolve_swept_ball(
 		surface_velocity,
 		hit_normal,
 		_get_ball_elasticity(ball)
+	)
+	resolved_velocity = apply_contact_zone_speed_multiplier(
+		resolved_velocity,
+		contact_zone
 	)
 	var velocity_change := resolved_velocity - ball.linear_velocity
 	if velocity_change.is_zero_approx():
@@ -628,6 +876,39 @@ func _refresh_selection_visual() -> void:
 
 func set_state_rules(value: Resource) -> void:
 	_state_rules = value if value != null else DEFAULT_STATE_RULES
+
+
+func set_parry_rules(value: Resource) -> void:
+	if _parry_rules == value and _parry_rules != null:
+		return
+
+	if (
+		_parry_rules != null
+		and _parry_rules.changed.is_connected(_on_parry_rules_changed)
+	):
+		_parry_rules.changed.disconnect(_on_parry_rules_changed)
+
+	_parry_rules = value if value != null else DEFAULT_PARRY_RULES
+	_connect_parry_rules_changed()
+	_on_parry_rules_changed()
+
+
+func _connect_parry_rules_changed() -> void:
+	if _parry_rules == null:
+		_parry_rules = DEFAULT_PARRY_RULES
+
+	if (
+		_parry_rules != null
+		and not _parry_rules.changed.is_connected(_on_parry_rules_changed)
+	):
+		_parry_rules.changed.connect(_on_parry_rules_changed)
+
+
+func _on_parry_rules_changed() -> void:
+	_ensure_contact_zone_overlay()
+	_queue_contact_zone_overlay_redraw()
+	if is_inside_tree():
+		update_configuration_warnings()
 
 
 func request_activation() -> bool:

@@ -29,6 +29,10 @@ func _run() -> void:
 		&"find_rotation_sweep_hit",
 		&"resolve_rotation_sweep",
 		&"calculate_physical_sweep_velocity",
+		&"calculate_contact_position_percent",
+		&"get_contact_zone",
+		&"get_contact_zone_speed_multiplier",
+		&"apply_contact_zone_speed_multiplier",
 	]
 
 	for method_name: StringName in required_methods:
@@ -41,11 +45,15 @@ func _run() -> void:
 
 	if _failures.is_empty():
 		_test_physical_sweep_reflection(flipper)
+		_test_contact_position_percent(flipper)
+		_test_contact_zone_boundaries(flipper)
+		_test_contact_zone_speed_multipliers(flipper)
 		_test_step_count(flipper)
 		_test_middle_angle_detection(flipper)
 		_test_sweep_contact_geometry(flipper)
 		_test_final_angle_detection(flipper)
 		await _test_swept_ball_resolution(flipper)
+		await _test_swept_ball_velocity_is_mass_independent(flipper)
 		await _test_final_overlap_uses_sweep_impulse(flipper)
 		await _test_active_state_runs_rotation_sweep(flipper)
 		await _test_actual_right_flipper_catches_falling_ball()
@@ -81,6 +89,87 @@ func _test_physical_sweep_reflection(flipper: PinballFlipper) -> void:
 		"움직이는 플리퍼 표면은 상대 속도 반사를 통해 공에 추가 속도를 전달해야 한다.")
 	_expect(absf(moving_result.x - incoming_velocity.x) <= EPSILON, \
 		"플리퍼 타격이 공의 기존 횡방향 속도 성분을 임의의 고정 방향으로 덮어쓰면 안 된다.")
+
+
+func _test_contact_position_percent(flipper: PinballFlipper) -> void:
+	_expect_float(
+		flipper.calculate_contact_position_percent(Vector2.ZERO, 0.0),
+		0.0,
+		"회전축 접촉 위치는 0%여야 한다."
+	)
+	_expect_float(
+		flipper.calculate_contact_position_percent(Vector2(50.0, 0.0), 0.0),
+		50.0,
+		"플리퍼 중앙 접촉 위치는 50%여야 한다."
+	)
+	_expect_float(
+		flipper.calculate_contact_position_percent(Vector2(100.0, 0.0), 0.0),
+		100.0,
+		"중앙 갭 방향 끝 접촉 위치는 100%여야 한다."
+	)
+	_expect_float(
+		flipper.calculate_contact_position_percent(Vector2(150.0, 0.0), 0.0),
+		100.0,
+		"플리퍼 끝을 벗어난 접촉 위치는 100%로 제한되어야 한다."
+	)
+
+
+func _test_contact_zone_boundaries(flipper: PinballFlipper) -> void:
+	var cases := [
+		[0.0, PinballFlipper.ContactZone.A],
+		[34.99, PinballFlipper.ContactZone.A],
+		[35.0, PinballFlipper.ContactZone.B],
+		[69.99, PinballFlipper.ContactZone.B],
+		[70.0, PinballFlipper.ContactZone.C],
+		[89.99, PinballFlipper.ContactZone.C],
+		[90.0, PinballFlipper.ContactZone.D],
+		[100.0, PinballFlipper.ContactZone.D],
+	]
+
+	for test_case: Array in cases:
+		var percent := float(test_case[0])
+		var expected_zone := int(test_case[1])
+		_expect(
+			flipper.get_contact_zone(percent) == expected_zone,
+			"접촉 위치 %.2f%%의 구역 판정이 기획서 경계와 일치해야 한다. " \
+			+ "(expected=%s, actual=%s)" % [
+				expected_zone,
+				flipper.get_contact_zone(percent),
+			]
+		)
+
+
+func _test_contact_zone_speed_multipliers(flipper: PinballFlipper) -> void:
+	var cases := [
+		[PinballFlipper.ContactZone.A, 0.94],
+		[PinballFlipper.ContactZone.B, 1.0],
+		[PinballFlipper.ContactZone.C, 1.08],
+		[PinballFlipper.ContactZone.D, 0.84],
+	]
+	var physical_reflection := Vector2(300.0, -400.0)
+
+	for test_case: Array in cases:
+		var zone := int(test_case[0])
+		var expected_multiplier := float(test_case[1])
+		_expect_float(
+			flipper.get_contact_zone_speed_multiplier(zone),
+			expected_multiplier,
+			"각 접촉 구역은 기획된 기본 속도 배율을 반환해야 한다."
+		)
+		var result: Vector2 = flipper.apply_contact_zone_speed_multiplier(
+			physical_reflection,
+			zone
+		)
+		_expect_float(
+			result.length(),
+			physical_reflection.length() * expected_multiplier,
+			"구역 배율은 물리 반사 결과의 속력에 적용되어야 한다."
+		)
+		_expect_vector(
+			result.normalized(),
+			physical_reflection.normalized(),
+			"구역 속도 배율은 반사 방향을 변경하면 안 된다."
+		)
 
 
 func _create_test_flipper() -> PinballFlipper:
@@ -161,7 +250,16 @@ func _test_sweep_contact_geometry(flipper: PinballFlipper) -> void:
 		"회전 구간 충돌 결과에 플리퍼 표면 접촉점이 필요하다.")
 	_expect(hit.has(&"normal"), \
 		"회전 구간 충돌 결과에 물리 반사용 충돌 법선이 필요하다.")
-	if not hit.has(&"point") or not hit.has(&"normal"):
+	_expect(hit.has(&"contact_percent"), \
+		"회전 구간 충돌 결과에 0~100% 접촉 위치가 필요하다.")
+	_expect(hit.has(&"contact_zone"), \
+		"회전 구간 충돌 결과에 A/B/C/D 접촉 구역이 필요하다.")
+	if (
+		not hit.has(&"point")
+		or not hit.has(&"normal")
+		or not hit.has(&"contact_percent")
+		or not hit.has(&"contact_zone")
+	):
 		return
 
 	var contact_point: Vector2 = hit.get(&"point")
@@ -170,6 +268,13 @@ func _test_sweep_contact_geometry(flipper: PinballFlipper) -> void:
 		"회전 구간 충돌 법선은 단위 벡터여야 한다.")
 	_expect((BALL_CENTER - contact_point).dot(contact_normal) > 0.0, \
 		"충돌 법선은 플리퍼 표면에서 공 중심을 향하는 바깥 방향이어야 한다.")
+	var contact_percent := float(hit.get(&"contact_percent"))
+	_expect(contact_percent >= 0.0 and contact_percent <= 100.0, \
+		"회전 충돌의 접촉 위치는 0~100% 범위여야 한다.")
+	_expect(
+		int(hit.get(&"contact_zone")) == flipper.get_contact_zone(contact_percent),
+		"회전 충돌의 A/B/C/D 구역은 접촉 위치 경계와 일치해야 한다."
+	)
 
 
 func _test_final_angle_detection(flipper: PinballFlipper) -> void:
@@ -252,6 +357,10 @@ func _test_swept_ball_resolution(flipper: PinballFlipper) -> void:
 		contact_normal,
 		physics_material.bounce
 	)
+	expected_velocity = flipper.apply_contact_zone_speed_multiplier(
+		expected_velocity,
+		int(direct_hit.get(&"contact_zone", PinballFlipper.ContactZone.B))
+	)
 	var resolved_count := int(flipper.call(
 		&"resolve_rotation_sweep",
 		START_ROTATION,
@@ -307,6 +416,70 @@ func _test_final_overlap_uses_sweep_impulse(
 
 	ball.queue_free()
 	await process_frame
+
+
+func _test_swept_ball_velocity_is_mass_independent(
+	flipper: PinballFlipper
+) -> void:
+	var light_ball := _create_impulse_test_ball("LightBall", 1.0)
+	var heavy_ball := _create_impulse_test_ball("HeavyBall", 4.0)
+	root.add_child(light_ball)
+	root.add_child(heavy_ball)
+	await physics_frame
+
+	var hit_point := Vector2(75.0, 0.0)
+	var hit_normal := Vector2.UP
+	var incoming_velocity := Vector2(100.0, 300.0)
+	light_ball.linear_velocity = incoming_velocity
+	heavy_ball.linear_velocity = incoming_velocity
+	await physics_frame
+
+	flipper.call(
+		&"_resolve_swept_ball",
+		light_ball,
+		hit_point,
+		hit_normal,
+		PinballFlipper.ContactZone.C,
+		START_ROTATION,
+		END_ROTATION,
+		1.0 / 60.0
+	)
+	flipper.call(
+		&"_resolve_swept_ball",
+		heavy_ball,
+		hit_point,
+		hit_normal,
+		PinballFlipper.ContactZone.C,
+		START_ROTATION,
+		END_ROTATION,
+		1.0 / 60.0
+	)
+	await physics_frame
+
+	_expect_vector(
+		heavy_ball.linear_velocity,
+		light_ball.linear_velocity,
+		"질량은 필요한 임펄스만 바꾸고 같은 충돌의 목표 반사 속도는 바꾸면 안 된다."
+	)
+
+	light_ball.queue_free()
+	heavy_ball.queue_free()
+	await process_frame
+
+
+func _create_impulse_test_ball(ball_name: String, ball_mass: float) -> RigidBody2D:
+	var ball := RigidBody2D.new()
+	ball.name = ball_name
+	ball.mass = ball_mass
+	ball.gravity_scale = 0.0
+	ball.linear_damp_mode = RigidBody2D.DAMP_MODE_REPLACE
+	ball.linear_damp = 0.0
+	ball.collision_layer = 0
+	ball.collision_mask = 0
+	var material := PhysicsMaterial.new()
+	material.bounce = 1.0
+	ball.physics_material_override = material
+	return ball
 
 
 func _test_pinball_registration() -> void:
@@ -446,6 +619,11 @@ func _find_property(object: Object, property_name: StringName) -> Dictionary:
 
 func _expect_vector(actual: Vector2, expected: Vector2, message: String) -> void:
 	_expect(actual.is_equal_approx(expected), \
+		"%s (expected=%s, actual=%s)" % [message, expected, actual])
+
+
+func _expect_float(actual: float, expected: float, message: String) -> void:
+	_expect(is_equal_approx(actual, expected), \
 		"%s (expected=%s, actual=%s)" % [message, expected, actual])
 
 

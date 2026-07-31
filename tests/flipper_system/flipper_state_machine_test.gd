@@ -62,8 +62,6 @@ func _test_rules_contract(rules_script: Script, default_rules: Resource) -> void
 
 	var required_properties := [
 		&"return_reflection_multiplier",
-		&"normal_parry_reflection_multiplier",
-		&"perfect_parry_reflection_multiplier",
 		&"activation_time",
 		&"hold_time",
 		&"return_time",
@@ -80,7 +78,10 @@ func _test_rules_contract(rules_script: Script, default_rules: Resource) -> void
 
 func _test_individual_editor_contract(flipper: PinballFlipper) -> void:
 	var expected_properties := [
-		&"contact_position_reflection_multiplier",
+		&"contact_zone_a_speed_multiplier",
+		&"contact_zone_b_speed_multiplier",
+		&"contact_zone_c_speed_multiplier",
+		&"contact_zone_d_speed_multiplier",
 		&"cooldown_time",
 		&"initial_angle_degrees",
 		&"maximum_angle_degrees",
@@ -117,25 +118,18 @@ func _test_state_sequence(flipper: PinballFlipper, rules_script: Script) -> void
 
 	var rules := rules_script.new() as Resource
 	rules.set(&"return_reflection_multiplier", 0.5)
-	rules.set(&"normal_parry_reflection_multiplier", 1.25)
-	rules.set(&"perfect_parry_reflection_multiplier", 2.0)
 	rules.set(&"activation_time", 0.05)
 	rules.set(&"hold_time", 0.05)
 	rules.set(&"return_time", 0.05)
 
-	flipper.set(&"contact_position_reflection_multiplier", 1.4)
+	flipper.set(&"contact_zone_c_speed_multiplier", 1.4)
 	flipper.set(&"cooldown_time", 0.05)
 	flipper.set(&"initial_angle_degrees", 0.0)
 	flipper.set(&"maximum_angle_degrees", 60.0)
 	flipper.call(&"set_state_rules", rules)
 
-	_expect_float(float(flipper.get(&"contact_position_reflection_multiplier")), 1.4, \
-		"접촉 위치 반사 배율은 값만 보관할 수 있어야 한다.")
-	_expect_float(float(rules.get(&"normal_parry_reflection_multiplier")), 1.25, \
-		"일반 패링 반사 배율은 공용 설정에 보관되어야 한다.")
-	_expect_float(float(rules.get(&"perfect_parry_reflection_multiplier")), 2.0, \
-		"정확한 패링 반사 배율은 공용 설정에 보관되어야 한다.")
-
+	_expect_float(float(flipper.get(&"contact_zone_c_speed_multiplier")), 1.4, \
+		"접촉 구역별 속도 배율은 개별 플리퍼에 보관되어야 한다.")
 	_observed_states.clear()
 	flipper.state_changed.connect(_on_flipper_state_changed)
 	flipper.call(&"set_selected_visual", true)

@@ -4,8 +4,6 @@ extends Resource
 
 
 var _return_reflection_multiplier: float = 0.5
-var _normal_parry_reflection_multiplier: float = 1.25
-var _perfect_parry_reflection_multiplier: float = 2.0
 var _activation_time: float = 0.07
 var _hold_time: float = 0.04
 var _return_time: float = 0.12
@@ -23,25 +21,6 @@ var return_reflection_multiplier: float:
 	set(value):
 		_return_reflection_multiplier = clampf(value, 0.0, 5.0)
 		emit_changed()
-
-## 일반 패링 반사 배율입니다. 패링 판정 규칙이 정해질 때까지 값만 보관합니다.
-@export_range(0.0, 5.0, 0.05, "suffix:x")
-var normal_parry_reflection_multiplier: float:
-	get:
-		return _normal_parry_reflection_multiplier
-	set(value):
-		_normal_parry_reflection_multiplier = clampf(value, 0.0, 5.0)
-		emit_changed()
-
-## 정확한 패링 반사 배율입니다. 정확 판정 규칙이 정해질 때까지 값만 보관합니다.
-@export_range(0.0, 5.0, 0.05, "suffix:x")
-var perfect_parry_reflection_multiplier: float:
-	get:
-		return _perfect_parry_reflection_multiplier
-	set(value):
-		_perfect_parry_reflection_multiplier = clampf(value, 0.0, 5.0)
-		emit_changed()
-
 
 @export_group("상태 시간")
 

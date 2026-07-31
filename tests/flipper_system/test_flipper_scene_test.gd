@@ -33,7 +33,7 @@ func _run() -> void:
 		_finish()
 		return
 
-	var authored_position := Vector2(295.0, -2.0)
+	var authored_position := test_scene.get(&"ball_reset_position") as Vector2
 	ball.global_position = Vector2(900.0, 900.0)
 	ball.linear_velocity = Vector2(300.0, 400.0)
 	ball.angular_velocity = 10.0

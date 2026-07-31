@@ -5,8 +5,6 @@
 [resource]
 script = ExtResource("1_rules")
 return_reflection_multiplier = 0.5
-normal_parry_reflection_multiplier = 1.25
-perfect_parry_reflection_multiplier = 2.0
 activation_time = 0.09999999999999999
 hold_time = 0.05
 return_time = 0.2

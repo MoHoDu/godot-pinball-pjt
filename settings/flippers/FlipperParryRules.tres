@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="FlipperParryRules" format=3]
+
+[ext_resource type="Script" path="res://scripts/flipper_system/flipper_parry_rules.gd" id="1_parry_rules"]
+
+[resource]
+script = ExtResource("1_parry_rules")
+show_contact_zones_in_editor = true
+zone_a_end_percent = 35.0
+zone_b_end_percent = 70.0
+zone_c_end_percent = 90.0
+zone_a_speed_multiplier = 0.94
+zone_b_speed_multiplier = 1.0
+zone_c_speed_multiplier = 1.08
+zone_d_speed_multiplier = 0.84
+zone_a_angle_correction_enabled = false
+zone_b_angle_correction_enabled = false
+zone_c_angle_correction_enabled = false
+zone_d_angle_correction_enabled = false
+zone_a_angle_correction_degrees = 0.0
+zone_b_angle_correction_degrees = 0.0
+zone_c_angle_correction_degrees = 0.0
+zone_d_angle_correction_degrees = 0.0
+left_angle_direction_sign = -1.0
+right_angle_direction_sign = 1.0
+normal_parry_window_time = 0.08
+perfect_parry_window_time = 0.03
+normal_parry_speed_multiplier = 1.25
+perfect_parry_speed_multiplier = 2.0
