@@ -55,6 +55,7 @@ const MIN_SWEEP_INTERVAL: float = 1.0
 const MAX_SWEEP_INTERVAL: float = 64.0
 const DEFAULT_SWEEP_INTERVAL: float = 8.0
 const MAX_ROTATION_SWEEP_STEPS: int = 128
+const ACTIVE_START_ELAPSED_EPSILON: float = 0.0001
 const CONTACT_ZONE_COLORS: Array[Color] = [
 	Color(0.3, 0.75, 1.0, 0.9),
 	Color(0.35, 1.0, 0.45, 0.9),
@@ -379,13 +380,20 @@ func find_rotation_sweep_hit(
 	circle_center: Vector2,
 	circle_radius: float,
 	previous_rotation: float,
-	target_rotation: float
+	target_rotation: float,
+	include_initial_overlap: bool = false
 ) -> Dictionary:
 	if is_circle_overlapping_at_rotation(
 		circle_center,
 		circle_radius,
 		previous_rotation
 	):
+		if include_initial_overlap:
+			return _build_rotation_sweep_hit(
+				circle_center,
+				previous_rotation,
+				0.0
+			)
 		return {}
 
 	var step_count := get_rotation_sweep_step_count(
@@ -406,25 +414,39 @@ func find_rotation_sweep_hit(
 			circle_radius,
 			sample_rotation
 		):
-			var polygon := _get_world_collision_polygon(sample_rotation)
-			var contact := _get_circle_polygon_contact(circle_center, polygon)
-			var hit := {
-				&"rotation": sample_rotation,
-				&"progress": progress,
-			}
-			if not contact.is_empty():
-				var contact_point: Vector2 = contact.get(&"point")
-				var contact_percent := calculate_contact_position_percent(
-					contact_point,
-					sample_rotation
-				)
-				hit[&"point"] = contact_point
-				hit[&"normal"] = contact.get(&"normal")
-				hit[&"contact_percent"] = contact_percent
-				hit[&"contact_zone"] = get_contact_zone(contact_percent)
-			return hit
+			return _build_rotation_sweep_hit(
+				circle_center,
+				sample_rotation,
+				progress
+			)
 
 	return {}
+
+
+func _build_rotation_sweep_hit(
+	circle_center: Vector2,
+	sample_rotation: float,
+	progress: float
+) -> Dictionary:
+	var polygon := _get_world_collision_polygon(sample_rotation)
+	var contact := _get_circle_polygon_contact(circle_center, polygon)
+	var hit := {
+		&"rotation": sample_rotation,
+		&"progress": progress,
+	}
+	if contact.is_empty():
+		return hit
+
+	var contact_point: Vector2 = contact.get(&"point")
+	var contact_percent := calculate_contact_position_percent(
+		contact_point,
+		sample_rotation
+	)
+	hit[&"point"] = contact_point
+	hit[&"normal"] = contact.get(&"normal")
+	hit[&"contact_percent"] = contact_percent
+	hit[&"contact_zone"] = get_contact_zone(contact_percent)
+	return hit
 
 
 ## 회전축을 0%, 중앙 갭을 향하는 플리퍼 끝을 100%로 접촉 위치를 환산합니다.
@@ -743,11 +765,18 @@ func resolve_rotation_sweep(
 			collision_scale.x,
 			collision_scale.y
 		)
+		# 작동 첫 물리 프레임에는 시작 자세에 이미 닿아 있던 공도 이 검사가
+		# 소유합니다. 이후 프레임의 겹침은 일반 물리에 맡겨 중복 임펄스를 막습니다.
+		var include_initial_overlap := (
+			active_elapsed_before_sweep >= 0.0
+			and active_elapsed_before_sweep <= ACTIVE_START_ELAPSED_EPSILON
+		)
 		var hit := find_rotation_sweep_hit(
 			ball_collision.global_position,
 			circle_radius,
 			previous_rotation,
-			target_rotation
+			target_rotation,
+			include_initial_overlap
 		)
 
 		if hit.is_empty():
@@ -822,10 +851,15 @@ func _resolve_swept_ball(
 		-radial_vector.y,
 		radial_vector.x
 	) * angular_velocity
+	var impact_normal := _get_approaching_sweep_normal(
+		ball.linear_velocity,
+		surface_velocity,
+		hit_normal
+	)
 	var resolved_velocity := calculate_physical_sweep_velocity(
 		ball.linear_velocity,
 		surface_velocity,
-		hit_normal,
+		impact_normal,
 		_get_ball_elasticity(ball)
 	)
 	resolved_velocity = apply_contact_zone_speed_multiplier(
@@ -848,11 +882,38 @@ func _resolve_swept_ball(
 	if velocity_change.is_zero_approx():
 		return false
 
+	var impact_maximum_speed := get_parry_maximum_speed(parry_grade)
+	if ball.has_method(&"request_temporary_maximum_speed"):
+		ball.call(
+			&"request_temporary_maximum_speed",
+			impact_maximum_speed,
+			2
+		)
+
 	# RigidBody2D의 Transform이나 속도를 직접 덮어쓰지 않습니다.
 	# 목표 속도 변화량을 질량에 맞는 순간 임펄스로 변환해 물리 서버에 전달합니다.
 	ball.sleeping = false
 	ball.apply_central_impulse(velocity_change * ball.mass)
 	return true
+
+
+## 회전 끝점처럼 모서리가 뾰족한 곳은 샘플 시점의 최근접 면 법선이
+## 실제 접근 방향과 반대로 잡힐 수 있습니다. 그 경우 공과 표면의 상대 운동을
+## 향하는 법선을 사용해 "감지는 됐지만 아래로 통과하는" 결과를 막습니다.
+func _get_approaching_sweep_normal(
+	incoming_velocity: Vector2,
+	surface_velocity: Vector2,
+	geometric_normal: Vector2
+) -> Vector2:
+	var normal := geometric_normal.normalized()
+	var relative_velocity := incoming_velocity - surface_velocity
+	if not normal.is_zero_approx() and relative_velocity.dot(normal) < 0.0:
+		return normal
+
+	var approach_normal := surface_velocity - incoming_velocity
+	if not approach_normal.is_zero_approx():
+		return approach_normal.normalized()
+	return normal
 
 
 func _get_ball_elasticity(ball: RigidBody2D) -> float:

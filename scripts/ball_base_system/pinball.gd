@@ -21,8 +21,11 @@ const MIN_COLLISION_RADIUS_RATIO: float = 0.25
 const MAX_COLLISION_RADIUS_RATIO: float = 1.5
 const DEFAULT_COLLISION_RADIUS_RATIO: float = 1.0
 const PINBALL_GROUP: StringName = &"pinball_balls"
+const DEFAULT_COLLISION_LIMIT_SETTLING_FRAMES := 2
 
 var _minimum_speed_suppressed_by_gravity: bool = false
+var _temporary_maximum_speed := INF
+var _temporary_speed_limit_until_physics_frame := -1
 var _stats: PinballStats = PinballStats.new()
 var _physics_rules: PinballPhysicsRules = DEFAULT_PHYSICS_RULES
 
@@ -237,28 +240,84 @@ func launch(direction: Vector2) -> bool:
 
 
 ## 방향은 유지하면서 정지, 최소 속력, 최대 속력 규칙을 적용한 속도를 반환합니다.
-func get_limited_velocity(velocity: Vector2) -> Vector2:
+func get_limited_velocity(
+	velocity: Vector2,
+	maximum_speed_override: float = INF
+) -> Vector2:
 	var speed := velocity.length()
 
 	if speed <= STOPPED_SPEED_EPSILON:
 		return Vector2.ZERO
 
 	var speed_range := physics_rules.get_effective_speed_range(stats)
-	var limited_speed := clampf(speed, speed_range.x, speed_range.y)
+	var effective_maximum := minf(speed_range.y, maximum_speed_override)
+	var effective_minimum := minf(speed_range.x, effective_maximum)
+	var limited_speed := clampf(speed, effective_minimum, effective_maximum)
 	return velocity.normalized() * limited_speed
+
+
+## 플리퍼 등 외부 충돌이 요청한 순간 속도 상한을 짧은 물리 정리 구간 동안 보관합니다.
+## 공 자체 Maximum Speed가 더 낮으면 기존 공 설정이 항상 우선합니다.
+func request_temporary_maximum_speed(
+	maximum_speed: float,
+	settling_physics_frames: int = DEFAULT_COLLISION_LIMIT_SETTLING_FRAMES
+) -> void:
+	if is_nan(maximum_speed) or maximum_speed < 0.0:
+		return
+
+	var current_physics_frame := Engine.get_physics_frames()
+	var active_maximum := get_active_temporary_maximum_speed(
+		current_physics_frame
+	)
+	_temporary_maximum_speed = (
+		minf(active_maximum, maximum_speed)
+		if not is_inf(active_maximum)
+		else maximum_speed
+	)
+	_temporary_speed_limit_until_physics_frame = maxi(
+		_temporary_speed_limit_until_physics_frame,
+		current_physics_frame + maxi(settling_physics_frames, 0)
+	)
+
+
+func get_active_temporary_maximum_speed(
+	physics_frame: int = Engine.get_physics_frames()
+) -> float:
+	if physics_frame <= _temporary_speed_limit_until_physics_frame:
+		return _temporary_maximum_speed
+
+	clear_temporary_maximum_speed()
+	return INF
+
+
+func clear_temporary_maximum_speed() -> void:
+	_temporary_maximum_speed = INF
+	_temporary_speed_limit_until_physics_frame = -1
+
+
+## 물리 프레임 사이에 외부 코드가 관찰하는 linear_velocity에도 현재 상한을 적용합니다.
+func enforce_active_temporary_speed_limit() -> void:
+	var active_maximum := get_active_temporary_maximum_speed()
+	if is_inf(active_maximum):
+		return
+	linear_velocity = _get_maximum_limited_velocity(
+		linear_velocity,
+		active_maximum
+	)
 
 
 ## 중력을 거슬러 상승하는 동안에는 최소 속력 보정을 억제합니다.
 ## 공이 정점을 지나 중력으로 최소 속력을 회복하면 일반 제한으로 복귀합니다.
 func _get_physics_limited_velocity(
 	velocity: Vector2,
-	gravity: Vector2
+	gravity: Vector2,
+	maximum_speed_override: float = INF
 ) -> Vector2:
 	var speed := velocity.length()
 
 	if gravity.is_zero_approx():
 		_minimum_speed_suppressed_by_gravity = false
-		return get_limited_velocity(velocity)
+		return get_limited_velocity(velocity, maximum_speed_override)
 
 	if velocity.dot(gravity) < 0.0:
 		_minimum_speed_suppressed_by_gravity = true
@@ -273,14 +332,23 @@ func _get_physics_limited_velocity(
 		if recovered_minimum_speed:
 			_minimum_speed_suppressed_by_gravity = false
 		else:
-			return _get_maximum_limited_velocity(velocity)
+			return _get_maximum_limited_velocity(
+				velocity,
+				maximum_speed_override
+			)
 
-	return get_limited_velocity(velocity)
+	return get_limited_velocity(velocity, maximum_speed_override)
 
 
-func _get_maximum_limited_velocity(velocity: Vector2) -> Vector2:
+func _get_maximum_limited_velocity(
+	velocity: Vector2,
+	maximum_speed_override: float = INF
+) -> Vector2:
 	var speed := velocity.length()
-	var maximum_speed := physics_rules.get_effective_speed_range(stats).y
+	var maximum_speed := minf(
+		physics_rules.get_effective_speed_range(stats).y,
+		maximum_speed_override
+	)
 
 	if speed <= STOPPED_SPEED_EPSILON:
 		return Vector2.ZERO
@@ -351,9 +419,11 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 	if best_result != null:
 		_apply_impact(state, best_context, best_result)
 
+	var temporary_maximum := get_active_temporary_maximum_speed()
 	state.linear_velocity = _get_physics_limited_velocity(
 		state.linear_velocity,
-		state.total_gravity
+		state.total_gravity,
+		temporary_maximum
 	)
 
 func _apply_impact(

@@ -173,11 +173,14 @@ func _test_scene_right_flipper_catches_ball(
 			ball.is_in_group(&"pinball_balls"),
 			frame_trace,
 		])
-	_expect_vector(
-		sweep_snapshot[&"position_at_resolution"],
-		sweep_snapshot[&"position_before_step"],
-		"1/8 배속의 회전 충돌 시점에도 공 Transform을 직접 이동시키면 안 된다."
+	var position_at_resolution: Vector2 = sweep_snapshot[&"position_at_resolution"]
+	var position_before_step: Vector2 = sweep_snapshot[&"position_before_step"]
+	var resolution_step_distance := position_at_resolution.distance_to(
+		position_before_step
 	)
+	_expect(resolution_step_distance <= 2.0, \
+		"1/8 배속 회전 충돌은 한 틱의 자연 이동을 넘어 공 Transform을 순간이동시키면 안 된다. " \
+		+ "(step_distance=%.3f)" % resolution_step_distance)
 	_expect(observed_ball_displacement, \
 		"회전 안전 검사가 공을 플리퍼 진행 방향 앞으로 분리해야 한다.")
 	_expect(observed_upward_hit, \

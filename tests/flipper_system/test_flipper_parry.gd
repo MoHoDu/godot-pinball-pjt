@@ -44,6 +44,7 @@ var _last_elapsed_time := -1.0
 var _last_multiplier := 1.0
 var _last_outgoing_speed := 0.0
 var _last_parry_physics_frame := -1
+var _speed_capture_version := 0
 
 
 func _ready() -> void:
@@ -128,6 +129,7 @@ func get_test_parry_rules() -> Resource:
 
 
 func reset_ball() -> void:
+	_speed_capture_version += 1
 	_last_result = "공 낙하 중 — Space 타이밍을 맞추세요"
 	_last_elapsed_time = -1.0
 	_last_multiplier = 1.0
@@ -165,7 +167,7 @@ func _on_parry_resolved(
 	_last_result = "PERFECT!" if grade == 2 else "PARRY!"
 	_last_elapsed_time = elapsed_time
 	_last_multiplier = multiplier
-	call_deferred(&"_capture_outgoing_speed", hit_ball)
+	_queue_confirmed_speed_capture(hit_ball)
 
 
 func _on_rotation_sweep_resolved(hit_ball: RigidBody2D) -> void:
@@ -182,10 +184,25 @@ func _record_non_parry_if_needed(
 	_last_result = "패링 판정 밖 충돌"
 	_last_elapsed_time = -1.0
 	_last_multiplier = 1.0
-	_capture_outgoing_speed(hit_ball)
+	_queue_confirmed_speed_capture(hit_ball)
 
 
-func _capture_outgoing_speed(hit_ball: RigidBody2D) -> void:
+func _queue_confirmed_speed_capture(hit_ball: RigidBody2D) -> void:
+	_speed_capture_version += 1
+	_capture_outgoing_speed_after_physics(
+		hit_ball,
+		_speed_capture_version
+	)
+
+
+func _capture_outgoing_speed_after_physics(
+	hit_ball: RigidBody2D,
+	capture_version: int
+) -> void:
+	await get_tree().physics_frame
+	await get_tree().process_frame
+	if capture_version != _speed_capture_version:
+		return
 	if is_instance_valid(hit_ball):
 		_last_outgoing_speed = hit_ball.linear_velocity.length()
 
@@ -219,7 +236,7 @@ func _refresh_guide_text() -> void:
 			elapsed_text,
 			_last_multiplier,
 		]
-		+ "충돌 후 속력: %.1f px/s / 현재 속력: %.1f px/s" % [
+		+ "물리 확정 속력: %.1f px/s / 현재 속력: %.1f px/s" % [
 			_last_outgoing_speed,
 			current_ball_speed,
 		]

@@ -62,9 +62,49 @@ func _run() -> void:
 			_expect(float(perfect_rules.get(&"perfect_parry_window_time")) > 1.0, \
 				"정확 고정 모드는 작동 충돌을 충분히 긴 정확 구간으로 만들어야 한다.")
 
+	await _test_scene_actual_velocity_limit(test_scene)
+
 	test_scene.queue_free()
 	await process_frame
 	_finish()
+
+
+func _test_scene_actual_velocity_limit(test_scene: Node2D) -> void:
+	var ball := test_scene.get_node_or_null("PinballBall") as Pinball
+	var right_flipper := test_scene.get_node_or_null(
+		"FlipperControllers/FlipperController/RightFlipper"
+	) as PinballFlipper
+	_expect(ball != null and right_flipper != null, \
+		"테스트 씬 실제 속도 검증에는 공과 오른쪽 플리퍼가 필요하다.")
+	if ball == null or right_flipper == null:
+		return
+
+	test_scene.call(&"select_test_mode", 3)
+	await process_frame
+	ball.freeze = false
+	ball.stats.minimum_speed = 0.0
+	ball.stats.maximum_speed = 5000.0
+	ball.stats.gravity_scale = 0.0
+	ball.stats.elasticity = 1.0
+	ball.global_position = right_flipper.global_position + Vector2(-400.0, 0.0)
+	ball.linear_velocity = Vector2(0.0, 400.0)
+	ball.sleeping = false
+	ball.reset_physics_interpolation()
+
+	_expect(right_flipper.request_activation(), \
+		"테스트 씬 오른쪽 플리퍼를 정확 패링 고정 모드로 작동할 수 있어야 한다.")
+	var maximum_observed_speed := 0.0
+	for _physics_step: int in 6:
+		await physics_frame
+		await process_frame
+		maximum_observed_speed = maxf(
+			maximum_observed_speed,
+			ball.linear_velocity.length()
+		)
+
+	_expect(maximum_observed_speed <= 1700.0 + 1.0, \
+		"실제 패링 테스트 씬의 linear_velocity가 정확 패링 상한을 넘으면 안 된다. " \
+		+ "(limit=1700, observed=%.1f)" % maximum_observed_speed)
 
 
 func _expect_float(actual: float, expected: float, message: String) -> void:

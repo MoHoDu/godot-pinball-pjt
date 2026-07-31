@@ -41,6 +41,7 @@ func _run() -> void:
 	_test_speed_range_invariants(ball)
 	_test_launch_uses_initial_speed(ball)
 	_test_velocity_limit_rules(ball)
+	await _test_temporary_collision_speed_limit(ball)
 	await _test_runtime_velocity_limits(ball)
 	await _test_gravity_reverses_upward_motion(ball)
 	_test_physics_material_is_instance_local(packed_scene, ball)
@@ -225,6 +226,62 @@ func _test_velocity_limit_rules(ball: Pinball) -> void:
 	var fast := ball.call(&"get_limited_velocity", Vector2(3000.0, 4000.0)) as Vector2
 	_expect_vector(fast, Vector2(1200.0, 1600.0), \
 		"최대 속력을 넘으면 방향을 유지한 채 2000px/s로 제한해야 한다.")
+
+
+func _test_temporary_collision_speed_limit(ball: Pinball) -> void:
+	for method_name: StringName in [
+		&"request_temporary_maximum_speed",
+		&"get_active_temporary_maximum_speed",
+		&"clear_temporary_maximum_speed",
+		&"enforce_active_temporary_speed_limit",
+	]:
+		_expect(ball.has_method(method_name), \
+			"충돌 직후 실제 속도 상한을 위한 %s API가 필요하다." % method_name)
+	if not ball.has_method(&"request_temporary_maximum_speed") \
+		or not ball.has_method(&"get_active_temporary_maximum_speed") \
+		or not ball.has_method(&"clear_temporary_maximum_speed") \
+		or not ball.has_method(&"enforce_active_temporary_speed_limit"):
+		return
+
+	var original_minimum := ball.stats.minimum_speed
+	var original_maximum := ball.stats.maximum_speed
+	var original_gravity := ball.stats.gravity_scale
+	ball.stats.minimum_speed = 0.0
+	ball.stats.maximum_speed = 5000.0
+	ball.stats.gravity_scale = 0.0
+	ball.call(&"request_temporary_maximum_speed", 1540.0, 2)
+	_expect_float(float(ball.call(&"get_active_temporary_maximum_speed")), 1540.0, \
+		"공은 플리퍼가 요청한 임시 최대 속도를 현재 충돌 상한으로 보관해야 한다.")
+
+	ball.linear_velocity = Vector2(4000.0, 0.0)
+	ball.call(&"enforce_active_temporary_speed_limit")
+	_expect_float(ball.linear_velocity.length(), 1540.0, \
+		"공은 물리 프레임 사이에도 관찰 가능한 linear_velocity를 즉시 제한해야 한다.")
+	ball.linear_velocity = Vector2(4000.0, 0.0)
+	await physics_frame
+	_expect_float(ball.linear_velocity.length(), 1540.0, \
+		"실제 물리 프레임의 linear_velocity가 임시 충돌 상한을 넘으면 안 된다.")
+	await physics_frame
+	_expect(ball.linear_velocity.length() <= 1540.0 + EPSILON, \
+		"충돌 정리 프레임 동안 임시 속도 상한이 유지되어야 한다.")
+	await physics_frame
+	_expect(is_inf(float(ball.call(&"get_active_temporary_maximum_speed"))), \
+		"임시 충돌 상한은 지정한 물리 프레임 이후 자동으로 해제되어야 한다.")
+
+	ball.stats.maximum_speed = 1200.0
+	ball.call(&"request_temporary_maximum_speed", 1700.0, 2)
+	ball.linear_velocity = Vector2(4000.0, 0.0)
+	ball.call(&"enforce_active_temporary_speed_limit")
+	_expect_float(ball.linear_velocity.length(), 1200.0, \
+		"공 자체 최대 속도가 충돌 임시 상한보다 낮으면 공의 상한이 우선해야 한다.")
+	ball.call(&"clear_temporary_maximum_speed")
+	_expect(is_inf(float(ball.call(&"get_active_temporary_maximum_speed"))), \
+		"공 재배치 등을 위해 임시 충돌 상한을 즉시 초기화할 수 있어야 한다.")
+
+	ball.linear_velocity = Vector2.ZERO
+	ball.stats.minimum_speed = original_minimum
+	ball.stats.maximum_speed = original_maximum
+	ball.stats.gravity_scale = original_gravity
 
 
 func _test_runtime_velocity_limits(ball: Pinball) -> void:

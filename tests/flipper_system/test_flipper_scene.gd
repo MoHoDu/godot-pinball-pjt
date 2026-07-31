@@ -45,6 +45,8 @@ func reset_ball() -> void:
 		push_warning("Ball Path에 유효한 RigidBody2D 공을 지정해야 합니다.")
 		return
 
+	if ball.has_method(&"clear_temporary_maximum_speed"):
+		ball.call(&"clear_temporary_maximum_speed")
 	ball.freeze = true
 	ball.global_position = ball_reset_position
 	ball.rotation = 0.0
