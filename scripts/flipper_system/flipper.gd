@@ -56,6 +56,7 @@ const MAX_SWEEP_INTERVAL: float = 64.0
 const DEFAULT_SWEEP_INTERVAL: float = 8.0
 const MAX_ROTATION_SWEEP_STEPS: int = 128
 const ACTIVE_START_ELAPSED_EPSILON: float = 0.0001
+const PIVOT_COLLISION_RADIUS_RATIO: float = 0.1
 const CONTACT_ZONE_COLORS: Array[Color] = [
 	Color(0.3, 0.75, 1.0, 0.9),
 	Color(0.35, 1.0, 0.45, 0.9),
@@ -235,6 +236,8 @@ func _physics_process(delta: float) -> void:
 			delta,
 			previous_state_elapsed
 		)
+	else:
+		resolve_pivot_motion_sweep(delta, previous_state_type)
 
 
 ## 설정된 길이를 시각 이미지와 충돌 폴리곤에 같은 비율로 적용합니다.
@@ -242,6 +245,9 @@ func _physics_process(delta: float) -> void:
 func refresh_flipper_size() -> void:
 	var target_sprite := get_node_or_null("Sprite2D") as Sprite2D
 	var collision := get_node_or_null("CollisionPolygon2D") as CollisionPolygon2D
+	var pivot_collision := get_node_or_null(
+		"PivotCollisionShape2D"
+	) as CollisionShape2D
 
 	if target_sprite == null or target_sprite.texture == null:
 		if is_inside_tree():
@@ -266,6 +272,16 @@ func refresh_flipper_size() -> void:
 		collision.position = _source_collision_position * size_factor
 		_last_applied_collision_position = collision.position
 		_has_last_applied_collision_position = true
+
+	if pivot_collision != null and pivot_collision.shape is CircleShape2D:
+		var pivot_circle := pivot_collision.shape as CircleShape2D
+		if not pivot_circle.resource_local_to_scene:
+			pivot_circle = pivot_circle.duplicate() as CircleShape2D
+			pivot_circle.resource_local_to_scene = true
+			pivot_collision.shape = pivot_circle
+		pivot_circle.radius = flipper_length * PIVOT_COLLISION_RADIUS_RATIO
+		pivot_collision.position = Vector2.ZERO
+		pivot_collision.scale = Vector2.ONE
 
 	if is_inside_tree():
 		update_configuration_warnings()
@@ -731,6 +747,120 @@ func calculate_physical_sweep_velocity(
 	return surface_velocity + reflected_relative_velocity
 
 
+## 비작동 상태의 고정 회전축을 공이 한 프레임 안에 통과하는지 예측합니다.
+## 원 표면의 실제 법선으로 물리 반사 임펄스만 적용하며 위치는 이동시키지 않습니다.
+func resolve_pivot_motion_sweep(
+	delta: float,
+	state_type: int = -1
+) -> int:
+	if not is_inside_tree() or delta <= 0.0:
+		return 0
+
+	var pivot_collision := get_node_or_null(
+		"PivotCollisionShape2D"
+	) as CollisionShape2D
+	if pivot_collision == null \
+		or pivot_collision.disabled \
+		or not pivot_collision.shape is CircleShape2D:
+		return 0
+
+	var pivot_circle := pivot_collision.shape as CircleShape2D
+	var pivot_scale := pivot_collision.global_scale.abs()
+	var pivot_radius := pivot_circle.radius * maxf(
+		pivot_scale.x,
+		pivot_scale.y
+	)
+	var pivot_center := pivot_collision.global_position
+	var collision_state_type := (
+		get_current_state_type()
+		if state_type < 0
+		else state_type
+	)
+	var resolved_count := 0
+
+	for candidate: Node in get_tree().get_nodes_in_group(PINBALL_GROUP):
+		if not candidate is RigidBody2D:
+			continue
+		var ball := candidate as RigidBody2D
+		if bool(_collision_guard.call(
+			&"was_resolved_this_physics_frame",
+			ball
+		)):
+			continue
+
+		var ball_collision := ball.get_node_or_null(
+			"CollisionShape2D"
+		) as CollisionShape2D
+		if ball_collision == null or not ball_collision.shape is CircleShape2D:
+			continue
+
+		var ball_circle := ball_collision.shape as CircleShape2D
+		var ball_scale := ball_collision.global_scale.abs()
+		var ball_radius := ball_circle.radius * maxf(ball_scale.x, ball_scale.y)
+		var hit_normal := _find_moving_circle_pivot_normal(
+			ball_collision.global_position,
+			ball.linear_velocity * delta,
+			pivot_center,
+			pivot_radius + ball_radius
+		)
+		if hit_normal.is_zero_approx():
+			continue
+
+		var reflected_velocity := calculate_physical_sweep_velocity(
+			ball.linear_velocity,
+			Vector2.ZERO,
+			hit_normal,
+			_get_ball_elasticity(ball)
+		)
+		if collision_state_type == FlipperStateClass.Type.RETURNING:
+			reflected_velocity *= float(
+				state_rules.get(&"return_reflection_multiplier")
+			)
+		var velocity_change := reflected_velocity - ball.linear_velocity
+		if velocity_change.is_zero_approx():
+			continue
+
+		_collision_guard.call(&"mark_resolved", ball)
+		ball.sleeping = false
+		ball.apply_central_impulse(velocity_change * ball.mass)
+		resolved_count += 1
+
+	return resolved_count
+
+
+func _find_moving_circle_pivot_normal(
+	start_center: Vector2,
+	motion: Vector2,
+	pivot_center: Vector2,
+	expanded_radius: float
+) -> Vector2:
+	if motion.is_zero_approx() or expanded_radius <= 0.0:
+		return Vector2.ZERO
+
+	var start_relative := start_center - pivot_center
+	var radius_squared := expanded_radius * expanded_radius
+	# 이미 겹친 접촉은 PhysicsServer2D의 일반 접촉 해결에 맡깁니다.
+	if start_relative.length_squared() <= radius_squared:
+		return Vector2.ZERO
+
+	var a := motion.length_squared()
+	var b := 2.0 * start_relative.dot(motion)
+	var c := start_relative.length_squared() - radius_squared
+	var discriminant := b * b - 4.0 * a * c
+	if discriminant < 0.0:
+		return Vector2.ZERO
+
+	var hit_progress := (-b - sqrt(discriminant)) / (2.0 * a)
+	if hit_progress < 0.0 or hit_progress > 1.0:
+		return Vector2.ZERO
+
+	var hit_center := start_center + motion * hit_progress
+	var normal := (hit_center - pivot_center).normalized()
+	if normal.is_zero_approx() or motion.dot(normal) >= 0.0:
+		return Vector2.ZERO
+	return normal
+
+
 ## 시작 자세 밖에 있지만 회전 중간 또는 끝 자세에서 건너뛴 공을 찾아 임펄스를 줍니다.
 ## Transform 보정 없이 속도 변화만 물리 서버에 전달합니다.
 ## 반환값은 이 물리 프레임에서 별도 임펄스를 적용한 공의 개수입니다.
@@ -1055,6 +1185,14 @@ func _get_configuration_warnings() -> PackedStringArray:
 		warnings.append("CollisionPolygon2D 자식 노드가 필요합니다.")
 	elif collision.polygon.is_empty():
 		warnings.append("CollisionPolygon2D에 Polygon 점을 지정해야 합니다.")
+
+	var pivot_collision := get_node_or_null(
+		"PivotCollisionShape2D"
+	) as CollisionShape2D
+	if pivot_collision == null:
+		warnings.append("축 통과 방지용 PivotCollisionShape2D 자식 노드가 필요합니다.")
+	elif not pivot_collision.shape is CircleShape2D:
+		warnings.append("PivotCollisionShape2D에는 CircleShape2D를 지정해야 합니다.")
 
 	if not scale.is_equal_approx(Vector2.ONE):
 		warnings.append("플리퍼 루트의 Scale은 (1, 1)로 유지하고 Flipper Length를 사용하세요.")

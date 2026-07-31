@@ -24,6 +24,7 @@ radius = 28.8
 
 [node name="PinballBall" type="RigidBody2D" unique_id=1730574864]
 physics_material_override = SubResource("PhysicsMaterial_83qyv")
+continuous_cd = 2
 contact_monitor = true
 max_contacts_reported = 8
 script = ExtResource("1_83qyv")
