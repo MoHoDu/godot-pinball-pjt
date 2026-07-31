@@ -3,6 +3,10 @@
 [ext_resource type="PackedScene" uid="uid://bhh5qyc3llygr" path="res://resources/balls/base/pinball_ball.tscn" id="1_7vcf2"]
 [ext_resource type="Texture2D" uid="uid://d355bdkm1nv2g" path="res://resources/ui/icon.svg" id="2_7vcf2"]
 
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_7vcf2"]
+resource_local_to_scene = true
+bounce = 0.8
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_udrbm"]
 size = Vector2(127.799995, 127.50001)
 
@@ -11,6 +15,8 @@ size = Vector2(127.799995, 127.50001)
 [node name="Camera2D" type="Camera2D" parent="." unique_id=2052428608]
 
 [node name="PinballBall" parent="." unique_id=1730574864 instance=ExtResource("1_7vcf2")]
+position = Vector2(-3, -149)
+physics_material_override = SubResource("PhysicsMaterial_7vcf2")
 contact_monitor = true
 max_contacts_reported = 8
 
