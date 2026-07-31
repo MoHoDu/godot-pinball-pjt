@@ -1,0 +1,244 @@
+[gd_scene format=3 uid="uid://m6uretebr28i"]
+
+[ext_resource type="PackedScene" uid="uid://bhh5qyc3llygr" path="res://resources/balls/base/base_ball.tscn" id="1_7vcf2"]
+[ext_resource type="Texture2D" uid="uid://d355bdkm1nv2g" path="res://resources/ui/icon.svg" id="2_7vcf2"]
+[ext_resource type="Script" uid="uid://ce2wax7g2gio8" path="res://scripts/ball_base_system/pinball_stats.gd" id="2_yvrqj"]
+[ext_resource type="PackedScene" uid="uid://cpch6xwastfm0" path="res://resources/balls/elastic_var/dead_ball.tscn" id="3_lwnpo"]
+[ext_resource type="PackedScene" uid="uid://5hanx60oos03" path="res://resources/balls/elastic_var/rubber_ball.tscn" id="4_mgw4u"]
+[ext_resource type="PackedScene" uid="uid://by2n116isxska" path="res://resources/balls/elastic_var/super_ball.tscn" id="5_fx1r1"]
+[ext_resource type="PackedScene" uid="uid://5v4byhqjcnno" path="res://resources/balls/mass_var/light_ball.tscn" id="6_8v8v0"]
+[ext_resource type="PackedScene" uid="uid://csrwlhfpki4fs" path="res://resources/balls/mass_var/normal_ball.tscn" id="7_b5qjs"]
+[ext_resource type="PackedScene" uid="uid://bjccffqopu0ej" path="res://resources/balls/mass_var/heavy_ball.tscn" id="8_ol4x0"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_7dtsd"]
+resource_local_to_scene = true
+bounce = 0.51
+
+[sub_resource type="Resource" id="Resource_fxc18"]
+resource_local_to_scene = true
+script = ExtResource("2_yvrqj")
+mass = 0.1
+elasticity = 0.51
+gravity_scale = 1.0
+initial_speed = 700.0
+minimum_speed = 200.0
+maximum_speed = 2500.0
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_p0hhj"]
+resource_local_to_scene = true
+bounce = 0.1
+
+[sub_resource type="Resource" id="Resource_bvyen"]
+resource_local_to_scene = true
+script = ExtResource("2_yvrqj")
+mass = 1.0
+elasticity = 0.1
+gravity_scale = 1.0
+initial_speed = 700.0
+maximum_speed = 5000.0
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_f7gwv"]
+resource_local_to_scene = true
+bounce = 0.6
+
+[sub_resource type="Resource" id="Resource_jxqlp"]
+resource_local_to_scene = true
+script = ExtResource("2_yvrqj")
+mass = 1.0
+elasticity = 0.6
+gravity_scale = 1.0
+initial_speed = 700.0
+maximum_speed = 5000.0
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_0otdp"]
+resource_local_to_scene = true
+bounce = 0.9
+
+[sub_resource type="Resource" id="Resource_rjb5t"]
+resource_local_to_scene = true
+script = ExtResource("2_yvrqj")
+mass = 1.0
+elasticity = 0.9
+gravity_scale = 1.0
+initial_speed = 700.0
+maximum_speed = 5000.0
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_dwcr7"]
+resource_local_to_scene = true
+bounce = 0.5
+
+[sub_resource type="Resource" id="Resource_y1fm7"]
+resource_local_to_scene = true
+script = ExtResource("2_yvrqj")
+mass = 0.5
+elasticity = 0.5
+gravity_scale = 1.0
+initial_speed = 700.0
+maximum_speed = 5000.0
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_o7hvs"]
+resource_local_to_scene = true
+bounce = 0.5
+
+[sub_resource type="Resource" id="Resource_vd0p5"]
+resource_local_to_scene = true
+script = ExtResource("2_yvrqj")
+mass = 2.0
+elasticity = 0.5
+gravity_scale = 1.0
+initial_speed = 700.0
+maximum_speed = 5000.0
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_dfuo1"]
+resource_local_to_scene = true
+bounce = 0.5
+
+[sub_resource type="Resource" id="Resource_mxss0"]
+resource_local_to_scene = true
+script = ExtResource("2_yvrqj")
+mass = 8.0
+elasticity = 0.5
+gravity_scale = 1.0
+initial_speed = 700.0
+maximum_speed = 5000.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_udrbm"]
+size = Vector2(127.799995, 127.50001)
+
+[node name="TestBallPhysics" type="Node2D" unique_id=745725862]
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=2052428608]
+
+[node name="Balls" type="Node2D" parent="." unique_id=214673538]
+
+[node name="PinballBall" parent="Balls" unique_id=1730574864 instance=ExtResource("1_7vcf2")]
+position = Vector2(-520, -250)
+mass = 0.1
+physics_material_override = SubResource("PhysicsMaterial_7dtsd")
+stats = SubResource("Resource_fxc18")
+ball_diameter = 32.0
+
+[node name="ElasticTest" type="Node2D" parent="Balls" unique_id=1390203812]
+position = Vector2(-130, -250)
+
+[node name="DeadBall" parent="Balls/ElasticTest" unique_id=2119574522 instance=ExtResource("3_lwnpo")]
+position = Vector2(-130, 0)
+physics_material_override = SubResource("PhysicsMaterial_p0hhj")
+stats = SubResource("Resource_bvyen")
+ball_diameter = 32.0
+
+[node name="RubberBall" parent="Balls/ElasticTest" unique_id=1065090344 instance=ExtResource("4_mgw4u")]
+physics_material_override = SubResource("PhysicsMaterial_f7gwv")
+stats = SubResource("Resource_jxqlp")
+ball_diameter = 32.0
+
+[node name="SuperBall" parent="Balls/ElasticTest" unique_id=298672590 instance=ExtResource("5_fx1r1")]
+position = Vector2(130, 0)
+physics_material_override = SubResource("PhysicsMaterial_0otdp")
+stats = SubResource("Resource_rjb5t")
+ball_diameter = 32.0
+
+[node name="MassTest" type="Node2D" parent="Balls" unique_id=95295492]
+position = Vector2(390, -250)
+
+[node name="LightBall" parent="Balls/MassTest" unique_id=1885030982 instance=ExtResource("6_8v8v0")]
+position = Vector2(-130, 0)
+physics_material_override = SubResource("PhysicsMaterial_dwcr7")
+stats = SubResource("Resource_y1fm7")
+ball_diameter = 32.0
+
+[node name="NormalBall" parent="Balls/MassTest" unique_id=864722459 instance=ExtResource("7_b5qjs")]
+physics_material_override = SubResource("PhysicsMaterial_o7hvs")
+stats = SubResource("Resource_vd0p5")
+ball_diameter = 32.0
+
+[node name="HeavyBall" parent="Balls/MassTest" unique_id=959581413 instance=ExtResource("8_ol4x0")]
+position = Vector2(130, 0)
+physics_material_override = SubResource("PhysicsMaterial_dfuo1")
+stats = SubResource("Resource_mxss0")
+ball_diameter = 32.0
+
+[node name="Walls" type="Node2D" parent="." unique_id=221462373]
+
+[node name="Wall" type="StaticBody2D" parent="Walls" unique_id=1344426755]
+position = Vector2(0, 250)
+
+[node name="Sprite2D" type="Sprite2D" parent="Walls/Wall" unique_id=611328941]
+texture = ExtResource("2_7vcf2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Wall" unique_id=1726102261]
+position = Vector2(-0.30000877, 0.1499939)
+scale = Vector2(0.9999998, 0.9999998)
+shape = SubResource("RectangleShape2D_udrbm")
+
+[node name="Wall2" type="StaticBody2D" parent="Walls" unique_id=1823931143]
+position = Vector2(130, 250)
+
+[node name="Sprite2D" type="Sprite2D" parent="Walls/Wall2" unique_id=1158123362]
+texture = ExtResource("2_7vcf2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Wall2" unique_id=1878967023]
+shape = SubResource("RectangleShape2D_udrbm")
+
+[node name="Wall3" type="StaticBody2D" parent="Walls" unique_id=1949496390]
+position = Vector2(-130, 250)
+
+[node name="Sprite2D" type="Sprite2D" parent="Walls/Wall3" unique_id=654863412]
+texture = ExtResource("2_7vcf2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Wall3" unique_id=1147292464]
+shape = SubResource("RectangleShape2D_udrbm")
+
+[node name="Wall4" type="StaticBody2D" parent="Walls" unique_id=1248010076]
+position = Vector2(260, 250)
+
+[node name="Sprite2D" type="Sprite2D" parent="Walls/Wall4" unique_id=147509666]
+texture = ExtResource("2_7vcf2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Wall4" unique_id=1528907852]
+shape = SubResource("RectangleShape2D_udrbm")
+
+[node name="Wall5" type="StaticBody2D" parent="Walls" unique_id=1170632940]
+position = Vector2(-260, 250)
+
+[node name="Sprite2D" type="Sprite2D" parent="Walls/Wall5" unique_id=850069507]
+texture = ExtResource("2_7vcf2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Wall5" unique_id=878446450]
+shape = SubResource("RectangleShape2D_udrbm")
+
+[node name="Wall6" type="StaticBody2D" parent="Walls" unique_id=449030983]
+position = Vector2(390, 250)
+
+[node name="Sprite2D" type="Sprite2D" parent="Walls/Wall6" unique_id=493496803]
+texture = ExtResource("2_7vcf2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Wall6" unique_id=522586292]
+shape = SubResource("RectangleShape2D_udrbm")
+
+[node name="Wall7" type="StaticBody2D" parent="Walls" unique_id=738404049]
+position = Vector2(-390, 250)
+
+[node name="Sprite2D" type="Sprite2D" parent="Walls/Wall7" unique_id=270504888]
+texture = ExtResource("2_7vcf2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Wall7" unique_id=1964374882]
+shape = SubResource("RectangleShape2D_udrbm")
+
+[node name="Wall8" type="StaticBody2D" parent="Walls" unique_id=899625536]
+position = Vector2(520, 250)
+
+[node name="Sprite2D" type="Sprite2D" parent="Walls/Wall8" unique_id=987362980]
+texture = ExtResource("2_7vcf2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Wall8" unique_id=1900095278]
+shape = SubResource("RectangleShape2D_udrbm")
+
+[node name="Wall9" type="StaticBody2D" parent="Walls" unique_id=1963484632]
+position = Vector2(-520, 250)
+
+[node name="Sprite2D" type="Sprite2D" parent="Walls/Wall9" unique_id=1914366988]
+texture = ExtResource("2_7vcf2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Wall9" unique_id=1903084870]
+shape = SubResource("RectangleShape2D_udrbm")

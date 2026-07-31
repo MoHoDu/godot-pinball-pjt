@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://x25woi2trsvl"
-path="res://.godot/imported/industrial_steel_flipper.png-9aec28e387802ee4b01d59e163cf72e2.ctex"
+uid="uid://dnnkhyomr1pbg"
+path="res://.godot/imported/teleport_before_5_26s.png-9216b50a1b546b755e9e3ca933bf57aa.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/art/flippers/industrial_steel_flipper.png"
-dest_files=["res://.godot/imported/industrial_steel_flipper.png-9aec28e387802ee4b01d59e163cf72e2.ctex"]
+source_file="res://tests/evidence/flipper_collision/teleport_before_5_26s.png"
+dest_files=["res://.godot/imported/teleport_before_5_26s.png-9216b50a1b546b755e9e3ca933bf57aa.ctex"]
 
 [params]
 

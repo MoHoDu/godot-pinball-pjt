@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="FlipperStateRules" format=3 uid="uid://cwq44mmuu4cbm"]
+
+[ext_resource type="Script" uid="uid://bigcuudoprs4s" path="res://scripts/flipper_system/flipper_state_rules.gd" id="1_rules"]
+
+[resource]
+script = ExtResource("1_rules")
+return_reflection_multiplier = 0.5
+activation_time = 0.1
+hold_time = 0.05
+return_time = 0.2

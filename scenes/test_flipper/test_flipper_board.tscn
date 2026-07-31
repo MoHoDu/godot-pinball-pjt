@@ -1,0 +1,288 @@
+[gd_scene format=3 uid="uid://bcwvt3i4iw5ej"]
+
+[ext_resource type="Script" path="res://tests/flipper_system/test_flipper_board.gd" id="1_board"]
+[ext_resource type="PackedScene" uid="uid://bhh5qyc3llygr" path="res://resources/balls/base/base_ball.tscn" id="2_ball"]
+[ext_resource type="Script" uid="uid://ce2wax7g2gio8" path="res://scripts/ball_base_system/pinball_stats.gd" id="3_stats"]
+[ext_resource type="Script" uid="uid://58k0flhnlg3" path="res://scripts/flipper_system/flipper_selector.gd" id="4_selector"]
+[ext_resource type="Script" uid="uid://lj3ocu4ruejo" path="res://scripts/flipper_system/flipper_controller.gd" id="5_controller"]
+[ext_resource type="PackedScene" uid="uid://ris3ga3vl6ci" path="res://resources/flippers/sub_flipper/normal_flipper_left.tscn" id="6_left"]
+[ext_resource type="PackedScene" uid="uid://u4e8s8havfkw" path="res://resources/flippers/sub_flipper/normal_flipper_right.tscn" id="7_right"]
+[ext_resource type="Script" path="res://tests/flipper_system/test_speed_bumper.gd" id="8_bumper"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape_horizontal"]
+size = Vector2(640, 24)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape_vertical"]
+size = Vector2(24, 220)
+
+[sub_resource type="CircleShape2D" id="CircleShape_bumper"]
+resource_local_to_scene = true
+radius = 64.0
+
+[sub_resource type="CircleShape2D" id="CircleShape_bumper_area"]
+resource_local_to_scene = true
+radius = 68.0
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_6qixg"]
+resource_local_to_scene = true
+bounce = 0.9
+
+[sub_resource type="Resource" id="Resource_sexy2"]
+resource_local_to_scene = true
+script = ExtResource("3_stats")
+mass = 1.0
+elasticity = 0.9
+gravity_scale = 0.35
+initial_speed = 940.0
+minimum_speed = 320.0
+maximum_speed = 1540.0
+
+[node name="TestFlipperBoard" type="Node2D" unique_id=1905006504]
+script = ExtResource("1_board")
+
+[node name="BoardBackground" type="Polygon2D" parent="." unique_id=2016125082]
+z_index = -10
+color = Color(0.055, 0.075, 0.105, 1)
+polygon = PackedVector2Array(-932, -512, 932, -512, 932, 512, -932, 512)
+
+[node name="GapGuides" type="Node2D" parent="." unique_id=655463945]
+z_index = -5
+
+[node name="TopGap" type="Polygon2D" parent="GapGuides" unique_id=1295286968]
+color = Color(0.65, 0.13, 0.18, 0.28)
+polygon = PackedVector2Array(-280, -512, 280, -512, 280, -484, -280, -484)
+
+[node name="BottomGap" type="Polygon2D" parent="GapGuides" unique_id=783219558]
+color = Color(0.65, 0.13, 0.18, 0.28)
+polygon = PackedVector2Array(-280, 484, 280, 484, 280, 512, -280, 512)
+
+[node name="LeftGap" type="Polygon2D" parent="GapGuides" unique_id=173239717]
+color = Color(0.65, 0.13, 0.18, 0.28)
+polygon = PackedVector2Array(-932, -280, -904, -280, -904, 280, -932, 280)
+
+[node name="RightGap" type="Polygon2D" parent="GapGuides" unique_id=609608203]
+color = Color(0.65, 0.13, 0.18, 0.28)
+polygon = PackedVector2Array(904, -280, 932, -280, 932, 280, 904, 280)
+
+[node name="Walls" type="Node2D" parent="." unique_id=262200944]
+
+[node name="TopLeftWall" type="StaticBody2D" parent="Walls" unique_id=1286810749]
+position = Vector2(-600, -500)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/TopLeftWall" unique_id=965608187]
+shape = SubResource("RectangleShape_horizontal")
+
+[node name="Visual" type="Polygon2D" parent="Walls/TopLeftWall" unique_id=1986772914]
+color = Color(0.35, 0.78, 0.96, 1)
+polygon = PackedVector2Array(-320, -3, 320, -3, 320, 3, -320, 3)
+
+[node name="TopRightWall" type="StaticBody2D" parent="Walls" unique_id=10598488]
+position = Vector2(600, -500)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/TopRightWall" unique_id=2056627273]
+shape = SubResource("RectangleShape_horizontal")
+
+[node name="Visual" type="Polygon2D" parent="Walls/TopRightWall" unique_id=1280937662]
+color = Color(0.35, 0.78, 0.96, 1)
+polygon = PackedVector2Array(-320, -3, 320, -3, 320, 3, -320, 3)
+
+[node name="BottomLeftWall" type="StaticBody2D" parent="Walls" unique_id=2088105206]
+position = Vector2(-600, 500)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/BottomLeftWall" unique_id=1052435425]
+shape = SubResource("RectangleShape_horizontal")
+
+[node name="Visual" type="Polygon2D" parent="Walls/BottomLeftWall" unique_id=24145458]
+color = Color(0.35, 0.78, 0.96, 1)
+polygon = PackedVector2Array(-320, -3, 320, -3, 320, 3, -320, 3)
+
+[node name="BottomRightWall" type="StaticBody2D" parent="Walls" unique_id=1475565543]
+position = Vector2(600, 500)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/BottomRightWall" unique_id=1617611803]
+shape = SubResource("RectangleShape_horizontal")
+
+[node name="Visual" type="Polygon2D" parent="Walls/BottomRightWall" unique_id=908687253]
+color = Color(0.35, 0.78, 0.96, 1)
+polygon = PackedVector2Array(-320, -3, 320, -3, 320, 3, -320, 3)
+
+[node name="LeftTopWall" type="StaticBody2D" parent="Walls" unique_id=151964803]
+position = Vector2(-920, -390)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/LeftTopWall" unique_id=1152379131]
+shape = SubResource("RectangleShape_vertical")
+
+[node name="Visual" type="Polygon2D" parent="Walls/LeftTopWall" unique_id=567372056]
+color = Color(0.35, 0.78, 0.96, 1)
+polygon = PackedVector2Array(-3, -110, 3, -110, 3, 110, -3, 110)
+
+[node name="LeftBottomWall" type="StaticBody2D" parent="Walls" unique_id=45340433]
+position = Vector2(-920, 390)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/LeftBottomWall" unique_id=870962979]
+shape = SubResource("RectangleShape_vertical")
+
+[node name="Visual" type="Polygon2D" parent="Walls/LeftBottomWall" unique_id=1910477406]
+color = Color(0.35, 0.78, 0.96, 1)
+polygon = PackedVector2Array(-3, -110, 3, -110, 3, 110, -3, 110)
+
+[node name="RightTopWall" type="StaticBody2D" parent="Walls" unique_id=1407026575]
+position = Vector2(920, -390)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/RightTopWall" unique_id=1324753321]
+shape = SubResource("RectangleShape_vertical")
+
+[node name="Visual" type="Polygon2D" parent="Walls/RightTopWall" unique_id=2000538707]
+color = Color(0.35, 0.78, 0.96, 1)
+polygon = PackedVector2Array(-3, -110, 3, -110, 3, 110, -3, 110)
+
+[node name="RightBottomWall" type="StaticBody2D" parent="Walls" unique_id=984388911]
+position = Vector2(920, 390)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/RightBottomWall" unique_id=2066987778]
+shape = SubResource("RectangleShape_vertical")
+
+[node name="Visual" type="Polygon2D" parent="Walls/RightBottomWall" unique_id=244297459]
+color = Color(0.35, 0.78, 0.96, 1)
+polygon = PackedVector2Array(-3, -110, 3, -110, 3, 110, -3, 110)
+
+[node name="Bumpers" type="Node2D" parent="." unique_id=525693520]
+
+[node name="BumperCenter" type="StaticBody2D" parent="Bumpers" unique_id=1050007271]
+position = Vector2(0, -145)
+script = ExtResource("8_bumper")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bumpers/BumperCenter" unique_id=637540678]
+shape = SubResource("CircleShape_bumper")
+
+[node name="SpeedDetectionArea" type="Area2D" parent="Bumpers/BumperCenter" unique_id=1641841581]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bumpers/BumperCenter/SpeedDetectionArea" unique_id=342771053]
+shape = SubResource("CircleShape_bumper_area")
+
+[node name="BumperLeft" type="StaticBody2D" parent="Bumpers" unique_id=1034082624]
+position = Vector2(-285, 75)
+script = ExtResource("8_bumper")
+fill_color = Color(0.66, 0.25, 0.58, 1)
+rim_color = Color(1, 0.66, 0.92, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bumpers/BumperLeft" unique_id=1416908033]
+shape = SubResource("CircleShape_bumper")
+
+[node name="SpeedDetectionArea" type="Area2D" parent="Bumpers/BumperLeft" unique_id=746818323]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bumpers/BumperLeft/SpeedDetectionArea" unique_id=1122045982]
+shape = SubResource("CircleShape_bumper_area")
+
+[node name="BumperRight" type="StaticBody2D" parent="Bumpers" unique_id=965244053]
+position = Vector2(285, 75)
+script = ExtResource("8_bumper")
+fill_color = Color(0.82, 0.48, 0.14, 1)
+rim_color = Color(1, 0.88, 0.54, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bumpers/BumperRight" unique_id=1571238968]
+shape = SubResource("CircleShape_bumper")
+
+[node name="SpeedDetectionArea" type="Area2D" parent="Bumpers/BumperRight" unique_id=344627012]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bumpers/BumperRight/SpeedDetectionArea" unique_id=143861581]
+shape = SubResource("CircleShape_bumper_area")
+
+[node name="FlipperSelector" type="Node2D" parent="." unique_id=1315987330]
+script = ExtResource("4_selector")
+
+[node name="BottomController" type="Node2D" parent="FlipperSelector" unique_id=1804315096]
+position = Vector2(0, 460)
+script = ExtResource("5_controller")
+
+[node name="LeftFlipper" parent="FlipperSelector/BottomController" unique_id=1456684495 instance=ExtResource("6_left")]
+position = Vector2(-230, 0)
+_source_collision_position = Vector2(2128.6719, -88.14147)
+flipper_length = 328.0
+
+[node name="RightFlipper" parent="FlipperSelector/BottomController" unique_id=1943189333 instance=ExtResource("7_right")]
+position = Vector2(230, 0)
+_source_collision_position = Vector2(-2126.5242, 80.03048)
+flipper_length = 328.0
+
+[node name="TopController" type="Node2D" parent="FlipperSelector" unique_id=183453463]
+position = Vector2(0, -460)
+rotation = 3.1415927
+script = ExtResource("5_controller")
+
+[node name="LeftFlipper" parent="FlipperSelector/TopController" unique_id=1999694581 instance=ExtResource("6_left")]
+position = Vector2(-230, 0)
+_source_collision_position = Vector2(2128.6719, -88.14147)
+flipper_length = 328.0
+
+[node name="RightFlipper" parent="FlipperSelector/TopController" unique_id=1424501983 instance=ExtResource("7_right")]
+position = Vector2(230, 0)
+_source_collision_position = Vector2(-2126.5242, 80.03048)
+flipper_length = 328.0
+
+[node name="LeftController" type="Node2D" parent="FlipperSelector" unique_id=1499529864]
+position = Vector2(-880, 0)
+rotation = 1.5707964
+script = ExtResource("5_controller")
+
+[node name="LeftFlipper" parent="FlipperSelector/LeftController" unique_id=73646635 instance=ExtResource("6_left")]
+position = Vector2(-230, 0)
+_source_collision_position = Vector2(2128.6719, -88.14147)
+flipper_length = 328.0
+
+[node name="RightFlipper" parent="FlipperSelector/LeftController" unique_id=1748286883 instance=ExtResource("7_right")]
+position = Vector2(230, 0)
+_source_collision_position = Vector2(-2126.5242, 80.03048)
+flipper_length = 328.0
+
+[node name="RightController" type="Node2D" parent="FlipperSelector" unique_id=1029836660]
+position = Vector2(880, 0)
+rotation = -1.5707964
+script = ExtResource("5_controller")
+
+[node name="LeftFlipper" parent="FlipperSelector/RightController" unique_id=1462510913 instance=ExtResource("6_left")]
+position = Vector2(-230, 0)
+_source_collision_position = Vector2(2128.6719, -88.14147)
+flipper_length = 328.0
+
+[node name="RightFlipper" parent="FlipperSelector/RightController" unique_id=1093853158 instance=ExtResource("7_right")]
+position = Vector2(230, 0)
+_source_collision_position = Vector2(-2126.5242, 80.03048)
+flipper_length = 328.0
+
+[node name="PinballBall" parent="." unique_id=1525149773 instance=ExtResource("2_ball")]
+position = Vector2(720, 340)
+physics_material_override = SubResource("PhysicsMaterial_6qixg")
+gravity_scale = 0.35
+freeze = true
+stats = SubResource("Resource_sexy2")
+ball_diameter = 44.0
+
+[node name="LauncherMarker" type="Polygon2D" parent="." unique_id=489416960]
+z_index = -1
+position = Vector2(720, 340)
+color = Color(0.25, 0.85, 0.43, 0.25)
+polygon = PackedVector2Array(-42, -42, 42, -42, 42, 42, -42, 42)
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=366379460]
+zoom = Vector2(0.56, 0.56)
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=2130486477]
+
+[node name="GuideLabel" type="Label" parent="HUD" unique_id=1815472958]
+offset_left = 18.0
+offset_top = 16.0
+offset_right = 610.0
+offset_bottom = 92.0
+theme_override_colors/font_color = Color(0.86, 0.95, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "[사각 플리퍼 자유 테스트]"
+
+[node name="StatusLabel" type="Label" parent="HUD" unique_id=2062526515]
+offset_left = 18.0
+offset_top = 98.0
+offset_right = 580.0
+offset_bottom = 150.0
+theme_override_colors/font_color = Color(1, 0.83, 0.32, 1)
+theme_override_font_sizes/font_size = 16
+text = "Enter로 공을 발사하세요"

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://x25woi2trsvl"
-path="res://.godot/imported/industrial_steel_flipper.png-9aec28e387802ee4b01d59e163cf72e2.ctex"
+uid="uid://cf4b3xik2kbth"
+path="res://.godot/imported/industrial_steel_ball.png-7c144e0a8469bf8d97a91ba5db50f787.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/art/flippers/industrial_steel_flipper.png"
-dest_files=["res://.godot/imported/industrial_steel_flipper.png-9aec28e387802ee4b01d59e163cf72e2.ctex"]
+source_file="res://resources/art/balls/industrial_steel_ball.png"
+dest_files=["res://.godot/imported/industrial_steel_ball.png-7c144e0a8469bf8d97a91ba5db50f787.ctex"]
 
 [params]
 

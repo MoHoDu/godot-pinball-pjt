@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="PinballPhysicsRules" format=3 uid="uid://b73nmqd88r4gg"]
+
+[ext_resource type="Script" uid="uid://d1hwmw8t7pl30" path="res://scripts/ball_base_system/pinball_physics_rules.gd" id="1_4nl6u"]
+
+[resource]
+script = ExtResource("1_4nl6u")
+minimum_mass = 0.1
+maximum_mass = 100.0
+maximum_elasticity = 1.0
+maximum_speed = 5000.0
+maximum_gravity_scale = 5.0
