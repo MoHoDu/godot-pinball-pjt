@@ -25,7 +25,7 @@ script = ExtResource("1_reset")
 ball_reset_position = Vector2(150, 0)
 
 [node name="PinballBall" parent="." unique_id=71153037 instance=ExtResource("2_ball")]
-position = Vector2(295, -2)
+position = Vector2(477, 128)
 physics_material_override = SubResource("PhysicsMaterial_gxni2")
 stats = SubResource("Resource_2klqs")
 ball_diameter = 128.0

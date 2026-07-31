@@ -16,7 +16,7 @@ elasticity = 0.8
 gravity_scale = 1.0
 initial_speed = 700.0
 minimum_speed = 200.0
-maximum_speed = 2500.0
+maximum_speed = 2000.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_udrbm"]
 resource_local_to_scene = true
