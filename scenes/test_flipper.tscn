@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bl7f22o1hfcl1"]
 
-[ext_resource type="Script" uid="uid://58k0flhnlg3" path="res://Test/flipper_selector.gd" id="1_tg1pa"]
-[ext_resource type="PackedScene" uid="uid://boehobmrxkjlb" path="res://Test/controllers/flipper_controller_sample.tscn" id="1_yqxnb"]
+[ext_resource type="Script" uid="uid://58k0flhnlg3" path="res://scripts/flipper_system/flipper_selector.gd" id="1_tg1pa"]
+[ext_resource type="PackedScene" uid="uid://boehobmrxkjlb" path="res://resources/flippers/controllers/flipper_controller_sample.tscn" id="1_yqxnb"]
 
 [node name="Test-Flipper" type="Node2D" unique_id=270252956]
 
