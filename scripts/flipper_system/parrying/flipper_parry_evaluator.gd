@@ -62,6 +62,33 @@ func apply_speed_multiplier(
 	return reflected_velocity * get_speed_multiplier(grade, rules)
 
 
+## 패링 등급별 최종 속도 상한을 반환합니다. 패링이 아니면 제한하지 않습니다.
+func get_maximum_speed(grade: Grade, rules: Resource) -> float:
+	if rules == null:
+		return INF
+
+	match grade:
+		Grade.PERFECT:
+			return maxf(float(rules.get(&"perfect_parry_maximum_speed")), 0.0)
+		_:
+			return maxf(float(rules.get(&"normal_maximum_speed")), 0.0)
+
+
+## 최종 반사 방향은 유지하면서 패링 등급별 최대 속력만 제한합니다.
+func limit_velocity(
+	velocity: Vector2,
+	grade: Grade,
+	rules: Resource
+) -> Vector2:
+	if velocity.is_zero_approx():
+		return velocity
+
+	var maximum_speed := get_maximum_speed(grade, rules)
+	if is_inf(maximum_speed) or velocity.length() <= maximum_speed:
+		return velocity
+	return velocity.normalized() * maximum_speed
+
+
 func get_grade_label(grade: Grade) -> String:
 	match grade:
 		Grade.NORMAL:

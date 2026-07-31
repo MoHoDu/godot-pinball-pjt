@@ -1,7 +1,7 @@
 extends SceneTree
 
 
-const TEST_SCENE_PATH := "res://scenes/test_flipper_parry.tscn"
+const TEST_SCENE_PATH := "res://scenes/test_flipper/test_flipper_parry.tscn"
 const EPSILON := 0.001
 
 
@@ -43,6 +43,10 @@ func _run() -> void:
 				"실전 모드는 기획서 정확 패링 시간 0.042초를 사용해야 한다.")
 			_expect_float(float(actual_rules.get(&"normal_parry_window_time")), 0.095, \
 				"실전 모드는 기획서 일반 패링 시간 0.095초를 사용해야 한다.")
+			_expect_float(float(actual_rules.get(&"normal_maximum_speed")), 1540.0, \
+				"실전 모드는 일반 최대 속도 1540px/s를 표시해야 한다.")
+			_expect_float(float(actual_rules.get(&"perfect_parry_maximum_speed")), 1700.0, \
+				"실전 모드는 정확 패링 최대 속도 1700px/s를 표시해야 한다.")
 
 		test_scene.call(&"select_test_mode", 2)
 		var normal_rules := test_scene.call(&"get_test_parry_rules") as Resource

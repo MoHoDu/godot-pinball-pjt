@@ -210,6 +210,10 @@ func _refresh_guide_text() -> void:
 			_test_parry_rules.perfect_parry_window_time * 1000.0,
 			_test_parry_rules.normal_parry_window_time * 1000.0,
 		]
+		+ "최대 속도: 일반 %.0f / 정확 %.0f px/s\n" % [
+			_test_parry_rules.normal_maximum_speed,
+			_test_parry_rules.perfect_parry_maximum_speed,
+		]
 		+ "최근 결과: %s\n" % _last_result
 		+ "입력→접촉: %s / 적용 배율: %.2fx\n" % [
 			elapsed_text,

@@ -36,6 +36,9 @@ const FlipperParryEvaluatorClass := preload(
 const FlipperParryFeedbackClass := preload(
 	"res://scripts/flipper_system/parrying/flipper_parry_feedback.gd"
 )
+const FlipperCollisionGuardClass := preload(
+	"res://scripts/flipper_system/parrying/flipper_collision_guard.gd"
+)
 const DEFAULT_STATE_RULES: Resource = preload(
 	"res://settings/flippers/FlipperStateRules.tres"
 )
@@ -68,6 +71,7 @@ var _state_rules: Resource = DEFAULT_STATE_RULES
 var _parry_rules: Resource = DEFAULT_PARRY_RULES
 var _state_machine: RefCounted
 var _parry_evaluator: RefCounted = FlipperParryEvaluatorClass.new()
+var _collision_guard: RefCounted = FlipperCollisionGuardClass.new()
 var _is_selected: bool = false
 @export_storage var _source_collision_polygon := PackedVector2Array()
 @export_storage var _source_collision_position := Vector2.ZERO
@@ -748,6 +752,15 @@ func resolve_rotation_sweep(
 
 		if hit.is_empty():
 			continue
+		if bool(_collision_guard.call(
+			&"was_resolved_this_physics_frame",
+			ball
+		)):
+			continue
+
+		# 충돌을 발견한 첫 플리퍼가 이 물리 프레임의 처리 권한을 가집니다.
+		# 공 메타데이터를 사용하므로 서로 다른 서브 플리퍼 인스턴스도 같은 값을 공유합니다.
+		_collision_guard.call(&"mark_resolved", ball)
 
 		var hit_point: Vector2 = hit.get(&"point", ball_collision.global_position)
 		var hit_normal: Vector2 = hit.get(&"normal", Vector2.UP)
@@ -824,6 +837,10 @@ func _resolve_swept_ball(
 		contact_zone
 	)
 	resolved_velocity = apply_parry_speed_multiplier(
+		resolved_velocity,
+		parry_grade
+	)
+	resolved_velocity = apply_parry_maximum_speed(
 		resolved_velocity,
 		parry_grade
 	)
@@ -1081,6 +1098,27 @@ func apply_parry_speed_multiplier(
 ) -> Vector2:
 	return _parry_evaluator.call(
 		&"apply_speed_multiplier",
+		reflected_velocity,
+		parry_grade,
+		parry_rules
+	) as Vector2
+
+
+func get_parry_maximum_speed(parry_grade: int) -> float:
+	return float(_parry_evaluator.call(
+		&"get_maximum_speed",
+		parry_grade,
+		parry_rules
+	))
+
+
+## 패링 배율까지 적용된 최종 방향을 유지하면서 등급별 속력 상한을 적용합니다.
+func apply_parry_maximum_speed(
+	reflected_velocity: Vector2,
+	parry_grade: int
+) -> Vector2:
+	return _parry_evaluator.call(
+		&"limit_velocity",
 		reflected_velocity,
 		parry_grade,
 		parry_rules

@@ -33,9 +33,12 @@ func _run() -> void:
 	rules.set(&"normal_parry_window_time", 0.095)
 	rules.set(&"perfect_parry_speed_multiplier", 1.18)
 	rules.set(&"normal_parry_speed_multiplier", 1.08)
+	rules.set(&"normal_maximum_speed", 1540.0)
+	rules.set(&"perfect_parry_maximum_speed", 1700.0)
 
 	_test_timing_boundaries(evaluator, rules)
 	_test_speed_multipliers(evaluator, rules)
+	_test_maximum_speed_limits(evaluator, rules)
 	_finish()
 
 
@@ -80,6 +83,57 @@ func _test_speed_multipliers(evaluator: RefCounted, rules: Resource) -> void:
 			"패링 배율은 반사된 공의 속력에 적용되어야 한다.")
 		_expect(result.normalized().is_equal_approx(reflected_velocity.normalized()), \
 			"패링 속도 배율은 이미 계산된 반사 방향을 바꾸면 안 된다.")
+
+
+func _test_maximum_speed_limits(evaluator: RefCounted, rules: Resource) -> void:
+	for method_name: StringName in [
+		&"get_maximum_speed",
+		&"limit_velocity",
+	]:
+		_expect(evaluator.has_method(method_name), \
+			"패링 최대 속도 처리를 위한 %s API가 필요하다." % method_name)
+	if not evaluator.has_method(&"get_maximum_speed") \
+		or not evaluator.has_method(&"limit_velocity"):
+		return
+
+	_expect_float(float(evaluator.call(
+		&"get_maximum_speed",
+		GRADE_NORMAL,
+		rules
+	)), 1540.0, "일반 패링은 일반 최대 속도를 사용해야 한다.")
+	_expect_float(float(evaluator.call(
+		&"get_maximum_speed",
+		GRADE_PERFECT,
+		rules
+	)), 1700.0, "정확 패링은 정확 최대 속도를 사용해야 한다.")
+
+	var fast_velocity := Vector2(1800.0, -2400.0)
+	var normal_limited: Vector2 = evaluator.call(
+		&"limit_velocity",
+		fast_velocity,
+		GRADE_NORMAL,
+		rules
+	)
+	var perfect_limited: Vector2 = evaluator.call(
+		&"limit_velocity",
+		fast_velocity,
+		GRADE_PERFECT,
+		rules
+	)
+	var no_parry_velocity: Vector2 = evaluator.call(
+		&"limit_velocity",
+		fast_velocity,
+		GRADE_NONE,
+		rules
+	)
+	_expect_float(normal_limited.length(), 1540.0, \
+		"일반 패링 최종 속력은 1540px/s를 넘으면 안 된다.")
+	_expect_float(perfect_limited.length(), 1700.0, \
+		"정확 패링 최종 속력은 1700px/s를 넘으면 안 된다.")
+	_expect_float(no_parry_velocity.length(), 1540.0, \
+		"정확 패링이 아닌 플리퍼 충돌은 일반 최대 속도를 사용해야 한다.")
+	_expect(normal_limited.normalized().is_equal_approx(fast_velocity.normalized()), \
+		"최대 속도 제한은 최종 반사 방향을 변경하면 안 된다.")
 
 
 func _expect_float(actual: float, expected: float, message: String) -> void:

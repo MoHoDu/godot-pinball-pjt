@@ -91,6 +91,8 @@ func _test_editor_contract(rules: Resource) -> void:
 		&"perfect_parry_window_time",
 		&"normal_parry_speed_multiplier",
 		&"perfect_parry_speed_multiplier",
+		&"normal_maximum_speed",
+		&"perfect_parry_maximum_speed",
 	]
 
 	for property_name: StringName in required_properties:
@@ -107,6 +109,10 @@ func _test_design_document_defaults(rules: Resource) -> void:
 		"일반 패링 속도 배율은 기획서 권장값 1.08배여야 한다.")
 	_expect_float(float(rules.get(&"perfect_parry_speed_multiplier")), 1.18, \
 		"정확 패링 속도 배율은 기획서 권장값 1.18배여야 한다.")
+	_expect_float(float(rules.get(&"normal_maximum_speed")), 1540.0, \
+		"일반 최대 속도는 사각 보드 권장값 1540px/s여야 한다.")
+	_expect_float(float(rules.get(&"perfect_parry_maximum_speed")), 1700.0, \
+		"정확 패링 최대 속도는 사각 보드 권장값 1700px/s여야 한다.")
 
 
 func _test_overlay_draw_order(overlay_script: Script) -> void:

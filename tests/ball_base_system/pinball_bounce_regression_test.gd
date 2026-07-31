@@ -1,6 +1,6 @@
 extends SceneTree
 
-const TEST_SCENE_PATH := "res://scenes/test_ball_physics.tscn"
+const TEST_SCENE_PATH := "res://scenes/test_ball/test_ball_physics.tscn"
 const MAX_PHYSICS_STEPS := 180
 const DIRECTION_EPSILON := 1.0
 

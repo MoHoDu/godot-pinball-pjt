@@ -13,6 +13,7 @@ const BALL_RADIUS := 6.0
 
 var _failures: Array[String] = []
 var _last_parry_event: Dictionary = {}
+var _duplicate_parry_signal_count := 0
 
 
 func _init() -> void:
@@ -38,6 +39,8 @@ func _run() -> void:
 		&"get_parry_grade",
 		&"get_parry_speed_multiplier",
 		&"apply_parry_speed_multiplier",
+		&"get_parry_maximum_speed",
+		&"apply_parry_maximum_speed",
 	]
 
 	for method_name: StringName in required_methods:
@@ -59,6 +62,7 @@ func _run() -> void:
 		_test_final_angle_detection(flipper)
 		await _test_swept_ball_resolution(flipper)
 		await _test_rotation_sweep_applies_timed_parry(flipper)
+		await _test_same_frame_sweep_is_resolved_once(flipper)
 		await _test_swept_ball_velocity_is_mass_independent(flipper)
 		await _test_final_overlap_uses_sweep_impulse(flipper)
 		await _test_active_state_runs_rotation_sweep(flipper)
@@ -383,6 +387,10 @@ func _test_swept_ball_resolution(flipper: PinballFlipper) -> void:
 		expected_velocity,
 		int(direct_hit.get(&"contact_zone", PinballFlipper.ContactZone.B))
 	)
+	expected_velocity = flipper.apply_parry_maximum_speed(
+		expected_velocity,
+		0
+	)
 	var resolved_count := int(flipper.call(
 		&"resolve_rotation_sweep",
 		START_ROTATION,
@@ -430,6 +438,8 @@ func _test_rotation_sweep_applies_timed_parry(
 	rules.perfect_parry_window_time = 0.042
 	rules.normal_parry_speed_multiplier = 1.08
 	rules.perfect_parry_speed_multiplier = 1.18
+	rules.normal_maximum_speed = 1540.0
+	rules.perfect_parry_maximum_speed = 1700.0
 	var original_rules := flipper.parry_rules
 	flipper.set_parry_rules(rules)
 
@@ -455,12 +465,16 @@ func _test_rotation_sweep_applies_timed_parry(
 	var radial_vector := hit_point - flipper.global_position
 	var surface_velocity := Vector2(-radial_vector.y, radial_vector.x) \
 		* angular_velocity
-	var expected_velocity := flipper.calculate_physical_sweep_velocity(
+	var unbounded_velocity := flipper.calculate_physical_sweep_velocity(
 		incoming_velocity,
 		surface_velocity,
 		hit_normal,
 		1.0
 	) * 1.08
+	var expected_velocity := unbounded_velocity.normalized() * minf(
+		unbounded_velocity.length(),
+		1540.0
+	)
 
 	_last_parry_event.clear()
 	_expect(flipper.has_signal(&"parry_resolved"), \
@@ -490,6 +504,63 @@ func _test_rotation_sweep_applies_timed_parry(
 	flipper.set_parry_rules(original_rules)
 	ball.queue_free()
 	await process_frame
+
+
+func _test_same_frame_sweep_is_resolved_once(
+	flipper: PinballFlipper
+) -> void:
+	var ball := _create_impulse_test_ball("DuplicateGuardBall", 1.0)
+	ball.position = BALL_CENTER
+	ball.add_to_group(&"pinball_balls")
+	var ball_collision := CollisionShape2D.new()
+	ball_collision.name = "CollisionShape2D"
+	var circle := CircleShape2D.new()
+	circle.radius = BALL_RADIUS
+	ball_collision.shape = circle
+	ball.add_child(ball_collision)
+	root.add_child(ball)
+	await physics_frame
+
+	ball.global_position = BALL_CENTER
+	ball.linear_velocity = Vector2(40.0, 80.0)
+	_duplicate_parry_signal_count = 0
+	if not flipper.parry_resolved.is_connected(_count_duplicate_parry_signal):
+		flipper.parry_resolved.connect(_count_duplicate_parry_signal)
+
+	var first_count := flipper.resolve_rotation_sweep(
+		START_ROTATION,
+		END_ROTATION,
+		1.0 / 60.0,
+		0.0
+	)
+	var second_count := flipper.resolve_rotation_sweep(
+		START_ROTATION,
+		END_ROTATION,
+		1.0 / 60.0,
+		0.0
+	)
+	_expect(first_count == 1, \
+		"동일 물리 프레임의 첫 회전 충돌은 정상적으로 해결해야 한다.")
+	_expect(second_count == 0, \
+		"같은 공의 동일 물리 프레임 충돌은 두 번째 임펄스를 적용하면 안 된다.")
+	_expect(_duplicate_parry_signal_count == 1, \
+		"동일 충돌의 패링 결과와 피드백 신호도 한 번만 발생해야 한다.")
+
+	if flipper.parry_resolved.is_connected(_count_duplicate_parry_signal):
+		flipper.parry_resolved.disconnect(_count_duplicate_parry_signal)
+	ball.queue_free()
+	await process_frame
+
+
+func _count_duplicate_parry_signal(
+	_ball: RigidBody2D,
+	_grade: int,
+	_contact_point: Vector2,
+	_contact_zone: int,
+	_elapsed_time: float,
+	_multiplier: float
+) -> void:
+	_duplicate_parry_signal_count += 1
 
 
 func _on_test_parry_resolved(

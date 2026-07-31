@@ -18,3 +18,5 @@ normal_parry_window_time = 0.095
 perfect_parry_window_time = 0.042
 normal_parry_speed_multiplier = 1.08
 perfect_parry_speed_multiplier = 1.18
+normal_maximum_speed = 1540.0
+perfect_parry_maximum_speed = 1700.0

@@ -25,6 +25,8 @@ var _normal_parry_window_time: float = 0.095
 var _perfect_parry_window_time: float = 0.042
 var _normal_parry_speed_multiplier: float = 1.08
 var _perfect_parry_speed_multiplier: float = 1.18
+var _normal_maximum_speed: float = 1540.0
+var _perfect_parry_maximum_speed: float = 1700.0
 
 
 @export_category("플리퍼 공용 패링 설정")
@@ -236,4 +238,25 @@ var perfect_parry_speed_multiplier: float:
 		return _perfect_parry_speed_multiplier
 	set(value):
 		_perfect_parry_speed_multiplier = clampf(value, 0.0, 5.0)
+		emit_changed()
+
+
+@export_group("패링 최대 속도")
+
+## 정확 패링이 아닌 플리퍼 반사에 적용할 보드의 일반 최대 속력입니다.
+@export_range(0.0, 10000.0, 1.0, "suffix:px/s")
+var normal_maximum_speed: float:
+	get:
+		return _normal_maximum_speed
+	set(value):
+		_normal_maximum_speed = clampf(value, 0.0, 10000.0)
+		emit_changed()
+
+## 모든 배율과 각도 보정을 적용한 뒤 정확 패링 공이 가질 수 있는 최대 속력입니다.
+@export_range(0.0, 10000.0, 1.0, "suffix:px/s")
+var perfect_parry_maximum_speed: float:
+	get:
+		return _perfect_parry_maximum_speed
+	set(value):
+		_perfect_parry_maximum_speed = clampf(value, 0.0, 10000.0)
 		emit_changed()

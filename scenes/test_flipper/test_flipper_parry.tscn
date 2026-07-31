@@ -34,14 +34,14 @@ stats = SubResource("Resource_cbmow")
 offset_left = 20.0
 offset_top = 20.0
 offset_right = 590.0
-offset_bottom = 265.0
+offset_bottom = 292.0
 
 [node name="GuideLabel" type="Label" parent="ParryTestGuide/Panel" index="0" unique_id=1362814704]
 layout_mode = 0
 offset_left = 16.0
 offset_top = 12.0
 offset_right = 554.0
-offset_bottom = 230.0
+offset_bottom = 258.0
 theme_override_font_sizes/font_size = 18
 text = "일반·정확 패링 테스트 로딩 중..."
 
