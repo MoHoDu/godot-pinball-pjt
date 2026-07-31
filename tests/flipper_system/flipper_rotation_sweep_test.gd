@@ -12,6 +12,7 @@ const BALL_RADIUS := 6.0
 
 
 var _failures: Array[String] = []
+var _last_parry_event: Dictionary = {}
 
 
 func _init() -> void:
@@ -34,6 +35,9 @@ func _run() -> void:
 		&"get_contact_zone_speed_multiplier",
 		&"apply_contact_zone_speed_multiplier",
 		&"apply_contact_zone_angle_correction",
+		&"get_parry_grade",
+		&"get_parry_speed_multiplier",
+		&"apply_parry_speed_multiplier",
 	]
 
 	for method_name: StringName in required_methods:
@@ -54,6 +58,7 @@ func _run() -> void:
 		_test_sweep_contact_geometry(flipper)
 		_test_final_angle_detection(flipper)
 		await _test_swept_ball_resolution(flipper)
+		await _test_rotation_sweep_applies_timed_parry(flipper)
 		await _test_swept_ball_velocity_is_mass_independent(flipper)
 		await _test_final_overlap_uses_sweep_impulse(flipper)
 		await _test_active_state_runs_rotation_sweep(flipper)
@@ -397,6 +402,109 @@ func _test_swept_ball_resolution(flipper: PinballFlipper) -> void:
 	flipper.set_parry_rules(original_parry_rules)
 	ball.queue_free()
 	await process_frame
+
+
+func _test_rotation_sweep_applies_timed_parry(
+	flipper: PinballFlipper
+) -> void:
+	var ball := _create_impulse_test_ball("TimedParryBall", 1.0)
+	ball.position = BALL_CENTER
+	ball.add_to_group(&"pinball_balls")
+	var ball_collision := CollisionShape2D.new()
+	ball_collision.name = "CollisionShape2D"
+	var circle := CircleShape2D.new()
+	circle.radius = BALL_RADIUS
+	ball_collision.shape = circle
+	ball.add_child(ball_collision)
+	root.add_child(ball)
+	await physics_frame
+
+	var rules := FlipperParryRules.new()
+	for zone_name: String in ["a", "b", "c", "d"]:
+		rules.set(StringName("zone_%s_speed_multiplier" % zone_name), 1.0)
+		rules.set(
+			StringName("zone_%s_angle_correction_enabled" % zone_name),
+			false
+		)
+	rules.normal_parry_window_time = 0.095
+	rules.perfect_parry_window_time = 0.042
+	rules.normal_parry_speed_multiplier = 1.08
+	rules.perfect_parry_speed_multiplier = 1.18
+	var original_rules := flipper.parry_rules
+	flipper.set_parry_rules(rules)
+
+	var incoming_velocity := Vector2(40.0, 80.0)
+	ball.global_position = BALL_CENTER
+	ball.linear_velocity = incoming_velocity
+	var hit := flipper.find_rotation_sweep_hit(
+		BALL_CENTER,
+		BALL_RADIUS,
+		START_ROTATION,
+		END_ROTATION
+	)
+	_expect(not hit.is_empty(), "시간 패링 테스트 공은 회전 궤도 안에 있어야 한다.")
+	if hit.is_empty():
+		flipper.set_parry_rules(original_rules)
+		ball.queue_free()
+		await process_frame
+		return
+
+	var hit_point: Vector2 = hit.get(&"point", BALL_CENTER)
+	var hit_normal: Vector2 = hit.get(&"normal", Vector2.UP)
+	var angular_velocity := (END_ROTATION - START_ROTATION) / (1.0 / 60.0)
+	var radial_vector := hit_point - flipper.global_position
+	var surface_velocity := Vector2(-radial_vector.y, radial_vector.x) \
+		* angular_velocity
+	var expected_velocity := flipper.calculate_physical_sweep_velocity(
+		incoming_velocity,
+		surface_velocity,
+		hit_normal,
+		1.0
+	) * 1.08
+
+	_last_parry_event.clear()
+	_expect(flipper.has_signal(&"parry_resolved"), \
+		"플리퍼는 일반·정확 패링 결과를 연출과 UI에 전달하는 신호가 필요하다.")
+	if flipper.has_signal(&"parry_resolved"):
+		flipper.connect(&"parry_resolved", _on_test_parry_resolved, CONNECT_ONE_SHOT)
+
+	var resolved_count := int(flipper.call(
+		&"resolve_rotation_sweep",
+		START_ROTATION,
+		END_ROTATION,
+		1.0 / 60.0,
+		0.05
+	))
+	_expect(resolved_count == 1, "일반 패링 시간의 회전 충돌을 한 번 해결해야 한다.")
+	await physics_frame
+	_expect_vector(ball.linear_velocity, expected_velocity, \
+		"일반 패링 1.08배는 물리 반사와 구역 계산 뒤 최종 속력에 적용되어야 한다.")
+	_expect(int(_last_parry_event.get(&"grade", -1)) == 1, \
+		"정확 판정 이후 일반 판정 안의 충돌은 NORMAL 등급을 알려야 한다.")
+	_expect_float(float(_last_parry_event.get(&"multiplier", 0.0)), 1.08, \
+		"패링 결과 신호에는 실제 적용한 속도 배율이 포함되어야 한다.")
+	var elapsed := float(_last_parry_event.get(&"elapsed_time", -1.0))
+	_expect(elapsed > 0.05 and elapsed <= 0.095, \
+		"패링 판정은 물리 프레임 끝이 아니라 회전 구간 안 실제 접촉 시각을 사용해야 한다.")
+
+	flipper.set_parry_rules(original_rules)
+	ball.queue_free()
+	await process_frame
+
+
+func _on_test_parry_resolved(
+	_ball: RigidBody2D,
+	grade: int,
+	_contact_point: Vector2,
+	_contact_zone: int,
+	elapsed_time: float,
+	multiplier: float
+) -> void:
+	_last_parry_event = {
+		&"grade": grade,
+		&"elapsed_time": elapsed_time,
+		&"multiplier": multiplier,
+	}
 
 
 func _test_final_overlap_uses_sweep_impulse(

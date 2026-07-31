@@ -5,7 +5,8 @@ const LEFT_FLIPPER_SCENE_PATH := \
 	"res://resources/flippers/sub_flipper/normal_flipper_left.tscn"
 const RIGHT_FLIPPER_SCENE_PATH := \
 	"res://resources/flippers/sub_flipper/normal_flipper_right.tscn"
-const RULES_SCRIPT_PATH := "res://scripts/flipper_system/flipper_parry_rules.gd"
+const RULES_SCRIPT_PATH := \
+	"res://scripts/flipper_system/parrying/flipper_parry_rules.gd"
 const RULES_RESOURCE_PATH := "res://settings/flippers/FlipperParryRules.tres"
 const OVERLAY_SCRIPT_PATH := \
 	"res://scripts/flipper_system/flipper_contact_zone_overlay.gd"
@@ -38,6 +39,7 @@ func _run() -> void:
 		return
 
 	_test_editor_contract(default_rules)
+	_test_design_document_defaults(default_rules)
 	_test_overlay_draw_order(overlay_script)
 
 	var left_flipper := left_scene.instantiate() as PinballFlipper
@@ -94,6 +96,17 @@ func _test_editor_contract(rules: Resource) -> void:
 	for property_name: StringName in required_properties:
 		_expect(not _find_property(rules, property_name).is_empty(), \
 			"공용 패링 설정의 %s 속성이 Inspector에 표시되어야 한다." % property_name)
+
+
+func _test_design_document_defaults(rules: Resource) -> void:
+	_expect_float(float(rules.get(&"normal_parry_window_time")), 0.095, \
+		"사각 보드의 일반 패링 판정 시간은 기획서 권장값 0.095초여야 한다.")
+	_expect_float(float(rules.get(&"perfect_parry_window_time")), 0.042, \
+		"사각 보드의 정확 패링 판정 시간은 기획서 권장값 0.042초여야 한다.")
+	_expect_float(float(rules.get(&"normal_parry_speed_multiplier")), 1.08, \
+		"일반 패링 속도 배율은 기획서 권장값 1.08배여야 한다.")
+	_expect_float(float(rules.get(&"perfect_parry_speed_multiplier")), 1.18, \
+		"정확 패링 속도 배율은 기획서 권장값 1.18배여야 한다.")
 
 
 func _test_overlay_draw_order(overlay_script: Script) -> void:

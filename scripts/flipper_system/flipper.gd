@@ -5,6 +5,14 @@ extends AnimatableBody2D
 
 signal state_changed(previous_state: int, current_state: int)
 signal rotation_sweep_resolved(ball: RigidBody2D)
+signal parry_resolved(
+	ball: RigidBody2D,
+	grade: int,
+	contact_point: Vector2,
+	contact_zone: int,
+	elapsed_time: float,
+	speed_multiplier: float
+)
 
 
 enum ContactZone {
@@ -21,6 +29,12 @@ const FlipperStateMachineClass := preload(
 )
 const FlipperContactZoneOverlayClass := preload(
 	"res://scripts/flipper_system/flipper_contact_zone_overlay.gd"
+)
+const FlipperParryEvaluatorClass := preload(
+	"res://scripts/flipper_system/parrying/flipper_parry_evaluator.gd"
+)
+const FlipperParryFeedbackClass := preload(
+	"res://scripts/flipper_system/parrying/flipper_parry_feedback.gd"
 )
 const DEFAULT_STATE_RULES: Resource = preload(
 	"res://settings/flippers/FlipperStateRules.tres"
@@ -46,11 +60,14 @@ const CONTACT_ZONE_COLORS: Array[Color] = [
 ]
 const CONTACT_ZONE_OVERLAY_NAME: StringName = &"_ContactZoneOverlay"
 const CONTACT_ZONE_OVERLAY_PATH: NodePath = ^"_ContactZoneOverlay"
+const PARRY_FEEDBACK_NAME: StringName = &"_ParryFeedback"
+const PARRY_FEEDBACK_PATH: NodePath = ^"_ParryFeedback"
 
 
 var _state_rules: Resource = DEFAULT_STATE_RULES
 var _parry_rules: Resource = DEFAULT_PARRY_RULES
 var _state_machine: RefCounted
+var _parry_evaluator: RefCounted = FlipperParryEvaluatorClass.new()
 var _is_selected: bool = false
 @export_storage var _source_collision_polygon := PackedVector2Array()
 @export_storage var _source_collision_position := Vector2.ZERO
@@ -188,6 +205,7 @@ func _ready() -> void:
 	refresh_flipper_size()
 	_refresh_selection_visual()
 	_ensure_contact_zone_overlay()
+	_ensure_parry_feedback()
 	_queue_contact_zone_overlay_redraw()
 
 
@@ -200,12 +218,18 @@ func _physics_process(delta: float) -> void:
 	# 상태 머신이 보관한 논리 각도를 사용해야 실제 이번 회전 구간을 잃지 않습니다.
 	var previous_rotation := float(_state_machine.get_target_rotation())
 	var previous_state_type := get_current_state_type()
+	var previous_state_elapsed := get_current_state_elapsed_time()
 	var target_rotation := float(_state_machine.physics_update(delta, state_rules))
 
 	# 작동 상태에서 이전 각도 이후부터 이번 최종 각도까지 공을 별도 검사합니다.
 	# 일반 접촉이 놓칠 수 있는 최종 각도 겹침도 같은 경로에서 해결합니다.
 	if previous_state_type == FlipperStateClass.Type.ACTIVE:
-		resolve_rotation_sweep(previous_rotation, target_rotation, delta)
+		resolve_rotation_sweep(
+			previous_rotation,
+			target_rotation,
+			delta,
+			previous_state_elapsed
+		)
 
 
 ## 설정된 길이를 시각 이미지와 충돌 폴리곤에 같은 비율로 적용합니다.
@@ -616,6 +640,19 @@ func _queue_contact_zone_overlay_redraw() -> void:
 		overlay.queue_redraw()
 
 
+func _ensure_parry_feedback() -> void:
+	if Engine.is_editor_hint() or not is_inside_tree():
+		return
+
+	var feedback := get_node_or_null(PARRY_FEEDBACK_PATH) as Node2D
+	if feedback == null:
+		feedback = FlipperParryFeedbackClass.new() as Node2D
+		feedback.name = PARRY_FEEDBACK_NAME
+		add_child(feedback, false, Node.INTERNAL_MODE_FRONT)
+
+	feedback.call(&"bind_to_flipper", self)
+
+
 func _get_local_contact_zone_axis_data() -> Dictionary:
 	var collision := get_node_or_null(
 		"CollisionPolygon2D"
@@ -674,7 +711,8 @@ func calculate_physical_sweep_velocity(
 func resolve_rotation_sweep(
 	previous_rotation: float,
 	target_rotation: float,
-	delta: float
+	delta: float,
+	active_elapsed_before_sweep: float = -1.0
 ) -> int:
 	if (
 		not is_inside_tree()
@@ -717,15 +755,33 @@ func resolve_rotation_sweep(
 			&"contact_zone",
 			ContactZone.B
 		))
-		_resolve_swept_ball(
+		var impact_elapsed_time := -1.0
+		if active_elapsed_before_sweep >= 0.0:
+			impact_elapsed_time = active_elapsed_before_sweep + delta * clampf(
+				float(hit.get(&"progress", 1.0)),
+				0.0,
+				1.0
+			)
+		var parry_grade := get_parry_grade(impact_elapsed_time)
+		var impulse_applied := _resolve_swept_ball(
 			ball,
 			hit_point,
 			hit_normal,
 			contact_zone,
 			previous_rotation,
 			target_rotation,
-			delta
+			delta,
+			parry_grade
 		)
+		if impulse_applied and parry_grade != FlipperParryEvaluatorClass.Grade.NONE:
+			parry_resolved.emit(
+				ball,
+				parry_grade,
+				hit_point,
+				contact_zone,
+				impact_elapsed_time,
+				get_parry_speed_multiplier(parry_grade)
+			)
 		rotation_sweep_resolved.emit(ball)
 		resolved_count += 1
 
@@ -739,8 +795,9 @@ func _resolve_swept_ball(
 	contact_zone: ContactZone,
 	previous_rotation: float,
 	target_rotation: float,
-	delta: float
-) -> void:
+	delta: float,
+	parry_grade: int = FlipperParryEvaluatorClass.Grade.NONE
+) -> bool:
 	var pivot := global_position
 	var total_rotation := _get_short_rotation_delta(
 		previous_rotation,
@@ -766,14 +823,19 @@ func _resolve_swept_ball(
 		resolved_velocity,
 		contact_zone
 	)
+	resolved_velocity = apply_parry_speed_multiplier(
+		resolved_velocity,
+		parry_grade
+	)
 	var velocity_change := resolved_velocity - ball.linear_velocity
 	if velocity_change.is_zero_approx():
-		return
+		return false
 
 	# RigidBody2D의 Transform이나 속도를 직접 덮어쓰지 않습니다.
 	# 목표 속도 변화량을 질량에 맞는 순간 임펄스로 변환해 물리 서버에 전달합니다.
 	ball.sleeping = false
 	ball.apply_central_impulse(velocity_change * ball.mass)
+	return true
 
 
 func _get_ball_elasticity(ball: RigidBody2D) -> float:
@@ -993,10 +1055,44 @@ func get_current_state_type() -> int:
 	return _state_machine.get_current_state_type()
 
 
-## 작동 상태 전체를 패링 가능 구간으로 공개합니다.
-## 일반/정확 패링 판정과 배율 적용은 판정 기준이 정해질 때 구현합니다.
+func get_current_state_elapsed_time() -> float:
+	if _state_machine == null:
+		return 0.0
+	return float(_state_machine.get_current_state_elapsed_time())
+
+
+## 작동 입력부터 충돌까지의 시간으로 NONE/NORMAL/PERFECT 등급을 반환합니다.
+func get_parry_grade(elapsed_time: float) -> int:
+	return int(_parry_evaluator.call(&"evaluate", elapsed_time, parry_rules))
+
+
+func get_parry_speed_multiplier(parry_grade: int) -> float:
+	return float(_parry_evaluator.call(
+		&"get_speed_multiplier",
+		parry_grade,
+		parry_rules
+	))
+
+
+## 물리 반사와 접촉 구역 계산이 끝난 속력에 패링 배율만 추가합니다.
+func apply_parry_speed_multiplier(
+	reflected_velocity: Vector2,
+	parry_grade: int
+) -> Vector2:
+	return _parry_evaluator.call(
+		&"apply_speed_multiplier",
+		reflected_velocity,
+		parry_grade,
+		parry_rules
+	) as Vector2
+
+
+## 현재 작동 상태의 경과 시간이 일반 패링 판정 안에 있는지 공개합니다.
 func is_parry_window() -> bool:
-	return get_current_state_type() == FlipperStateClass.Type.ACTIVE
+	if get_current_state_type() != FlipperStateClass.Type.ACTIVE:
+		return false
+	return get_parry_grade(get_current_state_elapsed_time()) \
+		!= FlipperParryEvaluatorClass.Grade.NONE
 
 
 ## 복귀 중 충돌에만 빗맞음 반사 배율을 적용합니다.

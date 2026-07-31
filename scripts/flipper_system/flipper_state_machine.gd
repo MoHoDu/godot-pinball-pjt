@@ -64,6 +64,12 @@ func get_target_rotation() -> float:
 	return _target_rotation
 
 
+func get_current_state_elapsed_time() -> float:
+	if current_state == null:
+		return 0.0
+	return float(current_state.elapsed_time)
+
+
 func _update_active(delta: float, duration: float) -> void:
 	current_state.advance(delta)
 	var progress := _get_progress(current_state.elapsed_time, duration)

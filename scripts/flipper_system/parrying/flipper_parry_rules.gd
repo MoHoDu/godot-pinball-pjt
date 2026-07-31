@@ -21,10 +21,10 @@ var _zone_c_angle_correction_degrees: float = 0.0
 var _zone_d_angle_correction_degrees: float = 0.0
 var _left_angle_direction_sign: float = -1.0
 var _right_angle_direction_sign: float = 1.0
-var _normal_parry_window_time: float = 0.08
-var _perfect_parry_window_time: float = 0.03
-var _normal_parry_speed_multiplier: float = 1.25
-var _perfect_parry_speed_multiplier: float = 2.0
+var _normal_parry_window_time: float = 0.095
+var _perfect_parry_window_time: float = 0.042
+var _normal_parry_speed_multiplier: float = 1.08
+var _perfect_parry_speed_multiplier: float = 1.18
 
 
 @export_category("플리퍼 공용 패링 설정")
