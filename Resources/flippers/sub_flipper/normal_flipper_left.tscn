@@ -2,27 +2,30 @@
 
 [ext_resource type="Script" uid="uid://bartghgyuhhe8" path="res://scripts/flipper_system/flipper.gd" id="1_hv5km"]
 [ext_resource type="Shader" uid="uid://d2wx6fpflk13d" path="res://resources/shaders/selection_outline.gdshader" id="2_7ccxm"]
-[ext_resource type="Texture2D" uid="uid://x25woi2trsvl" path="res://resources/art/flippers/industrial_steel_flipper.png" id="3_hv5km"]
+[ext_resource type="Texture2D" uid="uid://c7uw0wdcfvsh1" path="res://resources/art/flippers/Flipper_cartoon.png" id="3_p8ilj"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_uk1me"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_p8ilj"]
 shader = ExtResource("2_7ccxm")
 shader_parameter/outline_enabled = false
-shader_parameter/outline_color = Color(18.892157, 15.300281, 0, 1)
-shader_parameter/outline_size = 1.678000032205
-shader_parameter/glow_size = 24.0
-shader_parameter/glow_strength = 1.0
-shader_parameter/emission_strength = 4.310000157225
+shader_parameter/outline_color = Color(1, 0.75, 0.05, 1)
+shader_parameter/outline_size = 7.0
+shader_parameter/glow_size = 16.0
+shader_parameter/glow_strength = 0.65
+shader_parameter/emission_strength = 2.0
 
 [node name="LeftFlipper" type="AnimatableBody2D" unique_id=1915782774]
 rotation = 0.2617994
 script = ExtResource("1_hv5km")
-flip_angle_degrees = -45.0
+initial_angle_degrees = 15.0
+maximum_angle_degrees = -30.0
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=48376136]
-material = SubResource("ShaderMaterial_uk1me")
-texture = ExtResource("3_hv5km")
-offset = Vector2(565, 0)
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1147352695]
+material = SubResource("ShaderMaterial_p8ilj")
+scale = Vector2(0.46634614, 0.46634614)
+texture = ExtResource("3_p8ilj")
+offset = Vector2(930, 35)
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="." unique_id=703980807]
-position = Vector2(565, 0)
-polygon = PackedVector2Array(9, 140, 310, 112, 700, 87, 743, 36, 725, -33, 680, -62, -567, -190, -647, -167, -722, -87, -744, 8, -711, 97, -652, 166, -569, 198, -442, 182)
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="." unique_id=834435262]
+position = Vector2(434.14038, -17.976332)
+scale = Vector2(0.46634614, 0.46634614)
+polygon = PackedVector2Array(-633.2789, 482.77847, 1124.771, 200.16539, 1299.2161, 140.27435, 1332.2063, 24.88086, 1248.7998, -92.71323, -542.1433, -421.44467, -1091.7008, -398.91284, -1305.8789, -240.9642, -1374.7705, -53.403687, -1377.2028, 148.85875, -1287.2292, 323.08212, -1241.1101, 378.92133, -1115.7156, 451.8612, -916.97504, 490.6197)

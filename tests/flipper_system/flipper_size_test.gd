@@ -5,7 +5,7 @@ const LEFT_FLIPPER_SCENE_PATH := \
 const RIGHT_FLIPPER_SCENE_PATH := \
 	"res://resources/flippers/sub_flipper/normal_flipper_right.tscn"
 const CONTROLLER_SCENE_PATH := \
-	"res://resources/flippers/controllers/flipper_controller_sample.tscn"
+	"res://resources/flippers/flipper/flipper_controller_sample.tscn"
 const EXPECTED_DEFAULT_LENGTH := 1552.0
 const EXPECTED_MINIMUM_LENGTH := 64.0
 const EXPECTED_MAXIMUM_LENGTH := 4096.0
@@ -81,7 +81,10 @@ func _test_default_length(flipper: PinballFlipper) -> void:
 
 	_expect_float(float(flipper.get(&"flipper_length")), EXPECTED_DEFAULT_LENGTH, \
 		"기본 플리퍼 길이는 원본 이미지 길이인 1552px이어야 한다.")
-	_expect_geometry_scale(flipper, 1.0)
+	_expect_geometry_scale(
+		flipper,
+		EXPECTED_DEFAULT_LENGTH / _get_source_length(flipper)
+	)
 
 
 func _test_scaled_geometry(flipper: PinballFlipper, target_length: float) -> void:
@@ -96,7 +99,7 @@ func _test_scaled_geometry(flipper: PinballFlipper, target_length: float) -> voi
 		_sign_or_one(collision.scale.x),
 		_sign_or_one(collision.scale.y)
 	)
-	var scale_factor := target_length / EXPECTED_DEFAULT_LENGTH
+	var scale_factor := target_length / _get_source_length(flipper)
 
 	flipper.set(&"flipper_length", target_length)
 	flipper.call(&"refresh_flipper_size")
@@ -122,12 +125,18 @@ func _test_length_clamp(flipper: PinballFlipper) -> void:
 	flipper.set(&"flipper_length", 1.0)
 	_expect_float(float(flipper.get(&"flipper_length")), EXPECTED_MINIMUM_LENGTH, \
 		"플리퍼 길이는 64px보다 작아질 수 없다.")
-	_expect_geometry_scale(flipper, EXPECTED_MINIMUM_LENGTH / EXPECTED_DEFAULT_LENGTH)
+	_expect_geometry_scale(
+		flipper,
+		EXPECTED_MINIMUM_LENGTH / _get_source_length(flipper)
+	)
 
 	flipper.set(&"flipper_length", 10000.0)
 	_expect_float(float(flipper.get(&"flipper_length")), EXPECTED_MAXIMUM_LENGTH, \
 		"플리퍼 길이는 4096px보다 커질 수 없다.")
-	_expect_geometry_scale(flipper, EXPECTED_MAXIMUM_LENGTH / EXPECTED_DEFAULT_LENGTH)
+	_expect_geometry_scale(
+		flipper,
+		EXPECTED_MAXIMUM_LENGTH / _get_source_length(flipper)
+	)
 
 	flipper.set(&"flipper_length", EXPECTED_DEFAULT_LENGTH)
 
@@ -145,8 +154,8 @@ func _test_instances_keep_independent_sizes(
 	first_flipper.set(&"flipper_length", 776.0)
 	second_flipper.set(&"flipper_length", 2328.0)
 
-	_expect_geometry_scale(first_flipper, 0.5)
-	_expect_geometry_scale(second_flipper, 1.5)
+	_expect_geometry_scale(first_flipper, 776.0 / _get_source_length(first_flipper))
+	_expect_geometry_scale(second_flipper, 2328.0 / _get_source_length(second_flipper))
 
 	first_flipper.set(&"flipper_length", EXPECTED_DEFAULT_LENGTH)
 	second_flipper.free()
@@ -205,7 +214,7 @@ func _test_controller_instance_overrides_are_applied() -> void:
 		var flipper := child as PinballFlipper
 		var expected_factor := (
 			float(flipper.get(&"flipper_length"))
-			/ EXPECTED_DEFAULT_LENGTH
+			/ _get_source_length(flipper)
 		)
 		_expect_geometry_scale(flipper, expected_factor)
 
@@ -241,6 +250,12 @@ func _expect_geometry_scale(flipper: PinballFlipper, expected_factor: float) -> 
 		"플리퍼 충돌 폴리곤 배율이 올바르지 않다.")
 	_expect_vector(collision.position, sprite.offset * expected_factor, \
 		"플리퍼 충돌 폴리곤 위치가 올바르지 않다.")
+
+
+func _get_source_length(flipper: PinballFlipper) -> float:
+	var sprite := flipper.get_node("Sprite2D") as Sprite2D
+	var texture_size := sprite.texture.get_size()
+	return maxf(absf(texture_size.x), absf(texture_size.y))
 
 
 func _sign_or_one(value: float) -> float:

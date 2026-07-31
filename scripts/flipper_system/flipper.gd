@@ -3,10 +3,33 @@ class_name PinballFlipper
 extends AnimatableBody2D
 
 
+signal state_changed(previous_state: int, current_state: int)
+
+
+const FlipperStateClass := preload("res://scripts/flipper_system/flipper_state.gd")
+const FlipperStateMachineClass := preload(
+	"res://scripts/flipper_system/flipper_state_machine.gd"
+)
+const DEFAULT_STATE_RULES: Resource = preload(
+	"res://settings/flippers/FlipperStateRules.tres"
+)
+
 const MIN_FLIPPER_LENGTH: float = 64.0
 const MAX_FLIPPER_LENGTH: float = 4096.0
 const DEFAULT_FLIPPER_LENGTH: float = 1552.0
 const MIN_SOURCE_SIZE: float = 0.001
+
+
+var _state_rules: Resource = DEFAULT_STATE_RULES
+var _state_machine: RefCounted
+var _is_selected: bool = false
+
+
+## 모든 플리퍼가 공유하는 상태 시간 및 상태별 반사 배율 설정입니다.
+## 개별 Inspector에서는 교체하지 않고 settings의 .tres를 편집합니다.
+var state_rules: Resource:
+	get:
+		return _state_rules
 
 
 @export_category("플리퍼 설정")
@@ -30,18 +53,42 @@ var flipper_length: float = DEFAULT_FLIPPER_LENGTH:
 		call_deferred(&"refresh_flipper_size")
 
 
-@export_group("회전")
+@export_group("개별 상태 설정")
 
-## 플리퍼가 작동할 때 회전하는 각도입니다.
-## 음수는 반시계 방향, 양수는 시계 방향입니다.
-@export_range(-90.0, 90.0, 1.0, "suffix:°")
-var flip_angle_degrees: float = -35.0
+## 플리퍼가 대기 및 쿨다운 상태에서 유지할 로컬 각도입니다.
+@export_range(-180.0, 180.0, 1.0, "suffix:°")
+var initial_angle_degrees: float = 0.0:
+	set(value):
+		initial_angle_degrees = clampf(value, -180.0, 180.0)
+
+		if Engine.is_editor_hint() or get_current_state_type() == FlipperStateClass.Type.IDLE:
+			rotation = deg_to_rad(initial_angle_degrees)
+
+## 작동 상태가 끝났을 때 도달할 로컬 최대 각도입니다.
+@export_range(-180.0, 180.0, 1.0, "suffix:°")
+var maximum_angle_degrees: float = -35.0:
+	set(value):
+		maximum_angle_degrees = clampf(value, -180.0, 180.0)
+
+## 복귀가 끝난 뒤 다시 입력을 받을 때까지 기다리는 개별 시간입니다.
+@export_range(0.0, 5.0, 0.01, "suffix:s")
+var cooldown_time: float = 0.15:
+	set(value):
+		cooldown_time = clampf(value, 0.0, 5.0)
+
+## 접촉 위치에 따른 반사 배율입니다.
+## 위치 판정 방식이 정해질 때까지 값만 보관하며 현재 충돌 계산에는 사용하지 않습니다.
+@export_range(0.0, 5.0, 0.05, "suffix:x")
+var contact_position_reflection_multiplier: float = 1.0:
+	set(value):
+		contact_position_reflection_multiplier = clampf(value, 0.0, 5.0)
 
 
 @export_group("상태")
 
-var rest_rotation: float
-var is_flipping: bool = false
+var is_flipping: bool:
+	get:
+		return get_current_state_type() != FlipperStateClass.Type.IDLE
 
 
 @export_group("쉐이더")
@@ -57,13 +104,22 @@ func _enter_tree() -> void:
 
 
 func _ready() -> void:
-	rest_rotation = rotation
-
 	# 다른 플리퍼와 Material 상태를 공유하지 않도록 복제
 	if sprite.material:
 		sprite.material = sprite.material.duplicate()
 
+	_ensure_state_machine()
+	rotation = deg_to_rad(initial_angle_degrees)
 	refresh_flipper_size()
+	_refresh_selection_visual()
+
+
+func _physics_process(delta: float) -> void:
+	if Engine.is_editor_hint():
+		return
+
+	_ensure_state_machine()
+	_state_machine.physics_update(delta, state_rules)
 
 
 ## 설정된 길이를 시각 이미지와 충돌 폴리곤에 같은 비율로 적용합니다.
@@ -124,62 +180,73 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 
 func set_selected_visual(is_selected: bool) -> void:
-	var shader_material := sprite.material as ShaderMaterial
+	_is_selected = is_selected
+	_refresh_selection_visual()
+
+
+func _refresh_selection_visual() -> void:
+	var target_sprite := get_node_or_null("Sprite2D") as Sprite2D
+
+	if target_sprite == null:
+		return
+
+	var shader_material := target_sprite.material as ShaderMaterial
 
 	if shader_material == null:
-		return 
+		return
 
 	shader_material.set_shader_parameter(
 		shader_active_value,
-		is_selected
+		_is_selected and get_current_state_type() == FlipperStateClass.Type.IDLE
 	)
 
 
-func play_flip(attack_time: float, return_time: float, wait_time: float) -> void:
-	is_flipping = true
+func set_state_rules(value: Resource) -> void:
+	_state_rules = value if value != null else DEFAULT_STATE_RULES
 
-	var target_rotation: float = (
-		rest_rotation
-		+ deg_to_rad(flip_angle_degrees)
-	)
 
-	# 트윈 애니메이션 생성
-	var tween: Tween = create_tween()
+func request_activation() -> bool:
+	_ensure_state_machine()
+	return _state_machine.request_activation()
 
-	# 트윈을 물리 프레임에서 처리
-	tween.set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
 
-	# 플리퍼의 rotation을 attack_time동안 target_rotation까지 변경
-	# 시작할 때 빠르게 움직이고 목표에 가까워지면서 감속하는 효과 추가
-	tween.tween_property(
-		self,
-		"rotation",
-		target_rotation,
-		attack_time
-	).set_trans(
-		Tween.TRANS_QUART
-	).set_ease(
-		Tween.EASE_OUT
-	)
+func get_current_state_type() -> int:
+	if _state_machine == null:
+		return FlipperStateClass.Type.IDLE
 
-	# 현재 각도에서 wait_time만큼 기다림
-	tween.tween_interval(wait_time)
+	return _state_machine.get_current_state_type()
 
-	# 플리퍼의 rotation을 return_time동안 rest_rotation으로 복구
-	tween.tween_property(
-		self,
-		"rotation",
-		rest_rotation,
-		return_time
-	).set_trans(
-		Tween.TRANS_CUBIC
-	).set_ease(
-		Tween.EASE_IN_OUT
-	)
 
-	# 트윈 종료까지 대기 
-	await tween.finished
+## 작동 상태 전체를 패링 가능 구간으로 공개합니다.
+## 일반/정확 패링 판정과 배율 적용은 판정 기준이 정해질 때 구현합니다.
+func is_parry_window() -> bool:
+	return get_current_state_type() == FlipperStateClass.Type.ACTIVE
 
-	# 현재 각도를 초기 각도로 복구 
-	rotation = rest_rotation
-	is_flipping = false
+
+## 복귀 중 충돌에만 빗맞음 반사 배율을 적용합니다.
+## 다른 상태의 특수 충돌 결과는 패링 판정이 정해질 때 추가합니다.
+func get_ball_impact(_context: BallImpactContext) -> Variant:
+	if get_current_state_type() != FlipperStateClass.Type.RETURNING:
+		return null
+
+	var result := BallImpactResult.new()
+	result.direction_mode = BallImpactResult.DirectionMode.PHYSICAL_REFLECTION
+	result.speed_multiplier = float(state_rules.get(&"return_reflection_multiplier"))
+	result.maximum_speed = INF
+	return result
+
+
+func _ensure_state_machine() -> void:
+	if _state_machine != null:
+		return
+
+	_state_machine = FlipperStateMachineClass.new(self)
+	_state_machine.state_changed.connect(_on_state_machine_state_changed)
+
+
+func _on_state_machine_state_changed(
+	previous_state: int,
+	current_state: int
+) -> void:
+	_refresh_selection_visual()
+	state_changed.emit(previous_state, current_state)
