@@ -51,19 +51,26 @@ func _run() -> void:
 
 
 func _test_editor_property_contract(ball: Pinball) -> void:
+	var stats_property := _find_property(ball, &"stats")
+	_expect(not stats_property.is_empty(), \
+		"공 개별 스탯 리소스가 Inspector에 표시되어야 한다.")
+
+	if stats_property.is_empty() or ball.stats == null:
+		return
+
 	var expected_ranges := {
-		&"ball_mass": "0.1,100.0",
-		&"ball_elasticity": "0.0,1.0",
+		&"mass": "0.1,100.0",
+		&"elasticity": "0.0,1.0",
 		&"initial_speed": "0.0,5000.0",
 		&"minimum_speed": "0.0,5000.0",
 		&"maximum_speed": "0.0,5000.0",
-		&"ball_gravity_scale": "0.0,5.0",
+		&"gravity_scale": "0.0,5.0",
 	}
 
 	for property_name: StringName in expected_ranges:
-		var property := _find_property(ball, property_name)
+		var property := _find_property(ball.stats, property_name)
 		_expect(not property.is_empty(), \
-			"%s 속성이 Inspector에 표시되어야 한다." % property_name)
+			"PinballStats.%s 속성이 Inspector에 표시되어야 한다." % property_name)
 
 		if property.is_empty():
 			continue
@@ -78,28 +85,32 @@ func _test_editor_property_contract(ball: Pinball) -> void:
 
 
 func _test_default_physics_values(ball: Pinball) -> void:
+	if ball.stats == null:
+		_expect(false, "공 개별 스탯 리소스가 필요하다.")
+		return
+
 	var required_properties := [
-		&"ball_mass",
-		&"ball_elasticity",
+		&"mass",
+		&"elasticity",
 		&"initial_speed",
 		&"minimum_speed",
 		&"maximum_speed",
-		&"ball_gravity_scale",
+		&"gravity_scale",
 	]
-	if not _require_properties(ball, required_properties):
+	if not _require_properties(ball.stats, required_properties):
 		return
 
-	_expect_float(float(ball.get(&"ball_mass")), EXPECTED_DEFAULT_MASS, \
+	_expect_float(ball.stats.mass, EXPECTED_DEFAULT_MASS, \
 		"공의 기본 무게는 1kg이어야 한다.")
-	_expect_float(float(ball.get(&"ball_elasticity")), EXPECTED_DEFAULT_ELASTICITY, \
+	_expect_float(ball.stats.elasticity, EXPECTED_DEFAULT_ELASTICITY, \
 		"공의 기본 탄성은 0.8이어야 한다.")
-	_expect_float(float(ball.get(&"initial_speed")), EXPECTED_DEFAULT_INITIAL_SPEED, \
+	_expect_float(ball.stats.initial_speed, EXPECTED_DEFAULT_INITIAL_SPEED, \
 		"공의 기본 초기 속력은 700px/s이어야 한다.")
-	_expect_float(float(ball.get(&"minimum_speed")), EXPECTED_DEFAULT_MINIMUM_SPEED, \
+	_expect_float(ball.stats.minimum_speed, EXPECTED_DEFAULT_MINIMUM_SPEED, \
 		"공의 기본 최소 속력은 200px/s이어야 한다.")
-	_expect_float(float(ball.get(&"maximum_speed")), EXPECTED_DEFAULT_MAXIMUM_SPEED, \
+	_expect_float(ball.stats.maximum_speed, EXPECTED_DEFAULT_MAXIMUM_SPEED, \
 		"공의 기본 최대 속력은 2500px/s이어야 한다.")
-	_expect_float(float(ball.get(&"ball_gravity_scale")), EXPECTED_DEFAULT_GRAVITY_SCALE, \
+	_expect_float(ball.stats.gravity_scale, EXPECTED_DEFAULT_GRAVITY_SCALE, \
 		"공의 기본 중력 배율은 1배여야 한다.")
 
 	_expect_float(ball.mass, EXPECTED_DEFAULT_MASS, \
@@ -115,62 +126,62 @@ func _test_default_physics_values(ball: Pinball) -> void:
 
 
 func _test_property_clamps(ball: Pinball) -> void:
-	if not _require_properties(ball, [
-		&"ball_mass",
-		&"ball_elasticity",
-		&"ball_gravity_scale",
+	if ball.stats == null or not _require_properties(ball.stats, [
+		&"mass",
+		&"elasticity",
+		&"gravity_scale",
 	]):
 		return
 
-	ball.set(&"ball_mass", -10.0)
-	_expect_float(float(ball.get(&"ball_mass")), 0.1, \
+	ball.stats.mass = -10.0
+	_expect_float(ball.stats.mass, 0.1, \
 		"공 무게는 0.1kg보다 작아질 수 없다.")
-	ball.set(&"ball_mass", 1000.0)
-	_expect_float(float(ball.get(&"ball_mass")), 100.0, \
+	ball.stats.mass = 1000.0
+	_expect_float(ball.stats.mass, 100.0, \
 		"공 무게는 100kg보다 커질 수 없다.")
 
-	ball.set(&"ball_elasticity", -1.0)
-	_expect_float(float(ball.get(&"ball_elasticity")), 0.0, \
+	ball.stats.elasticity = -1.0
+	_expect_float(ball.stats.elasticity, 0.0, \
 		"공 탄성은 0보다 작아질 수 없다.")
-	ball.set(&"ball_elasticity", 2.0)
-	_expect_float(float(ball.get(&"ball_elasticity")), 1.0, \
+	ball.stats.elasticity = 2.0
+	_expect_float(ball.stats.elasticity, 1.0, \
 		"공 탄성은 1보다 커질 수 없다.")
 
-	ball.set(&"ball_gravity_scale", -1.0)
-	_expect_float(float(ball.get(&"ball_gravity_scale")), 0.0, \
+	ball.stats.gravity_scale = -1.0
+	_expect_float(ball.stats.gravity_scale, 0.0, \
 		"공 중력 배율은 0보다 작아질 수 없다.")
-	ball.set(&"ball_gravity_scale", 10.0)
-	_expect_float(float(ball.get(&"ball_gravity_scale")), 5.0, \
+	ball.stats.gravity_scale = 10.0
+	_expect_float(ball.stats.gravity_scale, 5.0, \
 		"공 중력 배율은 5보다 커질 수 없다.")
 
-	ball.set(&"ball_mass", EXPECTED_DEFAULT_MASS)
-	ball.set(&"ball_elasticity", EXPECTED_DEFAULT_ELASTICITY)
-	ball.set(&"ball_gravity_scale", EXPECTED_DEFAULT_GRAVITY_SCALE)
+	ball.stats.mass = EXPECTED_DEFAULT_MASS
+	ball.stats.elasticity = EXPECTED_DEFAULT_ELASTICITY
+	ball.stats.gravity_scale = EXPECTED_DEFAULT_GRAVITY_SCALE
 
 
 func _test_speed_range_invariants(ball: Pinball) -> void:
-	if not _require_properties(ball, [
+	if ball.stats == null or not _require_properties(ball.stats, [
 		&"initial_speed",
 		&"minimum_speed",
 		&"maximum_speed",
 	]):
 		return
 
-	ball.set(&"minimum_speed", 1000.0)
-	ball.set(&"maximum_speed", 500.0)
-	_expect_float(float(ball.get(&"maximum_speed")), 1000.0, \
+	ball.stats.minimum_speed = 1000.0
+	ball.stats.maximum_speed = 500.0
+	_expect_float(ball.stats.maximum_speed, 1000.0, \
 		"최대 속력은 최소 속력보다 작아질 수 없다.")
 
-	ball.set(&"initial_speed", 2000.0)
-	_expect_float(float(ball.get(&"initial_speed")), 1000.0, \
+	ball.stats.initial_speed = 2000.0
+	_expect_float(ball.stats.initial_speed, 1000.0, \
 		"초기 속력은 최대 속력을 초과할 수 없다.")
-	ball.set(&"initial_speed", -10.0)
-	_expect_float(float(ball.get(&"initial_speed")), 0.0, \
+	ball.stats.initial_speed = -10.0
+	_expect_float(ball.stats.initial_speed, 0.0, \
 		"초기 속력은 0보다 작아질 수 없다.")
 
-	ball.set(&"minimum_speed", EXPECTED_DEFAULT_MINIMUM_SPEED)
-	ball.set(&"maximum_speed", EXPECTED_DEFAULT_MAXIMUM_SPEED)
-	ball.set(&"initial_speed", EXPECTED_DEFAULT_INITIAL_SPEED)
+	ball.stats.minimum_speed = EXPECTED_DEFAULT_MINIMUM_SPEED
+	ball.stats.maximum_speed = EXPECTED_DEFAULT_MAXIMUM_SPEED
+	ball.stats.initial_speed = EXPECTED_DEFAULT_INITIAL_SPEED
 
 
 func _test_launch_uses_initial_speed(ball: Pinball) -> void:
@@ -222,10 +233,10 @@ func _test_runtime_velocity_limits(ball: Pinball) -> void:
 	if Engine.is_editor_hint():
 		return
 
-	if not _has_property(ball, &"ball_gravity_scale"):
+	if ball.stats == null:
 		return
 
-	ball.set(&"ball_gravity_scale", 0.0)
+	ball.stats.gravity_scale = 0.0
 	ball.linear_velocity = Vector2(5000.0, 0.0)
 	await physics_frame
 	_expect_float(ball.linear_velocity.length(), EXPECTED_DEFAULT_MAXIMUM_SPEED, \
@@ -241,14 +252,14 @@ func _test_runtime_velocity_limits(ball: Pinball) -> void:
 	_expect_vector(ball.linear_velocity, Vector2.ZERO, \
 		"실제 물리 프레임에서도 정지 상태는 유지해야 한다.")
 
-	ball.set(&"ball_gravity_scale", EXPECTED_DEFAULT_GRAVITY_SCALE)
+	ball.stats.gravity_scale = EXPECTED_DEFAULT_GRAVITY_SCALE
 
 
 func _test_gravity_reverses_upward_motion(ball: Pinball) -> void:
 	if Engine.is_editor_hint():
 		return
 
-	ball.set(&"ball_gravity_scale", EXPECTED_DEFAULT_GRAVITY_SCALE)
+	ball.stats.gravity_scale = EXPECTED_DEFAULT_GRAVITY_SCALE
 	ball.sleeping = false
 	ball.linear_velocity = Vector2(0.0, -300.0)
 
@@ -265,7 +276,7 @@ func _test_physics_material_is_instance_local(
 	packed_scene: PackedScene,
 	first_ball: Pinball
 ) -> void:
-	if not _has_property(first_ball, &"ball_elasticity"):
+	if first_ball.stats == null:
 		return
 
 	var second_ball := packed_scene.instantiate() as Pinball
@@ -278,24 +289,24 @@ func _test_physics_material_is_instance_local(
 	_expect(first_ball.physics_material_override != second_ball.physics_material_override, \
 		"공 인스턴스마다 독립된 PhysicsMaterial을 사용해야 한다.")
 
-	first_ball.set(&"ball_elasticity", 0.25)
+	first_ball.stats.elasticity = 0.25
 	_expect_float(first_ball.physics_material_override.bounce, 0.25, \
 		"첫 번째 공의 탄성 변경이 적용되어야 한다.")
 	_expect_float(second_ball.physics_material_override.bounce, EXPECTED_DEFAULT_ELASTICITY, \
 		"첫 번째 공의 탄성 변경이 두 번째 공에 영향을 주지 않아야 한다.")
 
-	first_ball.set(&"ball_elasticity", EXPECTED_DEFAULT_ELASTICITY)
+	first_ball.stats.elasticity = EXPECTED_DEFAULT_ELASTICITY
 	second_ball.free()
 
 
-func _require_properties(ball: Pinball, property_names: Array) -> bool:
+func _require_properties(object: Object, property_names: Array) -> bool:
 	var has_all_properties := true
 
 	for property_name: StringName in property_names:
-		if _has_property(ball, property_name):
+		if _has_property(object, property_name):
 			continue
 
-		_expect(false, "Pinball에 %s 속성이 필요하다." % property_name)
+		_expect(false, "%s 속성이 필요하다." % property_name)
 		has_all_properties = false
 
 	return has_all_properties

@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://csrwlhfpki4fs"]
+
+[ext_resource type="PackedScene" uid="uid://bhh5qyc3llygr" path="res://resources/balls/base/base_ball.tscn" id="1_1kyvu"]
+[ext_resource type="Script" uid="uid://ce2wax7g2gio8" path="res://scripts/ball_base_system/pinball_stats.gd" id="2_h2l1d"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_1j0e5"]
+resource_local_to_scene = true
+bounce = 0.5
+
+[sub_resource type="Resource" id="Resource_6olh6"]
+resource_local_to_scene = true
+script = ExtResource("2_h2l1d")
+mass = 2.0
+elasticity = 0.5
+gravity_scale = 1.0
+initial_speed = 700.0
+maximum_speed = 5000.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ymjl1"]
+resource_local_to_scene = true
+radius = 32.0
+
+[node name="PinballBall" unique_id=1730574864 instance=ExtResource("1_1kyvu")]
+mass = 2.0
+physics_material_override = SubResource("PhysicsMaterial_1j0e5")
+stats = SubResource("Resource_6olh6")
+
+[node name="CollisionShape2D" parent="." index="1" unique_id=383084480]
+shape = SubResource("CircleShape2D_ymjl1")

@@ -3,6 +3,10 @@ class_name Pinball
 extends RigidBody2D
 
 
+const DEFAULT_PHYSICS_RULES: PinballPhysicsRules = preload(
+	"res://settings/balls/PinballPhysicsRules.tres"
+)
+
 # 크기 상수 정의
 const MIN_BALL_DIAMETER: float = 16.0		# 최소 공 지름
 const MAX_BALL_DIAMETER: float = 256.0		# 최대 공 지름
@@ -11,37 +15,42 @@ const DEFAULT_BALL_DIAMETER: float = 64.0	# 기본 공 지름
 # 극도로 작은 원본 크기로 나누는 것을 막기 위한 안전값
 const MIN_SOURCE_SIZE: float = 0.001
 
-
-# 공 기본 물리 상수 정의
-const MIN_BALL_MASS: float = 0.1
-const MAX_BALL_MASS: float = 100.0
-const DEFAULT_BALL_MASS: float = 1.0
-
-const MIN_BALL_ELASTICITY: float = 0.0
-const MAX_BALL_ELASTICITY: float = 1.0
-const DEFAULT_BALL_ELASTICITY: float = 0.8
-
-const MIN_BALL_SPEED: float = 0.0
-const MAX_BALL_SPEED: float = 5000.0
-const DEFAULT_INITIAL_SPEED: float = 700.0
-const DEFAULT_MINIMUM_SPEED: float = 200.0
-const DEFAULT_MAXIMUM_SPEED: float = 2500.0
-
-const MIN_BALL_GRAVITY_SCALE: float = 0.0
-const MAX_BALL_GRAVITY_SCALE: float = 5.0
-const DEFAULT_BALL_GRAVITY_SCALE: float = 1.0
-
 const STOPPED_SPEED_EPSILON: float = 0.001
 
+const MIN_COLLISION_RADIUS_RATIO: float = 0.25
+const MAX_COLLISION_RADIUS_RATIO: float = 1.5
+const DEFAULT_COLLISION_RADIUS_RATIO: float = 1.0
 
-var _normalizing_speed_settings: bool = false
 var _minimum_speed_suppressed_by_gravity: bool = false
+var _stats: PinballStats = PinballStats.new()
+var _physics_rules: PinballPhysicsRules = DEFAULT_PHYSICS_RULES
+
+## 모든 공이 기본으로 공유하는 허용 범위 규칙입니다.
+## 개별 Stats의 원본은 보존하고 실제 물리에 적용할 때 이 범위로 보정합니다.
+var physics_rules: PinballPhysicsRules:
+	get:
+		return _physics_rules
+	set(value):
+		_set_physics_rules(value)
 
 
-@export_category("공 크기")
+@export_category("공 바리에이션")
+
+## 공 개별 물성 및 속도 설정입니다.
+## 씬에 내장하거나 .tres 프리셋을 지정해 공 종류별 설정을 저장할 수 있습니다.
+@export var stats: PinballStats:
+	get:
+		return _stats
+	set(value):
+		_set_stats(value)
+
+
+@export_category("공 외형 및 충돌")
+
+@export_group("공 크기")
 
 ## 게임에서 사용하는 공의 지름입니다.
-## 시각 이미지의 원본 해상도와 관계없이 표시 및 충돌 크기에 적용됩니다.
+## 시각 이미지의 원본 해상도와 관계없이 표시 크기에 적용됩니다.
 @export_range(16.0, 256.0, 1.0, "suffix:px")
 var ball_diameter: float = DEFAULT_BALL_DIAMETER:
 	set(value):
@@ -49,94 +58,32 @@ var ball_diameter: float = DEFAULT_BALL_DIAMETER:
 		refresh_ball_size()
 
 
-@export_category("공 기본 물리")
+@export_group("충돌 범위")
 
-@export_group("물성")
-
-## 공의 질량입니다. 충격량과 힘에 의한 가속도에 영향을 줍니다.
-@export_range(0.1, 100.0, 0.1, "suffix:kg")
-var ball_mass: float = DEFAULT_BALL_MASS:
+## 표시 반지름에 곱할 충돌 반지름 비율입니다.
+## 1은 표시 크기와 동일하고, 0.75는 표시 반지름의 75%입니다.
+@export_range(0.25, 1.5, 0.05, "suffix:x")
+var collision_radius_ratio: float = DEFAULT_COLLISION_RADIUS_RATIO:
 	set(value):
-		ball_mass = clampf(value, MIN_BALL_MASS, MAX_BALL_MASS)
-		mass = ball_mass
-
-## 공의 기본 탄성입니다. 0은 튀지 않고 1은 완전 탄성에 가깝습니다.
-@export_range(0.0, 1.0, 0.01)
-var ball_elasticity: float = DEFAULT_BALL_ELASTICITY:
-	set(value):
-		ball_elasticity = clampf(
+		collision_radius_ratio = clampf(
 			value,
-			MIN_BALL_ELASTICITY,
-			MAX_BALL_ELASTICITY
+			MIN_COLLISION_RADIUS_RATIO,
+			MAX_COLLISION_RADIUS_RATIO
 		)
-		_apply_ball_elasticity()
+		refresh_ball_size()
 
-## 프로젝트 기본 2D 중력에 곱하는 공 고유 배율입니다.
-## 0은 무중력, 1은 프로젝트 기본 중력, 5는 기본 중력의 5배입니다.
-@export_range(0.0, 5.0, 0.05, "suffix:x")
-var ball_gravity_scale: float = DEFAULT_BALL_GRAVITY_SCALE:
+## 공 루트 원점에서 충돌 원 중심을 이동할 거리입니다.
+@export var collision_offset: Vector2 = Vector2.ZERO:
 	set(value):
-		ball_gravity_scale = clampf(
-			value,
-			MIN_BALL_GRAVITY_SCALE,
-			MAX_BALL_GRAVITY_SCALE
-		)
-		gravity_scale = ball_gravity_scale
-
-
-@export_group("속도")
-
-## launch()로 공을 발사할 때 사용하는 초기 속력입니다.
-@export_range(0.0, 5000.0, 10.0, "suffix:px/s")
-var initial_speed: float = DEFAULT_INITIAL_SPEED:
-	set(value):
-		initial_speed = clampf(value, MIN_BALL_SPEED, maximum_speed)
-
-		if initial_speed > STOPPED_SPEED_EPSILON and initial_speed < minimum_speed:
-			initial_speed = minimum_speed
-
-## 움직이는 공이 유지해야 하는 최소 속력입니다.
-@export_range(0.0, 5000.0, 10.0, "suffix:px/s")
-var minimum_speed: float = DEFAULT_MINIMUM_SPEED:
-	set(value):
-		minimum_speed = clampf(value, MIN_BALL_SPEED, MAX_BALL_SPEED)
-
-		if _normalizing_speed_settings:
-			return
-
-		_normalizing_speed_settings = true
-
-		if maximum_speed < minimum_speed:
-			maximum_speed = minimum_speed
-
-		if initial_speed > STOPPED_SPEED_EPSILON and initial_speed < minimum_speed:
-			initial_speed = minimum_speed
-
-		_normalizing_speed_settings = false
-
-## 공이 가질 수 있는 최대 속력입니다.
-@export_range(0.0, 5000.0, 10.0, "suffix:px/s")
-var maximum_speed: float = DEFAULT_MAXIMUM_SPEED:
-	set(value):
-		maximum_speed = clampf(value, MIN_BALL_SPEED, MAX_BALL_SPEED)
-
-		if _normalizing_speed_settings:
-			return
-
-		_normalizing_speed_settings = true
-
-		if maximum_speed < minimum_speed:
-			maximum_speed = minimum_speed
-
-		if initial_speed > maximum_speed:
-			initial_speed = maximum_speed
-
-		_normalizing_speed_settings = false
+		collision_offset = value
+		refresh_ball_size()
 
 
 func _ready() -> void:
 	contact_monitor = true		# 물리 접촉 정보를 수집하도록 활성화. 향후 범퍼/플리퍼 충돌 처리에 필요
 	max_contacts_reported = 8	# 한 물리 프레임에 최대 8개의 접촉점 기록
+	_set_physics_rules(_physics_rules)
+	_set_stats(_stats)
 	refresh_ball_size()
 	refresh_physics_properties()
 
@@ -155,12 +102,10 @@ func refresh_ball_size() -> void:
 
 	var collision := get_node_or_null("CollisionShape2D") as CollisionShape2D
 	if collision != null and collision.shape is CircleShape2D:
-		var circle := collision.shape as CircleShape2D
-		var source_diameter := circle.radius * 2.0
-
-		if source_diameter > MIN_SOURCE_SIZE:
-			var collision_scale := ball_diameter / source_diameter
-			collision.scale = Vector2.ONE * collision_scale
+		var circle := _get_instance_circle_shape(collision)
+		circle.radius = ball_diameter * 0.5 * collision_radius_ratio
+		collision.scale = Vector2.ONE
+		collision.position = collision_offset
 
 	if is_inside_tree():
 		update_configuration_warnings()
@@ -185,6 +130,16 @@ func _get_configuration_warnings() -> PackedStringArray:
 	elif not collision.shape is CircleShape2D:
 		warnings.append("CollisionShape2D에는 CircleShape2D를 지정해야 합니다.")
 
+	if (
+		stats != null
+		and physics_rules != null
+		and not physics_rules.is_stats_within_rules(stats)
+	):
+		warnings.append(
+			"개별 Stats 일부가 공용 물리 규칙 범위를 벗어났습니다. "
+			+ "게임에서는 허용 범위로 보정됩니다."
+		)
+
 	if not scale.is_equal_approx(Vector2.ONE):
 		warnings.append("PinballBall 루트의 Scale은 (1, 1)로 유지하고 Ball Diameter를 사용하세요.")
 
@@ -193,9 +148,71 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 ## 에디터에 설정된 공 물성을 RigidBody2D와 PhysicsMaterial에 반영합니다.
 func refresh_physics_properties() -> void:
-	mass = ball_mass
-	gravity_scale = ball_gravity_scale
+	if stats == null or physics_rules == null:
+		return
+
+	mass = physics_rules.get_effective_mass(stats)
+	gravity_scale = physics_rules.get_effective_gravity_scale(stats)
 	_apply_ball_elasticity()
+
+
+func _set_stats(value: PinballStats) -> void:
+	if _stats != null and _stats.changed.is_connected(_on_stats_changed):
+		_stats.changed.disconnect(_on_stats_changed)
+
+	_stats = value
+
+	if _stats == null:
+		_stats = PinballStats.new()
+		_stats.resource_local_to_scene = true
+
+	if not _stats.changed.is_connected(_on_stats_changed):
+		_stats.changed.connect(_on_stats_changed)
+
+	refresh_physics_properties()
+
+
+func _on_stats_changed() -> void:
+	refresh_physics_properties()
+
+	if is_inside_tree():
+		update_configuration_warnings()
+
+
+func _set_physics_rules(value: PinballPhysicsRules) -> void:
+	if (
+		_physics_rules != null
+		and _physics_rules.changed.is_connected(_on_physics_rules_changed)
+	):
+		_physics_rules.changed.disconnect(_on_physics_rules_changed)
+
+	_physics_rules = value if value != null else DEFAULT_PHYSICS_RULES
+
+	if not _physics_rules.changed.is_connected(_on_physics_rules_changed):
+		_physics_rules.changed.connect(_on_physics_rules_changed)
+
+	refresh_physics_properties()
+
+	if is_inside_tree():
+		update_configuration_warnings()
+
+
+func _on_physics_rules_changed() -> void:
+	refresh_physics_properties()
+
+	if is_inside_tree():
+		update_configuration_warnings()
+
+
+func _get_instance_circle_shape(collision: CollisionShape2D) -> CircleShape2D:
+	var circle := collision.shape as CircleShape2D
+
+	if not circle.resource_local_to_scene:
+		circle = circle.duplicate() as CircleShape2D
+		circle.resource_local_to_scene = true
+		collision.shape = circle
+
+	return circle
 
 
 ## 입력 방향을 정규화하고 설정된 초기 속력으로 공을 발사합니다.
@@ -207,7 +224,8 @@ func launch(direction: Vector2) -> bool:
 	_minimum_speed_suppressed_by_gravity = false
 	sleeping = false
 	linear_velocity = get_limited_velocity(
-		direction.normalized() * initial_speed
+		direction.normalized()
+		* physics_rules.get_effective_initial_speed(stats)
 	)
 	return true
 
@@ -219,7 +237,8 @@ func get_limited_velocity(velocity: Vector2) -> Vector2:
 	if speed <= STOPPED_SPEED_EPSILON:
 		return Vector2.ZERO
 
-	var limited_speed := clampf(speed, minimum_speed, maximum_speed)
+	var speed_range := physics_rules.get_effective_speed_range(stats)
+	var limited_speed := clampf(speed, speed_range.x, speed_range.y)
 	return velocity.normalized() * limited_speed
 
 
@@ -239,9 +258,10 @@ func _get_physics_limited_velocity(
 		_minimum_speed_suppressed_by_gravity = true
 
 	if _minimum_speed_suppressed_by_gravity:
+		var speed_range := physics_rules.get_effective_speed_range(stats)
 		var recovered_minimum_speed := (
 			velocity.dot(gravity) >= 0.0
-			and speed >= minimum_speed
+			and speed >= speed_range.x
 		)
 
 		if recovered_minimum_speed:
@@ -254,6 +274,7 @@ func _get_physics_limited_velocity(
 
 func _get_maximum_limited_velocity(velocity: Vector2) -> Vector2:
 	var speed := velocity.length()
+	var maximum_speed := physics_rules.get_effective_speed_range(stats).y
 
 	if speed <= STOPPED_SPEED_EPSILON:
 		return Vector2.ZERO
@@ -266,7 +287,7 @@ func _get_maximum_limited_velocity(velocity: Vector2) -> Vector2:
 
 func _apply_ball_elasticity() -> void:
 	var physics_material := _get_instance_physics_material()
-	physics_material.bounce = ball_elasticity
+	physics_material.bounce = physics_rules.get_effective_elasticity(stats)
 
 
 func _get_instance_physics_material() -> PhysicsMaterial:
@@ -331,9 +352,9 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 
 
 func _apply_impact(
-    state: PhysicsDirectBodyState2D,
-    context: BallImpactContext,
-    result: BallImpactResult
+	state: PhysicsDirectBodyState2D,
+	context: BallImpactContext,
+	result: BallImpactResult
 ) -> void:
 	var relative_velocity := (
 		context.velocity

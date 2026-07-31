@@ -23,7 +23,7 @@ func _run() -> void:
 	root.add_child(test_scene)
 	await process_frame
 
-	var ball := test_scene.get_node_or_null("PinballBall") as Pinball
+	var ball := test_scene.find_child("PinballBall", true, false) as Pinball
 	_expect(ball != null, "테스트 씬에 PinballBall 인스턴스가 있어야 한다.")
 
 	if ball == null:
