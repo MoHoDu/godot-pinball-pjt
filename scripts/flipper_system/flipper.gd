@@ -24,7 +24,6 @@ const MIN_SWEEP_INTERVAL: float = 1.0
 const MAX_SWEEP_INTERVAL: float = 64.0
 const DEFAULT_SWEEP_INTERVAL: float = 8.0
 const MAX_ROTATION_SWEEP_STEPS: int = 128
-const SWEEP_SEPARATION_MARGIN: float = 1.0
 
 
 var _state_rules: Resource = DEFAULT_STATE_RULES
@@ -327,16 +326,47 @@ func find_rotation_sweep_hit(
 			circle_radius,
 			sample_rotation
 		):
-			return {
+			var polygon := _get_world_collision_polygon(sample_rotation)
+			var contact := _get_circle_polygon_contact(circle_center, polygon)
+			var hit := {
 				&"rotation": sample_rotation,
 				&"progress": progress,
 			}
+			if not contact.is_empty():
+				hit[&"point"] = contact.get(&"point")
+				hit[&"normal"] = contact.get(&"normal")
+			return hit
 
 	return {}
 
 
-## 회전 중간 구간에서 건너뛴 공을 찾아 최종 플리퍼 진행 방향 앞으로 분리합니다.
-## 반환값은 이 물리 프레임에서 별도로 처리한 공의 개수입니다.
+## 움직이는 플리퍼 표면을 기준으로 공의 상대속도를 물리 반사합니다.
+## 접선 성분은 보존하고 법선 성분에만 탄성을 적용한 뒤 표면 속도를 다시 더합니다.
+func calculate_physical_sweep_velocity(
+	incoming_velocity: Vector2,
+	surface_velocity: Vector2,
+	collision_normal: Vector2,
+	elasticity: float = 1.0
+) -> Vector2:
+	var normal := collision_normal.normalized()
+	if normal.is_zero_approx():
+		return incoming_velocity
+
+	var relative_velocity := incoming_velocity - surface_velocity
+	var incoming_normal_speed := relative_velocity.dot(normal)
+	if incoming_normal_speed >= 0.0:
+		return incoming_velocity
+
+	var clamped_elasticity := clampf(elasticity, 0.0, 1.0)
+	var reflected_relative_velocity := relative_velocity - normal * (
+		(1.0 + clamped_elasticity) * incoming_normal_speed
+	)
+	return surface_velocity + reflected_relative_velocity
+
+
+## 시작 자세 밖에 있지만 회전 중간 또는 끝 자세에서 건너뛴 공을 찾아 임펄스를 줍니다.
+## Transform 보정 없이 속도 변화만 물리 서버에 전달합니다.
+## 반환값은 이 물리 프레임에서 별도 임펄스를 적용한 공의 개수입니다.
 func resolve_rotation_sweep(
 	previous_rotation: float,
 	target_rotation: float,
@@ -377,11 +407,12 @@ func resolve_rotation_sweep(
 		if hit.is_empty():
 			continue
 
+		var hit_point: Vector2 = hit.get(&"point", ball_collision.global_position)
+		var hit_normal: Vector2 = hit.get(&"normal", Vector2.UP)
 		_resolve_swept_ball(
 			ball,
-			ball_collision,
-			circle_radius,
-			float(hit.get(&"rotation")),
+			hit_point,
+			hit_normal,
 			previous_rotation,
 			target_rotation,
 			delta
@@ -394,74 +425,45 @@ func resolve_rotation_sweep(
 
 func _resolve_swept_ball(
 	ball: RigidBody2D,
-	ball_collision: CollisionShape2D,
-	circle_radius: float,
-	hit_rotation: float,
+	hit_point: Vector2,
+	hit_normal: Vector2,
 	previous_rotation: float,
 	target_rotation: float,
 	delta: float
 ) -> void:
 	var pivot := global_position
-	var original_center := ball_collision.global_position
-	var remaining_rotation := _get_short_rotation_delta(
-		hit_rotation,
-		target_rotation
-	)
-	var resolved_center := pivot + (
-		original_center - pivot
-	).rotated(remaining_rotation)
 	var total_rotation := _get_short_rotation_delta(
 		previous_rotation,
 		target_rotation
 	)
 	var angular_velocity := total_rotation / delta
-	var radial_vector := resolved_center - pivot
+	var radial_vector := hit_point - pivot
 	var surface_velocity := Vector2(
 		-radial_vector.y,
 		radial_vector.x
 	) * angular_velocity
-	var push_direction := surface_velocity.normalized()
-
-	if push_direction.is_zero_approx():
-		push_direction = Vector2.UP
-
-	var final_polygon := _get_world_collision_polygon(target_rotation)
-	var separation_step := maxf(
-		SWEEP_SEPARATION_MARGIN,
-		minf(rotation_sweep_interval, circle_radius * 0.5)
+	var resolved_velocity := calculate_physical_sweep_velocity(
+		ball.linear_velocity,
+		surface_velocity,
+		hit_normal,
+		_get_ball_elasticity(ball)
 	)
-	var separation_attempts := 0
+	var velocity_change := resolved_velocity - ball.linear_velocity
+	if velocity_change.is_zero_approx():
+		return
 
-	while (
-		_is_circle_overlapping_polygon(
-			resolved_center,
-			circle_radius,
-			final_polygon
-		)
-		and separation_attempts < MAX_ROTATION_SWEEP_STEPS
-	):
-		resolved_center += push_direction * separation_step
-		separation_attempts += 1
-
-	resolved_center += push_direction * SWEEP_SEPARATION_MARGIN
-	var collision_offset_world := (
-		ball_collision.global_position
-		- ball.global_position
-	)
-	var resolved_ball_position := resolved_center - collision_offset_world
-	ball.global_position = resolved_ball_position
-	ball.reset_physics_interpolation()
+	# RigidBody2D의 Transform이나 속도를 직접 덮어쓰지 않습니다.
+	# 목표 속도 변화량을 질량에 맞는 순간 임펄스로 변환해 물리 서버에 전달합니다.
 	ball.sleeping = false
+	ball.apply_central_impulse(velocity_change * ball.mass)
 
-	var resolved_velocity := ball.linear_velocity
-	var current_surface_speed := ball.linear_velocity.dot(push_direction)
-	var target_surface_speed := surface_velocity.dot(push_direction)
-	if target_surface_speed > current_surface_speed:
-		resolved_velocity += push_direction * (
-			target_surface_speed - current_surface_speed
-		)
 
-	ball.linear_velocity = resolved_velocity
+func _get_ball_elasticity(ball: RigidBody2D) -> float:
+	var physics_material := ball.physics_material_override
+	if physics_material == null:
+		return 0.0
+
+	return clampf(physics_material.bounce, 0.0, 1.0)
 
 
 func _get_collision_sweep_radius() -> float:
@@ -524,6 +526,57 @@ func _is_circle_overlapping_polygon(
 			return true
 
 	return false
+
+
+func _get_circle_polygon_contact(
+	circle_center: Vector2,
+	polygon: PackedVector2Array
+) -> Dictionary:
+	if polygon.size() < 2:
+		return {}
+
+	var closest_point := polygon[0]
+	var closest_edge_start := polygon[0]
+	var closest_edge_end := polygon[1]
+	var closest_distance_squared := INF
+
+	for point_index in polygon.size():
+		var next_index := (point_index + 1) % polygon.size()
+		var edge_point := Geometry2D.get_closest_point_to_segment(
+			circle_center,
+			polygon[point_index],
+			polygon[next_index]
+		)
+		var distance_squared := circle_center.distance_squared_to(edge_point)
+		if distance_squared < closest_distance_squared:
+			closest_distance_squared = distance_squared
+			closest_point = edge_point
+			closest_edge_start = polygon[point_index]
+			closest_edge_end = polygon[next_index]
+
+	var center_is_inside := Geometry2D.is_point_in_polygon(circle_center, polygon)
+	var normal := (
+		closest_point - circle_center
+		if center_is_inside
+		else circle_center - closest_point
+	)
+
+	if normal.is_zero_approx():
+		var polygon_center := Vector2.ZERO
+		for point: Vector2 in polygon:
+			polygon_center += point
+		polygon_center /= float(polygon.size())
+
+		normal = (closest_edge_end - closest_edge_start).orthogonal().normalized()
+		if normal.dot(closest_point - polygon_center) < 0.0:
+			normal = -normal
+	else:
+		normal = normal.normalized()
+
+	return {
+		&"point": closest_point,
+		&"normal": normal,
+	}
 
 
 func _get_short_rotation_delta(from_rotation: float, to_rotation: float) -> float:

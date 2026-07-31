@@ -124,18 +124,26 @@ func _test_scene_right_flipper_catches_ball(
 	ball.reset_physics_interpolation()
 	var position_before_activation := ball.global_position
 	var rotation_before_activation := right_flipper.rotation
+	var original_time_scale := Engine.time_scale
+	Engine.time_scale = 0.125
 
 	Input.action_press(&"flipper")
 	var observed_upward_hit := false
 	var observed_active_state := false
 	var observed_ball_displacement := false
-	var sweep_snapshot := {&"resolved": false}
+	var sweep_snapshot := {
+		&"resolved": false,
+		&"position_before_step": ball.global_position,
+		&"position_at_resolution": ball.global_position,
+	}
 	var frame_trace: Array[String] = []
 	right_flipper.rotation_sweep_resolved.connect(func(resolved_ball: RigidBody2D) -> void:
 		if resolved_ball == ball:
 			sweep_snapshot[&"resolved"] = true
+			sweep_snapshot[&"position_at_resolution"] = ball.global_position
 	)
-	for _step in 8:
+	for _step in 80:
+		sweep_snapshot[&"position_before_step"] = ball.global_position
 		await physics_frame
 		var current_observed_rotation := right_flipper.rotation
 		frame_trace.append("angle=%.2f position=%s velocity=%s" % [
@@ -151,6 +159,7 @@ func _test_scene_right_flipper_catches_ball(
 			observed_upward_hit = true
 			break
 	Input.action_release(&"flipper")
+	Engine.time_scale = original_time_scale
 
 	_expect(controller.is_active, \
 		"test_flipper 씬의 단일 컨트롤러는 선택되어 활성 상태여야 한다.")
@@ -164,6 +173,11 @@ func _test_scene_right_flipper_catches_ball(
 			ball.is_in_group(&"pinball_balls"),
 			frame_trace,
 		])
+	_expect_vector(
+		sweep_snapshot[&"position_at_resolution"],
+		sweep_snapshot[&"position_before_step"],
+		"1/8 배속의 회전 충돌 시점에도 공 Transform을 직접 이동시키면 안 된다."
+	)
 	_expect(observed_ball_displacement, \
 		"회전 안전 검사가 공을 플리퍼 진행 방향 앞으로 분리해야 한다.")
 	_expect(observed_upward_hit, \

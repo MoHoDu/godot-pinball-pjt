@@ -28,6 +28,7 @@ func _run() -> void:
 		&"is_circle_overlapping_at_rotation",
 		&"find_rotation_sweep_hit",
 		&"resolve_rotation_sweep",
+		&"calculate_physical_sweep_velocity",
 	]
 
 	for method_name: StringName in required_methods:
@@ -39,10 +40,13 @@ func _run() -> void:
 		"Rotation Sweep Interval은 Inspector에서 조정할 수 있어야 한다.")
 
 	if _failures.is_empty():
+		_test_physical_sweep_reflection(flipper)
 		_test_step_count(flipper)
 		_test_middle_angle_detection(flipper)
+		_test_sweep_contact_geometry(flipper)
 		_test_final_angle_detection(flipper)
 		await _test_swept_ball_resolution(flipper)
+		await _test_final_overlap_uses_sweep_impulse(flipper)
 		await _test_active_state_runs_rotation_sweep(flipper)
 		await _test_actual_right_flipper_catches_falling_ball()
 		await _test_pinball_registration()
@@ -50,6 +54,33 @@ func _run() -> void:
 	flipper.queue_free()
 	await process_frame
 	_finish()
+
+
+func _test_physical_sweep_reflection(flipper: PinballFlipper) -> void:
+	var upward_normal := Vector2.UP
+	var incoming_velocity := Vector2(200.0, 400.0)
+	var stationary_result: Vector2 = flipper.call(
+		&"calculate_physical_sweep_velocity",
+		incoming_velocity,
+		Vector2.ZERO,
+		upward_normal,
+		1.0
+	)
+	_expect_vector(stationary_result, Vector2(200.0, -400.0), \
+		"정지한 표면에서는 입사 속도를 충돌 법선 기준으로 물리 반사해야 한다.")
+
+	var upward_surface_velocity := Vector2(0.0, -100.0)
+	var moving_result: Vector2 = flipper.call(
+		&"calculate_physical_sweep_velocity",
+		incoming_velocity,
+		upward_surface_velocity,
+		upward_normal,
+		1.0
+	)
+	_expect_vector(moving_result, Vector2(200.0, -600.0), \
+		"움직이는 플리퍼 표면은 상대 속도 반사를 통해 공에 추가 속도를 전달해야 한다.")
+	_expect(absf(moving_result.x - incoming_velocity.x) <= EPSILON, \
+		"플리퍼 타격이 공의 기존 횡방향 속도 성분을 임의의 고정 방향으로 덮어쓰면 안 된다.")
 
 
 func _create_test_flipper() -> PinballFlipper:
@@ -119,6 +150,28 @@ func _test_middle_angle_detection(flipper: PinballFlipper) -> void:
 			"충돌 각도는 시작과 최종 각도 사이여야 한다.")
 
 
+func _test_sweep_contact_geometry(flipper: PinballFlipper) -> void:
+	var hit := flipper.find_rotation_sweep_hit(
+		BALL_CENTER,
+		BALL_RADIUS,
+		START_ROTATION,
+		END_ROTATION
+	)
+	_expect(hit.has(&"point"), \
+		"회전 구간 충돌 결과에 플리퍼 표면 접촉점이 필요하다.")
+	_expect(hit.has(&"normal"), \
+		"회전 구간 충돌 결과에 물리 반사용 충돌 법선이 필요하다.")
+	if not hit.has(&"point") or not hit.has(&"normal"):
+		return
+
+	var contact_point: Vector2 = hit.get(&"point")
+	var contact_normal: Vector2 = hit.get(&"normal")
+	_expect(absf(contact_normal.length() - 1.0) <= EPSILON, \
+		"회전 구간 충돌 법선은 단위 벡터여야 한다.")
+	_expect((BALL_CENTER - contact_point).dot(contact_normal) > 0.0, \
+		"충돌 법선은 플리퍼 표면에서 공 중심을 향하는 바깥 방향이어야 한다.")
+
+
 func _test_final_angle_detection(flipper: PinballFlipper) -> void:
 	var final_only_center := Vector2(70.0, 70.0)
 	var small_radius := 1.0
@@ -152,6 +205,8 @@ func _test_swept_ball_resolution(flipper: PinballFlipper) -> void:
 	var ball := RigidBody2D.new()
 	ball.name = "SweepTestBall"
 	ball.gravity_scale = 0.0
+	ball.linear_damp_mode = RigidBody2D.DAMP_MODE_REPLACE
+	ball.linear_damp = 0.0
 	ball.position = BALL_CENTER
 	ball.add_to_group(&"pinball_balls")
 
@@ -161,11 +216,15 @@ func _test_swept_ball_resolution(flipper: PinballFlipper) -> void:
 	circle.radius = BALL_RADIUS
 	ball_collision.shape = circle
 	ball.add_child(ball_collision)
+	var physics_material := PhysicsMaterial.new()
+	physics_material.bounce = 1.0
+	ball.physics_material_override = physics_material
 	root.add_child(ball)
 	await physics_frame
 
 	ball.global_position = BALL_CENTER
-	ball.linear_velocity = Vector2.ZERO
+	var incoming_velocity := Vector2(40.0, 80.0)
+	ball.linear_velocity = incoming_velocity
 	flipper.rotation = END_ROTATION
 	_expect(ball.is_in_group(&"pinball_balls"), \
 		"테스트 공이 회전 구간 검사 그룹에 등록되어야 한다.")
@@ -181,6 +240,18 @@ func _test_swept_ball_resolution(flipper: PinballFlipper) -> void:
 	) as Dictionary
 	_expect(not direct_hit.is_empty(), \
 		"실제 공의 전역 충돌 중심으로도 중간 회전 충돌을 찾을 수 있어야 한다.")
+	var contact_point: Vector2 = direct_hit.get(&"point", Vector2.ZERO)
+	var contact_normal: Vector2 = direct_hit.get(&"normal", Vector2.ZERO)
+	var angular_velocity := (END_ROTATION - START_ROTATION) / (1.0 / 60.0)
+	var radial_vector := contact_point - flipper.global_position
+	var surface_velocity := Vector2(-radial_vector.y, radial_vector.x) \
+		* angular_velocity
+	var expected_velocity := flipper.calculate_physical_sweep_velocity(
+		incoming_velocity,
+		surface_velocity,
+		contact_normal,
+		physics_material.bounce
+	)
 	var resolved_count := int(flipper.call(
 		&"resolve_rotation_sweep",
 		START_ROTATION,
@@ -189,11 +260,50 @@ func _test_swept_ball_resolution(flipper: PinballFlipper) -> void:
 	))
 
 	_expect(resolved_count == 1, \
-		"회전 구간 안의 공 한 개를 감지하고 분리해야 한다.")
-	_expect(not ball.global_position.is_equal_approx(BALL_CENTER), \
-		"감지한 공을 최종 플리퍼 진행 방향 앞으로 이동시켜야 한다.")
-	_expect(ball.linear_velocity.length() > EPSILON, \
-		"감지한 공에 플리퍼 표면 이동 속도를 전달해야 한다.")
+		"회전 구간 안의 공 한 개를 감지해야 한다.")
+	_expect(ball.global_position.is_equal_approx(BALL_CENTER), \
+		"회전 구간 충돌은 RigidBody2D의 Transform을 직접 이동시키면 안 된다. " \
+		+ "(expected=%s, actual=%s)" % [BALL_CENTER, ball.global_position])
+	await physics_frame
+	_expect_vector(ball.linear_velocity, expected_velocity, \
+		"회전 안전 충돌 임펄스는 다음 물리 적분에서 반사 속도로 변환되어야 한다.")
+
+	ball.queue_free()
+	await process_frame
+
+
+func _test_final_overlap_uses_sweep_impulse(
+	flipper: PinballFlipper
+) -> void:
+	var final_only_center := Vector2(70.0, 70.0)
+	var ball := RigidBody2D.new()
+	ball.name = "FinalContactBall"
+	ball.gravity_scale = 0.0
+	ball.position = final_only_center
+	ball.add_to_group(&"pinball_balls")
+
+	var ball_collision := CollisionShape2D.new()
+	ball_collision.name = "CollisionShape2D"
+	var circle := CircleShape2D.new()
+	circle.radius = 1.0
+	ball_collision.shape = circle
+	ball.add_child(ball_collision)
+	root.add_child(ball)
+
+	_expect(flipper.is_circle_overlapping_at_rotation(
+		final_only_center,
+		circle.radius,
+		END_ROTATION
+	), "최종 각도의 일반 물리 접촉을 검증할 공이 플리퍼와 겹쳐야 한다.")
+	var resolved_count := flipper.resolve_rotation_sweep(
+		START_ROTATION,
+		END_ROTATION,
+		1.0 / 60.0
+	)
+	_expect(resolved_count == 1, \
+		"큰 회전으로 최종 각도까지 겹친 공도 회전 안전 임펄스로 놓치지 않아야 한다.")
+	_expect(ball.global_position.is_equal_approx(final_only_center), \
+		"최종 각도 접촉도 회전 검사에서 Transform을 직접 이동시키면 안 된다.")
 
 	ball.queue_free()
 	await process_frame
@@ -332,6 +442,11 @@ func _find_property(object: Object, property_name: StringName) -> Dictionary:
 			return property
 
 	return {}
+
+
+func _expect_vector(actual: Vector2, expected: Vector2, message: String) -> void:
+	_expect(actual.is_equal_approx(expected), \
+		"%s (expected=%s, actual=%s)" % [message, expected, actual])
 
 
 func _expect(condition: bool, message: String) -> void:
