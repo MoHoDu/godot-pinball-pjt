@@ -11,6 +11,7 @@ signal state_changed(previous_state: int, current_state: int)
 var flipper: AnimatableBody2D
 var current_state: Variant
 var _states: Dictionary = {}
+var _target_rotation: float = 0.0
 
 
 func _init(p_flipper: AnimatableBody2D) -> void:
@@ -36,13 +37,13 @@ func request_activation() -> bool:
 	return true
 
 
-func physics_update(delta: float, rules: Resource) -> void:
+func physics_update(delta: float, rules: Resource) -> float:
 	if rules == null:
-		return
+		return _target_rotation
 
 	match current_state.type:
 		FlipperStateClass.Type.IDLE:
-			flipper.rotation = _get_initial_rotation()
+			_set_target_rotation(_get_initial_rotation())
 
 		FlipperStateClass.Type.ACTIVE:
 			_update_active(delta, float(rules.get(&"activation_time")))
@@ -56,23 +57,29 @@ func physics_update(delta: float, rules: Resource) -> void:
 		FlipperStateClass.Type.COOLDOWN:
 			_update_cooldown(delta)
 
+	return _target_rotation
+
+
+func get_target_rotation() -> float:
+	return _target_rotation
+
 
 func _update_active(delta: float, duration: float) -> void:
 	current_state.advance(delta)
 	var progress := _get_progress(current_state.elapsed_time, duration)
 	var eased_progress := 1.0 - pow(1.0 - progress, 4.0)
-	flipper.rotation = lerp_angle(
+	_set_target_rotation(lerp_angle(
 		_get_initial_rotation(),
 		_get_maximum_rotation(),
 		eased_progress
-	)
+	))
 
 	if progress >= 1.0:
 		_transition_to(FlipperStateClass.Type.HOLD)
 
 
 func _update_hold(delta: float, duration: float) -> void:
-	flipper.rotation = _get_maximum_rotation()
+	_set_target_rotation(_get_maximum_rotation())
 	current_state.advance(delta)
 
 	if _get_progress(current_state.elapsed_time, duration) >= 1.0:
@@ -83,18 +90,18 @@ func _update_returning(delta: float, duration: float) -> void:
 	current_state.advance(delta)
 	var progress := _get_progress(current_state.elapsed_time, duration)
 	var eased_progress := progress * progress * (3.0 - 2.0 * progress)
-	flipper.rotation = lerp_angle(
+	_set_target_rotation(lerp_angle(
 		_get_maximum_rotation(),
 		_get_initial_rotation(),
 		eased_progress
-	)
+	))
 
 	if progress >= 1.0:
 		_transition_to(FlipperStateClass.Type.COOLDOWN)
 
 
 func _update_cooldown(delta: float) -> void:
-	flipper.rotation = _get_initial_rotation()
+	_set_target_rotation(_get_initial_rotation())
 	current_state.advance(delta)
 	var cooldown_time := float(flipper.get(&"cooldown_time"))
 
@@ -113,9 +120,14 @@ func _transition_to(next_state_type: int) -> void:
 func _apply_state_rotation() -> void:
 	match current_state.type:
 		FlipperStateClass.Type.IDLE, FlipperStateClass.Type.COOLDOWN:
-			flipper.rotation = _get_initial_rotation()
+			_set_target_rotation(_get_initial_rotation())
 		FlipperStateClass.Type.HOLD, FlipperStateClass.Type.RETURNING:
-			flipper.rotation = _get_maximum_rotation()
+			_set_target_rotation(_get_maximum_rotation())
+
+
+func _set_target_rotation(value: float) -> void:
+	_target_rotation = value
+	flipper.rotation = value
 
 
 func _get_initial_rotation() -> float:

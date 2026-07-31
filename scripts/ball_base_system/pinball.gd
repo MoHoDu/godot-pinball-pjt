@@ -20,6 +20,7 @@ const STOPPED_SPEED_EPSILON: float = 0.001
 const MIN_COLLISION_RADIUS_RATIO: float = 0.25
 const MAX_COLLISION_RADIUS_RATIO: float = 1.5
 const DEFAULT_COLLISION_RADIUS_RATIO: float = 1.0
+const PINBALL_GROUP: StringName = &"pinball_balls"
 
 var _minimum_speed_suppressed_by_gravity: bool = false
 var _stats: PinballStats = PinballStats.new()
@@ -77,6 +78,11 @@ var collision_radius_ratio: float = DEFAULT_COLLISION_RADIUS_RATIO:
 	set(value):
 		collision_offset = value
 		refresh_ball_size()
+
+
+func _enter_tree() -> void:
+	if not Engine.is_editor_hint():
+		add_to_group(PINBALL_GROUP)
 
 
 func _ready() -> void:
@@ -349,7 +355,6 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 		state.linear_velocity,
 		state.total_gravity
 	)
-
 
 func _apply_impact(
 	state: PhysicsDirectBodyState2D,

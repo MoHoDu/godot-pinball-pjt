@@ -1,6 +1,6 @@
 extends SceneTree
 
-const BALL_SCENE_PATH := "res://resources/balls/base/pinball_ball.tscn"
+const BALL_SCENE_PATH := "res://resources/balls/base/base_ball.tscn"
 const EXPECTED_DEFAULT_DIAMETER := 64.0
 const EXPECTED_MIN_DIAMETER := 16.0
 const EXPECTED_MAX_DIAMETER := 256.0
@@ -166,8 +166,12 @@ func _expect_ball_geometry(ball: Pinball, expected_diameter: float) -> void:
 		* 2.0
 		* maxf(absf(collision.scale.x), absf(collision.scale.y))
 	)
-	_expect_float(effective_collision_diameter, expected_diameter, \
-		"유효 충돌 지름은 공 지름과 일치해야 한다.")
+	var expected_collision_diameter := (
+		expected_diameter
+		* ball.collision_radius_ratio
+	)
+	_expect_float(effective_collision_diameter, expected_collision_diameter, \
+		"유효 충돌 지름은 공 지름에 Collision Radius Ratio를 적용해야 한다.")
 
 	var rendered_size := sprite.texture.get_size() * sprite.scale.abs()
 	_expect_float(maxf(rendered_size.x, rendered_size.y), expected_diameter, \

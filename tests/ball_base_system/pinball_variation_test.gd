@@ -1,6 +1,6 @@
 extends SceneTree
 
-const BALL_SCENE_PATH := "res://resources/balls/base/pinball_ball.tscn"
+const BALL_SCENE_PATH := "res://resources/balls/base/base_ball.tscn"
 const STATS_SCRIPT_PATH := "res://scripts/ball_base_system/pinball_stats.gd"
 const EPSILON := 0.001
 

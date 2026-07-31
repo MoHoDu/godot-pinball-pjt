@@ -25,9 +25,10 @@ script = ExtResource("1_reset")
 ball_reset_position = Vector2(150, 0)
 
 [node name="PinballBall" parent="." unique_id=71153037 instance=ExtResource("2_ball")]
-position = Vector2(152, -2)
+position = Vector2(295, -2)
 physics_material_override = SubResource("PhysicsMaterial_gxni2")
 stats = SubResource("Resource_2klqs")
+ball_diameter = 128.0
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=2035507205]
 zoom = Vector2(0.4, 0.4)
@@ -36,16 +37,4 @@ zoom = Vector2(0.4, 0.4)
 script = ExtResource("1_tg1pa")
 
 [node name="FlipperController" parent="FlipperControllers" unique_id=1981825440 instance=ExtResource("1_yqxnb")]
-position = Vector2(0, 500)
-
-[node name="FlipperController2" parent="FlipperControllers" unique_id=570007250 instance=ExtResource("1_yqxnb")]
-position = Vector2(0, -500)
-rotation = 3.1415927
-
-[node name="FlipperController3" parent="FlipperControllers" unique_id=608740202 instance=ExtResource("1_yqxnb")]
-position = Vector2(-1000, 0)
-rotation = 1.5707964
-
-[node name="FlipperController4" parent="FlipperControllers" unique_id=188796075 instance=ExtResource("1_yqxnb")]
-position = Vector2(1000, 0)
-rotation = -1.5707964
+position = Vector2(12, 444)

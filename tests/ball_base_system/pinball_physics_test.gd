@@ -1,6 +1,6 @@
 extends SceneTree
 
-const BALL_SCENE_PATH := "res://resources/balls/base/pinball_ball.tscn"
+const BALL_SCENE_PATH := "res://resources/balls/base/base_ball.tscn"
 const EPSILON := 0.001
 
 const EXPECTED_DEFAULT_MASS := 1.0

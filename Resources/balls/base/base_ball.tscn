@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://bhh5qyc3llygr"]
 
 [ext_resource type="Script" uid="uid://dkphuydwnd8tu" path="res://scripts/ball_base_system/pinball.gd" id="1_83qyv"]
-[ext_resource type="Texture2D" uid="uid://cf4b3xik2kbth" path="res://resources/art/balls/industrial_steel_ball.png" id="1_ieye2"]
 [ext_resource type="Script" uid="uid://ce2wax7g2gio8" path="res://scripts/ball_base_system/pinball_stats.gd" id="2_stats"]
+[ext_resource type="Texture2D" uid="uid://cev1latte166t" path="res://resources/art/balls/ball.png" id="3_m0qcu"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_83qyv"]
 resource_local_to_scene = true
@@ -20,7 +20,7 @@ maximum_speed = 2500.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_udrbm"]
 resource_local_to_scene = true
-radius = 32.0
+radius = 28.8
 
 [node name="PinballBall" type="RigidBody2D" unique_id=1730574864]
 physics_material_override = SubResource("PhysicsMaterial_83qyv")
@@ -28,12 +28,13 @@ contact_monitor = true
 max_contacts_reported = 8
 script = ExtResource("1_83qyv")
 stats = SubResource("Resource_ball_stats")
+collision_radius_ratio = 0.9
 
 [node name="Visual" type="Node2D" parent="." unique_id=1870657790]
 
 [node name="Sprite2D" type="Sprite2D" parent="Visual" unique_id=1614424068]
-scale = Vector2(0.051036682, 0.051036682)
-texture = ExtResource("1_ieye2")
+scale = Vector2(0.057971016, 0.057971016)
+texture = ExtResource("3_m0qcu")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=383084480]
 shape = SubResource("CircleShape2D_udrbm")

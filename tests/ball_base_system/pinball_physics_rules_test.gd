@@ -1,8 +1,8 @@
 extends SceneTree
 
-const BALL_SCENE_PATH := "res://resources/balls/base/pinball_ball.tscn"
+const BALL_SCENE_PATH := "res://resources/balls/base/base_ball.tscn"
 const RULES_SCRIPT_PATH := "res://scripts/ball_base_system/pinball_physics_rules.gd"
-const RULES_RESOURCE_PATH := "res://@settings/balls/PinballPhysicsRules.tres"
+const RULES_RESOURCE_PATH := "res://settings/balls/PinballPhysicsRules.tres"
 const EPSILON := 0.001
 
 var _failures: Array[String] = []
@@ -44,7 +44,7 @@ func _test_rules_resource_contract(
 ) -> void:
 	_expect(rules_script != null, "PinballPhysicsRules 스크립트가 필요하다.")
 	_expect(default_rules != null, \
-		"@settings/balls/PinballPhysicsRules.tres 공용 설정이 필요하다.")
+		"settings/balls/PinballPhysicsRules.tres 공용 설정이 필요하다.")
 
 	if rules_script == null or default_rules == null:
 		return
@@ -80,7 +80,7 @@ func _test_default_rules_binding(ball: Pinball, default_rules: Resource) -> void
 		return
 
 	_expect(ball.get(&"physics_rules") == default_rules, \
-		"기본 공은 @settings의 공용 Rules 리소스를 참조해야 한다.")
+		"기본 공은 settings의 공용 Rules 리소스를 참조해야 한다.")
 
 	var rules_property := _find_property(ball, &"physics_rules")
 	var usage := int(rules_property.get("usage", 0))
