@@ -11,21 +11,17 @@ zoom = Vector2(0.5, 0.5)
 [node name="FlipperControllers" type="Node2D" parent="." unique_id=1024680401]
 script = ExtResource("1_tg1pa")
 
-[node name="Controller01" parent="FlipperControllers" unique_id=1981825440 instance=ExtResource("1_yqxnb")]
-position = Vector2(0, 400)
-scale = Vector2(0.2, 0.2)
+[node name="FlipperController" parent="FlipperControllers" unique_id=1981825440 instance=ExtResource("1_yqxnb")]
+position = Vector2(0, 500)
 
-[node name="Controller02" parent="FlipperControllers" unique_id=552166194 instance=ExtResource("1_yqxnb")]
-position = Vector2(0, -400)
+[node name="FlipperController2" parent="FlipperControllers" unique_id=570007250 instance=ExtResource("1_yqxnb")]
+position = Vector2(0, -500)
 rotation = 3.1415927
-scale = Vector2(0.2, 0.2)
 
-[node name="Controller03" parent="FlipperControllers" unique_id=670024506 instance=ExtResource("1_yqxnb")]
-position = Vector2(-400, 0)
+[node name="FlipperController3" parent="FlipperControllers" unique_id=608740202 instance=ExtResource("1_yqxnb")]
+position = Vector2(-1000, 0)
 rotation = 1.5707964
-scale = Vector2(0.2, 0.2)
 
-[node name="Controller04" parent="FlipperControllers" unique_id=1289061940 instance=ExtResource("1_yqxnb")]
-position = Vector2(400, 0)
+[node name="FlipperController4" parent="FlipperControllers" unique_id=188796075 instance=ExtResource("1_yqxnb")]
+position = Vector2(1000, 0)
 rotation = -1.5707964
-scale = Vector2(0.2, 0.2)
