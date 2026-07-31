@@ -489,6 +489,72 @@ func apply_contact_zone_speed_multiplier(
 	)
 
 
+## 구역 설정이 켜진 경우 좌우 플리퍼 부호를 반영해 반사 방향만 회전시킵니다.
+func apply_contact_zone_angle_correction(
+	reflected_velocity: Vector2,
+	contact_zone: ContactZone
+) -> Vector2:
+	if reflected_velocity.is_zero_approx() \
+		or not is_contact_zone_angle_correction_enabled(contact_zone):
+		return reflected_velocity
+
+	var correction_degrees := get_contact_zone_angle_correction_degrees(
+		contact_zone
+	)
+	var signed_correction := correction_degrees * get_flipper_angle_direction_sign()
+	return reflected_velocity.rotated(deg_to_rad(signed_correction))
+
+
+func is_contact_zone_angle_correction_enabled(
+	contact_zone: ContactZone
+) -> bool:
+	var property_name: StringName
+	match contact_zone:
+		ContactZone.A:
+			property_name = &"zone_a_angle_correction_enabled"
+		ContactZone.B:
+			property_name = &"zone_b_angle_correction_enabled"
+		ContactZone.C:
+			property_name = &"zone_c_angle_correction_enabled"
+		ContactZone.D:
+			property_name = &"zone_d_angle_correction_enabled"
+		_:
+			return false
+
+	return bool(parry_rules.get(property_name))
+
+
+func get_contact_zone_angle_correction_degrees(
+	contact_zone: ContactZone
+) -> float:
+	var property_name: StringName
+	match contact_zone:
+		ContactZone.A:
+			property_name = &"zone_a_angle_correction_degrees"
+		ContactZone.B:
+			property_name = &"zone_b_angle_correction_degrees"
+		ContactZone.C:
+			property_name = &"zone_c_angle_correction_degrees"
+		ContactZone.D:
+			property_name = &"zone_d_angle_correction_degrees"
+		_:
+			return 0.0
+
+	return float(parry_rules.get(property_name))
+
+
+## 피벗에서 충돌체가 뻗는 방향으로 좌우 플리퍼를 판별합니다.
+func get_flipper_angle_direction_sign() -> float:
+	var axis_data := _get_local_contact_zone_axis_data()
+	if axis_data.is_empty():
+		return 1.0
+
+	var axis: Vector2 = axis_data.get(&"axis")
+	if axis.x >= 0.0:
+		return float(parry_rules.get(&"left_angle_direction_sign"))
+	return float(parry_rules.get(&"right_angle_direction_sign"))
+
+
 func is_contact_zone_visualization_enabled() -> bool:
 	return bool(parry_rules.get(&"show_contact_zones_in_editor"))
 
@@ -693,6 +759,10 @@ func _resolve_swept_ball(
 		_get_ball_elasticity(ball)
 	)
 	resolved_velocity = apply_contact_zone_speed_multiplier(
+		resolved_velocity,
+		contact_zone
+	)
+	resolved_velocity = apply_contact_zone_angle_correction(
 		resolved_velocity,
 		contact_zone
 	)

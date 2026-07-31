@@ -49,6 +49,12 @@ func _run() -> void:
 	_test_default_rules_are_shared(left_flipper, right_flipper, default_rules)
 	_test_individual_speed_contract(left_flipper)
 	_test_shared_rules_live_update(left_flipper, right_flipper, default_rules)
+	_test_zone_angle_correction(
+		left_flipper,
+		right_flipper,
+		rules_script,
+		default_rules
+	)
 	_test_live_rules_application(left_flipper, rules_script)
 	_test_null_initialization_fallback(left_flipper, default_rules)
 	_test_visualization_segments(left_flipper)
@@ -150,6 +156,59 @@ func _test_shared_rules_live_update(
 	default_rules.set(&"zone_b_speed_multiplier", original_multiplier)
 
 
+func _test_zone_angle_correction(
+	left_flipper: PinballFlipper,
+	right_flipper: PinballFlipper,
+	rules_script: Script,
+	default_rules: Resource
+) -> void:
+	var rules := rules_script.new() as Resource
+	rules.set(&"zone_c_angle_correction_enabled", true)
+	rules.set(&"zone_c_angle_correction_degrees", 12.0)
+	rules.set(&"left_angle_direction_sign", -1.0)
+	rules.set(&"right_angle_direction_sign", 1.0)
+	left_flipper.call(&"set_parry_rules", rules)
+	right_flipper.call(&"set_parry_rules", rules)
+
+	var reflected_velocity := Vector2(300.0, -400.0)
+	var left_result: Vector2 = left_flipper.call(
+		&"apply_contact_zone_angle_correction",
+		reflected_velocity,
+		PinballFlipper.ContactZone.C
+	)
+	var right_result: Vector2 = right_flipper.call(
+		&"apply_contact_zone_angle_correction",
+		reflected_velocity,
+		PinballFlipper.ContactZone.C
+	)
+	_expect_vector(
+		left_result,
+		reflected_velocity.rotated(deg_to_rad(-12.0)),
+		"왼쪽 플리퍼는 공용 왼쪽 부호로 C 구역 각도를 보정해야 한다."
+	)
+	_expect_vector(
+		right_result,
+		reflected_velocity.rotated(deg_to_rad(12.0)),
+		"오른쪽 플리퍼는 공용 오른쪽 부호로 C 구역 각도를 보정해야 한다."
+	)
+	_expect_float(left_result.length(), reflected_velocity.length(), \
+		"각도 보정은 물리 반사 결과의 속력을 변경하면 안 된다.")
+
+	rules.set(&"zone_c_angle_correction_enabled", false)
+	_expect_vector(
+		left_flipper.call(
+			&"apply_contact_zone_angle_correction",
+			reflected_velocity,
+			PinballFlipper.ContactZone.C
+		) as Vector2,
+		reflected_velocity,
+		"각도 보정을 끈 구역은 물리 반사 방향을 변경하면 안 된다."
+	)
+
+	left_flipper.call(&"set_parry_rules", default_rules)
+	right_flipper.call(&"set_parry_rules", default_rules)
+
+
 func _test_live_rules_application(flipper: PinballFlipper, rules_script: Script) -> void:
 	var rules := rules_script.new() as Resource
 	rules.set(&"zone_a_end_percent", 20.0)
@@ -219,6 +278,11 @@ func _find_property(object: Object, property_name: StringName) -> Dictionary:
 
 func _expect_float(actual: float, expected: float, message: String) -> void:
 	_expect(absf(actual - expected) <= EPSILON, \
+		"%s (expected=%s, actual=%s)" % [message, expected, actual])
+
+
+func _expect_vector(actual: Vector2, expected: Vector2, message: String) -> void:
+	_expect(actual.is_equal_approx(expected), \
 		"%s (expected=%s, actual=%s)" % [message, expected, actual])
 
 

@@ -108,7 +108,7 @@ var zone_d_speed_multiplier: float:
 
 @export_group("구역 각도 보정")
 
-## 다음 TDD 단계에서 A 구역 반사 각도 계산의 적용 여부로 사용합니다.
+## A 구역 반사 각도 계산의 적용 여부
 @export var zone_a_angle_correction_enabled: bool:
 	get:
 		return _zone_a_angle_correction_enabled
@@ -116,7 +116,7 @@ var zone_d_speed_multiplier: float:
 		_zone_a_angle_correction_enabled = value
 		emit_changed()
 
-## 다음 TDD 단계에서 B 구역 반사 각도 계산의 적용 여부로 사용합니다.
+## B 구역 반사 각도 계산의 적용 여부
 @export var zone_b_angle_correction_enabled: bool:
 	get:
 		return _zone_b_angle_correction_enabled
@@ -124,7 +124,7 @@ var zone_d_speed_multiplier: float:
 		_zone_b_angle_correction_enabled = value
 		emit_changed()
 
-## 다음 TDD 단계에서 C 구역 반사 각도 계산의 적용 여부로 사용합니다.
+## C 구역 반사 각도 계산의 적용 여부
 @export var zone_c_angle_correction_enabled: bool:
 	get:
 		return _zone_c_angle_correction_enabled
@@ -132,7 +132,7 @@ var zone_d_speed_multiplier: float:
 		_zone_c_angle_correction_enabled = value
 		emit_changed()
 
-## 다음 TDD 단계에서 D 구역 반사 각도 계산의 적용 여부로 사용합니다.
+## D 구역 반사 각도 계산의 적용 여부
 @export var zone_d_angle_correction_enabled: bool:
 	get:
 		return _zone_d_angle_correction_enabled

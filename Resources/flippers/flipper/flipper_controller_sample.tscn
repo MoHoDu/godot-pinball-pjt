@@ -8,12 +8,16 @@
 script = ExtResource("1_bev62")
 
 [node name="LeftFlipper" parent="." unique_id=1915782774 instance=ExtResource("2_palup")]
-position = Vector2(-600, 0)
+position = Vector2(-601.00006, 0)
 rotation = 0.7853982
 _source_collision_position = Vector2(997.4349, -41.300575)
 flipper_length = 700.0
 initial_angle_degrees = 45.0
 maximum_angle_degrees = -45.0
+contact_zone_a_speed_multiplier = 3.0
+contact_zone_b_speed_multiplier = 3.0
+contact_zone_c_speed_multiplier = 3.0
+contact_zone_d_speed_multiplier = 3.0
 
 [node name="RightFlipper" parent="." unique_id=2137998633 instance=ExtResource("3_4jh4a")]
 position = Vector2(600, 0)

@@ -33,6 +33,7 @@ func _run() -> void:
 		&"get_contact_zone",
 		&"get_contact_zone_speed_multiplier",
 		&"apply_contact_zone_speed_multiplier",
+		&"apply_contact_zone_angle_correction",
 	]
 
 	for method_name: StringName in required_methods:
@@ -347,6 +348,18 @@ func _test_swept_ball_resolution(flipper: PinballFlipper) -> void:
 		"실제 공의 전역 충돌 중심으로도 중간 회전 충돌을 찾을 수 있어야 한다.")
 	var contact_point: Vector2 = direct_hit.get(&"point", Vector2.ZERO)
 	var contact_normal: Vector2 = direct_hit.get(&"normal", Vector2.ZERO)
+	var original_parry_rules := flipper.parry_rules
+	var angle_rules := FlipperParryRules.new()
+	for zone_name: String in ["a", "b", "c", "d"]:
+		angle_rules.set(
+			StringName("zone_%s_angle_correction_enabled" % zone_name),
+			true
+		)
+		angle_rules.set(
+			StringName("zone_%s_angle_correction_degrees" % zone_name),
+			10.0
+		)
+	flipper.set_parry_rules(angle_rules)
 	var angular_velocity := (END_ROTATION - START_ROTATION) / (1.0 / 60.0)
 	var radial_vector := contact_point - flipper.global_position
 	var surface_velocity := Vector2(-radial_vector.y, radial_vector.x) \
@@ -358,6 +371,10 @@ func _test_swept_ball_resolution(flipper: PinballFlipper) -> void:
 		physics_material.bounce
 	)
 	expected_velocity = flipper.apply_contact_zone_speed_multiplier(
+		expected_velocity,
+		int(direct_hit.get(&"contact_zone", PinballFlipper.ContactZone.B))
+	)
+	expected_velocity = flipper.apply_contact_zone_angle_correction(
 		expected_velocity,
 		int(direct_hit.get(&"contact_zone", PinballFlipper.ContactZone.B))
 	)
@@ -375,8 +392,9 @@ func _test_swept_ball_resolution(flipper: PinballFlipper) -> void:
 		+ "(expected=%s, actual=%s)" % [BALL_CENTER, ball.global_position])
 	await physics_frame
 	_expect_vector(ball.linear_velocity, expected_velocity, \
-		"회전 안전 충돌 임펄스는 다음 물리 적분에서 반사 속도로 변환되어야 한다.")
+		"회전 안전 충돌은 속도 배율과 각도 보정까지 반영한 임펄스를 적용해야 한다.")
 
+	flipper.set_parry_rules(original_parry_rules)
 	ball.queue_free()
 	await process_frame
 
