@@ -1,3 +1,35 @@
 [gd_scene format=3 uid="uid://m6uretebr28i"]
 
+[ext_resource type="PackedScene" uid="uid://bhh5qyc3llygr" path="res://resources/balls/base/pinball_ball.tscn" id="1_7vcf2"]
+[ext_resource type="Texture2D" uid="uid://d355bdkm1nv2g" path="res://resources/ui/icon.svg" id="2_7vcf2"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_udrbm"]
+size = Vector2(127.799995, 127.50001)
+
 [node name="TestBallPhysics" type="Node2D" unique_id=745725862]
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=2052428608]
+
+[node name="PinballBall" parent="." unique_id=1730574864 instance=ExtResource("1_7vcf2")]
+contact_monitor = true
+max_contacts_reported = 8
+
+[node name="Wall" type="StaticBody2D" parent="." unique_id=1344426755]
+position = Vector2(0, 250)
+
+[node name="Sprite2D" type="Sprite2D" parent="Wall" unique_id=611328941]
+texture = ExtResource("2_7vcf2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Wall" unique_id=1726102261]
+position = Vector2(-0.30000877, 0.1499939)
+scale = Vector2(0.9999998, 0.9999998)
+shape = SubResource("RectangleShape2D_udrbm")
+
+[node name="Wall2" type="StaticBody2D" parent="." unique_id=1823931143]
+position = Vector2(130, 250)
+
+[node name="Sprite2D" type="Sprite2D" parent="Wall2" unique_id=1158123362]
+texture = ExtResource("2_7vcf2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Wall2" unique_id=1878967023]
+shape = SubResource("RectangleShape2D_udrbm")

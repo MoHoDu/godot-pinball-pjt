@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://bhh5qyc3llygr"]
+
+[ext_resource type="Script" uid="uid://dkphuydwnd8tu" path="res://scripts/ball_base_system/pinball.gd" id="1_83qyv"]
+[ext_resource type="Texture2D" uid="uid://cf4b3xik2kbth" path="res://resources/art/balls/industrial_steel_ball.png" id="1_ieye2"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_udrbm"]
+radius = 32.0
+
+[node name="PinballBall" type="RigidBody2D" unique_id=1730574864]
+script = ExtResource("1_83qyv")
+
+[node name="Visual" type="Node2D" parent="." unique_id=1870657790]
+
+[node name="Sprite2D" type="Sprite2D" parent="Visual" unique_id=1614424068]
+texture = ExtResource("1_ieye2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=383084480]
+shape = SubResource("CircleShape2D_udrbm")
