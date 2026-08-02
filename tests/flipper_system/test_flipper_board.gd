@@ -10,7 +10,7 @@ signal ball_launched
 @export_node_path("RigidBody2D")
 var ball_path: NodePath = ^"PinballBall"
 
-@export var launcher_position := Vector2(720.0, 340.0)
+@export var launcher_position := Vector2(0.0, 400.0)
 @export var launcher_direction := Vector2(-0.65, -1.0)
 
 
