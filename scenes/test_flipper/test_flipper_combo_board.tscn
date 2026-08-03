@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://bnqe3gt0ocgvt"]
+[gd_scene load_steps=13 format=3 uid="uid://bnqe3gt0ocgvt"]
 
 [ext_resource type="PackedScene" uid="uid://bcwvt3i4iw5ej" path="res://scenes/test_flipper/test_flipper_board.tscn" id="1_board"]
 [ext_resource type="Script" uid="uid://c4utac2vfccwu" path="res://tests/combo_system/test_flipper_combo_board.gd" id="2_board_script"]
@@ -29,6 +29,14 @@ gravity_scale = 0.35
 initial_speed = 940.0
 minimum_speed = 320.0
 maximum_speed = 1540.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape_drain_horizontal"]
+resource_local_to_scene = true
+size = Vector2(2600, 160)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape_drain_vertical"]
+resource_local_to_scene = true
+size = Vector2(160, 1600)
 
 [node name="TestFlipperComboBoard" unique_id=754513727 instance=ExtResource("1_board")]
 script = ExtResource("2_board_script")
@@ -83,6 +91,25 @@ ball_path = NodePath("../PinballBall")
 [node name="ManualHitSource" type="Node" parent="." index="11" unique_id=756394642]
 script = ExtResource("4_hit_source")
 source_id = &"manual"
+
+[node name="BallDrainArea" type="Area2D" parent="." index="12"]
+collision_layer = 0
+
+[node name="TopDrain" type="CollisionShape2D" parent="BallDrainArea"]
+position = Vector2(0, -800)
+shape = SubResource("RectangleShape_drain_horizontal")
+
+[node name="BottomDrain" type="CollisionShape2D" parent="BallDrainArea"]
+position = Vector2(0, 800)
+shape = SubResource("RectangleShape_drain_horizontal")
+
+[node name="LeftDrain" type="CollisionShape2D" parent="BallDrainArea"]
+position = Vector2(-1280, 0)
+shape = SubResource("RectangleShape_drain_vertical")
+
+[node name="RightDrain" type="CollisionShape2D" parent="BallDrainArea"]
+position = Vector2(1280, 0)
+shape = SubResource("RectangleShape_drain_vertical")
 
 [node name="ComboHud" parent="HUD" parent_id_path=PackedInt32Array(2130486477) index="2" unique_id=1301318280 instance=ExtResource("5_combo_hud")]
 anchors_preset = 1

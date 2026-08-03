@@ -77,7 +77,7 @@ func _test_input_actions() -> void:
 		&"ball_launch_aim_right": [KEY_RIGHT, KEY_D],
 		&"ball_launch_power_up": [KEY_UP, KEY_W],
 		&"ball_launch_power_down": [KEY_DOWN, KEY_S],
-		&"ball_launch_confirm": [KEY_ENTER, KEY_KP_ENTER],
+		&"ball_launch_confirm": [KEY_SPACE],
 	}
 
 	for action: StringName in expected_keys:

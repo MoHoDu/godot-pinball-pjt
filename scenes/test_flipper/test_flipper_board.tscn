@@ -262,4 +262,4 @@ offset_right = 580.0
 offset_bottom = 150.0
 theme_override_colors/font_color = Color(1, 0.83, 0.32, 1)
 theme_override_font_sizes/font_size = 16
-text = "Enter로 공을 발사하세요"
+text = "Space로 공을 발사하세요"

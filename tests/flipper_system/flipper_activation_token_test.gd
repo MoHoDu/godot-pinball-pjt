@@ -18,6 +18,7 @@ func _init() -> void:
 
 func _run() -> void:
 	await _test_controller_shares_one_activation_token()
+	await _test_controller_input_lock_requires_release()
 	await _test_direct_activation_issues_independent_tokens()
 	_finish()
 
@@ -41,6 +42,32 @@ func _test_controller_shares_one_activation_token() -> void:
 		_expect(first_token == second_token, \
 			"같이 작동한 두 플리퍼는 동일한 작동 토큰을 공유해야 한다.")
 
+	controller.queue_free()
+	await process_frame
+
+
+func _test_controller_input_lock_requires_release() -> void:
+	var packed_scene := load(CONTROLLER_SCENE_PATH) as PackedScene
+	var controller := packed_scene.instantiate() as FlipperController
+	root.add_child(controller)
+	await process_frame
+	controller.set_input_enabled(false)
+	Input.action_press(&"flipper")
+	controller._physics_process(0.0)
+	_expect(controller.flippers[0].get_current_activation_token() == 0,
+		"Locked flipper input must ignore the shared Space press.")
+
+	controller.set_input_enabled(true)
+	controller._physics_process(0.0)
+	_expect(controller.flippers[0].get_current_activation_token() == 0,
+		"The Space press that launched the ball must not also activate a flipper.")
+	Input.action_release(&"flipper")
+	controller._physics_process(0.0)
+	Input.action_press(&"flipper")
+	controller._physics_process(0.0)
+	_expect(controller.flippers[0].get_current_activation_token() > 0,
+		"Flipper input must activate normally after Space is released and pressed again.")
+	Input.action_release(&"flipper")
 	controller.queue_free()
 	await process_frame
 

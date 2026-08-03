@@ -51,4 +51,4 @@ text = "이 공 1개 · 전체 1개 남음"
 [node name="GuideLabel" type="Label" parent="Panel/Margin/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "A/D 또는 ←/→: 선택    Enter: 조준 시작"
+text = "A/D 또는 ←/→: 선택    Space: 조준 시작"

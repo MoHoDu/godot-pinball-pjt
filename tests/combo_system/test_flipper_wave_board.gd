@@ -11,6 +11,9 @@ extends "res://tests/combo_system/test_flipper_combo_board.gd"
 	"HUD/BallSelectionHud"
 ) as BallSelectionHud
 @onready var wave_manager: WaveManager = get_node("WaveManager") as WaveManager
+@onready var flipper_selector: FlipperSelector = get_node_or_null(
+	"FlipperSelector"
+) as FlipperSelector
 
 
 @export var wave_stage_settings: ComboStageSettings
@@ -30,6 +33,8 @@ func _ready() -> void:
 	ball = null
 
 	wave_manager.active_ball_changed.connect(_on_active_ball_changed)
+	wave_manager.state_changed.connect(_on_wave_manager_state_changed)
+	_set_flipper_input_enabled(false)
 	if wave_stage_settings == null:
 		_wave_settings.stage_id = &"main_demo_stage"
 		_wave_settings.stage_base_score = 100
@@ -66,3 +71,15 @@ func _handle_ball_drained(source_name: String) -> void:
 
 func _on_active_ball_changed(next_ball: Pinball) -> void:
 	ball = next_ball
+
+
+func _on_wave_manager_state_changed(
+	_previous_state: WaveManager.State,
+	current_state: WaveManager.State
+) -> void:
+	_set_flipper_input_enabled(current_state == WaveManager.State.IN_PLAY)
+
+
+func _set_flipper_input_enabled(is_enabled: bool) -> void:
+	if is_instance_valid(flipper_selector):
+		flipper_selector.set_input_enabled(is_enabled)

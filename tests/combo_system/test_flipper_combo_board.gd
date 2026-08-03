@@ -1,7 +1,6 @@
 extends "res://tests/flipper_system/test_flipper_board.gd"
 
 
-const BOARD_LIMITS := Vector2(980.0, 560.0)
 const MAX_EVENT_LINES := 6
 
 
@@ -23,6 +22,10 @@ const MAX_EVENT_LINES := 6
 @onready var event_log_label: Label = get_node_or_null(
 	"HUD/ComboInspector/Panel/Margin/VBox/EventLogLabel"
 ) as Label
+@export_node_path("Area2D") var ball_drain_area_path: NodePath = ^"BallDrainArea"
+@onready var ball_drain_area: Area2D = get_node_or_null(
+	ball_drain_area_path
+) as Area2D
 
 
 var _event_lines: Array[String] = []
@@ -32,21 +35,20 @@ var _drain_pending := false
 
 func _ready() -> void:
 	super()
+	if is_instance_valid(ball_drain_area) \
+			and not ball_drain_area.body_entered.is_connected(
+				_on_ball_drain_area_body_entered
+			):
+		ball_drain_area.body_entered.connect(_on_ball_drain_area_body_entered)
 	_setup_combo_system()
-	_append_event("READY · Enter로 공을 발사하세요")
+	_append_event("READY · Space로 공을 발사하세요")
 
 
-func _physics_process(_delta: float) -> void:
-	if _drain_pending or not is_instance_valid(ball) or ball.freeze:
+func _on_ball_drain_area_body_entered(body: Node2D) -> void:
+	if _drain_pending or body != ball or ball.freeze:
 		return
-
-	var ball_position := ball.global_position
-	if absf(ball_position.x) <= BOARD_LIMITS.x \
-		and absf(ball_position.y) <= BOARD_LIMITS.y:
-		return
-
 	_drain_pending = true
-	call_deferred(&"_handle_ball_drained", "보드 이탈")
+	call_deferred(&"_handle_ball_drained", "커스텀 낙하 영역")
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -264,7 +266,7 @@ func _refresh_hud() -> void:
 	if is_instance_valid(guide_label):
 		guide_label.text = (
 			"[공·보드·플리퍼·콤보 통합 테스트]\n"
-			+ "WASD/방향키: 조준·플리퍼 선택   Enter: 발사   Space: 플리퍼\n"
+			+ "WASD/방향키: 조준·플리퍼 선택   Space: 선택·발사·플리퍼\n"
 			+ "R: 공 리셋/낙하 정산   오른쪽 패널: 콤보 검증 조작"
 		)
 	if is_instance_valid(combo_state_label) and is_instance_valid(combo_system):
