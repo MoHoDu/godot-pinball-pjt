@@ -198,11 +198,22 @@ func _test_launch_uses_initial_speed(ball: Pinball) -> void:
 	_expect_vector(ball.linear_velocity.normalized(), Vector2(0.6, 0.8), \
 		"launch()는 입력 방향을 정규화해 사용해야 한다.")
 
+	var overridden_launch := bool(ball.call(&"launch", Vector2.LEFT, 1200.0))
+	_expect(overridden_launch, "런처가 선택한 속력으로 공을 발사할 수 있어야 한다.")
+	_expect_float(ball.linear_velocity.length(), 1200.0, \
+		"launch()는 유효한 요청 속력을 공 물리 범위 안에서 사용해야 한다.")
+	_expect_vector(ball.linear_velocity.normalized(), Vector2.LEFT, \
+		"속력 요청을 추가해도 입력 방향을 보존해야 한다.")
+
 	var velocity_before_invalid_launch := ball.linear_velocity
 	var invalid_launch := bool(ball.call(&"launch", Vector2.ZERO))
 	_expect(not invalid_launch, "방향이 0인 발사는 거부해야 한다.")
 	_expect_vector(ball.linear_velocity, velocity_before_invalid_launch, \
 		"잘못된 발사는 기존 속도를 변경하지 않아야 한다.")
+	var invalid_speed_launch := bool(ball.call(&"launch", Vector2.RIGHT, -0.5))
+	_expect(not invalid_speed_launch, "-1 외의 음수 요청 속력은 거부해야 한다.")
+	_expect_vector(ball.linear_velocity, velocity_before_invalid_launch, \
+		"잘못된 요청 속력은 기존 속도를 변경하지 않아야 한다.")
 
 	ball.linear_velocity = Vector2.ZERO
 

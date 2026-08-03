@@ -55,6 +55,7 @@ const MIN_SWEEP_INTERVAL: float = 1.0
 const MAX_SWEEP_INTERVAL: float = 64.0
 const DEFAULT_SWEEP_INTERVAL: float = 8.0
 const MAX_ROTATION_SWEEP_STEPS: int = 128
+const MOTION_SWEEP_REFINEMENT_STEPS: int = 10
 const ACTIVE_START_ELAPSED_EPSILON: float = 0.0001
 const PIVOT_COLLISION_RADIUS_RATIO: float = 0.1
 const CONTACT_ZONE_COLORS: Array[Color] = [
@@ -74,6 +75,8 @@ var _parry_rules: Resource = DEFAULT_PARRY_RULES
 var _state_machine: RefCounted
 var _parry_evaluator: RefCounted = FlipperParryEvaluatorClass.new()
 var _collision_guard: RefCounted = FlipperCollisionGuardClass.new()
+static var _last_issued_activation_token: int = 0
+var _active_activation_token: int = 0
 var _is_selected: bool = false
 @export_storage var _source_collision_polygon := PackedVector2Array()
 @export_storage var _source_collision_position := Vector2.ZERO
@@ -237,7 +240,12 @@ func _physics_process(delta: float) -> void:
 			previous_state_elapsed
 		)
 	else:
-		resolve_pivot_motion_sweep(delta, previous_state_type)
+		resolve_body_motion_sweep(
+			previous_rotation,
+			target_rotation,
+			delta,
+			previous_state_type
+		)
 
 
 ## 설정된 길이를 시각 이미지와 충돌 폴리곤에 같은 비율로 적용합니다.
@@ -747,40 +755,27 @@ func calculate_physical_sweep_velocity(
 	return surface_velocity + reflected_relative_velocity
 
 
-## 비작동 상태의 고정 회전축을 공이 한 프레임 안에 통과하는지 예측합니다.
-## 원 표면의 실제 법선으로 물리 반사 임펄스만 적용하며 위치는 이동시키지 않습니다.
-func resolve_pivot_motion_sweep(
+## 대기·유지·복귀 중인 플리퍼의 몸체와 피벗을 공의 다음 이동 위치까지 연속 검사합니다.
+## 복귀 상태에서는 플리퍼의 역회전도 같은 샘플 진행도에 반영합니다.
+func resolve_body_motion_sweep(
+	previous_rotation: float,
+	target_rotation: float,
 	delta: float,
 	state_type: int = -1
 ) -> int:
 	if not is_inside_tree() or delta <= 0.0:
 		return 0
 
-	var pivot_collision := get_node_or_null(
-		"PivotCollisionShape2D"
-	) as CollisionShape2D
-	if pivot_collision == null \
-		or pivot_collision.disabled \
-		or not pivot_collision.shape is CircleShape2D:
-		return 0
-
-	var pivot_circle := pivot_collision.shape as CircleShape2D
-	var pivot_scale := pivot_collision.global_scale.abs()
-	var pivot_radius := pivot_circle.radius * maxf(
-		pivot_scale.x,
-		pivot_scale.y
-	)
-	var pivot_center := pivot_collision.global_position
 	var collision_state_type := (
 		get_current_state_type()
 		if state_type < 0
 		else state_type
 	)
 	var resolved_count := 0
-
 	for candidate: Node in get_tree().get_nodes_in_group(PINBALL_GROUP):
 		if not candidate is RigidBody2D:
 			continue
+
 		var ball := candidate as RigidBody2D
 		if bool(_collision_guard.call(
 			&"was_resolved_this_physics_frame",
@@ -796,30 +791,53 @@ func resolve_pivot_motion_sweep(
 
 		var ball_circle := ball_collision.shape as CircleShape2D
 		var ball_scale := ball_collision.global_scale.abs()
-		var ball_radius := ball_circle.radius * maxf(ball_scale.x, ball_scale.y)
-		var hit_normal := _find_moving_circle_pivot_normal(
-			ball_collision.global_position,
-			ball.linear_velocity * delta,
-			pivot_center,
-			pivot_radius + ball_radius
+		var ball_radius := ball_circle.radius * maxf(
+			ball_scale.x,
+			ball_scale.y
 		)
-		if hit_normal.is_zero_approx():
+		var hit := find_body_motion_sweep_hit(
+			ball_collision.global_position,
+			ball_radius,
+			ball.linear_velocity * delta,
+			previous_rotation,
+			target_rotation,
+			true
+		)
+		if hit.is_empty():
 			continue
 
-		var reflected_velocity := calculate_physical_sweep_velocity(
+		var hit_point: Vector2 = hit.get(
+			&"point",
+			ball_collision.global_position
+		)
+		var hit_normal: Vector2 = hit.get(&"normal", Vector2.UP)
+		var angular_velocity := _get_short_rotation_delta(
+			previous_rotation,
+			target_rotation
+		) / delta
+		var radial_vector := hit_point - global_position
+		var surface_velocity := Vector2(
+			-radial_vector.y,
+			radial_vector.x
+		) * angular_velocity
+		var impact_normal := _get_approaching_sweep_normal(
 			ball.linear_velocity,
-			Vector2.ZERO,
-			hit_normal,
+			surface_velocity,
+			hit_normal
+		)
+		var resolved_velocity := calculate_physical_sweep_velocity(
+			ball.linear_velocity,
+			surface_velocity,
+			impact_normal,
 			_get_ball_elasticity(ball)
 		)
 		if collision_state_type == FlipperStateClass.Type.RETURNING:
-			reflected_velocity *= float(
+			resolved_velocity *= float(
 				state_rules.get(&"return_reflection_multiplier")
 			)
-		var velocity_change := reflected_velocity - ball.linear_velocity
+		var velocity_change := resolved_velocity - ball.linear_velocity
 		if velocity_change.is_zero_approx():
 			continue
-
 		_collision_guard.call(&"mark_resolved", ball)
 		ball.sleeping = false
 		ball.apply_central_impulse(velocity_change * ball.mass)
@@ -828,37 +846,180 @@ func resolve_pivot_motion_sweep(
 	return resolved_count
 
 
-func _find_moving_circle_pivot_normal(
+## 공의 선형 이동과 플리퍼 회전을 같은 진행도로 샘플링해 최초 겹침을 찾습니다.
+## 폴리곤과 원형 피벗을 하나의 플리퍼 충돌 영역으로 취급합니다.
+func find_body_motion_sweep_hit(
 	start_center: Vector2,
+	circle_radius: float,
 	motion: Vector2,
-	pivot_center: Vector2,
-	expanded_radius: float
-) -> Vector2:
-	if motion.is_zero_approx() or expanded_radius <= 0.0:
-		return Vector2.ZERO
+	previous_rotation: float,
+	target_rotation: float,
+	include_initial_overlap: bool = false
+) -> Dictionary:
+	var angle_delta := _get_short_rotation_delta(
+		previous_rotation,
+		target_rotation
+	)
+	var combined_distance := motion.length() \
+		+ absf(angle_delta) * _get_collision_sweep_radius()
+	var step_count := clampi(
+		int(ceil(combined_distance / rotation_sweep_interval)),
+		1,
+		MAX_ROTATION_SWEEP_STEPS
+	)
+	if include_initial_overlap and _is_body_sweep_overlapping(
+		start_center,
+		circle_radius,
+		previous_rotation
+	):
+		return _build_body_sweep_hit(
+			start_center,
+			circle_radius,
+			motion,
+			angle_delta,
+			previous_rotation,
+			0.0
+		)
 
-	var start_relative := start_center - pivot_center
-	var radius_squared := expanded_radius * expanded_radius
-	# 이미 겹친 접촉은 PhysicsServer2D의 일반 접촉 해결에 맡깁니다.
-	if start_relative.length_squared() <= radius_squared:
-		return Vector2.ZERO
+	var previous_progress := 0.0
+	for step_index in range(1, step_count + 1):
+		var progress := float(step_index) / float(step_count)
+		var sample_center := start_center + motion * progress
+		var sample_rotation := previous_rotation + angle_delta * progress
+		if not _is_body_sweep_overlapping(
+			sample_center,
+			circle_radius,
+			sample_rotation
+		):
+			previous_progress = progress
+			continue
 
-	var a := motion.length_squared()
-	var b := 2.0 * start_relative.dot(motion)
-	var c := start_relative.length_squared() - radius_squared
-	var discriminant := b * b - 4.0 * a * c
-	if discriminant < 0.0:
-		return Vector2.ZERO
+		var lower_progress := previous_progress
+		var upper_progress := progress
+		for _refinement in MOTION_SWEEP_REFINEMENT_STEPS:
+			var middle_progress := (lower_progress + upper_progress) * 0.5
+			var middle_center := start_center + motion * middle_progress
+			var middle_rotation := previous_rotation \
+				+ angle_delta * middle_progress
+			if _is_body_sweep_overlapping(
+				middle_center,
+				circle_radius,
+				middle_rotation
+			):
+				upper_progress = middle_progress
+			else:
+				lower_progress = middle_progress
 
-	var hit_progress := (-b - sqrt(discriminant)) / (2.0 * a)
-	if hit_progress < 0.0 or hit_progress > 1.0:
-		return Vector2.ZERO
+		return _build_body_sweep_hit(
+			start_center + motion * upper_progress,
+			circle_radius,
+			motion,
+			angle_delta,
+			previous_rotation + angle_delta * upper_progress,
+			upper_progress
+		)
 
-	var hit_center := start_center + motion * hit_progress
-	var normal := (hit_center - pivot_center).normalized()
-	if normal.is_zero_approx() or motion.dot(normal) >= 0.0:
-		return Vector2.ZERO
-	return normal
+	return {}
+
+
+func _is_body_sweep_overlapping(
+	circle_center: Vector2,
+	circle_radius: float,
+	test_rotation: float
+) -> bool:
+	var polygon := _get_world_collision_polygon(test_rotation)
+	if _is_circle_overlapping_polygon(circle_center, circle_radius, polygon):
+		return true
+	return not _build_pivot_overlap_hit(
+		circle_center,
+		circle_radius,
+		0.0,
+		Vector2.ZERO
+	).is_empty()
+
+
+func _build_body_sweep_hit(
+	circle_center: Vector2,
+	circle_radius: float,
+	motion: Vector2,
+	angle_delta: float,
+	sample_rotation: float,
+	progress: float
+) -> Dictionary:
+	var polygon := _get_world_collision_polygon(sample_rotation)
+	var polygon_hit: Dictionary = {}
+	if _is_circle_overlapping_polygon(circle_center, circle_radius, polygon):
+		polygon_hit = _build_rotation_sweep_hit(
+			circle_center,
+			sample_rotation,
+			progress
+		)
+		polygon_hit[&"shape"] = &"polygon"
+	var pivot_hit := _build_pivot_overlap_hit(
+		circle_center,
+		circle_radius,
+		progress,
+		motion
+	)
+	if polygon_hit.is_empty():
+		return pivot_hit
+	if pivot_hit.is_empty():
+		return polygon_hit
+
+	var polygon_point: Vector2 = polygon_hit.get(&"point", circle_center)
+	var polygon_normal: Vector2 = polygon_hit.get(&"normal", Vector2.UP)
+	var polygon_radial := polygon_point - global_position
+	var polygon_surface_motion := Vector2(
+		-polygon_radial.y,
+		polygon_radial.x
+	) * angle_delta
+	var polygon_approach := (motion - polygon_surface_motion).dot(
+		polygon_normal
+	)
+	var pivot_normal: Vector2 = pivot_hit.get(&"normal", Vector2.UP)
+	var pivot_approach := motion.dot(pivot_normal)
+	return polygon_hit if polygon_approach <= pivot_approach else pivot_hit
+
+
+func _build_pivot_overlap_hit(
+	circle_center: Vector2,
+	circle_radius: float,
+	progress: float,
+	motion: Vector2
+) -> Dictionary:
+	var pivot_collision := get_node_or_null(
+		"PivotCollisionShape2D"
+	) as CollisionShape2D
+	if pivot_collision == null \
+		or pivot_collision.disabled \
+		or not pivot_collision.shape is CircleShape2D:
+		return {}
+
+	var pivot_circle := pivot_collision.shape as CircleShape2D
+	var pivot_scale := pivot_collision.global_scale.abs()
+	var pivot_radius := pivot_circle.radius * maxf(
+		pivot_scale.x,
+		pivot_scale.y
+	)
+	var pivot_center := pivot_collision.global_position
+	var center_offset := circle_center - pivot_center
+	if center_offset.length_squared() \
+		> pow(pivot_radius + circle_radius, 2.0):
+		return {}
+
+	var normal := center_offset.normalized()
+	if normal.is_zero_approx() and not motion.is_zero_approx():
+		normal = -motion.normalized()
+	if normal.is_zero_approx():
+		normal = Vector2.UP
+	return {
+		&"point": pivot_center + normal * pivot_radius,
+		&"normal": normal,
+		&"progress": progress,
+		&"contact_percent": 0.0,
+		&"contact_zone": ContactZone.A,
+		&"shape": &"pivot",
+	}
 
 
 ## 시작 자세 밖에 있지만 회전 중간 또는 끝 자세에서 건너뛴 공을 찾아 임펄스를 줍니다.
@@ -935,6 +1096,14 @@ func resolve_rotation_sweep(
 				1.0
 			)
 		var parry_grade := get_parry_grade(impact_elapsed_time)
+		var parry_was_reported := (
+			_active_activation_token > 0
+			and bool(_collision_guard.call(
+				&"was_parry_reported_for_activation",
+				ball,
+				_active_activation_token
+			))
+		)
 		var impulse_applied := _resolve_swept_ball(
 			ball,
 			hit_point,
@@ -945,7 +1114,15 @@ func resolve_rotation_sweep(
 			delta,
 			parry_grade
 		)
-		if impulse_applied and parry_grade != FlipperParryEvaluatorClass.Grade.NONE:
+		if impulse_applied \
+			and parry_grade != FlipperParryEvaluatorClass.Grade.NONE \
+			and not parry_was_reported:
+			if _active_activation_token > 0:
+				_collision_guard.call(
+					&"mark_parry_reported",
+					ball,
+					_active_activation_token
+				)
 			parry_resolved.emit(
 				ball,
 				parry_grade,
@@ -1259,9 +1436,30 @@ func _on_parry_rules_changed() -> void:
 		update_configuration_warnings()
 
 
-func request_activation() -> bool:
+## 컨트롤러가 전달한 토큰을 같은 플리퍼 묶음이 공유합니다.
+## 직접 작동할 때는 이 플리퍼만의 새 토큰을 발급합니다.
+func request_activation(shared_activation_token: int = 0) -> bool:
 	_ensure_state_machine()
-	return _state_machine.request_activation()
+	if not _state_machine.request_activation():
+		return false
+
+	_active_activation_token = (
+		shared_activation_token
+		if shared_activation_token > 0
+		else issue_activation_token()
+	)
+	return true
+
+
+static func issue_activation_token() -> int:
+	_last_issued_activation_token += 1
+	if _last_issued_activation_token <= 0:
+		_last_issued_activation_token = 1
+	return _last_issued_activation_token
+
+
+func get_current_activation_token() -> int:
+	return _active_activation_token
 
 
 func get_current_state_type() -> int:
