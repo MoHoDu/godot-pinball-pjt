@@ -1,6 +1,6 @@
 extends SceneTree
 
-const BALL_SCENE_PATH := "res://resources/balls/base/base_ball.tscn"
+const BALL_SCENE_PATH := "res://Resources/balls/base/base_ball.tscn"
 const GAZE_RULES_PATH := "res://settings/balls/BallGazeRules.tres"
 const ANGLE_EPSILON := 0.02
 const FLOAT_EPSILON := 0.001
