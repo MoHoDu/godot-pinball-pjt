@@ -1,8 +1,6 @@
-[gd_resource type="Resource" script_class="PinballLaunchRules" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="PinballLaunchRules" format=3 uid="uid://djhc3yth3yxha"]
 
-[ext_resource type="Script" path="res://scripts/ball_base_system/pinball_launch_rules.gd" id="1_rules"]
+[ext_resource type="Script" uid="uid://cr1ykaa1dhsf6" path="res://scripts/ball_base_system/pinball_launch_rules.gd" id="1_rules"]
 
 [resource]
 script = ExtResource("1_rules")
-angle_adjustment_speed = 90.0
-power_adjustment_speed = 600.0
