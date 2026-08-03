@@ -75,6 +75,8 @@ var _parry_rules: Resource = DEFAULT_PARRY_RULES
 var _state_machine: RefCounted
 var _parry_evaluator: RefCounted = FlipperParryEvaluatorClass.new()
 var _collision_guard: RefCounted = FlipperCollisionGuardClass.new()
+static var _last_issued_activation_token: int = 0
+var _active_activation_token: int = 0
 var _is_selected: bool = false
 @export_storage var _source_collision_polygon := PackedVector2Array()
 @export_storage var _source_collision_position := Vector2.ZERO
@@ -1094,6 +1096,14 @@ func resolve_rotation_sweep(
 				1.0
 			)
 		var parry_grade := get_parry_grade(impact_elapsed_time)
+		var parry_was_reported := (
+			_active_activation_token > 0
+			and bool(_collision_guard.call(
+				&"was_parry_reported_for_activation",
+				ball,
+				_active_activation_token
+			))
+		)
 		var impulse_applied := _resolve_swept_ball(
 			ball,
 			hit_point,
@@ -1104,7 +1114,15 @@ func resolve_rotation_sweep(
 			delta,
 			parry_grade
 		)
-		if impulse_applied and parry_grade != FlipperParryEvaluatorClass.Grade.NONE:
+		if impulse_applied \
+			and parry_grade != FlipperParryEvaluatorClass.Grade.NONE \
+			and not parry_was_reported:
+			if _active_activation_token > 0:
+				_collision_guard.call(
+					&"mark_parry_reported",
+					ball,
+					_active_activation_token
+				)
 			parry_resolved.emit(
 				ball,
 				parry_grade,
@@ -1418,9 +1436,30 @@ func _on_parry_rules_changed() -> void:
 		update_configuration_warnings()
 
 
-func request_activation() -> bool:
+## 컨트롤러가 전달한 토큰을 같은 플리퍼 묶음이 공유합니다.
+## 직접 작동할 때는 이 플리퍼만의 새 토큰을 발급합니다.
+func request_activation(shared_activation_token: int = 0) -> bool:
 	_ensure_state_machine()
-	return _state_machine.request_activation()
+	if not _state_machine.request_activation():
+		return false
+
+	_active_activation_token = (
+		shared_activation_token
+		if shared_activation_token > 0
+		else issue_activation_token()
+	)
+	return true
+
+
+static func issue_activation_token() -> int:
+	_last_issued_activation_token += 1
+	if _last_issued_activation_token <= 0:
+		_last_issued_activation_token = 1
+	return _last_issued_activation_token
+
+
+func get_current_activation_token() -> int:
+	return _active_activation_token
 
 
 func get_current_state_type() -> int:

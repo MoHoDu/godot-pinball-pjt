@@ -45,9 +45,10 @@ func _physics_process(_delta: float) -> void:
 
 
 func play_all_flippers() -> void:
+	var activation_token := PinballFlipper.issue_activation_token()
 	for flipper: PinballFlipper in flippers:
 		if is_instance_valid(flipper):
-			flipper.request_activation()
+			flipper.request_activation(activation_token)
 
 
 func is_any_flipper_running() -> bool:
