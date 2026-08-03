@@ -1,0 +1,6 @@
+[gd_resource type="Resource" script_class="PinballLaunchRules" format=3 uid="uid://djhc3yth3yxha"]
+
+[ext_resource type="Script" uid="uid://cr1ykaa1dhsf6" path="res://scripts/ball_base_system/pinball_launch_rules.gd" id="1_rules"]
+
+[resource]
+script = ExtResource("1_rules")

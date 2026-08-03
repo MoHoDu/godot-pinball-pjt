@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="BallGlowOutlineRules" format=3]
+
+[ext_resource type="Script" path="res://scripts/ball_base_system/vfx/ball_glow_outline_rules.gd" id="1_glow"]
+
+[resource]
+script = ExtResource("1_glow")
+radius_ratio = 1.818
+peak_alpha = 0.55
+band_count = 5
+falloff_exp = 0.85
+plume_amount = 0.08
+plume_lobes = 5
+wisp_amount = 0.45
+wisp_lobes = 8
+wisp_radial = 1
+inner_bloom = 0.3
+gaze_stretch = 0.1
+drift_speed = 0.45
+core_alpha = 0.8
+core_width_ratio = 0.062
+wobble_amount = 0.02
+flash_alpha_scale = 1.3
+flash_hold_time = 0.04
+flash_fade_time = 0.18
+normal_grade_strength = 0.45
+outer_darken = 0.58
+normal_core_color = Color(0.890, 0.651, 0.247, 0.8)
+normal_mist_color = Color(0.588, 0.416, 0.157, 1.0)
+combo_core_color = Color(0.890, 0.651, 0.247, 0.92)
+combo_mist_color = Color(0.588, 0.416, 0.157, 1.0)
+flash_core_color = Color(0.941, 0.878, 0.765, 1.0)
+flash_mist_color = Color(0.310, 0.651, 0.573, 1.0)
+curse_core_color = Color(0.690, 0.839, 0.361, 0.7)
+curse_mist_color = Color(0.541, 0.388, 0.788, 1.0)
+danger_core_color = Color(1.0, 0.588, 0.667, 0.8)
+danger_mist_color = Color(0.839, 0.243, 0.376, 1.0)

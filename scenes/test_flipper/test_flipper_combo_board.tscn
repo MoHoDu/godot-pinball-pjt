@@ -1,0 +1,151 @@
+[gd_scene format=3 uid="uid://bnqe3gt0ocgvt"]
+
+[ext_resource type="PackedScene" uid="uid://bcwvt3i4iw5ej" path="res://scenes/test_flipper/test_flipper_board.tscn" id="1_board"]
+[ext_resource type="Script" uid="uid://c4utac2vfccwu" path="res://tests/combo_system/test_flipper_combo_board.gd" id="2_board_script"]
+[ext_resource type="Script" uid="uid://dirv1p0s1sce1" path="res://scripts/combo_system/combo_system.gd" id="3_combo_system"]
+[ext_resource type="Script" uid="uid://bfbmlm1j8k4kb" path="res://scripts/combo_system/combo_hit_source.gd" id="4_hit_source"]
+[ext_resource type="Script" uid="uid://ce2wax7g2gio8" path="res://scripts/ball_base_system/pinball_stats.gd" id="4_oxyqn"]
+[ext_resource type="PackedScene" path="res://scenes/combo_system/combo_hud.tscn" id="5_combo_hud"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_oxyqn"]
+resource_local_to_scene = true
+radius = 64.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_6qpqr"]
+resource_local_to_scene = true
+radius = 68.0
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_domyk"]
+resource_local_to_scene = true
+bounce = 0.9
+
+[sub_resource type="Resource" id="Resource_4nqrj"]
+resource_local_to_scene = true
+script = ExtResource("4_oxyqn")
+mass = 1.0
+elasticity = 0.9
+gravity_scale = 0.35
+initial_speed = 940.0
+minimum_speed = 320.0
+maximum_speed = 1540.0
+
+[node name="TestFlipperComboBoard" unique_id=754513727 instance=ExtResource("1_board")]
+script = ExtResource("2_board_script")
+
+[node name="CollisionShape2D" parent="Bumpers/BumperCenter" parent_id_path=PackedInt32Array(1050007271) index="0" unique_id=637540678]
+shape = SubResource("CircleShape2D_oxyqn")
+
+[node name="CollisionShape2D" parent="Bumpers/BumperCenter/SpeedDetectionArea" parent_id_path=PackedInt32Array(1641841581) index="0" unique_id=342771053]
+shape = SubResource("CircleShape2D_6qpqr")
+
+[node name="ComboHitSource" type="Node" parent="Bumpers/BumperCenter" parent_id_path=PackedInt32Array(1050007271) index="2" unique_id=502111555]
+script = ExtResource("4_hit_source")
+source_id = &"center_bumper"
+
+[node name="CollisionShape2D" parent="Bumpers/BumperLeft" parent_id_path=PackedInt32Array(1034082624) index="0" unique_id=1416908033]
+shape = SubResource("CircleShape2D_oxyqn")
+
+[node name="CollisionShape2D" parent="Bumpers/BumperLeft/SpeedDetectionArea" parent_id_path=PackedInt32Array(746818323) index="0" unique_id=1122045982]
+shape = SubResource("CircleShape2D_6qpqr")
+
+[node name="ComboHitSource" type="Node" parent="Bumpers/BumperLeft" parent_id_path=PackedInt32Array(1034082624) index="2" unique_id=1489445546]
+script = ExtResource("4_hit_source")
+source_id = &"left_bumper"
+
+[node name="CollisionShape2D" parent="Bumpers/BumperRight" parent_id_path=PackedInt32Array(965244053) index="0" unique_id=1571238968]
+shape = SubResource("CircleShape2D_oxyqn")
+
+[node name="CollisionShape2D" parent="Bumpers/BumperRight/SpeedDetectionArea" parent_id_path=PackedInt32Array(344627012) index="0" unique_id=143861581]
+shape = SubResource("CircleShape2D_6qpqr")
+
+[node name="ComboHitSource" type="Node" parent="Bumpers/BumperRight" parent_id_path=PackedInt32Array(965244053) index="2" unique_id=136386367]
+script = ExtResource("4_hit_source")
+source_id = &"right_bumper"
+
+[node name="PinballBall" parent="." index="6" unique_id=1525149773]
+physics_material_override = SubResource("PhysicsMaterial_domyk")
+stats = SubResource("Resource_4nqrj")
+
+[node name="PinballLauncher" parent="." index="7"]
+rotation = -1.5707964
+minimum_launch_angle_degrees = -45.0
+maximum_launch_angle_degrees = 45.0
+
+[node name="ComboSystem" type="Node" parent="." index="9" unique_id=206264385]
+script = ExtResource("3_combo_system")
+
+[node name="ManualHitSource" type="Node" parent="." index="10" unique_id=756394642]
+script = ExtResource("4_hit_source")
+source_id = &"manual"
+
+[node name="ComboHud" parent="HUD" parent_id_path=PackedInt32Array(2130486477) index="2" unique_id=1301318280 instance=ExtResource("5_combo_hud")]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -278.0
+offset_top = 16.0
+offset_right = -18.0
+offset_bottom = 236.0
+grow_horizontal = 0
+
+[node name="ComboInspector" type="Control" parent="HUD" parent_id_path=PackedInt32Array(2130486477) index="3" unique_id=1079446609]
+layout_mode = 3
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -358.0
+offset_top = 252.0
+offset_right = -18.0
+offset_bottom = 566.0
+grow_horizontal = 0
+mouse_filter = 2
+
+[node name="Panel" type="PanelContainer" parent="HUD/ComboInspector" index="0" unique_id=600643955]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="HUD/ComboInspector/Panel" index="0" unique_id=1863344016]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 12
+
+[node name="VBox" type="VBoxContainer" parent="HUD/ComboInspector/Panel/Margin" index="0" unique_id=1695653943]
+layout_mode = 2
+theme_override_constants/separation = 7
+
+[node name="TitleLabel" type="Label" parent="HUD/ComboInspector/Panel/Margin/VBox" index="0" unique_id=391212167]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.83, 0.32, 1)
+theme_override_font_sizes/font_size = 18
+text = "콤보 검증 패널"
+
+[node name="ControlsLabel" type="Label" parent="HUD/ComboInspector/Panel/Margin/VBox" index="1" unique_id=1586821513]
+layout_mode = 2
+text = "범퍼 충돌: 실제 유효 타격
+C: 유효 타격 +1   T: 다음 티어 경계
+P: 타이머 정지/재개   F: 수동 정산
+X: 콤보·점수 초기화"
+
+[node name="StateLabel" type="Label" parent="HUD/ComboInspector/Panel/Margin/VBox" index="2" unique_id=2029189152]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.92, 1, 1)
+text = "현재 x0 · 가중치 0.0 · 남은 시간 0.00s
+티어 경계: Normal 1 / Super 11 / Hyper 21 / Ultra 36"
+
+[node name="Separator" type="HSeparator" parent="HUD/ComboInspector/Panel/Margin/VBox" index="3" unique_id=269612657]
+layout_mode = 2
+
+[node name="EventLogLabel" type="Label" parent="HUD/ComboInspector/Panel/Margin/VBox" index="4" unique_id=1187136944]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.82, 0.88, 0.92, 1)
+theme_override_font_sizes/font_size = 13
+text = "최근 이벤트"
+vertical_alignment = 1

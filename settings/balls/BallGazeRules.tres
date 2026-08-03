@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="BallGazeRules" format=3]
+
+[ext_resource type="Script" path="res://scripts/ball_base_system/vfx/ball_gaze_rules.gd" id="1_gaze"]
+
+[resource]
+script = ExtResource("1_gaze")
+gaze_speed_threshold = 120.0
+gaze_sharpness = 18.0
+instant_on_spawn = true

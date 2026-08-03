@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://by2n116isxska"]
 
-[ext_resource type="PackedScene" uid="uid://bhh5qyc3llygr" path="res://resources/balls/base/base_ball.tscn" id="1_k6rsm"]
+[ext_resource type="PackedScene" uid="uid://bhh5qyc3llygr" path="res://Resources/balls/base/base_ball.tscn" id="1_k6rsm"]
 [ext_resource type="Script" uid="uid://ce2wax7g2gio8" path="res://scripts/ball_base_system/pinball_stats.gd" id="2_swrvk"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_cutqo"]

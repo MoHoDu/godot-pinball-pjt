@@ -2,6 +2,36 @@ extends SceneTree
 
 
 const BOARD_SCENE_PATH := "res://scenes/test_flipper/test_flipper_board.tscn"
+const BOARD_TEXTURE_PATH := "res://Resources/Art/board/octagonal_dark_wood_board.png"
+const OUTSIDE_BACKGROUND_TEXTURE_PATH := (
+	"res://Resources/Art/backgrounds/cursed_circus_outside_background.png"
+)
+const WALL_BODY_TEXTURE_PATH := (
+	"res://Resources/Art/walls/cursed_toy_frame_v1/wall_body_256x40_cursed_toy_v1.png"
+)
+const WALL_LEFT_CAP_TEXTURE_PATH := (
+	"res://Resources/Art/walls/cursed_toy_frame_v1/wall_end_cap_left_64x40_cursed_toy_v1.png"
+)
+const WALL_RIGHT_CAP_TEXTURE_PATH := (
+	"res://Resources/Art/walls/cursed_toy_frame_v1/wall_end_cap_right_64x40_cursed_toy_v1.png"
+)
+const EXPECTED_BOARD_SIZE := Vector2(2240.0, 1260.0)
+const EXPECTED_OUTSIDE_BACKGROUND_SOURCE_SIZE := Vector2(1672.0, 941.0)
+const EXPECTED_WALL_BODY_REGION := Rect2(0.0, 0.0, 692.0, 40.0)
+const EXPECTED_CONTROLLER_POSITIONS := {
+	&"BottomController": Vector2(0.0, 550.0),
+	&"TopController": Vector2(0.0, -550.0),
+	&"LeftController": Vector2(-1040.0, 0.0),
+	&"RightController": Vector2(1040.0, 0.0),
+}
+const EXPECTED_LAUNCHER_POSITION := Vector2(0.0, 400.0)
+const EXPECTED_WALL_TRANSFORMS := {
+	&"TopRightDiagonal": [Vector2(735.0, -490.0), 0.348772],
+	&"BottomRightDiagonal": [Vector2(735.0, 490.0), 2.7928207],
+	&"BottomLeftDiagonal": [Vector2(-735.0, 490.0), -2.7928207],
+	&"TopLeftDiagonal": [Vector2(-735.0, -490.0), -0.348772],
+}
+const EXPECTED_WALL_LENGTH := 819.329
 const EXPECTED_LAUNCH_SPEED := 940.0
 
 
@@ -24,7 +54,8 @@ func _run() -> void:
 	await process_frame
 
 	_test_board_structure(board)
-	_test_wall_extensions(board)
+	_test_board_art(board)
+	_test_octagonal_walls(board)
 	await _test_reset_and_launcher(board)
 	await _test_bumper_speed_only(board)
 
@@ -38,13 +69,26 @@ func _test_board_structure(board: Node) -> void:
 	var walls := board.get_node_or_null("Walls")
 	var bumpers := board.get_node_or_null("Bumpers")
 	var ball := board.get_node_or_null("PinballBall") as RigidBody2D
+	var launcher := board.get_node_or_null("PinballLauncher") as PinballLauncher
 
 	_expect(selector != null, "보드에 4방향 플리퍼 선택 관리자가 필요하다.")
-	_expect(walls != null and walls.get_child_count() == 8, \
-		"각 플리퍼 구역을 비우도록 외벽을 8개 구간으로 나눠야 한다.")
+	_expect(walls != null and walls.get_child_count() == 4, \
+		"팔각형 보드의 네 대각 변에 고정벽 4개가 있어야 한다.")
 	_expect(bumpers != null and bumpers.get_child_count() == 3, \
 		"자유 반사 시험을 위한 단순 범퍼 3개가 필요하다.")
 	_expect(ball != null, "보드에 테스트 공이 필요하다.")
+	_expect(launcher != null, "보드별 설정을 가진 PinballLauncher가 필요하다.")
+	if launcher != null:
+		_expect(launcher.global_position.is_equal_approx(EXPECTED_LAUNCHER_POSITION), \
+			"팔각형 보드 발사대는 하단 중앙에 있어야 한다.")
+		_expect(is_equal_approx(launcher.default_launch_speed, 940.0), \
+			"사각 보드 기본 발사 속력은 Inspector에서 940px/s여야 한다.")
+		_expect(launcher.get_effective_speed_range().is_equal_approx(
+			Vector2(320.0, 1540.0)
+		), "사각 보드 발사 파워 범위는 Inspector에서 320~1540px/s여야 한다.")
+		_expect(is_equal_approx(launcher.minimum_launch_angle_degrees, -30.0) \
+			and is_equal_approx(launcher.maximum_launch_angle_degrees, 30.0), \
+			"사각 보드 발사 각도 범위는 중앙 방향 기준 ±30°여야 한다.")
 
 	if selector != null:
 		var controllers: Array[Node] = []
@@ -54,6 +98,15 @@ func _test_board_structure(board: Node) -> void:
 		_expect(controllers.size() == 4, \
 			"사각형 보드는 상·하·좌·우 플리퍼 그룹 4개를 가져야 한다.")
 		for controller: Node in controllers:
+			var expected_controller_position: Vector2 = (
+				EXPECTED_CONTROLLER_POSITIONS[controller.name]
+			)
+			_expect(
+				(controller as Node2D).position.is_equal_approx(
+					expected_controller_position
+				),
+				"%s 플리퍼 그룹이 팔각형 평면 변 중앙에 있어야 한다." % controller.name
+			)
 			var flipper_count := 0
 			var pivot_positions: Array[float] = []
 			for child: Node in controller.get_children():
@@ -70,36 +123,126 @@ func _test_board_structure(board: Node) -> void:
 			if pivot_positions.size() == 2:
 				_expect(is_equal_approx(
 					pivot_positions[1] - pivot_positions[0],
-					460.0
-				), "두 회전축은 화면상 중앙 갭 44px이 보이는 간격이어야 한다.")
+					700.0
+				), "두 외곽 회전축은 328 + 44 + 328 = 700px 간격이어야 한다.")
 
 
-func _test_wall_extensions(board: Node) -> void:
-	var horizontal_wall := board.get_node_or_null(
-		"Walls/TopLeftWall/CollisionShape2D"
-	) as CollisionShape2D
-	var vertical_wall := board.get_node_or_null(
-		"Walls/LeftTopWall/CollisionShape2D"
-	) as CollisionShape2D
-	_expect(
-		horizontal_wall != null
-		and horizontal_wall.shape is RectangleShape2D
-		and is_equal_approx(
-			(horizontal_wall.shape as RectangleShape2D).size.x,
-			640.0
-		),
-		"가로 외벽은 플리퍼 바깥 축 옆까지 640px로 연장되어야 한다."
-	)
-	_expect(
-		vertical_wall != null
-		and vertical_wall.shape is RectangleShape2D
-		and is_equal_approx(
-			(vertical_wall.shape as RectangleShape2D).size.y,
-			220.0
-		),
-		"세로 외벽은 플리퍼 바깥 축 옆까지 220px로 연장되어야 한다."
-	)
+func _test_board_art(board: Node) -> void:
+	var outside_background := board.get_node_or_null("OutsideBackground") as Sprite2D
+	_expect(outside_background != null, "보드 뒤에 외부 배경 Sprite2D가 필요하다.")
+	if outside_background != null:
+		_expect(outside_background.texture != null, "외부 배경 텍스처가 필요하다.")
+		if outside_background.texture != null:
+			_expect(
+				outside_background.texture.resource_path == OUTSIDE_BACKGROUND_TEXTURE_PATH,
+				"외부 배경은 지정된 저주받은 서커스 PNG를 사용해야 한다."
+			)
+			_expect(
+				outside_background.texture.get_size().is_equal_approx(
+					EXPECTED_OUTSIDE_BACKGROUND_SOURCE_SIZE
+				),
+				"외부 배경 원본은 1672x941px이어야 한다."
+			)
+			var outside_rendered_size := (
+				outside_background.texture.get_size()
+				* outside_background.scale.abs()
+			)
+			_expect(
+				outside_rendered_size.distance_to(EXPECTED_BOARD_SIZE) < 0.01,
+				"외부 배경은 2240x1260 보드 캔버스를 빈틈없이 채워야 한다."
+			)
+		_expect(outside_background.position.is_zero_approx(), \
+			"외부 배경 중심은 보드 중심과 일치해야 한다.")
+		_expect(outside_background.z_index < -10, \
+			"외부 배경은 보드 베이스보다 뒤에 그려져야 한다.")
 
+	var background := board.get_node_or_null("BoardBackground") as Sprite2D
+	_expect(background != null, "보드 배경은 이미지용 Sprite2D여야 한다.")
+	if background == null:
+		return
+
+	_expect(background.texture != null, "보드 배경 텍스처가 필요하다.")
+	if background.texture == null:
+		return
+
+	_expect(background.texture.resource_path == BOARD_TEXTURE_PATH, \
+		"보드 배경은 지정된 어두운 목재 텍스처를 사용해야 한다.")
+	var rendered_size := background.texture.get_size() * background.scale.abs()
+	_expect(rendered_size.is_equal_approx(EXPECTED_BOARD_SIZE), \
+		"보드 배경은 팔각형 기준 월드 크기 2240x1260이어야 한다.")
+
+
+func _test_octagonal_walls(board: Node) -> void:
+	var walls := board.get_node_or_null("Walls")
+	if walls == null:
+		return
+
+	for wall_name: StringName in EXPECTED_WALL_TRANSFORMS:
+		var wall := walls.get_node_or_null(NodePath(String(wall_name))) as StaticBody2D
+		_expect(wall != null, "%s 고정벽이 필요하다." % wall_name)
+		if wall == null:
+			continue
+
+		var expected_transform: Array = EXPECTED_WALL_TRANSFORMS[wall_name]
+		var expected_position: Vector2 = expected_transform[0]
+		var expected_rotation: float = float(expected_transform[1])
+		_expect(wall.position.is_equal_approx(expected_position), \
+			"%s 고정벽 중심이 보드 대각 변 중앙과 일치해야 한다." % wall_name)
+		_expect(is_equal_approx(wall.rotation, expected_rotation), \
+			"%s 고정벽 각도가 보드 대각 변과 일치해야 한다." % wall_name)
+
+		var collision := wall.get_node_or_null("CollisionShape2D") as CollisionShape2D
+		_expect(
+			collision != null
+			and collision.shape is RectangleShape2D
+			and is_equal_approx(
+				(collision.shape as RectangleShape2D).size.x,
+				EXPECTED_WALL_LENGTH
+			)
+			and is_equal_approx(
+				(collision.shape as RectangleShape2D).size.y,
+				24.0
+			),
+			"%s 고정벽은 819.33x24px 충돌체여야 한다." % wall_name
+		)
+		if collision != null:
+			_expect(collision.position.is_equal_approx(Vector2(0.0, 12.0)), \
+				"%s 충돌 두께는 보드 외곽에서 안쪽으로만 들어와야 한다." % wall_name)
+
+		var visual := wall.get_node_or_null("Visual") as Node2D
+		_expect(visual != null, "%s 고정벽은 모듈형 아트 씬을 사용해야 한다." % wall_name)
+		if visual == null:
+			continue
+		_expect(visual.position.is_zero_approx(), \
+			"%s 고정벽 아트 중심은 도면 경계 중심과 일치해야 한다." % wall_name)
+
+		var body := visual.get_node_or_null("Body") as Sprite2D
+		var left_cap := visual.get_node_or_null("LeftCap") as Sprite2D
+		var right_cap := visual.get_node_or_null("RightCap") as Sprite2D
+		_expect(body != null, "%s 고정벽에 반복 몸통이 필요하다." % wall_name)
+		_expect(left_cap != null and right_cap != null, \
+			"%s 고정벽에 좌우 끝 캡이 필요하다." % wall_name)
+		if body == null or left_cap == null or right_cap == null:
+			continue
+
+		_expect(body.texture != null and body.texture.resource_path == WALL_BODY_TEXTURE_PATH, \
+			"%s 고정벽 몸통은 256x40px 마스터 타일을 사용해야 한다." % wall_name)
+		_expect(body.region_enabled and body.region_rect == EXPECTED_WALL_BODY_REGION, \
+			"%s 고정벽 몸통은 좌우 캡 사이 692x40px를 반복해야 한다." % wall_name)
+		_expect(body.texture_repeat == CanvasItem.TEXTURE_REPEAT_ENABLED, \
+			"%s 고정벽 몸통 텍스처 반복이 활성화되어야 한다." % wall_name)
+		_expect(
+			left_cap.texture != null
+			and left_cap.texture.resource_path == WALL_LEFT_CAP_TEXTURE_PATH
+			and left_cap.position.is_equal_approx(Vector2(-378.0, 0.0)),
+			"%s 왼쪽 캡은 벽의 -410~-346px 구간에 있어야 한다." % wall_name
+		)
+		_expect(
+			right_cap.texture != null
+			and right_cap.texture.resource_path == WALL_RIGHT_CAP_TEXTURE_PATH
+			and right_cap.position.is_equal_approx(Vector2(378.0, 0.0)),
+			"%s 오른쪽 캡은 벽의 346~410px 구간에 있어야 한다." % wall_name
+		)
 
 func _test_reset_and_launcher(board: Node) -> void:
 	var ball := board.get_node_or_null("PinballBall") as RigidBody2D
@@ -112,8 +255,11 @@ func _test_reset_and_launcher(board: Node) -> void:
 	await process_frame
 	await process_frame
 
-	var launcher_position: Vector2 = board.get(&"launcher_position")
-	_expect(ball.global_position.is_equal_approx(launcher_position), \
+	var launcher := board.get_node_or_null("PinballLauncher") as PinballLauncher
+	_expect(launcher != null, "리셋과 발사를 담당할 PinballLauncher가 필요하다.")
+	if launcher == null:
+		return
+	_expect(ball.global_position.is_equal_approx(launcher.global_position), \
 		"R 리셋은 공을 발사 위치로 되돌려야 한다.")
 	_expect(ball.linear_velocity.is_zero_approx(), \
 		"R 리셋은 공의 속도를 제거해야 한다.")
@@ -125,7 +271,20 @@ func _test_reset_and_launcher(board: Node) -> void:
 		EXPECTED_LAUNCH_SPEED
 	), "발사 속력은 기획 기준 940px/s이어야 한다.")
 	_expect(ball.linear_velocity.x < 0.0 and ball.linear_velocity.y < 0.0, \
-		"오른쪽 아래 발사대는 공을 보드의 왼쪽 위 방향으로 보내야 한다.")
+		"하단 중앙 발사대는 공을 보드의 왼쪽 위 방향으로 보내야 한다.")
+
+	# reset_ball()의 비동기 정리보다 입력 액션 발사가 먼저 와도 공을 다시 얼리지 않아야 한다.
+	board.call(&"reset_ball")
+	var confirm_event := InputEventAction.new()
+	confirm_event.action = &"ball_launch_confirm"
+	confirm_event.pressed = true
+	launcher._input(confirm_event)
+	await process_frame
+	await physics_frame
+	_expect(not ball.freeze, \
+		"발사 확정 액션 직후 비동기 리셋 정리가 발사한 공을 다시 고정하면 안 된다.")
+	_expect(absf(ball.linear_velocity.length() - EXPECTED_LAUNCH_SPEED) < 10.0, \
+		"발사 확정 InputMap 액션도 중력 오차 범위에서 기본 속력을 적용해야 한다.")
 
 
 func _test_bumper_speed_only(board: Node) -> void:

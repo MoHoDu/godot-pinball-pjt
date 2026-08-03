@@ -2,9 +2,9 @@ extends SceneTree
 
 
 const LEFT_FLIPPER_SCENE_PATH := \
-	"res://resources/flippers/sub_flipper/normal_flipper_left.tscn"
+	"res://Resources/flippers/sub_flipper/normal_flipper_left.tscn"
 const RIGHT_FLIPPER_SCENE_PATH := \
-	"res://resources/flippers/sub_flipper/normal_flipper_right.tscn"
+	"res://Resources/flippers/sub_flipper/normal_flipper_right.tscn"
 const RULES_SCRIPT_PATH := \
 	"res://scripts/flipper_system/parrying/flipper_parry_rules.gd"
 const RULES_RESOURCE_PATH := "res://settings/flippers/FlipperParryRules.tres"
