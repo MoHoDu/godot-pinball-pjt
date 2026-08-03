@@ -1,0 +1,59 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/wave_hud/life_hud.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://Resources/ui/wave_hud_runtime_dark/life/panel_shadow.png" id="2_shadow"]
+[ext_resource type="Texture2D" path="res://Resources/ui/wave_hud_runtime_dark/life/panel_fill.png" id="3_fill"]
+[ext_resource type="Texture2D" path="res://Resources/ui/wave_hud_runtime_dark/life/panel_border.png" id="4_border"]
+
+[node name="LifeHud" type="Control"]
+custom_minimum_size = Vector2(364, 90)
+offset_right = 364.0
+offset_bottom = 90.0
+mouse_filter = 2
+script = ExtResource("1_script")
+
+[node name="PanelShadow" type="NinePatchRect" parent="."]
+unique_name_in_owner = true
+offset_left = -4.0
+offset_top = -4.0
+offset_right = 368.0
+offset_bottom = 94.0
+texture = ExtResource("2_shadow")
+patch_margin_left = 28
+patch_margin_top = 28
+patch_margin_right = 28
+patch_margin_bottom = 28
+mouse_filter = 2
+
+[node name="PanelFill" type="NinePatchRect" parent="."]
+unique_name_in_owner = true
+offset_right = 364.0
+offset_bottom = 90.0
+texture = ExtResource("3_fill")
+patch_margin_left = 24
+patch_margin_top = 24
+patch_margin_right = 24
+patch_margin_bottom = 24
+mouse_filter = 2
+
+[node name="PanelBorder" type="NinePatchRect" parent="."]
+unique_name_in_owner = true
+offset_left = -1.5
+offset_top = -1.5
+offset_right = 365.5
+offset_bottom = 91.5
+texture = ExtResource("4_border")
+patch_margin_left = 26
+patch_margin_top = 26
+patch_margin_right = 26
+patch_margin_bottom = 26
+mouse_filter = 2
+
+[node name="Slots" type="Control" parent="."]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
