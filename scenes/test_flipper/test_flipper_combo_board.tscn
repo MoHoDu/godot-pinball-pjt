@@ -7,19 +7,19 @@
 [ext_resource type="Script" uid="uid://ce2wax7g2gio8" path="res://scripts/ball_base_system/pinball_stats.gd" id="4_oxyqn"]
 [ext_resource type="PackedScene" path="res://scenes/combo_system/combo_hud.tscn" id="5_combo_hud"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_6qpqr"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_oxyqn"]
 resource_local_to_scene = true
 radius = 64.0
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_domyk"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_6qpqr"]
 resource_local_to_scene = true
 radius = 68.0
 
-[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_4nqrj"]
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_domyk"]
 resource_local_to_scene = true
 bounce = 0.9
 
-[sub_resource type="Resource" id="Resource_lgysr"]
+[sub_resource type="Resource" id="Resource_4nqrj"]
 resource_local_to_scene = true
 script = ExtResource("4_oxyqn")
 mass = 1.0
@@ -33,38 +33,50 @@ maximum_speed = 1540.0
 script = ExtResource("2_board_script")
 
 [node name="CollisionShape2D" parent="Bumpers/BumperCenter" parent_id_path=PackedInt32Array(1050007271) index="0" unique_id=637540678]
-shape = SubResource("CircleShape2D_6qpqr")
+shape = SubResource("CircleShape2D_oxyqn")
 
 [node name="CollisionShape2D" parent="Bumpers/BumperCenter/SpeedDetectionArea" parent_id_path=PackedInt32Array(1641841581) index="0" unique_id=342771053]
-shape = SubResource("CircleShape2D_domyk")
+shape = SubResource("CircleShape2D_6qpqr")
 
 [node name="ComboHitSource" type="Node" parent="Bumpers/BumperCenter" parent_id_path=PackedInt32Array(1050007271) index="2" unique_id=502111555]
 script = ExtResource("4_hit_source")
 source_id = &"center_bumper"
 
 [node name="CollisionShape2D" parent="Bumpers/BumperLeft" parent_id_path=PackedInt32Array(1034082624) index="0" unique_id=1416908033]
-shape = SubResource("CircleShape2D_6qpqr")
+shape = SubResource("CircleShape2D_oxyqn")
 
 [node name="CollisionShape2D" parent="Bumpers/BumperLeft/SpeedDetectionArea" parent_id_path=PackedInt32Array(746818323) index="0" unique_id=1122045982]
-shape = SubResource("CircleShape2D_domyk")
+shape = SubResource("CircleShape2D_6qpqr")
 
 [node name="ComboHitSource" type="Node" parent="Bumpers/BumperLeft" parent_id_path=PackedInt32Array(1034082624) index="2" unique_id=1489445546]
 script = ExtResource("4_hit_source")
 source_id = &"left_bumper"
 
 [node name="CollisionShape2D" parent="Bumpers/BumperRight" parent_id_path=PackedInt32Array(965244053) index="0" unique_id=1571238968]
-shape = SubResource("CircleShape2D_6qpqr")
+shape = SubResource("CircleShape2D_oxyqn")
 
 [node name="CollisionShape2D" parent="Bumpers/BumperRight/SpeedDetectionArea" parent_id_path=PackedInt32Array(344627012) index="0" unique_id=143861581]
-shape = SubResource("CircleShape2D_domyk")
+shape = SubResource("CircleShape2D_6qpqr")
 
 [node name="ComboHitSource" type="Node" parent="Bumpers/BumperRight" parent_id_path=PackedInt32Array(965244053) index="2" unique_id=136386367]
 script = ExtResource("4_hit_source")
 source_id = &"right_bumper"
 
-[node name="PinballBall" parent="." index="5" unique_id=1525149773]
-physics_material_override = SubResource("PhysicsMaterial_4nqrj")
-stats = SubResource("Resource_lgysr")
+[node name="PinballBall" parent="." index="6" unique_id=1525149773]
+physics_material_override = SubResource("PhysicsMaterial_domyk")
+stats = SubResource("Resource_4nqrj")
+
+[node name="PinballLauncher" parent="." index="7"]
+rotation = -1.5707964
+minimum_launch_angle_degrees = -45.0
+maximum_launch_angle_degrees = 45.0
+
+[node name="ComboSystem" type="Node" parent="." index="9" unique_id=206264385]
+script = ExtResource("3_combo_system")
+
+[node name="ManualHitSource" type="Node" parent="." index="10" unique_id=756394642]
+script = ExtResource("4_hit_source")
+source_id = &"manual"
 
 [node name="ComboHud" parent="HUD" parent_id_path=PackedInt32Array(2130486477) index="2" unique_id=1301318280 instance=ExtResource("5_combo_hud")]
 anchors_preset = 1
@@ -137,10 +149,3 @@ theme_override_colors/font_color = Color(0.82, 0.88, 0.92, 1)
 theme_override_font_sizes/font_size = 13
 text = "최근 이벤트"
 vertical_alignment = 1
-
-[node name="ComboSystem" type="Node" parent="." index="9" unique_id=206264385]
-script = ExtResource("3_combo_system")
-
-[node name="ManualHitSource" type="Node" parent="." index="10" unique_id=756394642]
-script = ExtResource("4_hit_source")
-source_id = &"manual"
