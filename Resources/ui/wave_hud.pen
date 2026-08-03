@@ -6,7 +6,7 @@
       "id": "bi8Au",
       "x": 0,
       "y": 460,
-      "name": "Screen/Wave HUD Preview 1920x1080",
+      "name": "Screen/Wave HUD Preview — Dark Panels",
       "clip": true,
       "width": 1920,
       "height": 1080,
@@ -646,171 +646,125 @@
       "id": "DCQmg",
       "x": 110,
       "y": 0,
-      "name": "Component/HUD Life Stock",
+      "name": "Component/HUD Ball Stock 3-5",
       "reusable": true,
-      "width": 388,
-      "height": 108,
+      "width": 364,
+      "height": 90,
       "fill": "#15333BEF",
       "cornerRadius": [
-        5,
-        17,
         6,
-        13
+        18,
+        6,
+        14
       ],
       "stroke": "$style/paper-ivory",
       "strokeWidth": 3,
       "effect": {
         "type": "shadow",
         "shadowType": "outer",
-        "color": "#071C24CC",
+        "color": "#071C2470",
         "offset": {
-          "x": 5,
-          "y": 6
-        }
+          "x": 4,
+          "y": 5
+        },
+        "blur": 4
       },
       "layout": "none",
       "children": [
         {
-          "type": "rectangle",
-          "cornerRadius": 1,
-          "id": "i72n6z",
-          "x": 8,
-          "y": 18,
-          "name": "Life Accent Rail",
-          "rotation": -2,
-          "fill": "$style/player-mint",
-          "width": 5,
-          "height": 70
-        },
-        {
-          "type": "text",
-          "id": "csuKc",
-          "x": 24,
-          "y": 12,
-          "name": "Life Eyebrow",
-          "fill": "$style/player-mint",
-          "content": "GLASS EYES",
-          "fontFamily": "$font/display",
-          "fontSize": 15,
-          "fontWeight": "normal",
-          "letterSpacing": 1.6
-        },
-        {
-          "type": "text",
-          "id": "IZJsl",
-          "x": 24,
-          "y": 36,
-          "name": "Life Count",
-          "fill": "$style/paper-ivory",
-          "stroke": "$style/toy-ink",
-          "strokeWidth": 2,
-          "content": "2 / 3",
-          "fontFamily": "$font/display",
-          "fontSize": 36,
-          "fontWeight": "normal"
-        },
-        {
-          "type": "frame",
-          "id": "qalWj",
-          "x": 22,
-          "y": 76,
-          "name": "Ball Type Tag",
-          "rotation": 1,
-          "width": 100,
-          "height": 23,
-          "fill": "$style/paper-ivory",
-          "cornerRadius": [
-            3,
-            9,
-            4,
-            8
-          ],
-          "stroke": "$style/toy-ink",
-          "strokeWidth": 2,
-          "justifyContent": "center",
-          "alignItems": "center",
-          "children": [
-            {
-              "type": "text",
-              "id": "qCKZa",
-              "name": "Ball Type Label",
-              "fill": "$style/toy-ink",
-              "content": "NORMAL",
-              "fontFamily": "$font/display",
-              "fontSize": 13,
-              "fontWeight": "normal",
-              "letterSpacing": 1
-            }
-          ]
-        },
-        {
-          "id": "Nj0rl",
-          "type": "ref",
-          "ref": "M9ax8T",
-          "name": "Ball Slot 1",
-          "x": 148,
-          "y": 20,
+          "type": "ellipse",
+          "id": "BHVG4",
+          "x": 18,
+          "y": 17,
+          "name": "Ball Slot 1 — Used Normal",
+          "opacity": 0.26,
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "../Art/balls/ball.png",
+            "mode": "fill"
+          },
           "width": 56,
-          "height": 56,
-          "opacity": 1
-        },
-        {
-          "id": "D2XTc",
-          "type": "ref",
-          "ref": "M9ax8T",
-          "name": "Ball Slot 2",
-          "x": 210,
-          "y": 20,
-          "width": 56,
-          "height": 56,
-          "opacity": 1
-        },
-        {
-          "id": "wbXmo",
-          "type": "ref",
-          "ref": "M9ax8T",
-          "name": "Ball Slot 3",
-          "x": 272,
-          "y": 20,
-          "width": 56,
-          "height": 56,
-          "opacity": 0.22
-        },
-        {
-          "type": "text",
-          "id": "dxiLh",
-          "x": 148,
-          "y": 81,
-          "name": "Life Hint",
-          "fill": "$style/paper-shadow",
-          "content": "보유 2  ·  최대 3",
-          "fontFamily": "$font/display",
-          "fontSize": 13,
-          "fontWeight": "normal"
+          "height": 56
         },
         {
           "type": "ellipse",
-          "id": "xDcOL",
-          "x": 366,
-          "y": 10,
-          "name": "Life Screw Top",
-          "fill": "$style/player-mint",
-          "width": 12,
-          "height": 12,
-          "stroke": "$style/toy-ink",
-          "strokeWidth": 2
+          "id": "esh4u",
+          "x": 86,
+          "y": 17,
+          "name": "Ball Slot 2 — Current Cat Eye",
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "../Art/balls/cats_eye_ball.png",
+            "mode": "fill"
+          },
+          "width": 56,
+          "height": 56
         },
         {
           "type": "ellipse",
-          "id": "AULb2",
-          "x": 366,
-          "y": 84,
-          "name": "Life Screw Bottom",
-          "fill": "$style/player-mint",
-          "width": 12,
-          "height": 12,
-          "stroke": "$style/toy-ink",
-          "strokeWidth": 2
+          "id": "d5UZ6o",
+          "x": 154,
+          "y": 17,
+          "name": "Ball Slot 3 — Remaining Steel",
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "../Art/balls/industrial_steel_ball.png",
+            "mode": "fill"
+          },
+          "width": 56,
+          "height": 56
+        },
+        {
+          "type": "ellipse",
+          "id": "czFQn",
+          "x": 222,
+          "y": 17,
+          "name": "Ball Slot 4 — Remaining Cat Eye",
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "../Art/balls/cats_eye_ball.png",
+            "mode": "fill"
+          },
+          "width": 56,
+          "height": 56
+        },
+        {
+          "type": "ellipse",
+          "id": "BbKNq",
+          "x": 290,
+          "y": 17,
+          "name": "Ball Slot 5 — Remaining Normal",
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "../Art/balls/ball.png",
+            "mode": "fill"
+          },
+          "width": 56,
+          "height": 56
+        },
+        {
+          "type": "ellipse",
+          "id": "CyJ21",
+          "x": 80,
+          "y": 11,
+          "name": "Current Ball Focus Outline",
+          "innerRadius": 0.88,
+          "fill": "#00000000",
+          "width": 68,
+          "height": 68,
+          "stroke": "$style/player-mint",
+          "strokeWidth": 4,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#74D8CF80",
+            "blur": 7
+          }
         }
       ]
     },
@@ -1703,7 +1657,7 @@
           "y": 407,
           "name": "UI Rule 2",
           "fill": "$style/paper-ivory",
-          "content": "02  HUD 청록·아이보리 / 수리도 예외",
+          "content": "02  라이프는 공 슬롯만 표시",
           "fontFamily": "$font/display",
           "fontSize": 18,
           "fontWeight": "normal"
@@ -1725,7 +1679,7 @@
           "y": 407,
           "name": "UI Rule 3",
           "fill": "$style/paper-ivory",
-          "content": "03  스코어 = 수리도 상승",
+          "content": "03  패널 배경 A/B 비교",
           "fontFamily": "$font/display",
           "fontSize": 18,
           "fontWeight": "normal"
@@ -1791,10 +1745,1032 @@
           "y": 474,
           "name": "Semantic Color Note",
           "fill": "$style/scratch",
-          "content": "위험·저주 색상은 이벤트 전용. 승인 예외: 수리도 트랙 #A349A4(보라) / 채움 #FFF200(금색)",
+          "content": "라이프 3~5 고정 슬롯: 현재=청록 외곽선 / 남음=원본 / 사용=26% · 패널: 다크 청록 또는 아이보리",
           "fontFamily": "$font/display",
           "fontSize": 15,
           "fontWeight": "normal"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "qM6qd",
+      "x": 2040,
+      "y": 460,
+      "name": "Screen/Wave HUD Preview — Ivory Panels",
+      "clip": true,
+      "width": 1920,
+      "height": 1080,
+      "fill": "#082F33",
+      "layout": "none",
+      "children": [
+        {
+          "type": "rectangle",
+          "id": "sdGAz",
+          "x": 0,
+          "y": 0,
+          "name": "Actual Board + Wall Resource Background",
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "../Art/walls/shape_prototype_v1/wall_shape_on_square_board_preview.png",
+            "mode": "fill"
+          },
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "type": "rectangle",
+          "id": "UYDGb",
+          "x": 78,
+          "y": 0,
+          "name": "Playfield Inner Surface",
+          "enabled": false,
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 180,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#243640",
+                "position": 0
+              },
+              {
+                "color": "#172B35",
+                "position": 0.48
+              },
+              {
+                "color": "#0E2029",
+                "position": 1
+              }
+            ]
+          },
+          "width": 1764,
+          "height": 1080,
+          "stroke": "#63D9E6",
+          "strokeWidth": 4
+        },
+        {
+          "type": "rectangle",
+          "id": "jpF3j",
+          "x": 78,
+          "y": 210,
+          "name": "Board Guide Rail 280",
+          "enabled": false,
+          "fill": "#091820A6",
+          "width": 1764,
+          "height": 4
+        },
+        {
+          "type": "rectangle",
+          "id": "hTVC5",
+          "x": 78,
+          "y": 420,
+          "name": "Board Guide Rail 1635",
+          "enabled": false,
+          "fill": "#091820A6",
+          "width": 1764,
+          "height": 4
+        },
+        {
+          "type": "rectangle",
+          "id": "ql7aE",
+          "x": 78,
+          "y": 630,
+          "name": "Board Guide Rail 382",
+          "enabled": false,
+          "fill": "#091820A6",
+          "width": 1764,
+          "height": 4
+        },
+        {
+          "type": "rectangle",
+          "id": "tKBgJ",
+          "x": 78,
+          "y": 840,
+          "name": "Board Guide Rail 1534",
+          "enabled": false,
+          "fill": "#091820A6",
+          "width": 1764,
+          "height": 4
+        },
+        {
+          "type": "ellipse",
+          "id": "E2xoEB",
+          "x": 446,
+          "y": 261,
+          "name": "Board Bumper 515",
+          "enabled": false,
+          "innerRadius": 0.7,
+          "fill": "#2AAFA740",
+          "width": 138,
+          "height": 138,
+          "stroke": "#F4F0E3A6",
+          "strokeWidth": 4,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#2AAFA780",
+            "blur": 18
+          }
+        },
+        {
+          "type": "ellipse",
+          "id": "OseBe",
+          "x": 483.26,
+          "y": 298.26,
+          "name": "Board Bumper Core 515",
+          "enabled": false,
+          "fill": "#8BC7C15C",
+          "width": 63.480000000000004,
+          "height": 63.480000000000004,
+          "stroke": "#F4F0E370",
+          "strokeWidth": 2
+        },
+        {
+          "type": "ellipse",
+          "id": "XqjhC",
+          "x": 900,
+          "y": 300,
+          "name": "Board Bumper 960",
+          "innerRadius": 0.72,
+          "fill": "#2AAFA74A",
+          "width": 120,
+          "height": 120,
+          "stroke": "#B8F3F0",
+          "strokeWidth": 4,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#2AAFA799",
+            "blur": 18
+          }
+        },
+        {
+          "type": "ellipse",
+          "id": "rRRk1",
+          "x": 938,
+          "y": 338,
+          "name": "Board Bumper Core 960",
+          "fill": "#B8F3F0B8",
+          "width": 44,
+          "height": 44,
+          "stroke": "#F4F0E3",
+          "strokeWidth": 2
+        },
+        {
+          "type": "ellipse",
+          "id": "JjVIz",
+          "x": 1311,
+          "y": 290,
+          "name": "Board Bumper 1375",
+          "enabled": false,
+          "innerRadius": 0.7,
+          "fill": "#2AAFA740",
+          "width": 128,
+          "height": 128,
+          "stroke": "#F4F0E3A6",
+          "strokeWidth": 4,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#2AAFA780",
+            "blur": 18
+          }
+        },
+        {
+          "type": "ellipse",
+          "id": "p9mx5",
+          "x": 1345.56,
+          "y": 324.56,
+          "name": "Board Bumper Core 1375",
+          "enabled": false,
+          "fill": "#8BC7C15C",
+          "width": 58.88,
+          "height": 58.88,
+          "stroke": "#F4F0E370",
+          "strokeWidth": 2
+        },
+        {
+          "type": "ellipse",
+          "id": "b7FGzP",
+          "x": 680,
+          "y": 520,
+          "name": "Board Bumper 720",
+          "innerRadius": 0.72,
+          "fill": "#8BC7C142",
+          "width": 104,
+          "height": 104,
+          "stroke": "#B8F3F0",
+          "strokeWidth": 4,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#2AAFA780",
+            "blur": 16
+          }
+        },
+        {
+          "type": "ellipse",
+          "id": "AhYMQ",
+          "x": 713,
+          "y": 553,
+          "name": "Board Bumper Core 720",
+          "fill": "#F4F0E3B3",
+          "width": 38,
+          "height": 38,
+          "stroke": "#8BC7C1",
+          "strokeWidth": 2
+        },
+        {
+          "type": "ellipse",
+          "id": "Pu7l3",
+          "x": 1136,
+          "y": 520,
+          "name": "Board Bumper 1220",
+          "innerRadius": 0.72,
+          "fill": "#2AAFA738",
+          "width": 104,
+          "height": 104,
+          "stroke": "#B8F3F0",
+          "strokeWidth": 4,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#2AAFA780",
+            "blur": 16
+          }
+        },
+        {
+          "type": "ellipse",
+          "id": "WG4Gq",
+          "x": 1169,
+          "y": 553,
+          "name": "Board Bumper Core 1220",
+          "fill": "#F4F0E3B3",
+          "width": 38,
+          "height": 38,
+          "stroke": "#8BC7C1",
+          "strokeWidth": 2
+        },
+        {
+          "type": "rectangle",
+          "cornerRadius": 25,
+          "id": "XHNiR",
+          "x": 360,
+          "y": 794,
+          "name": "Resource Flipper Bottom Left",
+          "rotation": 10,
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "../Art/flippers/Flipper_cartoon.png",
+            "mode": "stretch"
+          },
+          "width": 520,
+          "height": 290,
+          "stroke": {
+            "type": "color",
+            "color": "#00000000",
+            "enabled": false
+          }
+        },
+        {
+          "type": "ellipse",
+          "id": "RgMBf",
+          "x": 648,
+          "y": 940,
+          "name": "Left Flipper Pivot",
+          "enabled": false,
+          "fill": "#0B6468",
+          "width": 62,
+          "height": 62,
+          "stroke": "#F4F0E3",
+          "strokeWidth": 4
+        },
+        {
+          "type": "rectangle",
+          "cornerRadius": 25,
+          "id": "y5iOas",
+          "x": 1560,
+          "y": 794,
+          "name": "Resource Flipper Bottom Right",
+          "rotation": -10,
+          "flipX": true,
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "../Art/flippers/Flipper_cartoon.png",
+            "mode": "stretch"
+          },
+          "width": 520,
+          "height": 290,
+          "stroke": {
+            "type": "color",
+            "color": "#00000000",
+            "enabled": false
+          }
+        },
+        {
+          "type": "ellipse",
+          "id": "o1bpV",
+          "x": 1210,
+          "y": 940,
+          "name": "Right Flipper Pivot",
+          "enabled": false,
+          "fill": "#0B6468",
+          "width": 62,
+          "height": 62,
+          "stroke": "#F4F0E3",
+          "strokeWidth": 4
+        },
+        {
+          "type": "ellipse",
+          "id": "sYHNu",
+          "x": 1090,
+          "y": 690,
+          "name": "Resource Cat Eye Ball",
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "../Art/balls/cats_eye_ball.png",
+            "mode": "fill"
+          },
+          "width": 58,
+          "height": 58,
+          "stroke": "#F4F0E3",
+          "strokeWidth": 2,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#F4F0E399",
+            "blur": 18
+          }
+        },
+        {
+          "type": "rectangle",
+          "cornerRadius": 42,
+          "id": "UoRh4",
+          "x": 1510,
+          "y": 510,
+          "name": "Launcher Lane",
+          "enabled": false,
+          "fill": "#021F245C",
+          "width": 84,
+          "height": 410,
+          "stroke": "#8BC7C15C",
+          "strokeWidth": 3
+        },
+        {
+          "type": "icon",
+          "id": "iKH1e",
+          "x": 1536,
+          "y": 542,
+          "name": "Launcher Direction",
+          "enabled": false,
+          "width": 32,
+          "height": 32,
+          "icon": "chevrons-up",
+          "library": "lucide",
+          "fill": "#8BC7C199"
+        },
+        {
+          "type": "text",
+          "id": "BA5xF",
+          "x": 906,
+          "y": 140,
+          "name": "Wave Micro Label",
+          "fill": "#8BC7C180",
+          "content": "WAVE 03",
+          "fontFamily": "$font/display",
+          "fontSize": 18,
+          "fontWeight": "normal",
+          "letterSpacing": 5
+        },
+        {
+          "type": "rectangle",
+          "cornerRadius": 18,
+          "id": "x7Dy1",
+          "x": 16,
+          "y": 12,
+          "name": "Top Safe Area Guide",
+          "enabled": false,
+          "width": 1888,
+          "height": 112,
+          "stroke": "#8BC7C124",
+          "strokeWidth": 1
+        },
+        {
+          "id": "e52syo",
+          "type": "ref",
+          "ref": "DCQmg",
+          "fill": "#F4EBD8EE",
+          "stroke": "#15333B",
+          "strokeWidth": 3,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#071C2450",
+            "offset": {
+              "x": 4,
+              "y": 5
+            },
+            "blur": 4
+          },
+          "name": "HUD Life Stock Instance",
+          "x": 28,
+          "y": 24
+        },
+        {
+          "id": "GYjLi",
+          "type": "ref",
+          "ref": "N5fus",
+          "fill": "#F4EBD8EE",
+          "stroke": "#15333B",
+          "strokeWidth": 3,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#071C2450",
+            "offset": {
+              "x": 4,
+              "y": 5
+            },
+            "blur": 4
+          },
+          "name": "HUD Score Objective Instance",
+          "x": 710,
+          "y": 22,
+          "descendants": {
+            "cqjrI": {
+              "fill": "#15333B"
+            },
+            "n20dbA": {
+              "fill": "#0B6468"
+            },
+            "n81QWP": {
+              "fill": "#071C24",
+              "strokeWidth": 0
+            },
+            "NJC2t": {
+              "fill": "#526A6A"
+            },
+            "n7myRF": {
+              "fill": "#0B6468"
+            },
+            "hUV5C": {
+              "fill": "#071C24"
+            },
+            "jfbXG": {
+              "fill": "#0B6468"
+            },
+            "IZTav": {
+              "stroke": "#15333B"
+            },
+            "EJR7u": {
+              "stroke": "#15333B"
+            }
+          }
+        },
+        {
+          "id": "k8lfbJ",
+          "type": "ref",
+          "ref": "HRfWC",
+          "name": "HUD Settings Button Instance",
+          "x": 1820,
+          "y": 24,
+          "fill": "#F4EBD8EE",
+          "stroke": "#15333B",
+          "strokeWidth": 3,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#071C2450",
+            "offset": {
+              "x": 4,
+              "y": 5
+            },
+            "blur": 4
+          },
+          "descendants": {
+            "RMXiV": {
+              "fill": "#15333B",
+              "opacity": 0.18
+            },
+            "V6lYZ2": {
+              "fill": "#0B6468"
+            }
+          }
+        },
+        {
+          "id": "p7nFQY",
+          "type": "ref",
+          "ref": "pk021",
+          "name": "World Max Combo Instance",
+          "x": 850,
+          "y": 258
+        },
+        {
+          "type": "ellipse",
+          "id": "hxnrD",
+          "x": 945,
+          "y": 341,
+          "name": "Combo Anchored Object Ring",
+          "innerRadius": 0.68,
+          "fill": "#2AAFA73D",
+          "width": 30,
+          "height": 30,
+          "stroke": "#F4F0E3B3",
+          "strokeWidth": 2,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#2AAFA780",
+            "blur": 10
+          }
+        },
+        {
+          "type": "rectangle",
+          "id": "j4mzx",
+          "x": 959,
+          "y": 327,
+          "name": "Combo Anchor Stem",
+          "fill": "#8BC7C1B3",
+          "width": 2,
+          "height": 16
+        },
+        {
+          "type": "text",
+          "id": "PV7qb",
+          "x": 48,
+          "y": 1024,
+          "name": "Preview Footer Note",
+          "enabled": false,
+          "fill": "#8BC7C15C",
+          "content": "PINBALL LOGUE  /  VIDEO-REFERENCED HUD  /  1920×1080",
+          "fontFamily": "$font/display",
+          "fontSize": 14,
+          "fontWeight": "normal",
+          "letterSpacing": 2
+        },
+        {
+          "type": "rectangle",
+          "cornerRadius": 19,
+          "id": "wjhsm",
+          "x": 20,
+          "y": 430,
+          "name": "Resource Flipper Left Upper",
+          "rotation": 78,
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "../Art/flippers/Flipper_cartoon.png",
+            "mode": "stretch"
+          },
+          "width": 300,
+          "height": 167,
+          "stroke": {
+            "type": "color",
+            "color": "#00000000",
+            "enabled": false
+          }
+        },
+        {
+          "type": "rectangle",
+          "cornerRadius": 19,
+          "id": "PVOeJ",
+          "x": 1880,
+          "y": 430,
+          "name": "Resource Flipper Right Upper",
+          "rotation": -78,
+          "flipX": true,
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "../Art/flippers/Flipper_cartoon.png",
+            "mode": "stretch"
+          },
+          "width": 300,
+          "height": 167,
+          "stroke": {
+            "type": "color",
+            "color": "#00000000",
+            "enabled": false
+          }
+        },
+        {
+          "type": "rectangle",
+          "cornerRadius": 19,
+          "id": "z912E",
+          "x": 80,
+          "y": 938,
+          "name": "Resource Flipper Left Lower",
+          "rotation": 102,
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "../Art/flippers/Flipper_cartoon.png",
+            "mode": "stretch"
+          },
+          "width": 300,
+          "height": 167,
+          "stroke": {
+            "type": "color",
+            "color": "#00000000",
+            "enabled": false
+          }
+        },
+        {
+          "type": "rectangle",
+          "cornerRadius": 19,
+          "id": "VPnPr",
+          "x": 1857,
+          "y": 938,
+          "name": "Resource Flipper Right Lower",
+          "rotation": -102,
+          "flipX": true,
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "../Art/flippers/Flipper_cartoon.png",
+            "mode": "stretch"
+          },
+          "width": 300,
+          "height": 167,
+          "stroke": {
+            "type": "color",
+            "color": "#00000000",
+            "enabled": false
+          }
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "rdjOr",
+      "x": 2040,
+      "y": 1660,
+      "name": "Runtime Export Sheet/Dark HUD",
+      "width": 1400,
+      "height": 900,
+      "fill": "#0A1C22",
+      "layout": "none",
+      "children": [
+        {
+          "type": "rectangle",
+          "cornerRadius": [
+            6,
+            18,
+            6,
+            14
+          ],
+          "id": "w9GKtj",
+          "x": 30,
+          "y": 40,
+          "name": "Runtime/Life Panel Shadow",
+          "fill": "#071C2470",
+          "width": 364,
+          "height": 90,
+          "effect": {
+            "type": "blur",
+            "radius": 4
+          }
+        },
+        {
+          "type": "rectangle",
+          "cornerRadius": [
+            6,
+            18,
+            6,
+            14
+          ],
+          "id": "gs280",
+          "x": 420,
+          "y": 40,
+          "name": "Runtime/Life Panel Fill",
+          "fill": "#15333BEF",
+          "width": 364,
+          "height": 90
+        },
+        {
+          "type": "rectangle",
+          "cornerRadius": [
+            6,
+            18,
+            6,
+            14
+          ],
+          "id": "RbfMI",
+          "x": 810,
+          "y": 40,
+          "name": "Runtime/Life Panel Border",
+          "fill": "#00000000",
+          "width": 364,
+          "height": 90,
+          "stroke": "#F1E6CB",
+          "strokeWidth": 3
+        },
+        {
+          "type": "ellipse",
+          "id": "u0dCbK",
+          "x": 1200,
+          "y": 51,
+          "name": "Runtime/Life Current Outline",
+          "innerRadius": 0.88,
+          "fill": "#00000000",
+          "width": 68,
+          "height": 68,
+          "stroke": "#67D8D0",
+          "strokeWidth": 4,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#67D8D080",
+            "blur": 7
+          }
+        },
+        {
+          "type": "rectangle",
+          "cornerRadius": [
+            6,
+            18,
+            5,
+            14
+          ],
+          "id": "a1pnx",
+          "x": 30,
+          "y": 180,
+          "name": "Runtime/Score Panel Shadow",
+          "fill": "#071C2470",
+          "width": 500,
+          "height": 110,
+          "effect": {
+            "type": "blur",
+            "radius": 4
+          }
+        },
+        {
+          "type": "rectangle",
+          "cornerRadius": [
+            6,
+            18,
+            5,
+            14
+          ],
+          "id": "dh0AG",
+          "x": 560,
+          "y": 180,
+          "name": "Runtime/Score Panel Fill",
+          "fill": "#15333BEF",
+          "width": 500,
+          "height": 110
+        },
+        {
+          "type": "rectangle",
+          "cornerRadius": [
+            6,
+            18,
+            5,
+            14
+          ],
+          "id": "ZjCum",
+          "x": 30,
+          "y": 320,
+          "name": "Runtime/Score Panel Border",
+          "fill": "#00000000",
+          "width": 500,
+          "height": 110,
+          "stroke": "#F1E6CB",
+          "strokeWidth": 3
+        },
+        {
+          "type": "rectangle",
+          "cornerRadius": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "id": "N36r9",
+          "x": 560,
+          "y": 320,
+          "name": "Runtime/Score Top Rail",
+          "fill": "#F1E6CB",
+          "width": 164,
+          "height": 7
+        },
+        {
+          "type": "rectangle",
+          "id": "stTHc",
+          "x": 760,
+          "y": 320,
+          "name": "Runtime/Score Divider",
+          "rotation": 2,
+          "fill": "#C6BDA8",
+          "width": 3,
+          "height": 54
+        },
+        {
+          "type": "rectangle",
+          "cornerRadius": 1,
+          "id": "weM2F",
+          "x": 810,
+          "y": 320,
+          "name": "Runtime/Repair Gauge Track",
+          "fill": "#A349A4",
+          "width": 342,
+          "height": 7,
+          "stroke": "#C6BDA8",
+          "strokeWidth": 1
+        },
+        {
+          "type": "rectangle",
+          "cornerRadius": 1,
+          "id": "EKheu",
+          "x": 810,
+          "y": 350,
+          "name": "Runtime/Repair Gauge Fill 100%",
+          "fill": "#FFF200",
+          "width": 342,
+          "height": 7
+        },
+        {
+          "type": "rectangle",
+          "id": "VPjaP",
+          "x": 1180,
+          "y": 320,
+          "name": "Runtime/Repair Gauge Segment",
+          "fill": "#071C24",
+          "width": 2,
+          "height": 9
+        },
+        {
+          "type": "ellipse",
+          "id": "kVJKY",
+          "x": 1220,
+          "y": 315,
+          "name": "Runtime/Score Screw",
+          "fill": "#67D8D0",
+          "width": 11,
+          "height": 11,
+          "stroke": "#071C24",
+          "strokeWidth": 2
+        },
+        {
+          "type": "ellipse",
+          "id": "T6p1I",
+          "x": 30,
+          "y": 490,
+          "name": "Runtime/Settings Button Shadow",
+          "fill": "#071C2470",
+          "width": 72,
+          "height": 72,
+          "effect": {
+            "type": "blur",
+            "radius": 4
+          }
+        },
+        {
+          "type": "ellipse",
+          "id": "ZTgMC",
+          "x": 130,
+          "y": 490,
+          "name": "Runtime/Settings Button Fill",
+          "fill": "#15333BF2",
+          "width": 72,
+          "height": 72
+        },
+        {
+          "type": "ellipse",
+          "id": "w2rQve",
+          "x": 230,
+          "y": 490,
+          "name": "Runtime/Settings Button Border",
+          "fill": "#00000000",
+          "width": 72,
+          "height": 72,
+          "stroke": "#F1E6CB",
+          "strokeWidth": 3
+        },
+        {
+          "type": "ellipse",
+          "id": "cWWl0",
+          "x": 330,
+          "y": 499,
+          "name": "Runtime/Settings Inner Ring",
+          "opacity": 0.35,
+          "innerRadius": 0.88,
+          "fill": "#C6BDA8",
+          "width": 54,
+          "height": 54
+        },
+        {
+          "type": "icon",
+          "id": "W7d1HJ",
+          "layoutPosition": "absolute",
+          "x": 420,
+          "y": 511,
+          "name": "Runtime/Settings Gear Icon",
+          "width": 30,
+          "height": 30,
+          "icon": "settings",
+          "library": "lucide",
+          "fill": "#67D8D0"
+        },
+        {
+          "type": "ellipse",
+          "id": "R2fXMF",
+          "x": 520,
+          "y": 498,
+          "name": "Runtime/Ball Icon Normal",
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "../Art/balls/ball.png",
+            "mode": "fill"
+          },
+          "width": 56,
+          "height": 56
+        },
+        {
+          "type": "ellipse",
+          "id": "zq4fD",
+          "x": 610,
+          "y": 498,
+          "name": "Runtime/Ball Icon Cat Eye",
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "../Art/balls/cats_eye_ball.png",
+            "mode": "fill"
+          },
+          "width": 56,
+          "height": 56
+        },
+        {
+          "type": "ellipse",
+          "id": "rtpeb",
+          "x": 700,
+          "y": 498,
+          "name": "Runtime/Ball Icon Industrial Steel",
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "../Art/balls/industrial_steel_ball.png",
+            "mode": "fill"
+          },
+          "width": 56,
+          "height": 56
+        },
+        {
+          "type": "rectangle",
+          "cornerRadius": 1,
+          "id": "aRYnc",
+          "x": 30,
+          "y": 640,
+          "name": "Runtime/Combo Accent Rail",
+          "rotation": -1,
+          "fill": "$style/player-mint",
+          "width": 110,
+          "height": 3
+        },
+        {
+          "type": "polygon",
+          "polygonCount": 3,
+          "id": "NKDxH",
+          "x": 180,
+          "y": 640,
+          "name": "Runtime/Combo Anchor Pointer",
+          "rotation": 180,
+          "fill": "$style/paper-ivory",
+          "width": 14,
+          "height": 9
+        },
+        {
+          "type": "rectangle",
+          "id": "Wr7Bu",
+          "x": 250,
+          "y": 640,
+          "name": "Runtime/Combo Impact Tick Mint",
+          "rotation": -28,
+          "fill": "$style/player-mint",
+          "width": 18,
+          "height": 3
+        },
+        {
+          "type": "rectangle",
+          "id": "Yid4r",
+          "x": 330,
+          "y": 640,
+          "name": "Runtime/Combo Impact Tick Ivory",
+          "rotation": 8,
+          "fill": "$style/paper-ivory",
+          "width": 13,
+          "height": 3
         }
       ]
     }
