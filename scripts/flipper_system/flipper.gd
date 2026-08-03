@@ -51,6 +51,7 @@ const MAX_FLIPPER_LENGTH: float = 4096.0
 const DEFAULT_FLIPPER_LENGTH: float = 1552.0
 const MIN_SOURCE_SIZE: float = 0.001
 const PINBALL_GROUP: StringName = &"pinball_balls"
+const COMBO_FLIPPER_GROUP: StringName = &"combo_flippers"
 const MIN_SWEEP_INTERVAL: float = 1.0
 const MAX_SWEEP_INTERVAL: float = 64.0
 const DEFAULT_SWEEP_INTERVAL: float = 8.0
@@ -198,6 +199,7 @@ var is_flipping: bool:
 
 
 func _enter_tree() -> void:
+	add_to_group(COMBO_FLIPPER_GROUP)
 	_connect_parry_rules_changed()
 	call_deferred(&"_ensure_contact_zone_overlay")
 	# @tool 인스턴스가 에디터 씬 트리에 들어온 뒤 자식 노드까지 구성된 시점에 적용합니다.

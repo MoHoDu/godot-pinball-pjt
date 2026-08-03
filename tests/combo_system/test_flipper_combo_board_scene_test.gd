@@ -26,6 +26,7 @@ func _run() -> void:
 	await process_frame
 
 	_test_integrated_structure(board)
+	await _test_custom_drain_area(board)
 	_test_manual_tier_progression(board)
 	_test_timer_and_settlement(board)
 	await _test_real_bumper_contact(board)
@@ -41,12 +42,29 @@ func _test_integrated_structure(board: Node) -> void:
 	var inspector := board.get_node_or_null("HUD/ComboInspector")
 	var ball := board.get_node_or_null("PinballBall") as Pinball
 	var selector := board.get_node_or_null("FlipperSelector") as FlipperSelector
+	var collision_bridge := board.get_node_or_null(
+		"ComboCollisionBridge"
+	) as ComboCollisionBridge
 
 	_expect(combo != null, "보드에 실제 ComboSystem 노드가 필요하다.")
 	_expect(hud != null, "콤보 수·티어·시간·점수를 표시할 ComboHud가 필요하다.")
 	_expect(inspector != null, "콤보 검증 키와 이벤트를 표시할 패널이 필요하다.")
 	_expect(ball != null and selector != null, \
 		"원본 보드의 공과 4방향 플리퍼 선택기를 유지해야 한다.")
+	_expect(collision_bridge != null, \
+		"플리퍼·벽 접촉을 콤보 판정으로 전달하는 브리지가 필요하다.")
+	var drain_area := board.get_node_or_null("BallDrainArea") as Area2D
+	_expect(drain_area != null,
+		"Board drain must be authored as a customizable Area2D.")
+	if drain_area != null:
+		_expect(drain_area.get_child_count() == 4,
+			"Default drain Area2D must expose four editable edge colliders.")
+	var walls := board.get_node_or_null("Walls")
+	_expect(walls != null, "콤보 보드에 벽 루트가 필요하다.")
+	if walls != null:
+		for wall: Node in walls.get_children():
+			_expect(wall.is_in_group(&"combo_timer_refresh_walls"), \
+				"모든 보드 벽은 최초 접촉 시간 갱신 대상으로 표시되어야 한다.")
 
 	var bumpers := board.get_node_or_null("Bumpers")
 	_expect(bumpers != null and bumpers.get_child_count() == 3, \
@@ -56,6 +74,33 @@ func _test_integrated_structure(board: Node) -> void:
 	for bumper: Node in bumpers.get_children():
 		_expect(bumper.get_node_or_null("ComboHitSource") is ComboHitSource, \
 			"각 범퍼가 중복 접촉을 제거하는 ComboHitSource를 가져야 한다.")
+
+
+func _test_custom_drain_area(board: Node) -> void:
+	var ball := board.get_node("PinballBall") as Pinball
+	var launcher := board.get_node("PinballLauncher") as PinballLauncher
+	var reset_count := [0]
+	board.ball_reset_completed.connect(func() -> void: reset_count[0] += 1)
+	ball.stats.gravity_scale = 0.0
+	ball.global_position = Vector2(-350.0, -550.0)
+	ball.linear_velocity = Vector2.ZERO
+	ball.freeze = false
+	ball.sleeping = false
+	await physics_frame
+	await physics_frame
+	_expect(reset_count[0] == 0,
+		"A ball beside the top flipper pivot must not be treated as drained.")
+
+	ball.global_position = Vector2(0.0, 800.0)
+	ball.reset_physics_interpolation()
+	ball.sleeping = false
+	for _frame in 4:
+		await physics_frame
+	_expect(reset_count[0] == 1,
+		"Entering an authored drain collider must settle the ball exactly once.")
+	_expect(launcher.is_aiming,
+		"The base combo board must reset after its custom drain collider fires.")
+	board.call(&"reset_combo_test")
 
 
 func _test_manual_tier_progression(board: Node) -> void:

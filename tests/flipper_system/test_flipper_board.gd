@@ -27,7 +27,7 @@ var launcher_path: NodePath = ^"PinballLauncher"
 
 
 var _reset_version := 0
-var _status_text := "Enter로 공을 발사하세요"
+var _status_text := "Space로 공을 발사하세요"
 
 
 func _ready() -> void:
@@ -63,7 +63,7 @@ func reset_ball() -> void:
 	_reset_version += 1
 	var reset_version := _reset_version
 	launcher.prepare_ball(ball)
-	_status_text = "리셋 완료 — Enter로 다시 발사"
+	_status_text = "리셋 완료 — Space로 다시 발사"
 	_finish_ball_reset(reset_version)
 
 
@@ -73,7 +73,7 @@ func _finish_ball_reset(reset_version: int) -> void:
 		return
 
 	launcher.replace_prepared_ball()
-	# 발사형 테스트 보드이므로 Enter 입력 전까지 공을 발사대에 고정합니다.
+	# 발사형 테스트 보드이므로 Space 입력 전까지 공을 발사대에 고정합니다.
 	ball.freeze = true
 	ball_reset_completed.emit()
 
@@ -103,7 +103,7 @@ func _refresh_hud() -> void:
 			guide_label.text = (
 				"[공 발사 조준]\n"
 				+ "좌우/A·D: 각도   상하/W·S: 파워\n"
-				+ "Enter: 공 발사   R: 공·조준 리셋"
+				+ "Space: 공 발사   R: 공·조준 리셋"
 			)
 		else:
 			guide_label.text = (

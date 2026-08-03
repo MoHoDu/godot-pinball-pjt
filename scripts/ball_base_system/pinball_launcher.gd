@@ -250,6 +250,20 @@ func launch_prepared_ball() -> bool:
 	return true
 
 
+## 조준 중인 공을 발사하지 않고 취소합니다. 런처가 생성한 공은 필요하면 함께 제거합니다.
+func cancel_prepared_ball(free_ball := false) -> Pinball:
+	if not is_instance_valid(prepared_ball):
+		return null
+	var cancelled_ball := prepared_ball
+	cancelled_ball.freeze = true
+	is_aiming = false
+	prepared_ball = null
+	if free_ball:
+		cancelled_ball.queue_free()
+	queue_redraw()
+	return cancelled_ball
+
+
 ## 발사대 위치에 준비된 공을 다시 고정하고 모든 운동을 제거합니다.
 func replace_prepared_ball() -> bool:
 	if not is_instance_valid(prepared_ball):
