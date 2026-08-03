@@ -10,11 +10,14 @@ signal ball_launched
 @export_node_path("RigidBody2D")
 var ball_path: NodePath = ^"PinballBall"
 
-@export var launcher_position := Vector2(720.0, 340.0)
-@export var launcher_direction := Vector2(-0.65, -1.0)
+@export_node_path("Node2D")
+var launcher_path: NodePath = ^"PinballLauncher"
 
 
-@onready var ball: RigidBody2D = get_node_or_null(ball_path) as RigidBody2D
+@onready var ball: Pinball = get_node_or_null(ball_path) as Pinball
+@onready var launcher: PinballLauncher = get_node_or_null(
+	launcher_path
+) as PinballLauncher
 @onready var guide_label: Label = get_node_or_null(
 	"HUD/GuideLabel"
 ) as Label
@@ -28,6 +31,9 @@ var _status_text := "Enter로 공을 발사하세요"
 
 
 func _ready() -> void:
+	if is_instance_valid(launcher):
+		launcher.ball_launched.connect(_on_launcher_ball_launched)
+		launcher.prepare_ball(ball)
 	_refresh_hud()
 
 
@@ -43,27 +49,20 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not key_event.pressed or key_event.echo:
 		return
 
-	match key_event.physical_keycode:
-		KEY_R:
-			reset_ball()
-			get_viewport().set_input_as_handled()
-		KEY_ENTER, KEY_KP_ENTER:
-			launch_ball()
-			get_viewport().set_input_as_handled()
+	if key_event.physical_keycode == KEY_R:
+		reset_ball()
+		get_viewport().set_input_as_handled()
 
 
 ## 떨어진 공을 오른쪽 아래 발사 위치로 되돌리고 모든 운동을 제거합니다.
 func reset_ball() -> void:
-	if not is_instance_valid(ball):
-		push_warning("Ball Path에 유효한 RigidBody2D 공을 지정해야 합니다.")
+	if not is_instance_valid(ball) or not is_instance_valid(launcher):
+		push_warning("Ball Path와 Launcher Path에 유효한 노드를 지정해야 합니다.")
 		return
 
 	_reset_version += 1
 	var reset_version := _reset_version
-	if ball.has_method(&"clear_temporary_maximum_speed"):
-		ball.call(&"clear_temporary_maximum_speed")
-	ball.freeze = true
-	_place_ball_at_launcher()
+	launcher.prepare_ball(ball)
 	_status_text = "리셋 완료 — Enter로 다시 발사"
 	_finish_ball_reset(reset_version)
 
@@ -73,55 +72,55 @@ func _finish_ball_reset(reset_version: int) -> void:
 	if reset_version != _reset_version or not is_instance_valid(ball):
 		return
 
-	_place_ball_at_launcher()
+	launcher.replace_prepared_ball()
 	# 발사형 테스트 보드이므로 Enter 입력 전까지 공을 발사대에 고정합니다.
 	ball.freeze = true
 	ball_reset_completed.emit()
 
 
-## 기획 기준 초기 속력은 공 Stats(940px/s)가 담당하고 여기서는 방향만 제공합니다.
+## 테스트와 외부 게임 흐름에서 현재 선택값으로 발사를 요청하는 진입점입니다.
 func launch_ball() -> bool:
-	if not is_instance_valid(ball) or launcher_direction.is_zero_approx():
+	if not is_instance_valid(launcher):
 		return false
+	return launcher.launch_prepared_ball()
 
+
+func _on_launcher_ball_launched(
+	launched_ball: Pinball,
+	_direction: Vector2,
+	_speed: float
+) -> void:
+	if launched_ball != ball:
+		return
 	_reset_version += 1
-	if ball.has_method(&"clear_temporary_maximum_speed"):
-		ball.call(&"clear_temporary_maximum_speed")
-	ball.freeze = false
-	_place_ball_at_launcher()
-	ball.sleeping = false
-
-	var launched := false
-	if ball.has_method(&"launch"):
-		launched = bool(ball.call(&"launch", launcher_direction))
-	else:
-		ball.linear_velocity = launcher_direction.normalized() * 940.0
-		launched = true
-
-	if launched:
-		_status_text = "발사! 방향키/WASD 선택 · Space 작동"
-		ball_launched.emit()
-	return launched
-
-
-func _place_ball_at_launcher() -> void:
-	ball.global_position = launcher_position
-	ball.rotation = 0.0
-	ball.linear_velocity = Vector2.ZERO
-	ball.angular_velocity = 0.0
-	ball.reset_physics_interpolation()
+	_status_text = "발사! 방향키/WASD 선택 · Space 작동"
+	ball_launched.emit()
 
 
 func _refresh_hud() -> void:
 	if is_instance_valid(guide_label):
-		guide_label.text = (
-			"[사각 플리퍼 자유 테스트]\n"
-			+ "방향키/WASD: 플리퍼 선택   Space: 작동\n"
-			+ "Enter: 공 발사   R: 공·속도 리셋"
-		)
+		if is_instance_valid(launcher) and launcher.is_aiming:
+			guide_label.text = (
+				"[공 발사 조준]\n"
+				+ "좌우/A·D: 각도   상하/W·S: 파워\n"
+				+ "Enter: 공 발사   R: 공·조준 리셋"
+			)
+		else:
+			guide_label.text = (
+				"[사각 플리퍼 자유 테스트]\n"
+				+ "방향키/WASD: 플리퍼 선택   Space: 작동\n"
+				+ "R: 공·조준 리셋"
+			)
 	if is_instance_valid(status_label):
 		var speed := ball.linear_velocity.length() if is_instance_valid(ball) else 0.0
-		status_label.text = "%s\n현재 공 속력: %.1f px/s" % [
-			_status_text,
-			speed,
-		]
+		if is_instance_valid(launcher) and launcher.is_aiming:
+			status_label.text = "%s\n각도: %.1f°   발사 속력: %.1f px/s" % [
+				_status_text,
+				launcher.current_angle_degrees,
+				launcher.current_launch_speed,
+			]
+		else:
+			status_label.text = "%s\n현재 공 속력: %.1f px/s" % [
+				_status_text,
+				speed,
+			]
