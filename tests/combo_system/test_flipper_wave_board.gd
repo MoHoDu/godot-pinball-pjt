@@ -13,6 +13,10 @@ extends "res://tests/combo_system/test_flipper_combo_board.gd"
 @onready var wave_manager: WaveManager = get_node("WaveManager") as WaveManager
 
 
+@export var wave_stage_settings: ComboStageSettings
+@export_range(0, 99, 1) var wave_stage_index := 0
+
+
 var _wave_settings := ComboStageSettings.new()
 
 
@@ -26,11 +30,14 @@ func _ready() -> void:
 	ball = null
 
 	wave_manager.active_ball_changed.connect(_on_active_ball_changed)
-	_wave_settings.stage_id = &"main_demo_stage"
-	_wave_settings.stage_base_score = 100
-	_wave_settings.wave_target_scores = PackedInt32Array([500])
+	if wave_stage_settings == null:
+		_wave_settings.stage_id = &"main_demo_stage"
+		_wave_settings.stage_base_score = 100
+		_wave_settings.wave_target_scores = PackedInt32Array([500])
+	else:
+		_wave_settings = wave_stage_settings
 	ball_selection_hud.bind_ball_flow(wave_ball_flow)
-	wave_manager.enter_wave(_wave_settings, 0)
+	wave_manager.enter_wave(_wave_settings, wave_stage_index)
 	_append_event("WAVE · 다음 공을 선택하세요")
 
 

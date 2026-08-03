@@ -1,68 +1,33 @@
 class_name WaveRuntimeCoordinator
-extends "res://tests/flipper_system/test_flipper_board.gd"
+extends "res://tests/combo_system/test_flipper_wave_board.gd"
 
-
-const BOARD_LIMITS := Vector2(980.0, 560.0)
-
-
-@export var stage_settings: ComboStageSettings
-@export_range(0, 99, 1) var wave_index := 0
-@export var initial_ball_types: Array[StringName] = [
-	&"cat_eye",
-	&"normal",
-	&"industrial_steel",
-]
 
 @onready var hud_state: WaveHudStateSource = get_node_or_null(
 	"WaveHudStateSource"
 ) as WaveHudStateSource
 @onready var wave_hud: WaveHud = get_node_or_null("HUD/WaveHud") as WaveHud
-@onready var combo_system: ComboSystem = get_node_or_null(
-	"ComboSystem"
-) as ComboSystem
-@onready var combo_wave_controller: ComboWaveController = get_node_or_null(
-	"ComboWaveController"
-) as ComboWaveController
 @onready var combo_anchor: Node2D = get_node_or_null(
 	"Bumpers/BumperCenter"
 ) as Node2D
 
-var _drain_pending := false
+
+var _selection_committed := false
 
 
 func _ready() -> void:
-	process_mode = Node.PROCESS_MODE_ALWAYS
 	super()
 	assert(is_instance_valid(hud_state), "Wave scene requires WaveHudStateSource.")
 	assert(is_instance_valid(wave_hud), "Wave scene requires WaveHud.")
-	assert(is_instance_valid(combo_system), "Wave scene requires ComboSystem.")
-	assert(is_instance_valid(combo_wave_controller), \
-		"Wave scene requires ComboWaveController.")
 	wave_hud.bind_state_source(hud_state)
 	wave_hud.settings_requested.connect(_toggle_pause)
-	_setup_combo_runtime()
-	hud_state.begin_batch()
-	hud_state.configure_lives(initial_ball_types)
-	hud_state.set_score(combo_system.total_score, combo_wave_controller.target_score)
-	hud_state.end_batch()
+	_connect_hud_state_inputs()
+	_initialize_hud_state()
 	_update_combo_anchor()
 
 
-func _process(_delta: float) -> void:
-	super(_delta)
+func _process(delta: float) -> void:
+	super(delta)
 	_update_combo_anchor()
-
-
-func _physics_process(_delta: float) -> void:
-	if get_tree().paused or _drain_pending \
-			or not is_instance_valid(ball) or ball.freeze:
-		return
-	var ball_position := ball.global_position
-	if absf(ball_position.x) <= BOARD_LIMITS.x \
-			and absf(ball_position.y) <= BOARD_LIMITS.y:
-		return
-	_drain_pending = true
-	call_deferred(&"_handle_wave_ball_drained")
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -71,93 +36,110 @@ func _unhandled_input(event: InputEvent) -> void:
 	super(event)
 
 
-## Debug repositioning does not consume a life. Only a board drain does.
-func reset_ball() -> void:
-	super()
-	_drain_pending = false
-
-
-func retry_wave() -> void:
-	get_tree().paused = false
-	hud_state.begin_batch()
-	combo_wave_controller.on_wave_retried()
-	hud_state.reset_lives()
-	hud_state.reset_combo()
-	hud_state.set_score(combo_system.total_score, combo_wave_controller.target_score)
-	hud_state.set_paused(false)
-	hud_state.end_batch()
-	super.reset_ball()
-	_drain_pending = false
-
-
-func _setup_combo_runtime() -> void:
-	combo_wave_controller.bind_combo_system(combo_system)
-	combo_wave_controller.wave_configured.connect(_on_wave_configured)
+func _connect_hud_state_inputs() -> void:
 	combo_system.combo_changed.connect(_on_combo_changed)
 	combo_system.score_changed.connect(_on_score_changed)
-	ball_launched.connect(_on_wave_ball_launched)
-	_bind_bumper_hit_sources()
-	var configured := combo_wave_controller.configure_wave(stage_settings, wave_index)
-	assert(configured, "Wave scene requires valid ComboStageSettings.")
+	wave_ball_inventory.stock_reset.connect(_on_inventory_stock_reset)
+	wave_ball_inventory.selection_started.connect(_on_inventory_selection)
+	wave_ball_inventory.selection_changed.connect(_on_inventory_selection)
+	wave_ball_inventory.ball_consumed.connect(_on_inventory_ball_consumed)
+	wave_ball_flow.state_changed.connect(_on_ball_flow_state_changed)
+	wave_ball_flow.ball_drained.connect(_on_flow_ball_drained)
+	wave_manager.wave_entered.connect(_on_manager_wave_entered)
+	wave_manager.wave_retried.connect(_on_manager_wave_retried)
 
 
-func _bind_bumper_hit_sources() -> void:
-	var bumpers := get_node_or_null("Bumpers")
-	if bumpers == null:
-		return
-	for bumper: Node in bumpers.get_children():
-		var source := bumper.get_node_or_null("ComboHitSource") as ComboHitSource
-		var detection_area := bumper.get_node_or_null("SpeedDetectionArea") as Area2D
-		if source == null:
-			continue
-		combo_system.bind_hit_source(source)
-		if detection_area == null:
-			continue
-		var entered := Callable(self, &"_on_bumper_body_entered").bind(source)
-		var exited := Callable(self, &"_on_bumper_body_exited").bind(source)
-		if not detection_area.body_entered.is_connected(entered):
-			detection_area.body_entered.connect(entered)
-		if not detection_area.body_exited.is_connected(exited):
-			detection_area.body_exited.connect(exited)
-
-
-func _on_bumper_body_entered(body: Node2D, source: ComboHitSource) -> void:
-	if body == ball:
-		source.register_contact(body.get_instance_id())
-
-
-func _on_bumper_body_exited(body: Node2D, source: ComboHitSource) -> void:
-	if body == ball:
-		source.release_contact(body.get_instance_id())
-
-
-func _on_wave_ball_launched() -> void:
-	combo_wave_controller.on_ball_launched()
-
-
-func _handle_wave_ball_drained() -> void:
-	if not combo_wave_controller.ball_is_active:
-		_drain_pending = false
-		return
-	var remaining_after_drain := maxi(hud_state.get_remaining_life_count() - 1, 0)
+func _initialize_hud_state() -> void:
 	hud_state.begin_batch()
-	# Settlement emits score first; the slot transition joins the same snapshot batch.
-	combo_wave_controller.on_ball_drained(remaining_after_drain)
-	hud_state.consume_current_life()
+	_configure_lives_from_inventory()
+	_select_inventory_life()
+	hud_state.set_score(wave_manager.current_score, wave_manager.target_score)
+	hud_state.observe_combo(combo_system.combo_count)
+	hud_state.set_wave_index(wave_manager.current_wave_index)
+	hud_state.set_paused(get_tree().paused)
 	hud_state.end_batch()
-	if remaining_after_drain > 0:
-		super.reset_ball()
-	_drain_pending = false
 
 
-func _on_wave_configured(
-	_stage_id: StringName,
-	configured_wave_index: int,
+func _configure_lives_from_inventory() -> void:
+	var ball_types: Array[StringName] = []
+	for stock: BallStock in wave_ball_inventory.starting_stock:
+		if stock == null or not stock.is_valid():
+			continue
+		for _copy in stock.count:
+			ball_types.append(stock.definition.ball_id)
+	assert(ball_types.size() >= 3 and ball_types.size() <= 5,
+		"Wave HUD requires the actual wave inventory to contain three to five balls.")
+	if ball_types.size() < 3 or ball_types.size() > 5:
+		return
+	hud_state.configure_lives(ball_types)
+
+
+func _select_inventory_life() -> void:
+	if wave_ball_inventory.selected_definition == null:
+		return
+	hud_state.select_life(wave_ball_inventory.selected_definition.ball_id)
+
+
+func _on_inventory_stock_reset(_total_remaining: int) -> void:
+	_selection_committed = false
+	hud_state.begin_batch()
+	_configure_lives_from_inventory()
+	_select_inventory_life()
+	hud_state.end_batch()
+
+
+func _on_inventory_selection(
+	definition: BallDefinition,
+	_remaining_for_type: int
+) -> void:
+	if _selection_committed or definition == null:
+		return
+	hud_state.select_life(definition.ball_id)
+
+
+func _on_inventory_ball_consumed(
+	_definition: BallDefinition,
+	_remaining_for_type: int,
+	_total_remaining: int
+) -> void:
+	# Inventory may preselect another type while confirm_selection() is still
+	# committing the active ball. Keep the launched ball highlighted until drain.
+	_selection_committed = true
+
+
+func _on_ball_flow_state_changed(
+	_previous_state: WaveBallFlowController.State,
+	current_state: WaveBallFlowController.State
+) -> void:
+	if current_state == WaveBallFlowController.State.SELECTING:
+		_selection_committed = false
+
+
+func _on_flow_ball_drained(_ball: Pinball, remaining_balls: int) -> void:
+	var hud_remaining := hud_state.consume_current_life()
+	if hud_remaining != remaining_balls:
+		push_warning(
+			"Wave HUD life state diverged from inventory: hud=%d inventory=%d"
+			% [hud_remaining, remaining_balls]
+		)
+
+
+func _on_manager_wave_entered(
+	_wave_stage_id: StringName,
+	wave_index: int,
 	target_score: int
 ) -> void:
 	hud_state.begin_batch()
-	hud_state.set_wave_index(configured_wave_index)
-	hud_state.set_score(combo_system.total_score, target_score)
+	hud_state.reset_combo()
+	hud_state.set_wave_index(wave_index)
+	hud_state.set_score(wave_manager.current_score, target_score)
+	hud_state.end_batch()
+
+
+func _on_manager_wave_retried() -> void:
+	hud_state.begin_batch()
+	hud_state.reset_combo()
+	hud_state.set_score(wave_manager.current_score, wave_manager.target_score)
 	hud_state.end_batch()
 
 
@@ -166,7 +148,7 @@ func _on_combo_changed(combo_count: int, _tier: int, _time_remaining: float) -> 
 
 
 func _on_score_changed(total_score: int, _added_score: int) -> void:
-	hud_state.set_score(total_score, combo_wave_controller.target_score)
+	hud_state.set_score(total_score, wave_manager.target_score)
 
 
 func _update_combo_anchor() -> void:

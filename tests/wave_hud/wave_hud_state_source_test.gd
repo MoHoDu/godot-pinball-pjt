@@ -63,6 +63,18 @@ func _run() -> void:
 		"Consumed slot must stay in place and become spent.")
 	_expect(int(slots[1][&"state"]) == WaveHudStateSource.LifeState.CURRENT,
 		"The next fixed slot must become current.")
+	_expect(source.select_life(&"industrial_steel"),
+		"An available ball type must become the selected current life.")
+	snapshot = source.get_snapshot()
+	slots = snapshot[&"life_slots"]
+	_expect(int(slots[1][&"state"]) == WaveHudStateSource.LifeState.UPCOMING,
+		"Changing selection must return the previous unspent slot to upcoming.")
+	_expect(int(slots[2][&"state"]) == WaveHudStateSource.LifeState.CURRENT,
+		"Selection must support a non-sequential remaining ball.")
+	_expect(source.consume_current_life() == 1,
+		"Consuming the selected last slot must preserve earlier remaining lives.")
+	_expect(source.get_current_life_type() == &"normal",
+		"Life consumption must wrap to the next remaining slot.")
 
 	var hud_scene := load("res://scenes/wave_hud/wave_hud.tscn") as PackedScene
 	var hud := hud_scene.instantiate() as WaveHud

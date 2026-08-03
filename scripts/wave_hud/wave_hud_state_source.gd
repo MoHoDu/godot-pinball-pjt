@@ -62,6 +62,39 @@ func configure_lives(ball_types: Array[StringName], current_index: int = 0) -> v
 	_publish()
 
 
+func select_life(ball_type: StringName) -> bool:
+	var slots: Array = _snapshot[&"life_slots"]
+	var selected_index := -1
+	for index in slots.size():
+		var slot: Dictionary = slots[index]
+		if StringName(slot.get(&"type", &"")) != ball_type \
+				or int(slot.get(&"state", LifeState.SPENT)) == LifeState.SPENT:
+			continue
+		selected_index = index
+		if int(slot.get(&"state", LifeState.UPCOMING)) == LifeState.CURRENT:
+			break
+	if selected_index < 0:
+		return false
+
+	var changed := false
+	for index in slots.size():
+		var slot: Dictionary = slots[index]
+		var old_state := int(slot.get(&"state", LifeState.UPCOMING))
+		if old_state == LifeState.SPENT:
+			continue
+		var next_state := LifeState.CURRENT \
+			if index == selected_index else LifeState.UPCOMING
+		if old_state == next_state:
+			continue
+		slot[&"state"] = next_state
+		slots[index] = slot
+		changed = true
+	if changed:
+		_snapshot[&"life_slots"] = slots
+		_publish()
+	return true
+
+
 func consume_current_life() -> int:
 	var slots: Array = _snapshot[&"life_slots"]
 	var current_index := -1
@@ -74,10 +107,14 @@ func consume_current_life() -> int:
 	var spent: Dictionary = slots[current_index]
 	spent[&"state"] = LifeState.SPENT
 	slots[current_index] = spent
-	if current_index + 1 < slots.size():
-		var next_slot: Dictionary = slots[current_index + 1]
+	for offset in range(1, slots.size() + 1):
+		var next_index := posmod(current_index + offset, slots.size())
+		var next_slot: Dictionary = slots[next_index]
+		if int(next_slot.get(&"state", LifeState.SPENT)) == LifeState.SPENT:
+			continue
 		next_slot[&"state"] = LifeState.CURRENT
-		slots[current_index + 1] = next_slot
+		slots[next_index] = next_slot
+		break
 	_snapshot[&"life_slots"] = slots
 	_publish()
 	return get_remaining_life_count()
@@ -101,6 +138,13 @@ func get_remaining_life_count() -> int:
 		if int(slot.get(&"state", LifeState.SPENT)) != LifeState.SPENT:
 			count += 1
 	return count
+
+
+func get_current_life_type() -> StringName:
+	for slot: Dictionary in _snapshot[&"life_slots"]:
+		if int(slot.get(&"state", LifeState.SPENT)) == LifeState.CURRENT:
+			return StringName(slot.get(&"type", &""))
+	return &""
 
 
 func set_score(current_score: int, target_score: int) -> void:

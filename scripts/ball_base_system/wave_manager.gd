@@ -59,6 +59,10 @@ var current_score: int:
 	get:
 		return combo_wave.current_score if combo_wave != null else 0
 
+var current_wave_index: int:
+	get:
+		return _wave_index
+
 var remaining_balls: int:
 	get:
 		if ball_flow == null or ball_flow.inventory == null:

@@ -12,6 +12,8 @@ const ICON_TEXTURES := {
 	&"normal": preload("res://Resources/ui/wave_hud_runtime_dark/life/ball_normal.png"),
 	&"cat_eye": preload("res://Resources/ui/wave_hud_runtime_dark/life/ball_cat_eye.png"),
 	&"industrial_steel": preload("res://Resources/ui/wave_hud_runtime_dark/life/ball_industrial_steel.png"),
+	&"light": preload("res://Resources/ui/wave_hud_runtime_dark/life/ball_cat_eye.png"),
+	&"heavy": preload("res://Resources/ui/wave_hud_runtime_dark/life/ball_industrial_steel.png"),
 }
 const CURRENT_OUTLINE := preload(
 	"res://Resources/ui/wave_hud_runtime_dark/life/current_outline.png"
