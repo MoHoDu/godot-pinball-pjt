@@ -58,6 +58,8 @@ func _run() -> void:
 	_test_prepare_contract(launcher, ball)
 	_test_held_aim_and_power_input(launcher)
 	_test_effective_speed_range(launcher, ball)
+	_test_trajectory_preview(launcher, ball)
+	await _test_trajectory_preview_matches_initial_motion(launcher, ball)
 	_test_single_launch(launcher, ball)
 	_test_scene_spawning(launcher, packed_ball, test_root)
 	_test_confirm_input_action(launcher)
@@ -169,6 +171,66 @@ func _test_effective_speed_range(
 	launcher.prepare_ball(ball)
 
 
+func _test_trajectory_preview(
+	launcher: PinballLauncher,
+	ball: Pinball
+) -> void:
+	launcher.prepare_ball(ball)
+	launcher.set_current_angle(0.0)
+	launcher.set_current_launch_speed(launcher.get_effective_speed_range().x)
+	var low_power_points := launcher.get_trajectory_preview_points()
+	var low_power_length := _get_polyline_length(low_power_points)
+
+	launcher.set_current_launch_speed(launcher.get_effective_speed_range().y)
+	var high_power_points := launcher.get_trajectory_preview_points()
+	var high_power_length := _get_polyline_length(high_power_points)
+
+	_expect(low_power_points.size() >= 2, \
+		"조준 중에는 실제 물리를 샘플링한 발사 궤적이 필요하다.")
+	_expect(high_power_length > low_power_length + 200.0, \
+		"발사 강도가 높아지면 궤적 가이드가 눈에 띄게 길어져야 한다.")
+	_expect_float(low_power_length, launcher.minimum_preview_length, \
+		"최저 파워 가이드는 설정된 최소 길이를 사용해야 한다.")
+	_expect_float(high_power_length, launcher.maximum_preview_length, \
+		"최고 파워 가이드는 설정된 최대 길이를 사용해야 한다.")
+
+	launcher.set_current_angle(25.0)
+	var angled_points := launcher.get_trajectory_preview_points()
+	if angled_points.size() >= 2:
+		var preview_direction := (
+			angled_points[1] - angled_points[0]
+		).normalized()
+		_expect(preview_direction.dot(launcher.get_launch_direction()) > 0.999, \
+			"가이드의 시작 방향은 실제 발사 방향과 일치해야 한다.")
+
+
+func _test_trajectory_preview_matches_initial_motion(
+	launcher: PinballLauncher,
+	ball: Pinball
+) -> void:
+	launcher.prepare_ball(ball)
+	launcher.set_current_angle(10.0)
+	launcher.set_current_launch_speed(1200.0)
+	var preview_points := launcher.get_trajectory_preview_points()
+	var launched := launcher.launch_prepared_ball()
+	_expect(launched, "초기 비행과 궤적 가이드의 일치 테스트에서 공이 발사되어야 한다.")
+
+	for _frame: int in 6:
+		await physics_frame
+
+	var closest_distance := INF
+	for index: int in range(1, mini(preview_points.size(), 10)):
+		closest_distance = minf(
+			closest_distance,
+			ball.global_position.distance_to(preview_points[index])
+		)
+	_expect(closest_distance <= 12.0, \
+		"초기 실제 비행 위치가 표시된 궤적을 따라야 한다.")
+	_expect(launcher.get_trajectory_preview_points().is_empty(), \
+		"발사 후에는 궤적 가이드가 즉시 숨겨져야 한다.")
+	launcher.prepare_ball(ball)
+
+
 func _test_single_launch(launcher: PinballLauncher, ball: Pinball) -> void:
 	var launch_count := [0]
 	launcher.ball_launched.connect(func(
@@ -250,6 +312,13 @@ func _action_has_physical_key(action: StringName, key: Key) -> bool:
 		if event is InputEventKey and (event as InputEventKey).physical_keycode == key:
 			return true
 	return false
+
+
+func _get_polyline_length(points: PackedVector2Array) -> float:
+	var length := 0.0
+	for index: int in range(1, points.size()):
+		length += points[index - 1].distance_to(points[index])
+	return length
 
 
 func _release_launch_actions() -> void:

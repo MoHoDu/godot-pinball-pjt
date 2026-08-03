@@ -12,6 +12,9 @@ const DEFAULT_LAUNCH_RULES: PinballLaunchRules = preload(
 	"res://settings/balls/PinballLaunchRules.tres"
 )
 const SPEED_EPSILON := 0.001
+const PREVIEW_PHYSICS_STEP := 1.0 / 60.0
+const PREVIEW_MAXIMUM_STEPS := 120
+const PREVIEW_COLLISION_EPSILON := 0.001
 
 
 @export_category("공 발사대")
@@ -48,6 +51,45 @@ var minimum_launch_angle_degrees := -30.0
 var maximum_launch_angle_degrees := 30.0
 
 
+@export_group("발사 궤적 가이드")
+
+## 조준 중 실제 초기 비행을 짧은 점선으로 미리 표시합니다.
+@export var show_trajectory_preview := true:
+	set(value):
+		show_trajectory_preview = value
+		queue_redraw()
+
+## 최저 발사 속력에서 보여줄 가이드의 월드 길이입니다.
+@export_range(40.0, 1000.0, 10.0, "suffix:px")
+var minimum_preview_length := 160.0:
+	set(value):
+		minimum_preview_length = maxf(value, 40.0)
+		maximum_preview_length = maxf(
+			maximum_preview_length,
+			minimum_preview_length
+		)
+		queue_redraw()
+
+## 최고 발사 속력에서 보여줄 가이드의 월드 길이입니다.
+@export_range(40.0, 1600.0, 10.0, "suffix:px")
+var maximum_preview_length := 480.0:
+	set(value):
+		maximum_preview_length = maxf(value, minimum_preview_length)
+		queue_redraw()
+
+## 점 사이의 간격입니다. 전체 경로를 정답처럼 보이지 않게 점선으로 표현합니다.
+@export_range(12.0, 80.0, 1.0, "suffix:px")
+var preview_marker_spacing := 32.0:
+	set(value):
+		preview_marker_spacing = maxf(value, 12.0)
+		queue_redraw()
+
+@export var preview_color := Color(0.45, 1.0, 0.9, 0.9):
+	set(value):
+		preview_color = value
+		queue_redraw()
+
+
 @export_group("공통 조작 규칙")
 
 ## 모든 보드가 공유하는 각도 및 파워 변경 속도입니다.
@@ -72,6 +114,34 @@ var current_launch_speed := 0.0
 func _ready() -> void:
 	_normalize_board_settings()
 	_reset_selection()
+	queue_redraw()
+
+
+func _draw() -> void:
+	if not show_trajectory_preview or not is_aiming:
+		return
+
+	var points := get_trajectory_preview_points()
+	if points.size() < 2:
+		return
+
+	var marker_positions := _resample_trajectory_markers(points)
+	var marker_count := marker_positions.size()
+	for index: int in marker_count:
+		var progress := float(index + 1) / float(marker_count + 1)
+		var marker_position := to_local(marker_positions[index])
+		var radius := lerpf(6.0, 2.5, progress)
+		var alpha := lerpf(preview_color.a, preview_color.a * 0.2, progress)
+		draw_circle(
+			marker_position,
+			radius + 2.0,
+			Color(0.025, 0.055, 0.075, alpha * 0.7)
+		)
+		draw_circle(
+			marker_position,
+			radius,
+			Color(preview_color.r, preview_color.g, preview_color.b, alpha)
+		)
 
 
 func _process(delta: float) -> void:
@@ -130,6 +200,7 @@ func prepare_ball(ball: Pinball = null) -> Pinball:
 	_reset_selection()
 	is_aiming = true
 	ball_prepared.emit(prepared_ball)
+	queue_redraw()
 	return prepared_ball
 
 
@@ -175,6 +246,7 @@ func launch_prepared_ball() -> bool:
 	is_aiming = false
 	prepared_ball = null
 	ball_launched.emit(ball, direction, current_launch_speed)
+	queue_redraw()
 	return true
 
 
@@ -184,6 +256,7 @@ func replace_prepared_ball() -> bool:
 		return false
 	prepared_ball.freeze = true
 	_place_prepared_ball()
+	queue_redraw()
 	return true
 
 
@@ -197,6 +270,7 @@ func set_current_angle(value: float) -> void:
 		return
 	current_angle_degrees = next_angle
 	aim_changed.emit(current_angle_degrees)
+	queue_redraw()
 
 
 func set_current_launch_speed(value: float) -> void:
@@ -206,6 +280,7 @@ func set_current_launch_speed(value: float) -> void:
 		return
 	current_launch_speed = next_speed
 	power_changed.emit(current_launch_speed)
+	queue_redraw()
 
 
 ## 발사대의 Rotation과 현재 상대 각도를 반영한 월드 방향을 반환합니다.
@@ -213,6 +288,69 @@ func get_launch_direction() -> Vector2:
 	return Vector2.RIGHT.rotated(
 		global_rotation + deg_to_rad(current_angle_degrees)
 	).normalized()
+
+
+## 현재 파워에 맞춰 플레이어에게 보여줄 초기 궤적 길이를 반환합니다.
+func get_trajectory_preview_length() -> float:
+	var speed_range := get_effective_speed_range()
+	if speed_range.is_equal_approx(Vector2(speed_range.x, speed_range.x)):
+		return minimum_preview_length
+
+	var power_ratio := inverse_lerp(
+		speed_range.x,
+		speed_range.y,
+		current_launch_speed
+	)
+	return lerpf(minimum_preview_length, maximum_preview_length, power_ratio)
+
+
+## 공의 실제 발사 속도와 현재 중력을 60Hz로 적분한 초기 비행 경로입니다.
+## 첫 충돌 이후의 정답 경로는 노출하지 않도록 충돌 직전에서 가이드를 끝냅니다.
+func get_trajectory_preview_points() -> PackedVector2Array:
+	var points := PackedVector2Array()
+	if not is_aiming or not is_instance_valid(prepared_ball):
+		return points
+
+	var position := prepared_ball.global_position
+	var velocity := get_launch_direction() * current_launch_speed
+	var gravity := prepared_ball.get_gravity()
+	var target_length := get_trajectory_preview_length()
+	var traveled_length := 0.0
+	points.append(position)
+
+	for _step: int in PREVIEW_MAXIMUM_STEPS:
+		velocity += gravity * PREVIEW_PHYSICS_STEP
+		velocity = _apply_preview_linear_damping(
+			velocity,
+			PREVIEW_PHYSICS_STEP
+		)
+		var next_position := position + velocity * PREVIEW_PHYSICS_STEP
+		var segment_length := position.distance_to(next_position)
+		if segment_length <= PREVIEW_COLLISION_EPSILON:
+			break
+
+		var remaining_length := target_length - traveled_length
+		if segment_length >= remaining_length:
+			next_position = position.lerp(
+				next_position,
+				remaining_length / segment_length
+			)
+
+		var collision_fraction := _get_preview_collision_fraction(
+			position,
+			next_position
+		)
+		if collision_fraction < 1.0:
+			points.append(position.lerp(next_position, collision_fraction))
+			break
+
+		points.append(next_position)
+		traveled_length += position.distance_to(next_position)
+		position = next_position
+		if traveled_length + PREVIEW_COLLISION_EPSILON >= target_length:
+			break
+
+	return points
 
 
 ## 보드 발사 범위와 공의 실제 물리 속도 범위가 겹치는 구간을 반환합니다.
@@ -246,6 +384,77 @@ func _place_prepared_ball() -> void:
 	prepared_ball.linear_velocity = Vector2.ZERO
 	prepared_ball.angular_velocity = 0.0
 	prepared_ball.reset_physics_interpolation()
+
+
+func _apply_preview_linear_damping(
+	velocity: Vector2,
+	delta: float
+) -> Vector2:
+	if not is_instance_valid(prepared_ball):
+		return velocity
+
+	var damping := prepared_ball.linear_damp
+	if prepared_ball.linear_damp_mode == RigidBody2D.DAMP_MODE_COMBINE:
+		damping += float(ProjectSettings.get_setting(
+			"physics/2d/default_linear_damp",
+			0.1
+		))
+	return velocity * maxf(1.0 - damping * delta, 0.0)
+
+
+func _get_preview_collision_fraction(
+	from_position: Vector2,
+	to_position: Vector2
+) -> float:
+	if not is_inside_tree() or not is_instance_valid(prepared_ball):
+		return 1.0
+
+	var collision := prepared_ball.get_node_or_null(
+		"CollisionShape2D"
+	) as CollisionShape2D
+	if collision == null or collision.shape == null or collision.disabled:
+		return 1.0
+
+	var query := PhysicsShapeQueryParameters2D.new()
+	query.shape = collision.shape
+	query.transform = collision.global_transform
+	query.transform.origin += from_position - prepared_ball.global_position
+	query.motion = to_position - from_position
+	query.collision_mask = prepared_ball.collision_mask
+	query.exclude = [prepared_ball.get_rid()]
+	query.collide_with_bodies = true
+	query.collide_with_areas = false
+
+	var motion_result := get_world_2d().direct_space_state.cast_motion(query)
+	if motion_result.is_empty():
+		return 1.0
+	return clampf(motion_result[0], 0.0, 1.0)
+
+
+func _resample_trajectory_markers(
+	points: PackedVector2Array
+) -> PackedVector2Array:
+	var markers := PackedVector2Array()
+	if points.size() < 2:
+		return markers
+
+	var distance_until_marker := preview_marker_spacing
+	for index: int in range(1, points.size()):
+		var segment_start := points[index - 1]
+		var segment_end := points[index]
+		var segment_length := segment_start.distance_to(segment_end)
+
+		while segment_length + PREVIEW_COLLISION_EPSILON >= distance_until_marker:
+			var ratio := distance_until_marker / segment_length
+			var marker := segment_start.lerp(segment_end, ratio)
+			markers.append(marker)
+			segment_start = marker
+			segment_length = segment_start.distance_to(segment_end)
+			distance_until_marker = preview_marker_spacing
+
+		distance_until_marker -= segment_length
+
+	return markers
 
 
 func _reset_selection() -> void:
