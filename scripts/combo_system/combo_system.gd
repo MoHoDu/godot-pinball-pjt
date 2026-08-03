@@ -100,6 +100,17 @@ func register_hit(score_weight: float = 1.0) -> int:
 	return _combo_count
 
 
+## 콤보를 증가시키지 않고 활성 콤보의 유지 시간만 초기값으로 갱신합니다.
+## 벽처럼 시간 갱신만 담당하는 오브젝트가 사용하며 0콤보에서는 아무 상태도 만들지 않습니다.
+func refresh_combo_timer() -> bool:
+	if _combo_count <= 0:
+		return false
+	_time_remaining = _get_hold_time()
+	combo_timer_changed.emit(_time_remaining, _get_hold_time())
+	_refresh_processing()
+	return true
+
+
 ## 테스트와 일시정지에 독립적인 게임 상태 구동을 위해 시간을 명시적으로 진행합니다.
 func advance_time(delta: float) -> void:
 	if _combo_count <= 0 or is_timer_suspended or delta <= 0.0:
