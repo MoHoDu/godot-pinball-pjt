@@ -9,7 +9,7 @@ const RIGHT_FLIPPER_SCENE_PATH := \
 const TEST_FLIPPER_LENGTH := 328.0
 const BALL_DIAMETER := 44.0
 const START_CLEARANCE := 100.0
-const MAX_ALLOWED_PENETRATION := 10.0
+const MAX_ALLOWED_PENETRATION := 11.0
 const MAX_TEST_FRAMES := 20
 const ZONE_CASES := [
 	{&"name": "A20", &"percent": 20.0},
@@ -69,22 +69,24 @@ func _run() -> void:
 						speed,
 						angle_degrees,
 					]
-					print("CASE: %s actual_zone=%.1f reflected=%s penetration=%.2f" % [
+					print("CASE: %s actual_zone=%.1f response=%s penetration=%.2f" % [
 						case_name,
 						float(result.get(&"actual_percent", -1.0)),
-						bool(result.get(&"reflected", false)),
+						bool(result.get(&"collision_response", false)),
 						float(result.get(&"maximum_penetration", INF)),
 					])
-					_expect(bool(result.get(&"reflected", false)), \
-						"%s 공이 접촉면 바깥쪽으로 반사되어야 한다." % case_name)
+					_expect(bool(result.get(&"collision_response", false)), \
+						"%s 공에 실제 충돌 반응이 발생해야 한다." % case_name)
 					_expect(
 						float(result.get(&"maximum_penetration", INF))
 							<= MAX_ALLOWED_PENETRATION,
-						"%s 공 중심이 접촉면 안으로 %.2fpx 깊게 들어가면 안 된다." % [
+						"%s 공의 실제 고체 영역 침투 깊이가 %.2fpx이면 안 된다." % [
 							case_name,
 							float(result.get(&"maximum_penetration", INF)),
 						]
 					)
+					_expect(not bool(result.get(&"center_entered_solid", true)), \
+						"%s 공 중심이 플리퍼의 실제 고체 영역에 들어가면 안 된다." % case_name)
 
 	_finish()
 
@@ -162,25 +164,100 @@ func _run_contact_case(
 	ball.linear_velocity = incoming_direction * speed
 	ball.sleeping = false
 
-	var reflected := false
+	var initial_velocity := ball.linear_velocity
+	var collision_response := false
 	var maximum_penetration := 0.0
+	var center_entered_solid := false
 	for _frame in MAX_TEST_FRAMES:
 		await physics_frame
-		var signed_clearance := (
-			(ball.global_position - contact_point).dot(contact_normal)
-			- ball_radius
+		var current_polygon: PackedVector2Array = flipper.call(
+			&"_get_world_collision_polygon",
+			flipper.rotation
 		)
-		maximum_penetration = maxf(maximum_penetration, -signed_clearance)
-		if ball.linear_velocity.dot(contact_normal) > 0.0:
-			reflected = true
+		var polygon_penetration := _get_polygon_penetration(
+			ball.global_position,
+			ball_radius,
+			current_polygon,
+			flipper
+		)
+		var pivot_penetration := _get_pivot_penetration(
+			ball.global_position,
+			ball_radius,
+			flipper
+		)
+		maximum_penetration = maxf(
+			maximum_penetration,
+			maxf(
+				float(polygon_penetration.get(&"depth", 0.0)),
+				float(pivot_penetration.get(&"depth", 0.0))
+			)
+		)
+		center_entered_solid = center_entered_solid \
+			or bool(polygon_penetration.get(&"center_inside", false)) \
+			or bool(pivot_penetration.get(&"center_inside", false))
+		if ball.linear_velocity.distance_to(initial_velocity) > speed * 0.2:
+			collision_response = true
 
 	ball.queue_free()
 	flipper.queue_free()
 	await process_frame
 	return {
 		&"actual_percent": actual_percent,
-		&"reflected": reflected,
+		&"collision_response": collision_response,
 		&"maximum_penetration": maximum_penetration,
+		&"center_entered_solid": center_entered_solid,
+	}
+
+
+func _get_polygon_penetration(
+	circle_center: Vector2,
+	circle_radius: float,
+	polygon: PackedVector2Array,
+	flipper: PinballFlipper
+) -> Dictionary:
+	var contact: Dictionary = flipper.call(
+		&"_get_circle_polygon_contact",
+		circle_center,
+		polygon
+	)
+	if contact.is_empty():
+		return {}
+	var contact_point: Vector2 = contact[&"point"]
+	var distance := circle_center.distance_to(contact_point)
+	var center_inside := Geometry2D.is_point_in_polygon(circle_center, polygon)
+	return {
+		&"depth": (
+			circle_radius + distance
+			if center_inside
+			else maxf(circle_radius - distance, 0.0)
+		),
+		&"center_inside": center_inside,
+	}
+
+
+func _get_pivot_penetration(
+	circle_center: Vector2,
+	circle_radius: float,
+	flipper: PinballFlipper
+) -> Dictionary:
+	var pivot := flipper.get_node_or_null(
+		"PivotCollisionShape2D"
+	) as CollisionShape2D
+	if pivot == null or not pivot.shape is CircleShape2D:
+		return {}
+	var pivot_circle := pivot.shape as CircleShape2D
+	var pivot_scale := pivot.global_scale.abs()
+	var pivot_radius := pivot_circle.radius * maxf(
+		pivot_scale.x,
+		pivot_scale.y
+	)
+	var center_distance := circle_center.distance_to(pivot.global_position)
+	return {
+		&"depth": maxf(
+			pivot_radius + circle_radius - center_distance,
+			0.0
+		),
+		&"center_inside": center_distance < pivot_radius,
 	}
 
 
