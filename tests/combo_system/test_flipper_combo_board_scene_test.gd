@@ -41,12 +41,23 @@ func _test_integrated_structure(board: Node) -> void:
 	var inspector := board.get_node_or_null("HUD/ComboInspector")
 	var ball := board.get_node_or_null("PinballBall") as Pinball
 	var selector := board.get_node_or_null("FlipperSelector") as FlipperSelector
+	var collision_bridge := board.get_node_or_null(
+		"ComboCollisionBridge"
+	) as ComboCollisionBridge
 
 	_expect(combo != null, "보드에 실제 ComboSystem 노드가 필요하다.")
 	_expect(hud != null, "콤보 수·티어·시간·점수를 표시할 ComboHud가 필요하다.")
 	_expect(inspector != null, "콤보 검증 키와 이벤트를 표시할 패널이 필요하다.")
 	_expect(ball != null and selector != null, \
 		"원본 보드의 공과 4방향 플리퍼 선택기를 유지해야 한다.")
+	_expect(collision_bridge != null, \
+		"플리퍼·벽 접촉을 콤보 판정으로 전달하는 브리지가 필요하다.")
+	var walls := board.get_node_or_null("Walls")
+	_expect(walls != null, "콤보 보드에 벽 루트가 필요하다.")
+	if walls != null:
+		for wall: Node in walls.get_children():
+			_expect(wall.is_in_group(&"combo_timer_refresh_walls"), \
+				"모든 보드 벽은 최초 접촉 시간 갱신 대상으로 표시되어야 한다.")
 
 	var bumpers := board.get_node_or_null("Bumpers")
 	_expect(bumpers != null and bumpers.get_child_count() == 3, \

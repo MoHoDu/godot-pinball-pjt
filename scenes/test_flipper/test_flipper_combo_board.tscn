@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://bfbmlm1j8k4kb" path="res://scripts/combo_system/combo_hit_source.gd" id="4_hit_source"]
 [ext_resource type="Script" uid="uid://ce2wax7g2gio8" path="res://scripts/ball_base_system/pinball_stats.gd" id="4_oxyqn"]
 [ext_resource type="PackedScene" path="res://scenes/combo_system/combo_hud.tscn" id="5_combo_hud"]
+[ext_resource type="Script" path="res://scripts/combo_system/combo_collision_bridge.gd" id="6_collision_bridge"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_oxyqn"]
 resource_local_to_scene = true
@@ -74,7 +75,12 @@ maximum_launch_angle_degrees = 45.0
 [node name="ComboSystem" type="Node" parent="." index="9" unique_id=206264385]
 script = ExtResource("3_combo_system")
 
-[node name="ManualHitSource" type="Node" parent="." index="10" unique_id=756394642]
+[node name="ComboCollisionBridge" type="Node" parent="." index="10"]
+script = ExtResource("6_collision_bridge")
+combo_system_path = NodePath("../ComboSystem")
+ball_path = NodePath("../PinballBall")
+
+[node name="ManualHitSource" type="Node" parent="." index="11" unique_id=756394642]
 script = ExtResource("4_hit_source")
 source_id = &"manual"
 
