@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ComboRules" format=3]
+
+[ext_resource type="Script" path="res://scripts/combo_system/combo_rules.gd" id="1_combo_rules"]
+
+[resource]
+script = ExtResource("1_combo_rules")
+hold_time = 3.0
+super_start_count = 11
+hyper_start_count = 21
+ultra_start_count = 36
+normal_score_multiplier = 1.0
+super_score_multiplier = 5.0
+hyper_score_multiplier = 10.0
+ultra_score_multiplier = 20.0
+normal_damage_multiplier = 1.0
+super_damage_multiplier = 1.25
+hyper_damage_multiplier = 1.6
+ultra_damage_multiplier = 2.0
+damage_growth_per_hit = 0.025
+damage_combo_cap = 40
