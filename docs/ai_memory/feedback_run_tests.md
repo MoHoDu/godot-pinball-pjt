@@ -14,10 +14,36 @@ type: feedback
 "컨테이너에 Godot이 없다"고 했지만 실제로는 한 번 GitHub API가 403을 준 걸 보고 포기한 것이었다.
 그 결과 형락님이 파스 에러를 대신 발견했다.
 
-## Godot은 컨테이너에 설치된다 (경로 확인됨)
+## ⚠ 2026-08-03 재확인 — 이 방법은 지금 막혀 있다
+
+`github.com` 자체는 200이지만, 릴리스 에셋이 **`release-assets.githubusercontent.com`** 으로
+302 리다이렉트되고 **그 호스트가 차단**된다(연결 자체가 안 됨). 4.2 / 4.3 / 4.7.1 전부 같다.
+
+| 호스트 | 상태 |
+|---|---|
+| `github.com` | 200 |
+| `objects.githubusercontent.com` | 도달 가능 (구 에셋 호스트, 지금은 안 씀) |
+| `release-assets.githubusercontent.com` | **차단** |
+| `raw.githubusercontent.com` / `downloads.godotengine.org` | 차단 |
+| `registry.npmjs.org` / `pypi.org` / `archive.ubuntu.com` | 200 |
+
+npm·PyPI·apt 어디에도 Godot 바이너리를 직접 배포하는 패키지가 없다
+(npm의 godot-* 패키지들은 전부 GitHub에서 받아오므로 같이 막힌다).
+
+**그래서 엔진 실행이 필요한 검증은 형락님 로컬에서 돌려야 한다.** 넘길 때 명령어를 같이 준다.
+
+### 엔진 없이 할 수 있는 검증 (텍스처 교체 같은 데이터 변경에는 이걸로 상당 부분 커버된다)
+
+- 텍스처 크기·알파 bbox → `pinball_size_test` 가 보는 값과 동일
+- `refresh_ball_size()` 수식을 파이썬으로 재현해 표시 지름 vs 충돌 지름 대조
+- `.tscn` ext_resource 경로가 실제 파일과 **대소문자까지** 일치하는지
+- 구본 텍스처 참조 잔존 / 변종 씬 상속 확인
+- 보드·플리퍼 원본 텍스처 + 규칙 `.tres` 값으로 **파이썬 근사 합성** → 눈으로 확인
+
+### 원래 방법 (호스트가 다시 열리면)
 
 GitHub **API**(`api.github.com`)와 릴리스 **목록** 페이지는 403이지만,
-릴리스 **에셋 직링크는 200으로 열린다.**
+과거에는 릴리스 **에셋 직링크가 200으로 열렸다.**
 
 ```bash
 curl -sL -o /tmp/godot.zip \

@@ -224,17 +224,30 @@ func _get_instance_circle_shape(collision: CollisionShape2D) -> CircleShape2D:
 	return circle
 
 
-## 입력 방향을 정규화하고 설정된 초기 속력으로 공을 발사합니다.
-## 방향이 Vector2.ZERO이면 기존 속도를 보존하고 false를 반환합니다.
-func launch(direction: Vector2) -> bool:
-	if direction.is_zero_approx():
+## 입력 방향을 정규화하고 설정된 초기 속력 또는 요청 속력으로 공을 발사합니다.
+## 요청 속력이 -1이면 공 Stats의 초기 속력을 사용합니다.
+## 방향이나 요청 속력이 잘못되면 기존 속도를 보존하고 false를 반환합니다.
+func launch(direction: Vector2, requested_speed: float = -1.0) -> bool:
+	if (
+		direction.is_zero_approx()
+		or is_nan(requested_speed)
+		or is_inf(requested_speed)
+		or (
+			requested_speed < 0.0
+			and not is_equal_approx(requested_speed, -1.0)
+		)
+	):
 		return false
+
+	var launch_speed := physics_rules.get_effective_initial_speed(stats)
+	if requested_speed >= 0.0:
+		launch_speed = requested_speed
 
 	_minimum_speed_suppressed_by_gravity = false
 	sleeping = false
 	linear_velocity = get_limited_velocity(
 		direction.normalized()
-		* physics_rules.get_effective_initial_speed(stats)
+		* launch_speed
 	)
 	return true
 

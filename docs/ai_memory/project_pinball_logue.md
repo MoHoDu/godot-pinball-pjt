@@ -93,6 +93,16 @@ git 리모트 `https://github.com/MoHoDu/godot-pinball-pjt.git`, 작업 브랜�
 - 플리퍼 시스템 기획서 v2: `1W8WMeM7hn-z-jui02duTsKTYL3MrwKJSt6r38DOVuRg`
 - 컨셉 기획서 "눈을 잃은 장난감" v0.1: `1usUq5E6mSIoJAMO-kytuJlYIQ2FaPhYE5dTNz34wrZQ`
 
+### ★ 사운드 규격은 두 문서에 나뉘어 있다 (2026-08-03 확인)
+
+| 문서 | 범위 | 사운드 관련 |
+|---|---|---|
+| `핀볼_PL_비주얼_사운드방향성가이드_강보현 (6).pdf` (33쪽, 보상 공 5종 전용) | 공 5종 | **6장 공통 사운드 원칙 / 7~11장 공별 SFX / 12장 검수 기준** |
+| `docs/source_materials/pdfs/pinball_visual_sound_direction_guide_2026-08-03.pdf` (75쪽) | 전체 | **11.1 벽 충돌 SFX 수치** (0.06~0.14초, 피치 ±5%, 동시 4개, 간격 0.04초, 패링 대비 -8~-10dB, 연타 -3dB) |
+
+**둘의 길이 규격이 다르다** — 33쪽 문서 6-4는 0.08~0.20초, 75쪽 문서 11.1은 0.06~0.14초.
+겹치는 구간(0.08~0.14초)으로 맞추면 둘 다 만족한다. SFX 파일럿은 그렇게 했다.
+
 ## 미해결 충돌 (아트 양산 전 확정 필요)
 1. **보드 형태가 3중으로 다름** — 기획서 메인안 팔각형 / 변형안 육각형 / Confluence는 역삼각형.
    단 **팔각형 기준으로 아트 진행 중**이고 마스킹까지 완료
@@ -103,12 +113,45 @@ git 리모트 `https://github.com/MoHoDu/godot-pinball-pjt.git`, 작업 브랜�
 6. **배경 코너 4개** — 팔각형 바깥 삼각형 4개(화면의 15%)를 무엇으로 채울지 미정
 7. **경로 대소문자 17곳** — Linux/macOS 익스포트 시 전부 깨짐 → [[path-case-issue]]
 
-## 현재 진척 (2026-08-03)
-- **플리퍼**: 기본 작동/컨트롤러/방향키 매핑/선택/노란 아웃라인/패링 시스템 **완료**. 남은 건 VFX·SFX 연결
-- **공 물리**: 이동/타입별 규칙(중력·탄성·무게)/커스텀/충돌 **완료**
-- **공 아트**: 캣츠아이 최종본 게임 적용 완료 → [[ball-glass-eye]]
-- **공 응시 시스템**: 진행방향 응시 구현·테스트 통과
-- **공 VFX ① 발광 테두리**: 구현·테스트 통과 → [[vfx-ball-effects]]
-- **보드 아트**: 사각형(팔각형) 마스킹까지 완료 → [[board-step-pipeline]]
-- **미착수**: 공 VFX ② 꼬리 ③ 파동 / 삼각형 보드 / 범퍼·유물·코인·보스 / 모든 SFX
-- 구 컨셉 잔재 `industrial_steel_ball.png`, `industrial_steel_flipper.png` 폐기 대상
+## 현재 진척 (2026-08-03 세션 종료 시점)
+
+> **상세 인계 메모는 [[HANDOFF]](HANDOFF.md) 에 있다. 이어받는 사람은 그걸 먼저 읽는 게 빠르다.**
+> 이 절은 요약이다.
+
+**완료**
+
+- **플리퍼**: 기본 작동/컨트롤러/방향키 매핑/선택/노란 아웃라인/패링 시스템. 남은 건 VFX·SFX 연결
+- **공 물리**: 이동/타입별 규칙(중력·탄성·무게)/커스텀/충돌
+- **공 아트**: `glass_eye_ball.png` 확정, 게임 적용 → [[ball-texture-fixed]], [[ball-v6-redesign]]
+  (캣츠아이는 폐기됨 — [[ball-glass-eye]]는 이력 문서로만 읽을 것)
+- **공 응시 시스템**: 진행방향 응시 구현
+- **공 VFX ① 발광 테두리 → 안개 오라**: 셰이더 구현 완료 → [[vfx01-mist-aura]]
+- **공 VFX ② 이동 꼬리**: 형태·텍스처 단계 모두 구현 완료, 인게임 피드백 3건 반영 → [[vfx02-trail]]
+- **보상 공 5종 아트**: 63개 파일. Body/Pupil + VFX 텍스처 세트 → [[ball-reward-variants]]
+  - 프리셋도 있다: `settings/balls/glow/` 발광 테두리 5종 · `settings/balls/trail/` 이동 꼬리 5종
+- **벽 리소스**: 톤다운 아이보리 프레임 확정, `test_flipper_board.tscn` 네 대각 벽에 적용 완료 → [[wall-final-resource-handoff]]
+- **보드 아트**: 사각형(팔각형) 마스킹까지 → [[board-step-pipeline]]
+- **테스트 씬 공 종류 전환**: `test_ball_physics` 에서 숫자키 1~7. VFX 검수는 여기서 → [[test-scene-controls]]
+- **공 SFX ① 형태 단계 (정속 태엽눈 파일럿)**: 공통 어택 3 + 충돌 3 + 패링 1 → [[sfx01-ball-pilot]]
+
+**다음에 이어서 할 일**
+
+1. ★ **공 VFX ③ 패링 원형 파동** — 2026-08-03 형락님 "꼬리는 넘어가고 패링 VFX로".
+   정확한 패링에만, r25~30 → 90~120px, 0.12~0.20초, 금색 보조 링. 텍스처 5종은 이미 있고 시스템만 없다.
+   붙일 곳: 플리퍼 `parry_resolved` 시그널의 PERFECT. 상세 수치는 [[HANDOFF]] §3
+2. **SFX ② 텍스처 단계 — 형락님 검수 대기 중.** `docs/ball_guides/sfx/SFX_Clockwork_audition.mp3` 를
+   들어보고 방향 확정 → ElevenLabs 재질음. 프롬프트는 `sfx_elevenlabs_prompts.md` 에 이미 있고,
+   형락님이 직접 생성해 `docs/ball_guides/sfx/raw/` 에 넣기로 했다. **승인 전 나머지 4종 양산 금지**
+3. **`AudioController` 노드 신설** — 문서 12-3 구조. 현재 `base_ball.tscn` 은 Sprite2D + `_Trail` 뿐
+4. **삼각형 보드** (2026-08-02 지시상 원래 1순위였으나 계속 밀렸다)
+5. 범퍼·유물·코인·보스 아트
+
+**결정 대기**: 보상 공 5종을 코드의 6종(`elastic_var` 3 + `mass_var` 3)에 어떻게 매핑할지.
+정속 태엽눈이 대응 없고 `super_ball`·`normal_ball` 이 남는다.
+
+**정리 가능**: `Resources/Art/balls/` 의 `ball.png` · `cats_eye_ball.png` · `industrial_steel_ball.png`
+— 코드·씬 참조 0건. 그리고 `industrial_steel_flipper.png`.
+
+**엔진 테스트가 전부 밀려 있다** — VFX ①②, 공 v6, 보상 공 5종, 새 테스트
+(`ball_trail_test.gd` 12종 · `test_ball_physics_scene_test.gd` 6종) 전부 **미실행**이다.
+컨테이너에 Godot을 못 받는다 → [[godot-install-blocked]]. 명령어 목록은 [[HANDOFF]] §3.

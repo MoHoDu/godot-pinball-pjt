@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3 uid="uid://ris3ga3vl6ci"]
 
 [ext_resource type="Script" uid="uid://bartghgyuhhe8" path="res://scripts/flipper_system/flipper.gd" id="1_hv5km"]
-[ext_resource type="Shader" uid="uid://d2wx6fpflk13d" path="res://resources/shaders/selection_outline.gdshader" id="2_7ccxm"]
-[ext_resource type="Texture2D" uid="uid://c7uw0wdcfvsh1" path="res://resources/art/flippers/Flipper_cartoon.png" id="3_p8ilj"]
+[ext_resource type="Shader" uid="uid://d2wx6fpflk13d" path="res://Resources/shaders/selection_outline.gdshader" id="2_7ccxm"]
+[ext_resource type="Texture2D" uid="uid://c7uw0wdcfvsh1" path="res://Resources/art/flippers/Flipper_cartoon.png" id="3_p8ilj"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_p8ilj"]
 shader = ExtResource("2_7ccxm")

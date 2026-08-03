@@ -1,9 +1,9 @@
 extends SceneTree
 
 
-const BASE_BALL_SCENE_PATH := "res://resources/balls/base/base_ball.tscn"
+const BASE_BALL_SCENE_PATH := "res://Resources/balls/base/base_ball.tscn"
 const LEFT_FLIPPER_SCENE_PATH := \
-	"res://resources/flippers/sub_flipper/normal_flipper_left.tscn"
+	"res://Resources/flippers/sub_flipper/normal_flipper_left.tscn"
 const TEST_FLIPPER_LENGTH := 328.0
 
 

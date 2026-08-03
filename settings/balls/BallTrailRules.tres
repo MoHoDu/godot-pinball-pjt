@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="BallTrailRules" format=3]
+
+[ext_resource type="Script" path="res://scripts/ball_base_system/vfx/ball_trail_rules.gd" id="1_trail"]
+
+[resource]
+script = ExtResource("1_trail")
+length_ratio = 6.364
+reference_speed = 900.0
+min_length_scale = 0.45
+max_length_scale = 1.3
+hide_below_speed = 60.0
+point_count = 24
+point_lifetime = 0.22
+bloom_root = 1.35
+bloom_tip = 0.02
+bloom_power = 1.0
+bloom_alpha = 0.8
+core_root = 0.2
+core_tip = 0.004
+core_power = 1.0
+core_alpha = 0.95
+band_steps = 4
+step_gamma = 1.15
+core_step_drop = 1
+fade_in_time = 0.05
+fade_out_time = 0.12
+laser_hot = Color(1, 1, 0.996, 1)
+laser_tip = Color(0.941, 0.878, 0.765, 1)
+bloom_in = Color(0.498, 0.788, 0.706, 1)
+bloom_mid = Color(0.31, 0.651, 0.573, 1)
+bloom_out = Color(0.18, 0.378, 0.332, 1)

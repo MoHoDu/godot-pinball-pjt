@@ -9,6 +9,9 @@
 [ext_resource type="PackedScene" uid="uid://u4e8s8havfkw" path="res://Resources/flippers/sub_flipper/normal_flipper_right.tscn" id="7_right"]
 [ext_resource type="Script" uid="uid://gmulfh3yhc8h" path="res://tests/flipper_system/test_speed_bumper.gd" id="8_bumper"]
 [ext_resource type="Texture2D" uid="uid://dsjw1kfs6d0xv" path="res://Resources/Art/board/octagonal_dark_wood_board.png" id="9_board_texture"]
+[ext_resource type="PackedScene" path="res://Resources/Art/walls/cursed_toy_frame_v1/wall_visual_820x40_cursed_toy_v1.tscn" id="10_wall_visual"]
+[ext_resource type="Texture2D" uid="uid://cccmtg74eywpf" path="res://Resources/Art/backgrounds/cursed_circus_outside_background.png" id="11_outside_background"]
+[ext_resource type="Script" path="res://scripts/ball_base_system/pinball_launcher.gd" id="12_launcher"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape_diagonal"]
 size = Vector2(819.329, 24)
@@ -21,11 +24,11 @@ radius = 64.0
 resource_local_to_scene = true
 radius = 68.0
 
-[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_sexy2"]
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_yeeea"]
 resource_local_to_scene = true
 bounce = 0.9
 
-[sub_resource type="Resource" id="Resource_dtk71"]
+[sub_resource type="Resource" id="Resource_cvo6k"]
 resource_local_to_scene = true
 script = ExtResource("3_stats")
 mass = 1.0
@@ -38,7 +41,14 @@ maximum_speed = 1540.0
 [node name="TestFlipperBoard" type="Node2D" unique_id=1905006504]
 script = ExtResource("1_board")
 
+[node name="OutsideBackground" type="Sprite2D" parent="." unique_id=1723056906]
+modulate = Color(0.82, 0.82, 0.82, 1)
+z_index = -20
+scale = Vector2(1.3397129, 1.3390011)
+texture = ExtResource("11_outside_background")
+
 [node name="BoardBackground" type="Sprite2D" parent="." unique_id=2016125082]
+modulate = Color(0.7, 0.7, 0.7, 1)
 z_index = -10
 texture = ExtResource("9_board_texture")
 
@@ -71,9 +81,7 @@ rotation = 0.348772
 position = Vector2(0, 12)
 shape = SubResource("RectangleShape_diagonal")
 
-[node name="Visual" type="Polygon2D" parent="Walls/TopRightDiagonal" unique_id=1986772914]
-color = Color(0.35, 0.78, 0.96, 1)
-polygon = PackedVector2Array(-409.6645, 0, 409.6645, 0, 409.6645, 6, -409.6645, 6)
+[node name="Visual" parent="Walls/TopRightDiagonal" unique_id=1986772914 instance=ExtResource("10_wall_visual")]
 
 [node name="BottomRightDiagonal" type="StaticBody2D" parent="Walls" unique_id=10598488]
 position = Vector2(735, 490)
@@ -83,9 +91,7 @@ rotation = 2.7928207
 position = Vector2(0, 12)
 shape = SubResource("RectangleShape_diagonal")
 
-[node name="Visual" type="Polygon2D" parent="Walls/BottomRightDiagonal" unique_id=1280937662]
-color = Color(0.35, 0.78, 0.96, 1)
-polygon = PackedVector2Array(-409.6645, 0, 409.6645, 0, 409.6645, 6, -409.6645, 6)
+[node name="Visual" parent="Walls/BottomRightDiagonal" unique_id=1280937662 instance=ExtResource("10_wall_visual")]
 
 [node name="BottomLeftDiagonal" type="StaticBody2D" parent="Walls" unique_id=2088105206]
 position = Vector2(-735, 490)
@@ -95,9 +101,7 @@ rotation = -2.7928207
 position = Vector2(0, 12)
 shape = SubResource("RectangleShape_diagonal")
 
-[node name="Visual" type="Polygon2D" parent="Walls/BottomLeftDiagonal" unique_id=24145458]
-color = Color(0.35, 0.78, 0.96, 1)
-polygon = PackedVector2Array(-409.6645, 0, 409.6645, 0, 409.6645, 6, -409.6645, 6)
+[node name="Visual" parent="Walls/BottomLeftDiagonal" unique_id=24145458 instance=ExtResource("10_wall_visual")]
 
 [node name="TopLeftDiagonal" type="StaticBody2D" parent="Walls" unique_id=1475565543]
 position = Vector2(-735, -490)
@@ -107,9 +111,7 @@ rotation = -0.348772
 position = Vector2(0, 12)
 shape = SubResource("RectangleShape_diagonal")
 
-[node name="Visual" type="Polygon2D" parent="Walls/TopLeftDiagonal" unique_id=908687253]
-color = Color(0.35, 0.78, 0.96, 1)
-polygon = PackedVector2Array(-409.6645, 0, 409.6645, 0, 409.6645, 6, -409.6645, 6)
+[node name="Visual" parent="Walls/TopLeftDiagonal" unique_id=908687253 instance=ExtResource("10_wall_visual")]
 
 [node name="Bumpers" type="Node2D" parent="." unique_id=525693520]
 
@@ -161,12 +163,12 @@ position = Vector2(0, 550)
 script = ExtResource("5_controller")
 
 [node name="LeftFlipper" parent="FlipperSelector/BottomController" unique_id=1456684495 instance=ExtResource("6_left")]
-position = Vector2(-350, 0)
+position = Vector2(-350, 72.00001)
 _source_collision_position = Vector2(2128.6719, -88.14147)
 flipper_length = 328.0
 
 [node name="RightFlipper" parent="FlipperSelector/BottomController" unique_id=1943189333 instance=ExtResource("7_right")]
-position = Vector2(350, 0)
+position = Vector2(350, 76.00001)
 _source_collision_position = Vector2(-2126.5242, 80.03048)
 flipper_length = 328.0
 
@@ -217,20 +219,30 @@ flipper_length = 328.0
 
 [node name="PinballBall" parent="." unique_id=1525149773 instance=ExtResource("2_ball")]
 position = Vector2(0, 400)
-physics_material_override = SubResource("PhysicsMaterial_sexy2")
+physics_material_override = SubResource("PhysicsMaterial_yeeea")
 gravity_scale = 0.35
 freeze = true
-stats = SubResource("Resource_dtk71")
+stats = SubResource("Resource_cvo6k")
 ball_diameter = 94.0
 
-[node name="LauncherMarker" type="Polygon2D" parent="." unique_id=489416960]
-z_index = -1
+[node name="PinballLauncher" type="Node2D" parent="."]
 position = Vector2(0, 400)
+rotation = -2.14717
+script = ExtResource("12_launcher")
+default_launch_speed = 940.0
+minimum_launch_speed = 320.0
+maximum_launch_speed = 1540.0
+minimum_launch_angle_degrees = -30.0
+maximum_launch_angle_degrees = 30.0
+
+[node name="LauncherMarker" type="Polygon2D" parent="PinballLauncher" unique_id=489416960]
+z_index = -1
 color = Color(0.25, 0.85, 0.43, 0.25)
 polygon = PackedVector2Array(-42, -42, 42, -42, 42, 42, -42, 42)
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=366379460]
-zoom = Vector2(0.514286, 0.514286)
+position = Vector2(0, 16)
+zoom = Vector2(0.494, 0.494)
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=2130486477]
 

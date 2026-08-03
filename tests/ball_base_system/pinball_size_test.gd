@@ -1,6 +1,6 @@
 extends SceneTree
 
-const BALL_SCENE_PATH := "res://resources/balls/base/base_ball.tscn"
+const BALL_SCENE_PATH := "res://Resources/balls/base/base_ball.tscn"
 const EXPECTED_DEFAULT_DIAMETER := 64.0
 const EXPECTED_MIN_DIAMETER := 16.0
 const EXPECTED_MAX_DIAMETER := 256.0
