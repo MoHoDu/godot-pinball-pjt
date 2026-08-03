@@ -11,6 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://dsjw1kfs6d0xv" path="res://Resources/Art/board/octagonal_dark_wood_board.png" id="9_board_texture"]
 [ext_resource type="PackedScene" path="res://Resources/Art/walls/cursed_toy_frame_v1/wall_visual_820x40_cursed_toy_v1.tscn" id="10_wall_visual"]
 [ext_resource type="Texture2D" uid="uid://cccmtg74eywpf" path="res://Resources/Art/backgrounds/cursed_circus_outside_background.png" id="11_outside_background"]
+[ext_resource type="Script" path="res://scripts/ball_base_system/pinball_launcher.gd" id="12_launcher"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape_diagonal"]
 size = Vector2(819.329, 24)
@@ -43,8 +44,7 @@ script = ExtResource("1_board")
 [node name="OutsideBackground" type="Sprite2D" parent="." unique_id=1723056906]
 modulate = Color(0.82, 0.82, 0.82, 1)
 z_index = -20
-position = Vector2(7, 23)
-scale = Vector2(1.3494952, 1.4303268)
+scale = Vector2(1.3397129, 1.3390011)
 texture = ExtResource("11_outside_background")
 
 [node name="BoardBackground" type="Sprite2D" parent="." unique_id=2016125082]
@@ -163,12 +163,12 @@ position = Vector2(0, 550)
 script = ExtResource("5_controller")
 
 [node name="LeftFlipper" parent="FlipperSelector/BottomController" unique_id=1456684495 instance=ExtResource("6_left")]
-position = Vector2(-351, 72.00001)
+position = Vector2(-350, 72.00001)
 _source_collision_position = Vector2(2128.6719, -88.14147)
 flipper_length = 328.0
 
 [node name="RightFlipper" parent="FlipperSelector/BottomController" unique_id=1943189333 instance=ExtResource("7_right")]
-position = Vector2(369, 76.00001)
+position = Vector2(350, 76.00001)
 _source_collision_position = Vector2(-2126.5242, 80.03048)
 flipper_length = 328.0
 
@@ -225,9 +225,18 @@ freeze = true
 stats = SubResource("Resource_cvo6k")
 ball_diameter = 94.0
 
-[node name="LauncherMarker" type="Polygon2D" parent="." unique_id=489416960]
-z_index = -1
+[node name="PinballLauncher" type="Node2D" parent="."]
 position = Vector2(0, 400)
+rotation = -2.14717
+script = ExtResource("12_launcher")
+default_launch_speed = 940.0
+minimum_launch_speed = 320.0
+maximum_launch_speed = 1540.0
+minimum_launch_angle_degrees = -30.0
+maximum_launch_angle_degrees = 30.0
+
+[node name="LauncherMarker" type="Polygon2D" parent="PinballLauncher" unique_id=489416960]
+z_index = -1
 color = Color(0.25, 0.85, 0.43, 0.25)
 polygon = PackedVector2Array(-42, -42, 42, -42, 42, 42, -42, 42)
 
