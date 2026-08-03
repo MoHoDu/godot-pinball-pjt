@@ -44,6 +44,10 @@ func _run() -> void:
 		flipper,
 		ball_scene
 	)
+	await _test_activation_owns_adjacent_frame_contact(
+		flipper,
+		ball_scene
+	)
 
 	flipper.queue_free()
 	await process_frame
@@ -123,6 +127,48 @@ func _test_tip_hit_uses_approaching_impact_normal(
 	_expect(ball.linear_velocity.length() <= PERFECT_MAXIMUM_SPEED + 1.0, \
 		"끝부분 정확 패링의 실제 속력이 상한을 넘으면 안 된다. " \
 		+ "(actual=%.1f)" % ball.linear_velocity.length())
+
+	ball.queue_free()
+	await process_frame
+
+
+func _test_activation_owns_adjacent_frame_contact(
+	flipper: PinballFlipper,
+	ball_scene: PackedScene
+) -> void:
+	var contact_position := flipper.global_position + Vector2(-560.0, -90.0)
+	var ball := await _create_test_ball(ball_scene, contact_position)
+	flipper.set_physics_process(false)
+	_expect(flipper.request_activation(), \
+		"인접 프레임 중복 검사 전에 플리퍼가 새 작동 토큰을 받아야 한다.")
+
+	_reset_signal_counts()
+	var first_count := flipper.resolve_rotation_sweep(
+		START_ROTATION,
+		END_ROTATION,
+		PHYSICS_DELTA,
+		0.0
+	)
+	await physics_frame
+
+	# 첫 임펄스 이후에도 같은 접촉 조건을 다시 만들어 다음 물리 프레임 중복을 검증합니다.
+	ball.global_position = contact_position
+	ball.linear_velocity = Vector2(0.0, 600.0)
+	ball.sleeping = false
+	ball.reset_physics_interpolation()
+	var second_count := flipper.resolve_rotation_sweep(
+		START_ROTATION,
+		END_ROTATION,
+		PHYSICS_DELTA,
+		PHYSICS_DELTA
+	)
+
+	_expect(first_count == 1, \
+		"한 작동의 첫 회전 충돌은 정상적으로 해결해야 한다.")
+	_expect(second_count == 1, \
+		"같은 작동의 후속 접촉도 물리 보정과 속도 제한은 다시 적용해야 한다.")
+	_expect(_parry_signal_count == 1, \
+		"같은 작동의 인접 프레임 패링 피드백 신호는 한 번만 발생해야 한다.")
 
 	ball.queue_free()
 	await process_frame
