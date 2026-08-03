@@ -170,6 +170,24 @@ func resume_combo_timer() -> void:
 	_refresh_processing()
 
 
+## 범퍼·유물의 중복 제거된 유효 타격 신호를 콤보 적립에 연결합니다.
+func bind_hit_source(source: Node) -> bool:
+	if source == null or not source.has_signal(&"valid_hit_registered"):
+		return false
+	var callback := Callable(self, &"_on_valid_hit_registered")
+	if not source.is_connected(&"valid_hit_registered", callback):
+		source.connect(&"valid_hit_registered", callback)
+	return true
+
+
+func unbind_hit_source(source: Node) -> void:
+	if source == null or not source.has_signal(&"valid_hit_registered"):
+		return
+	var callback := Callable(self, &"_on_valid_hit_registered")
+	if source.is_connected(&"valid_hit_registered", callback):
+		source.disconnect(&"valid_hit_registered", callback)
+
+
 ## 게임 상태의 낙하/새 발사 이벤트에 직접 연결할 수 있는 수명주기 진입점입니다.
 func on_ball_drained() -> int:
 	return finish_combo(EndReason.BALL_DRAINED)
@@ -209,6 +227,14 @@ func calculate_base_damage(
 		target_hit_count,
 		ball_weight_multiplier
 	))
+
+
+func _on_valid_hit_registered(
+	_source: Node,
+	_contact_id: int,
+	score_weight: float
+) -> void:
+	register_hit(score_weight)
 
 
 func _clear_active_combo() -> void:
