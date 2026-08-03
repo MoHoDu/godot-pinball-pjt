@@ -1,9 +1,9 @@
 extends SceneTree
 
 
-const BASE_BALL_SCENE_PATH := "res://resources/balls/base/base_ball.tscn"
+const BASE_BALL_SCENE_PATH := "res://Resources/balls/base/base_ball.tscn"
 const RIGHT_FLIPPER_SCENE_PATH := \
-	"res://resources/flippers/sub_flipper/normal_flipper_right.tscn"
+	"res://Resources/flippers/sub_flipper/normal_flipper_right.tscn"
 const EPSILON := 1.0
 const PERFECT_MAXIMUM_SPEED := 1700.0
 

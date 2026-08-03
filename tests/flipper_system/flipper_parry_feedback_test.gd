@@ -4,7 +4,7 @@ extends SceneTree
 const FEEDBACK_SCRIPT_PATH := \
 	"res://scripts/flipper_system/parrying/flipper_parry_feedback.gd"
 const LEFT_FLIPPER_SCENE_PATH := \
-	"res://resources/flippers/sub_flipper/normal_flipper_left.tscn"
+	"res://Resources/flippers/sub_flipper/normal_flipper_left.tscn"
 const GRADE_NORMAL := 1
 const GRADE_PERFECT := 2
 
