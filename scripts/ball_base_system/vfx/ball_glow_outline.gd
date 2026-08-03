@@ -1,16 +1,15 @@
 @tool
 class_name BallGlowOutline
 extends Node2D
-## 공을 두르는 상시 발광 테두리입니다 (비주얼 가이드 VFX ①).
+## 공을 감싸는 상시 발광 테두리입니다 (비주얼 가이드 VFX ①).
 ##
 ## 역할은 "예쁘게 빛나기"가 아니라 **공을 잃어버리지 않게 하는 것**입니다.
 ## 공이 어두운 보드·보스·벽·다른 파티클과 겹쳐도 즉시 찾을 수 있어야 합니다.
 ##
-## 구조: Line2D 두 겹(넓고 흐린 글로우 + 얇고 밝은 코어)을 닫힌 원으로 만들고,
-## Gradient의 알파로 갭을 뚫어 "빛이 원을 따라 흐르다 옅어지는" 인상을 만듭니다.
-## 노드 전체를 천천히 회전시켜 그 갭이 원을 돌게 합니다.
+## 구조(2026-08-03 리디자인): 셰이더를 입힌 Sprite2D 쿼드 한 장입니다.
+## 안개는 선이 아니라 면이라 Line2D 2겹으로는 표현할 수 없습니다.
+## GL Compatibility 렌더러는 GPUParticles 트레일을 못 쓰지만 셰이더는 제약이 없습니다.
 ##
-## GL Compatibility 렌더러라 GPUParticles 트레일을 못 쓰므로 Line2D로 갑니다.
 ## 물리 바디의 위치·회전·크기는 절대 건드리지 않습니다.
 ## FlipperParryFeedback과 같은 "연출은 물리와 분리" 패턴입니다.
 
@@ -19,24 +18,26 @@ const DEFAULT_OUTLINE_RULES: BallGlowOutlineRules = preload(
 	"res://settings/balls/BallGlowOutlineRules.tres"
 )
 
+const MIST_SHADER: Shader = preload("res://Resources/shaders/ball_mist_aura.gdshader")
+
 ## 비주얼 가이드의 레이어 순서입니다. 꼬리 < 공 본체 < 발광 테두리 < 파동 < 스파크.
 const Z_INDEX_OUTLINE: int = 10
 
-## 링을 이루는 점의 개수입니다. 44px에서 64점이면 각진 곳이 보이지 않습니다.
-const RING_POINT_COUNT: int = 64
+## 쿼드가 안개 최대 반경보다 얼마나 여유를 두는지입니다.
+## 여유가 없으면 안개가 쿼드 경계에서 잘려 네모난 자국이 남습니다.
+const QUAD_PADDING: float = 1.16
 
-## 갭 중심 각도입니다. 두 개만 둬야 링이 조각난 호로 보이지 않습니다.
-## PackedFloat32Array() 생성자는 상수 표현식이 아니므로 배열 리터럴로 둡니다.
-const GAP_CENTERS := [0.9, 3.9]
-
-## 공 지름이 이보다 크게 달라지면 링을 다시 만듭니다.
+## 공 지름이 이보다 크게 달라지면 쿼드 크기를 다시 잡습니다.
 const DIAMETER_EPSILON: float = 0.01
 
 ## 부모에서 공 지름을 읽지 못했을 때 쓰는 값입니다. 기획서 기준 22px 반지름.
 const FALLBACK_BALL_RADIUS: float = 22.0
 
-## 그라디언트를 다시 만드는 점등량 변화 임계값입니다. 매 프레임 재생성을 막습니다.
-const FLASH_REBUILD_EPSILON: float = 0.02
+## 이 속도 미만에서는 진행방향 늘림을 끕니다. 멈춘 공이 한쪽으로 쏠려 보이지 않게 합니다.
+const GAZE_MIN_SPEED: float = 40.0
+
+## 코어 링 두께의 최소 px입니다. 작은 공에서 링이 사라지지 않게 합니다.
+const MIN_CORE_WIDTH_PX: float = 0.85
 
 enum State {
 	NORMAL,		## 기본. 조작 가능 상태
@@ -55,19 +56,16 @@ const PARRY_SIGNAL: StringName = &"parry_resolved"
 
 var _outline_rules: BallGlowOutlineRules = DEFAULT_OUTLINE_RULES
 var _ball: Node2D
-var _glow_line: Line2D
-var _core_line: Line2D
+var _quad: Sprite2D
+var _material: ShaderMaterial
 var _state: State = State.NORMAL
 var _flash_amount: float = 0.0
 var _flash_hold_remaining: float = 0.0
 var _built_diameter: float = -1.0
+var _drift_phase: float = 0.0
+var _gaze_angle: float = 0.0
+var _gaze_enabled: float = 0.0
 var _bound_flippers: Array[Node] = []
-var _core_gradient: Gradient
-var _glow_gradient: Gradient
-## 갭 모양을 담아두는 캐시입니다. 점등량이 바뀔 때만 다시 계산합니다.
-var _gap_offsets := PackedFloat32Array()
-var _gap_ratios := PackedFloat32Array()
-var _cached_gap_depth: float = -1.0
 
 
 ## 링 반응 규칙입니다. 씬에 내장하거나 .tres 프리셋으로 교체할 수 있습니다.
@@ -77,12 +75,14 @@ var _cached_gap_depth: float = -1.0
 	set(value):
 		_outline_rules = value if value != null else DEFAULT_OUTLINE_RULES
 		_built_diameter = -1.0
-		_cached_gap_depth = -1.0
 		update_configuration_warnings()
 
 ## 켜면 현재 씬에서 parry_resolved 시그널을 가진 노드를 찾아 자동으로 연결합니다.
 ## 끄면 bind_to_flipper()로 직접 붙입니다.
 @export var auto_bind_parry: bool = true
+
+## 켜면 공의 속도 방향으로 안개가 살짝 길어집니다.
+@export var gaze_follow_velocity: bool = true
 
 
 func _init() -> void:
@@ -96,8 +96,9 @@ func _ready() -> void:
 		return
 
 	_ball = get_parent() as Node2D
-	_build_lines()
-	_refresh_ring()
+	_build_quad()
+	_refresh_quad()
+
 
 	if auto_bind_parry:
 		_auto_bind_parry_sources()
@@ -114,11 +115,15 @@ func _physics_process(delta: float) -> void:
 	# top_level이라 공의 visible을 물려받지 않으므로 직접 맞춥니다.
 	visible = _ball.visible
 	global_position = _ball.global_position
-	# 오래 굴려도 각도가 커지지 않도록 한 바퀴로 감쌉니다.
-	rotation = fposmod(rotation + _outline_rules.drift_speed * delta, TAU)
 
+	# 노드를 돌리지 않습니다. 안개가 통째로 회전하면 물체가 도는 것처럼 보입니다.
+	# 대신 셰이더의 위상만 밀어 안개가 제자리에서 소용돌이치게 합니다.
+	# 오래 굴려도 값이 커지지 않도록 한 바퀴로 감쌉니다.
+	_drift_phase = fposmod(_drift_phase + _outline_rules.drift_speed * delta, TAU)
+
+	_update_gaze()
 	_advance_flash(delta)
-	_refresh_ring()
+	_refresh_quad()
 
 
 ## 링의 기본 상태를 바꿉니다. 점등은 상태와 별개로 겹쳐집니다.
@@ -127,7 +132,7 @@ func set_state(new_state: State) -> void:
 		return
 
 	_state = new_state
-	_apply_colors()
+	_apply_uniforms()
 
 
 func get_state() -> State:
@@ -161,9 +166,22 @@ func get_flash_amount() -> float:
 	return _flash_amount
 
 
-## 현재 링 중심 반지름입니다(px). 공 지름에서 파생됩니다.
+## 안개가 도달하는 최대 반지름입니다(px). 공 지름에서 파생됩니다.
 func get_ring_radius() -> float:
 	return _ball_radius() * _outline_rules.radius_ratio
+
+
+## 안개가 흐른 누적 위상입니다. 테스트용입니다.
+func get_drift_phase() -> float:
+	return _drift_phase
+
+
+## 셰이더에 실제로 들어간 값을 읽습니다. 테스트용입니다.
+func get_shader_param(name: StringName) -> Variant:
+	if _material == null:
+		return null
+
+	return _material.get_shader_parameter(name)
 
 
 # ── 내부 ────────────────────────────────────────────────────
@@ -179,132 +197,108 @@ func _ball_radius() -> float:
 	return FALLBACK_BALL_RADIUS
 
 
-func _build_lines() -> void:
-	_glow_line = Line2D.new()
-	_glow_line.name = "Glow"
-	_glow_line.closed = true
-	_glow_line.joint_mode = Line2D.LINE_JOINT_ROUND
-	_glow_line.begin_cap_mode = Line2D.LINE_CAP_ROUND
-	_glow_line.end_cap_mode = Line2D.LINE_CAP_ROUND
-	_glow_line.antialiased = true
-	add_child(_glow_line)
+func _build_quad() -> void:
+	# 셰이더가 UV 전체에 그려지려면 실제로 픽셀이 있는 텍스처가 필요합니다.
+	# 흰색 1x1이면 충분합니다. 셰이더가 COLOR를 통째로 덮어쓰므로 내용은 안 씁니다.
+	var image := Image.create(1, 1, false, Image.FORMAT_RGBA8)
+	image.fill(Color.WHITE)
 
-	_core_line = Line2D.new()
-	_core_line.name = "Core"
-	_core_line.closed = true
-	_core_line.joint_mode = Line2D.LINE_JOINT_ROUND
-	_core_line.begin_cap_mode = Line2D.LINE_CAP_ROUND
-	_core_line.end_cap_mode = Line2D.LINE_CAP_ROUND
-	_core_line.antialiased = true
-	add_child(_core_line)
+	_material = ShaderMaterial.new()
+	_material.shader = MIST_SHADER
 
-	_glow_gradient = Gradient.new()
-	_core_gradient = Gradient.new()
-	_glow_line.gradient = _glow_gradient
-	_core_line.gradient = _core_gradient
+	_quad = Sprite2D.new()
+	_quad.name = "Mist"
+	_quad.centered = true
+	_quad.texture = ImageTexture.create_from_image(image)
+	_quad.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	_quad.material = _material
+	add_child(_quad)
 
 
-## 공 지름이 바뀌었으면 점을 다시 깔고, 점등량이 바뀌었으면 색·두께를 갱신합니다.
-func _refresh_ring() -> void:
-	if _glow_line == null or _core_line == null:
+## 공 지름이 바뀌었으면 쿼드를 다시 재고, 매 프레임 유니폼을 갱신합니다.
+func _refresh_quad() -> void:
+	if _quad == null or _material == null:
 		return
 
 	var diameter := _ball_radius() * 2.0
 	if absf(diameter - _built_diameter) > DIAMETER_EPSILON:
 		_built_diameter = diameter
-		_rebuild_points()
+		# 1x1 텍스처라 scale이 곧 px 크기입니다.
+		var quad_size := get_ring_radius() * 2.0 * QUAD_PADDING
+		_quad.scale = Vector2(quad_size, quad_size)
 
-	_apply_colors()
-
-
-func _rebuild_points() -> void:
-	var radius := get_ring_radius()
-	var points := PackedVector2Array()
-	points.resize(RING_POINT_COUNT)
-
-	for i in RING_POINT_COUNT:
-		var angle := TAU * float(i) / float(RING_POINT_COUNT)
-		var r := radius * _radius_at(angle)
-		points[i] = Vector2(cos(angle) * r, sin(angle) * r)
-
-	_glow_line.points = points
-	_core_line.points = points
+	_apply_uniforms()
 
 
-## 손그림 느낌의 반지름 배율입니다. 저주파만 섞어 원으로 읽히게 유지합니다.
-func _radius_at(angle: float) -> float:
-	var wobble := _outline_rules.wobble_amount
-	return 1.0 + wobble * sin(3.0 * angle) + wobble * 0.45 * sin(7.0 * angle + 1.7)
-
-
-func _apply_colors() -> void:
-	var base_core := _state_core_color()
-	var base_glow := _state_glow_color()
-	var core_color := base_core.lerp(_outline_rules.flash_core_color, _flash_amount)
-	var glow_color := base_glow.lerp(_outline_rules.flash_glow_color, _flash_amount)
-
-	var width_scale := lerpf(1.0, _outline_rules.flash_width_scale, _flash_amount)
-	var radius := _ball_radius()
-	_core_line.width = radius * _outline_rules.core_width_ratio * width_scale
-	_glow_line.width = radius * _outline_rules.glow_width_ratio * width_scale
-
-	_refresh_gap_shape()
-	_paint_gradient(_core_gradient, core_color)
-	_paint_gradient(_glow_gradient, glow_color)
-
-
-## 갭 모양(오프셋과 알파 배율)을 다시 계산합니다.
-## 점등이 강해질수록 갭이 메워져 "전체 점등"이 됩니다.
-func _refresh_gap_shape() -> void:
-	var gap_depth := 1.0 - _flash_amount
-	if (
-		absf(gap_depth - _cached_gap_depth) <= FLASH_REBUILD_EPSILON
-		and not _gap_offsets.is_empty()
-	):
+func _update_gaze() -> void:
+	if not gaze_follow_velocity or not is_instance_valid(_ball):
+		_gaze_enabled = 0.0
 		return
 
-	_cached_gap_depth = gap_depth
-
-	var half := _outline_rules.gap_half_width
-	var soft := _outline_rules.gap_softness
-	# GAP_CENTERS가 오름차순이고 갭이 겹치지 않으므로 이미 정렬된 상태로 쌓입니다.
-	var stops: Array[Vector2] = [Vector2(0.0, 1.0)]
-
-	for center: float in GAP_CENTERS:
-		stops.append(Vector2((center - half - soft) / TAU, 1.0))
-		stops.append(Vector2((center - half) / TAU, 1.0 - gap_depth))
-		stops.append(Vector2((center + half) / TAU, 1.0 - gap_depth))
-		stops.append(Vector2((center + half + soft) / TAU, 1.0))
-
-	stops.append(Vector2(1.0, 1.0))
-
-	_gap_offsets = PackedFloat32Array()
-	_gap_ratios = PackedFloat32Array()
-
-	var previous := -1.0
-	for stop: Vector2 in stops:
-		var offset := clampf(stop.x, 0.0, 1.0)
-		# Gradient의 오프셋은 증가해야 하므로 겹치면 아주 조금 밀어냅니다.
-		if offset <= previous:
-			offset = minf(previous + 0.0005, 1.0)
-
-		previous = offset
-		_gap_offsets.append(offset)
-		_gap_ratios.append(stop.y)
-
-
-## 캐시된 갭 모양에 색만 입혀 그라디언트를 갱신합니다. 새 객체를 만들지 않습니다.
-func _paint_gradient(gradient: Gradient, color: Color) -> void:
-	if gradient == null or _gap_offsets.is_empty():
+	var velocity: Variant = _ball.get(&"linear_velocity")
+	if velocity == null:
+		_gaze_enabled = 0.0
 		return
 
-	var colors := PackedColorArray()
-	colors.resize(_gap_ratios.size())
-	for i in _gap_ratios.size():
-		colors[i] = Color(color.r, color.g, color.b, color.a * _gap_ratios[i])
+	var v: Vector2 = velocity
+	if v.length() < GAZE_MIN_SPEED:
+		_gaze_enabled = 0.0
+		return
 
-	gradient.offsets = _gap_offsets
-	gradient.colors = colors
+	_gaze_angle = v.angle()
+	_gaze_enabled = 1.0
+
+
+func _apply_uniforms() -> void:
+	if _material == null:
+		return
+
+	var rules := _outline_rules
+	var ball_r := _ball_radius()
+	var outer_r := get_ring_radius()
+	# 쿼드 반지름을 1.0으로 보는 정규화 좌표로 넘깁니다. 셰이더에 px을 넘기지 않습니다.
+	var half_quad := maxf(outer_r * QUAD_PADDING, 0.001)
+
+	var core_color := _state_core_color()
+	var mist_color := _state_mist_color()
+	core_color = core_color.lerp(rules.flash_core_color, _flash_amount)
+	mist_color = mist_color.lerp(rules.flash_mist_color, _flash_amount)
+
+	var darken := rules.outer_darken
+	var outer_color := Color(
+		mist_color.r * darken,
+		mist_color.g * darken,
+		mist_color.b * darken,
+		mist_color.a
+	)
+
+	var gain := lerpf(1.0, rules.flash_alpha_scale, _flash_amount)
+	var core_width := maxf(ball_r * rules.core_width_ratio, MIN_CORE_WIDTH_PX)
+
+	_material.set_shader_parameter(&"ball_ratio", ball_r / half_quad)
+	_material.set_shader_parameter(&"outer_ratio", outer_r / half_quad)
+	_material.set_shader_parameter(&"peak", rules.peak_alpha)
+	_material.set_shader_parameter(&"bands", float(rules.band_count))
+	_material.set_shader_parameter(&"falloff_exp", rules.falloff_exp)
+	_material.set_shader_parameter(&"plume", rules.plume_amount)
+	_material.set_shader_parameter(&"plume_lobes", float(rules.plume_lobes))
+	_material.set_shader_parameter(&"wisp", rules.wisp_amount)
+	_material.set_shader_parameter(&"wisp_lobes", float(rules.wisp_lobes))
+	_material.set_shader_parameter(&"wisp_radial", float(rules.wisp_radial))
+	_material.set_shader_parameter(&"inner_bloom", rules.inner_bloom)
+	_material.set_shader_parameter(&"gaze_stretch", rules.gaze_stretch)
+	_material.set_shader_parameter(&"gaze_angle", _gaze_angle)
+	_material.set_shader_parameter(&"gaze_enabled", _gaze_enabled)
+	_material.set_shader_parameter(&"core_alpha", rules.core_alpha)
+	_material.set_shader_parameter(&"core_w_norm", core_width / half_quad)
+	_material.set_shader_parameter(&"core_gain", gain)
+	_material.set_shader_parameter(&"alpha_gain", gain)
+	_material.set_shader_parameter(&"wobble", rules.wobble_amount)
+	_material.set_shader_parameter(&"drift_phase", _drift_phase)
+	_material.set_shader_parameter(&"seed", 7.0)
+	_material.set_shader_parameter(&"col_core", core_color)
+	_material.set_shader_parameter(&"col_mist", mist_color)
+	_material.set_shader_parameter(&"col_outer", outer_color)
 
 
 func _state_core_color() -> Color:
@@ -319,16 +313,16 @@ func _state_core_color() -> Color:
 			return _outline_rules.normal_core_color
 
 
-func _state_glow_color() -> Color:
+func _state_mist_color() -> Color:
 	match _state:
 		State.COMBO:
-			return _outline_rules.combo_glow_color
+			return _outline_rules.combo_mist_color
 		State.CURSE:
-			return _outline_rules.curse_glow_color
+			return _outline_rules.curse_mist_color
 		State.DANGER:
-			return _outline_rules.danger_glow_color
+			return _outline_rules.danger_mist_color
 		_:
-			return _outline_rules.normal_glow_color
+			return _outline_rules.normal_mist_color
 
 
 func _advance_flash(delta: float) -> void:

@@ -2,9 +2,10 @@
 
 [ext_resource type="Script" uid="uid://dkphuydwnd8tu" path="res://scripts/ball_base_system/pinball.gd" id="1_83qyv"]
 [ext_resource type="Script" uid="uid://ce2wax7g2gio8" path="res://scripts/ball_base_system/pinball_stats.gd" id="2_stats"]
-[ext_resource type="Texture2D" path="res://Resources/Art/balls/cats_eye_ball.png" id="3_m0qcu"]
+[ext_resource type="Texture2D" path="res://Resources/Art/balls/glass_eye_ball.png" id="3_m0qcu"]
 [ext_resource type="Script" path="res://scripts/ball_base_system/vfx/ball_gaze_visual.gd" id="4_gaze"]
 [ext_resource type="Script" path="res://scripts/ball_base_system/vfx/ball_glow_outline.gd" id="5_glow"]
+[ext_resource type="Script" path="res://scripts/ball_base_system/vfx/ball_trail.gd" id="6_trail"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_83qyv"]
 resource_local_to_scene = true
@@ -34,6 +35,7 @@ stats = SubResource("Resource_ball_stats")
 collision_radius_ratio = 0.9
 
 [node name="Visual" type="Node2D" parent="." unique_id=1870657790]
+z_index = 6
 script = ExtResource("4_gaze")
 
 [node name="Sprite2D" type="Sprite2D" parent="Visual" unique_id=1614424068]
@@ -45,3 +47,6 @@ shape = SubResource("CircleShape2D_udrbm")
 
 [node name="_GlowOutline" type="Node2D" parent="." unique_id=1108423771]
 script = ExtResource("5_glow")
+
+[node name="_Trail" type="Node2D" parent="." unique_id=1108423772]
+script = ExtResource("6_trail")

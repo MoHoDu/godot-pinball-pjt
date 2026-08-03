@@ -3,7 +3,21 @@ extends SceneTree
 
 const BOARD_SCENE_PATH := "res://scenes/test_flipper/test_flipper_board.tscn"
 const BOARD_TEXTURE_PATH := "res://Resources/Art/board/octagonal_dark_wood_board.png"
+const OUTSIDE_BACKGROUND_TEXTURE_PATH := (
+	"res://Resources/Art/backgrounds/cursed_circus_outside_background.png"
+)
+const WALL_BODY_TEXTURE_PATH := (
+	"res://Resources/Art/walls/cursed_toy_frame_v1/wall_body_256x40_cursed_toy_v1.png"
+)
+const WALL_LEFT_CAP_TEXTURE_PATH := (
+	"res://Resources/Art/walls/cursed_toy_frame_v1/wall_end_cap_left_64x40_cursed_toy_v1.png"
+)
+const WALL_RIGHT_CAP_TEXTURE_PATH := (
+	"res://Resources/Art/walls/cursed_toy_frame_v1/wall_end_cap_right_64x40_cursed_toy_v1.png"
+)
 const EXPECTED_BOARD_SIZE := Vector2(2240.0, 1260.0)
+const EXPECTED_OUTSIDE_BACKGROUND_SOURCE_SIZE := Vector2(1672.0, 941.0)
+const EXPECTED_WALL_BODY_REGION := Rect2(0.0, 0.0, 692.0, 40.0)
 const EXPECTED_CONTROLLER_POSITIONS := {
 	&"BottomController": Vector2(0.0, 550.0),
 	&"TopController": Vector2(0.0, -550.0),
@@ -101,6 +115,34 @@ func _test_board_structure(board: Node) -> void:
 
 
 func _test_board_art(board: Node) -> void:
+	var outside_background := board.get_node_or_null("OutsideBackground") as Sprite2D
+	_expect(outside_background != null, "보드 뒤에 외부 배경 Sprite2D가 필요하다.")
+	if outside_background != null:
+		_expect(outside_background.texture != null, "외부 배경 텍스처가 필요하다.")
+		if outside_background.texture != null:
+			_expect(
+				outside_background.texture.resource_path == OUTSIDE_BACKGROUND_TEXTURE_PATH,
+				"외부 배경은 지정된 저주받은 서커스 PNG를 사용해야 한다."
+			)
+			_expect(
+				outside_background.texture.get_size().is_equal_approx(
+					EXPECTED_OUTSIDE_BACKGROUND_SOURCE_SIZE
+				),
+				"외부 배경 원본은 1672x941px이어야 한다."
+			)
+			var outside_rendered_size := (
+				outside_background.texture.get_size()
+				* outside_background.scale.abs()
+			)
+			_expect(
+				outside_rendered_size.distance_to(EXPECTED_BOARD_SIZE) < 0.01,
+				"외부 배경은 2240x1260 보드 캔버스를 빈틈없이 채워야 한다."
+			)
+		_expect(outside_background.position.is_zero_approx(), \
+			"외부 배경 중심은 보드 중심과 일치해야 한다.")
+		_expect(outside_background.z_index < -10, \
+			"외부 배경은 보드 베이스보다 뒤에 그려져야 한다.")
+
 	var background := board.get_node_or_null("BoardBackground") as Sprite2D
 	_expect(background != null, "보드 배경은 이미지용 Sprite2D여야 한다.")
 	if background == null:
@@ -153,6 +195,41 @@ func _test_octagonal_walls(board: Node) -> void:
 		if collision != null:
 			_expect(collision.position.is_equal_approx(Vector2(0.0, 12.0)), \
 				"%s 충돌 두께는 보드 외곽에서 안쪽으로만 들어와야 한다." % wall_name)
+
+		var visual := wall.get_node_or_null("Visual") as Node2D
+		_expect(visual != null, "%s 고정벽은 모듈형 아트 씬을 사용해야 한다." % wall_name)
+		if visual == null:
+			continue
+		_expect(visual.position.is_zero_approx(), \
+			"%s 고정벽 아트 중심은 도면 경계 중심과 일치해야 한다." % wall_name)
+
+		var body := visual.get_node_or_null("Body") as Sprite2D
+		var left_cap := visual.get_node_or_null("LeftCap") as Sprite2D
+		var right_cap := visual.get_node_or_null("RightCap") as Sprite2D
+		_expect(body != null, "%s 고정벽에 반복 몸통이 필요하다." % wall_name)
+		_expect(left_cap != null and right_cap != null, \
+			"%s 고정벽에 좌우 끝 캡이 필요하다." % wall_name)
+		if body == null or left_cap == null or right_cap == null:
+			continue
+
+		_expect(body.texture != null and body.texture.resource_path == WALL_BODY_TEXTURE_PATH, \
+			"%s 고정벽 몸통은 256x40px 마스터 타일을 사용해야 한다." % wall_name)
+		_expect(body.region_enabled and body.region_rect == EXPECTED_WALL_BODY_REGION, \
+			"%s 고정벽 몸통은 좌우 캡 사이 692x40px를 반복해야 한다." % wall_name)
+		_expect(body.texture_repeat == CanvasItem.TEXTURE_REPEAT_ENABLED, \
+			"%s 고정벽 몸통 텍스처 반복이 활성화되어야 한다." % wall_name)
+		_expect(
+			left_cap.texture != null
+			and left_cap.texture.resource_path == WALL_LEFT_CAP_TEXTURE_PATH
+			and left_cap.position.is_equal_approx(Vector2(-378.0, 0.0)),
+			"%s 왼쪽 캡은 벽의 -410~-346px 구간에 있어야 한다." % wall_name
+		)
+		_expect(
+			right_cap.texture != null
+			and right_cap.texture.resource_path == WALL_RIGHT_CAP_TEXTURE_PATH
+			and right_cap.position.is_equal_approx(Vector2(378.0, 0.0)),
+			"%s 오른쪽 캡은 벽의 346~410px 구간에 있어야 한다." % wall_name
+		)
 
 func _test_reset_and_launcher(board: Node) -> void:
 	var ball := board.get_node_or_null("PinballBall") as RigidBody2D

@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://5v4byhqjcnno" path="res://resources/balls/mass_var/light_ball.tscn" id="6_8v8v0"]
 [ext_resource type="PackedScene" uid="uid://csrwlhfpki4fs" path="res://resources/balls/mass_var/normal_ball.tscn" id="7_b5qjs"]
 [ext_resource type="PackedScene" uid="uid://bjccffqopu0ej" path="res://resources/balls/mass_var/heavy_ball.tscn" id="8_ol4x0"]
+[ext_resource type="Script" path="res://tests/ball_base_system/test_ball_physics.gd" id="9_switch"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_7dtsd"]
 resource_local_to_scene = true
@@ -106,6 +107,7 @@ maximum_speed = 5000.0
 size = Vector2(127.799995, 127.50001)
 
 [node name="TestBallPhysics" type="Node2D" unique_id=745725862]
+script = ExtResource("9_switch")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=2052428608]
 
@@ -242,3 +244,20 @@ texture = ExtResource("2_7vcf2")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Wall9" unique_id=1903084870]
 shape = SubResource("RectangleShape2D_udrbm")
+
+[node name="BallSwitchGuide" type="CanvasLayer" parent="." unique_id=1782164806]
+
+[node name="Panel" type="Panel" parent="BallSwitchGuide" unique_id=946168726]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 470.0
+offset_bottom = 330.0
+
+[node name="GuideLabel" type="Label" parent="BallSwitchGuide/Panel" unique_id=1362814705]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 434.0
+offset_bottom = 298.0
+theme_override_font_sizes/font_size = 16
+text = "공 종류 전환 로딩 중..."
