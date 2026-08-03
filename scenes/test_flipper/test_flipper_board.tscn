@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://ris3ga3vl6ci" path="res://resources/flippers/sub_flipper/normal_flipper_left.tscn" id="6_left"]
 [ext_resource type="PackedScene" uid="uid://u4e8s8havfkw" path="res://resources/flippers/sub_flipper/normal_flipper_right.tscn" id="7_right"]
 [ext_resource type="Script" path="res://tests/flipper_system/test_speed_bumper.gd" id="8_bumper"]
+[ext_resource type="Script" path="res://scripts/ball_base_system/pinball_launcher.gd" id="9_launcher"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape_horizontal"]
 size = Vector2(640, 24)
@@ -258,9 +259,18 @@ freeze = true
 stats = SubResource("Resource_sexy2")
 ball_diameter = 44.0
 
-[node name="LauncherMarker" type="Polygon2D" parent="." unique_id=489416960]
-z_index = -1
+[node name="PinballLauncher" type="Node2D" parent="."]
 position = Vector2(720, 340)
+rotation = -2.14717
+script = ExtResource("9_launcher")
+default_launch_speed = 940.0
+minimum_launch_speed = 320.0
+maximum_launch_speed = 1540.0
+minimum_launch_angle_degrees = -30.0
+maximum_launch_angle_degrees = 30.0
+
+[node name="LauncherMarker" type="Polygon2D" parent="PinballLauncher" unique_id=489416960]
+z_index = -1
 color = Color(0.25, 0.85, 0.43, 0.25)
 polygon = PackedVector2Array(-42, -42, 42, -42, 42, 42, -42, 42)
 
