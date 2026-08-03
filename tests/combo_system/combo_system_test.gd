@@ -31,6 +31,7 @@ func _run() -> void:
 	_test_hit_accumulation(combo_system)
 	_test_zero_combo_state(combo_system)
 	_test_timer_timeout(combo_system)
+	_test_timer_refresh(combo_system)
 	_test_timer_suspension(combo_system)
 	_test_lifecycle_and_score_signals(combo_system)
 	_test_boss_hit_integration(combo_system)
@@ -99,6 +100,45 @@ func _test_timer_timeout(combo_system: Node) -> void:
 		"시간 초과 종료 이유를 외부 시스템에 전달해야 한다.")
 	_expect(int(finished.get(&"score", 0)) == 100, \
 		"시간 초과로 종료된 콤보도 즉시 점수를 정산해야 한다.")
+
+
+func _test_timer_refresh(combo_system: Node) -> void:
+	combo_system.call(&"reset_run")
+	_expect(not bool(combo_system.call(&"refresh_combo_timer")), \
+		"0콤보의 시간 갱신 요청은 비활성 상태를 유지해야 한다.")
+	_expect_float(float(combo_system.get(&"time_remaining")), 0.0, \
+		"0콤보에서는 시간 갱신 요청이 타이머를 시작하면 안 된다.")
+
+	combo_system.call(&"register_hit", 2.5)
+	combo_system.call(&"advance_time", 1.25)
+	var combo_signal_count := {&"value": 0}
+	var timer_signal_count := {&"value": 0}
+	combo_system.combo_changed.connect(func(
+		_count: int,
+		_tier: int,
+		_time_remaining: float
+	) -> void:
+		combo_signal_count.value += 1
+	, CONNECT_ONE_SHOT)
+	combo_system.combo_timer_changed.connect(func(
+		_time_remaining: float,
+		_hold_time: float
+	) -> void:
+		timer_signal_count.value += 1
+	, CONNECT_ONE_SHOT)
+
+	_expect(bool(combo_system.call(&"refresh_combo_timer")), \
+		"활성 콤보의 시간 갱신 요청은 성공해야 한다.")
+	_expect(int(combo_system.get(&"combo_count")) == 1, \
+		"시간 갱신은 콤보 카운트를 증가시키면 안 된다.")
+	_expect_float(float(combo_system.get(&"total_score_weight")), 2.5, \
+		"시간 갱신은 점수 가중치를 추가하면 안 된다.")
+	_expect_float(float(combo_system.get(&"time_remaining")), 3.0, \
+		"시간 갱신은 현재 공용 유지 시간으로 타이머를 되돌려야 한다.")
+	_expect(int(combo_signal_count.value) == 0, \
+		"시간만 갱신할 때 타격·콤보 변화 신호를 발생시키면 안 된다.")
+	_expect(int(timer_signal_count.value) == 1, \
+		"시간 갱신은 타이머 변화 신호를 정확히 한 번 발생시켜야 한다.")
 
 
 func _test_timer_suspension(combo_system: Node) -> void:

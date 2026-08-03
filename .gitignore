@@ -1,3 +1,8 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
+
+# Import metadata for folders excluded from Godot's resource scan.
+/docs/**/*.import
+/tmp/**/*.import
+/tests/evidence/**/*.import
