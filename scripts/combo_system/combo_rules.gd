@@ -137,12 +137,16 @@ func get_damage_stage_multiplier(tier: Tier) -> float:
 			return 0.0
 
 
-## 콤보 하나가 종료될 때 한 번 정산할 점수를 계산합니다.
-func calculate_score(base_score: int, combo_count: int) -> int:
+## 콤보 하나가 종료될 때 유효 타격 가중치 합계로 한 번 정산합니다.
+func calculate_score(
+	stage_base_score: int,
+	total_score_weight: float,
+	combo_count: int
+) -> int:
 	var tier := get_tier(combo_count)
 	return roundi(
-		maxi(base_score, 0)
-		* combo_count
+		maxi(stage_base_score, 0)
+		* maxf(total_score_weight, 0.0)
 		* get_score_multiplier(tier)
 	)
 
