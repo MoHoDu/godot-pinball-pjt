@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/test_flipper/test_flipper_combo_board.tscn" id="1_board"]
 [ext_resource type="Script" path="res://tests/combo_system/test_flipper_wave_board.gd" id="2_script"]
@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" path="res://Resources/balls/mass_var/normal_ball.tscn" id="9_normal"]
 [ext_resource type="PackedScene" path="res://Resources/balls/mass_var/heavy_ball.tscn" id="10_heavy"]
 [ext_resource type="PackedScene" path="res://scenes/ball_base_system/ball_selection_hud.tscn" id="11_hud"]
+[ext_resource type="Script" path="res://scripts/ball_base_system/wave_manager.gd" id="12_manager"]
 
 [sub_resource type="Resource" id="BallDefinition_light"]
 script = ExtResource("6_definition")
@@ -59,5 +60,12 @@ launcher_path = NodePath("../PinballLauncher")
 
 [node name="ComboWaveController" type="Node" parent="." index="13"]
 script = ExtResource("5_combo_wave")
+
+[node name="WaveManager" type="Node" parent="." index="14"]
+script = ExtResource("12_manager")
+ball_flow_path = NodePath("../WaveBallFlowController")
+combo_wave_path = NodePath("../ComboWaveController")
+combo_system_path = NodePath("../ComboSystem")
+collision_bridge_path = NodePath("../ComboCollisionBridge")
 
 [node name="BallSelectionHud" parent="HUD" index="4" instance=ExtResource("11_hud")]
