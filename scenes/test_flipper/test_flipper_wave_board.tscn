@@ -1,0 +1,63 @@
+[gd_scene load_steps=13 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/test_flipper/test_flipper_combo_board.tscn" id="1_board"]
+[ext_resource type="Script" path="res://tests/combo_system/test_flipper_wave_board.gd" id="2_script"]
+[ext_resource type="Script" path="res://scripts/ball_base_system/wave_ball_inventory.gd" id="3_inventory"]
+[ext_resource type="Script" path="res://scripts/ball_base_system/wave_ball_flow_controller.gd" id="4_flow"]
+[ext_resource type="Script" path="res://scripts/combo_system/combo_wave_controller.gd" id="5_combo_wave"]
+[ext_resource type="Script" path="res://scripts/ball_base_system/ball_definition.gd" id="6_definition"]
+[ext_resource type="Script" path="res://scripts/ball_base_system/ball_stock.gd" id="7_stock"]
+[ext_resource type="PackedScene" path="res://Resources/balls/mass_var/light_ball.tscn" id="8_light"]
+[ext_resource type="PackedScene" path="res://Resources/balls/mass_var/normal_ball.tscn" id="9_normal"]
+[ext_resource type="PackedScene" path="res://Resources/balls/mass_var/heavy_ball.tscn" id="10_heavy"]
+[ext_resource type="PackedScene" path="res://scenes/ball_base_system/ball_selection_hud.tscn" id="11_hud"]
+
+[sub_resource type="Resource" id="BallDefinition_light"]
+script = ExtResource("6_definition")
+ball_id = &"light"
+display_name = "가벼운 공"
+ball_scene = ExtResource("8_light")
+
+[sub_resource type="Resource" id="BallStock_light"]
+script = ExtResource("7_stock")
+definition = SubResource("BallDefinition_light")
+count = 1
+
+[sub_resource type="Resource" id="BallDefinition_normal"]
+script = ExtResource("6_definition")
+ball_id = &"normal"
+display_name = "보통 공"
+ball_scene = ExtResource("9_normal")
+
+[sub_resource type="Resource" id="BallStock_normal"]
+script = ExtResource("7_stock")
+definition = SubResource("BallDefinition_normal")
+count = 1
+
+[sub_resource type="Resource" id="BallDefinition_heavy"]
+script = ExtResource("6_definition")
+ball_id = &"heavy"
+display_name = "무거운 공"
+ball_scene = ExtResource("10_heavy")
+
+[sub_resource type="Resource" id="BallStock_heavy"]
+script = ExtResource("7_stock")
+definition = SubResource("BallDefinition_heavy")
+count = 1
+
+[node name="TestFlipperWaveBoard" instance=ExtResource("1_board")]
+script = ExtResource("2_script")
+
+[node name="WaveBallInventory" type="Node" parent="." index="11"]
+script = ExtResource("3_inventory")
+starting_stock = Array[ExtResource("7_stock")]([SubResource("BallStock_light"), SubResource("BallStock_normal"), SubResource("BallStock_heavy")])
+
+[node name="WaveBallFlowController" type="Node" parent="." index="12"]
+script = ExtResource("4_flow")
+inventory_path = NodePath("../WaveBallInventory")
+launcher_path = NodePath("../PinballLauncher")
+
+[node name="ComboWaveController" type="Node" parent="." index="13"]
+script = ExtResource("5_combo_wave")
+
+[node name="BallSelectionHud" parent="HUD" index="4" instance=ExtResource("11_hud")]
