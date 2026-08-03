@@ -14,6 +14,9 @@ const MAX_EVENT_LINES := 6
 @onready var manual_hit_source: ComboHitSource = get_node_or_null(
 	"ManualHitSource"
 ) as ComboHitSource
+@onready var combo_wave_controller: ComboWaveController = get_node_or_null(
+	"ComboWaveController"
+) as ComboWaveController
 @onready var combo_state_label: Label = get_node_or_null(
 	"HUD/ComboInspector/Panel/Margin/VBox/StateLabel"
 ) as Label
@@ -233,6 +236,9 @@ func _on_combo_finished(
 
 func _on_combo_test_ball_launched() -> void:
 	if not is_instance_valid(combo_system):
+		return
+	if is_instance_valid(combo_wave_controller):
+		_append_event("BALL · 발사 · 웨이브 상태 연동")
 		return
 	combo_system.on_ball_launched()
 	_append_event("BALL · 발사 · 새 콤보 시작")

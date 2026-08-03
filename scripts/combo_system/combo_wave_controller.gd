@@ -5,11 +5,13 @@ extends Node
 signal wave_configured(stage_id: StringName, wave_index: int, target_score: int)
 signal target_score_reached(current_score: int, target_score: int)
 signal clear_choice_requested(current_score: int, target_score: int, remaining_balls: int)
+signal clear_choice_resolved(use_remaining_balls: bool)
 signal wave_clear_requested(current_score: int, target_score: int)
 signal wave_retried
 
 
 var _combo_system: Node
+var _ball_flow: WaveBallFlowController
 var _stage_settings: Resource
 var _wave_index: int = 0
 var _target_score: int = 0
@@ -18,6 +20,11 @@ var _ball_is_active: bool = false
 var _choice_is_pending: bool = false
 var _continue_until_balls_exhausted: bool = false
 var _clear_was_requested: bool = false
+var _listens_to_ball_flow_events: bool = true
+
+
+@export var clear_action: StringName = &"wave_choose_clear"
+@export var continue_action: StringName = &"wave_choose_remaining_balls"
 
 
 var target_score: int:
@@ -44,6 +51,22 @@ var clear_was_requested: bool:
 	get:
 		return _clear_was_requested
 
+var current_score: int:
+	get:
+		return _get_total_score()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not _choice_is_pending:
+		return
+	if event.is_action_pressed(clear_action):
+		if choose_clear():
+			get_viewport().set_input_as_handled()
+		return
+	if event.is_action_pressed(continue_action):
+		if choose_remaining_balls():
+			get_viewport().set_input_as_handled()
+
 
 func bind_combo_system(combo_system: Node) -> bool:
 	if combo_system == null \
@@ -69,6 +92,38 @@ func unbind_combo_system() -> void:
 	if _combo_system.is_connected(&"score_changed", callback):
 		_combo_system.disconnect(&"score_changed", callback)
 	_combo_system = null
+
+
+func bind_ball_flow(
+	ball_flow: WaveBallFlowController,
+	listen_to_ball_events := true
+) -> bool:
+	if ball_flow == null:
+		return false
+	if _ball_flow == ball_flow \
+			and _listens_to_ball_flow_events == listen_to_ball_events:
+		return true
+	unbind_ball_flow()
+	_ball_flow = ball_flow
+	_listens_to_ball_flow_events = listen_to_ball_events
+	if _listens_to_ball_flow_events:
+		_ball_flow.ball_launched.connect(_on_flow_ball_launched)
+		_ball_flow.ball_drained.connect(_on_flow_ball_drained)
+	_ball_flow.set_selection_locked(_choice_is_pending or _clear_was_requested)
+	return true
+
+
+func unbind_ball_flow() -> void:
+	if _ball_flow == null or not is_instance_valid(_ball_flow):
+		_ball_flow = null
+		return
+	if _ball_flow.ball_launched.is_connected(_on_flow_ball_launched):
+		_ball_flow.ball_launched.disconnect(_on_flow_ball_launched)
+	if _ball_flow.ball_drained.is_connected(_on_flow_ball_drained):
+		_ball_flow.ball_drained.disconnect(_on_flow_ball_drained)
+	_ball_flow.set_selection_locked(false)
+	_ball_flow = null
+	_listens_to_ball_flow_events = true
 
 
 ## wave_index는 0부터 시작합니다. 설정되지 않은 웨이브의 목표 점수는 0입니다.
@@ -127,6 +182,7 @@ func on_ball_drained(remaining_balls: int) -> int:
 
 	if not _choice_is_pending:
 		_choice_is_pending = true
+		_set_ball_selection_locked(true)
 		clear_choice_requested.emit(
 			_get_total_score(),
 			_target_score,
@@ -138,7 +194,11 @@ func on_ball_drained(remaining_balls: int) -> int:
 func choose_clear() -> bool:
 	if not _choice_is_pending:
 		return false
+	if _ball_flow != null and not _ball_flow.end_wave():
+		return false
 	_choice_is_pending = false
+	_set_ball_selection_locked(true)
+	clear_choice_resolved.emit(false)
 	_request_wave_clear()
 	return true
 
@@ -148,18 +208,32 @@ func choose_remaining_balls() -> bool:
 		return false
 	_choice_is_pending = false
 	_continue_until_balls_exhausted = true
+	_set_ball_selection_locked(false)
+	clear_choice_resolved.emit(true)
 	return true
 
 
-func on_wave_retried() -> void:
+func on_wave_retried(retry_ball_flow := true) -> void:
 	if _combo_system != null:
 		_combo_system.call(&"on_wave_retried")
 	_reset_flow_state()
+	_set_ball_selection_locked(false)
+	if retry_ball_flow and _ball_flow != null:
+		_ball_flow.retry_wave()
 	wave_retried.emit()
 
 
 func _on_score_changed(_total_score: int, _added_score: int) -> void:
 	_refresh_target_state()
+
+
+func _on_flow_ball_launched(_ball: Pinball, _remaining_balls: int) -> void:
+	on_ball_launched()
+
+
+func _on_flow_ball_drained(_ball: Pinball, remaining_balls: int) -> void:
+	on_ball_drained(remaining_balls)
+	_set_ball_selection_locked(_choice_is_pending or _clear_was_requested)
 
 
 func _refresh_target_state() -> void:
@@ -174,6 +248,7 @@ func _request_wave_clear() -> void:
 		return
 	_choice_is_pending = false
 	_clear_was_requested = true
+	_set_ball_selection_locked(true)
 	wave_clear_requested.emit(_get_total_score(), _target_score)
 
 
@@ -198,3 +273,8 @@ func _reset_flow_state() -> void:
 	_choice_is_pending = false
 	_continue_until_balls_exhausted = false
 	_clear_was_requested = false
+
+
+func _set_ball_selection_locked(is_locked: bool) -> void:
+	if _ball_flow != null and is_instance_valid(_ball_flow):
+		_ball_flow.set_selection_locked(is_locked)
