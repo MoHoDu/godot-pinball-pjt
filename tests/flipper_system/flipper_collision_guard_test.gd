@@ -24,6 +24,8 @@ func _run() -> void:
 	var first_ball := RigidBody2D.new()
 	var second_ball := RigidBody2D.new()
 	var test_frame := 120
+	var first_activation_token := 41
+	var second_activation_token := 42
 
 	_expect(not bool(left_guard.call(
 		&"was_resolved_this_physics_frame",
@@ -46,6 +48,27 @@ func _run() -> void:
 		second_ball,
 		test_frame
 	)), "한 공의 충돌 잠금이 다른 공의 충돌까지 막으면 안 된다.")
+
+	left_guard.call(
+		&"mark_parry_reported",
+		first_ball,
+		first_activation_token
+	)
+	_expect(bool(right_guard.call(
+		&"was_parry_reported_for_activation",
+		first_ball,
+		first_activation_token
+	)), "한 플리퍼가 처리한 작동 토큰을 다른 플리퍼도 공유해야 한다.")
+	_expect(not bool(right_guard.call(
+		&"was_parry_reported_for_activation",
+		first_ball,
+		second_activation_token
+	)), "새로운 작동 토큰은 같은 공을 다시 처리할 수 있어야 한다.")
+	_expect(not bool(right_guard.call(
+		&"was_parry_reported_for_activation",
+		second_ball,
+		first_activation_token
+	)), "한 공의 작동 잠금이 다른 공까지 막으면 안 된다.")
 
 	first_ball.free()
 	second_ball.free()
