@@ -10,6 +10,7 @@ extends Node2D
 @export var controllers: Array[FlipperController] = []
 
 @export var selected: FlipperController = null
+@export var input_enabled := true
 
 @export_group("입력")
 
@@ -105,6 +106,8 @@ func find_controller_in_direction(
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if not input_enabled:
+		return
 	for action: StringName in controller_by_action:
 		if event.is_action_pressed(action):
 			select_controller(
@@ -122,3 +125,10 @@ func select_controller(controller: FlipperController) -> void:
 
 	for current_controller: FlipperController in controllers:
 		current_controller.is_active = current_controller == selected
+
+
+func set_input_enabled(is_enabled: bool) -> void:
+	input_enabled = is_enabled
+	for controller: FlipperController in controllers:
+		if is_instance_valid(controller):
+			controller.set_input_enabled(is_enabled)

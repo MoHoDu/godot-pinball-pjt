@@ -18,6 +18,7 @@ var _snapshot: Dictionary = {
 	&"target_score": 0,
 	&"active_combo": 0,
 	&"max_combo": 0,
+	&"combo_visible": false,
 	&"combo_anchor_viewport": Vector2.ZERO,
 	&"combo_anchor_visible": false,
 	&"wave_index": 0,
@@ -160,18 +161,35 @@ func set_score(current_score: int, target_score: int) -> void:
 
 func observe_combo(combo_count: int) -> void:
 	var safe_combo := maxi(combo_count, 0)
+	# ComboSystem clears its active counters before it emits score_changed and
+	# combo_finished. Keep the last chain visible through score conversion; the
+	# coordinator closes it explicitly from combo_finished afterwards.
+	if safe_combo == 0:
+		return
 	var next_max := maxi(int(_snapshot[&"max_combo"]), safe_combo)
 	if int(_snapshot[&"active_combo"]) == safe_combo \
-			and int(_snapshot[&"max_combo"]) == next_max:
+			and int(_snapshot[&"max_combo"]) == next_max \
+			and bool(_snapshot[&"combo_visible"]):
 		return
 	_snapshot[&"active_combo"] = safe_combo
 	_snapshot[&"max_combo"] = next_max
+	_snapshot[&"combo_visible"] = true
+	_publish()
+
+
+func finish_combo_display() -> void:
+	if int(_snapshot[&"active_combo"]) == 0 \
+			and not bool(_snapshot[&"combo_visible"]):
+		return
+	_snapshot[&"active_combo"] = 0
+	_snapshot[&"combo_visible"] = false
 	_publish()
 
 
 func reset_combo() -> void:
 	_snapshot[&"active_combo"] = 0
 	_snapshot[&"max_combo"] = 0
+	_snapshot[&"combo_visible"] = false
 	_publish()
 
 

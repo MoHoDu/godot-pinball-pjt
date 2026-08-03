@@ -13,6 +13,7 @@ class ContractOnlySnapshotProvider:
 			&"target_score": 0,
 			&"active_combo": 0,
 			&"max_combo": 0,
+			&"combo_visible": false,
 			&"combo_anchor_viewport": Vector2.ZERO,
 			&"combo_anchor_visible": false,
 			&"wave_index": 0,
@@ -51,10 +52,20 @@ func _run() -> void:
 	_expect(int(slots[1][&"state"]) == WaveHudStateSource.LifeState.UPCOMING,
 		"Later configured balls must remain upcoming.")
 	_expect(int(snapshot[&"max_combo"]) == 7, "Observed combo must update wave max.")
+	_expect(bool(snapshot[&"combo_visible"]),
+		"An active combo must show the world combo UI.")
 
 	source.observe_combo(2)
 	_expect(int(source.get_snapshot()[&"max_combo"]) == 7,
 		"Wave max combo must not fall with the active chain.")
+	source.observe_combo(0)
+	_expect(int(source.get_snapshot()[&"active_combo"]) == 2 \
+		and bool(source.get_snapshot()[&"combo_visible"]),
+		"Zero combo must stay visible until score conversion finishes.")
+	source.finish_combo_display()
+	_expect(int(source.get_snapshot()[&"active_combo"]) == 0 \
+		and not bool(source.get_snapshot()[&"combo_visible"]),
+		"Combo finish must hide the world UI without erasing wave max.")
 	var remaining := source.consume_current_life()
 	snapshot = source.get_snapshot()
 	slots = snapshot[&"life_slots"]

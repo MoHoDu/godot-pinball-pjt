@@ -2,6 +2,9 @@ class_name WaveRuntimeCoordinator
 extends "res://tests/combo_system/test_flipper_wave_board.gd"
 
 
+const HUD_DESIGN_SIZE := Vector2(1920.0, 1080.0)
+
+
 @onready var hud_state: WaveHudStateSource = get_node_or_null(
 	"WaveHudStateSource"
 ) as WaveHudStateSource
@@ -9,9 +12,18 @@ extends "res://tests/combo_system/test_flipper_wave_board.gd"
 @onready var combo_anchor: Node2D = get_node_or_null(
 	"Bumpers/BumperCenter"
 ) as Node2D
+@onready var board_camera: Camera2D = get_node_or_null("Camera2D") as Camera2D
+
+
+@export_category("Wave Board Camera")
+@export var board_world_bounds := Rect2(-1180.0, -700.0, 2360.0, 1400.0)
+@export_range(0.01, 4.0, 0.001) var maximum_board_zoom := 0.494
+@export_range(0.0, 1080.0, 1.0) var hud_safe_top_design := 190.0
+@export_range(0.0, 256.0, 1.0) var board_margin_design := 24.0
 
 
 var _selection_committed := false
+var _camera_viewport_size := Vector2.ZERO
 
 
 func _ready() -> void:
@@ -20,13 +32,16 @@ func _ready() -> void:
 	assert(is_instance_valid(wave_hud), "Wave scene requires WaveHud.")
 	wave_hud.bind_state_source(hud_state)
 	wave_hud.settings_requested.connect(_toggle_pause)
+	get_viewport().size_changed.connect(_on_viewport_size_changed)
 	_connect_hud_state_inputs()
 	_initialize_hud_state()
+	_fit_board_camera(true)
 	_update_combo_anchor()
 
 
 func _process(delta: float) -> void:
 	super(delta)
+	_fit_board_camera()
 	_update_combo_anchor()
 
 
@@ -36,8 +51,15 @@ func _unhandled_input(event: InputEvent) -> void:
 	super(event)
 
 
+func reset_combo_test() -> void:
+	super()
+	if is_instance_valid(hud_state):
+		hud_state.reset_combo()
+
+
 func _connect_hud_state_inputs() -> void:
 	combo_system.combo_changed.connect(_on_combo_changed)
+	combo_system.combo_finished.connect(_on_combo_display_finished)
 	combo_system.score_changed.connect(_on_score_changed)
 	wave_ball_inventory.stock_reset.connect(_on_inventory_stock_reset)
 	wave_ball_inventory.selection_started.connect(_on_inventory_selection)
@@ -147,6 +169,15 @@ func _on_combo_changed(combo_count: int, _tier: int, _time_remaining: float) -> 
 	hud_state.observe_combo(combo_count)
 
 
+func _on_combo_display_finished(
+	_combo_count: int,
+	_tier: int,
+	_awarded_score: int,
+	_reason: int
+) -> void:
+	hud_state.finish_combo_display()
+
+
 func _on_score_changed(total_score: int, _added_score: int) -> void:
 	hud_state.set_score(total_score, wave_manager.target_score)
 
@@ -157,6 +188,52 @@ func _update_combo_anchor() -> void:
 		return
 	var viewport_position := combo_anchor.get_global_transform_with_canvas().origin
 	hud_state.set_combo_anchor(viewport_position, true)
+
+
+func _fit_board_camera(force := false) -> void:
+	if not is_instance_valid(board_camera) or not is_instance_valid(wave_hud):
+		return
+	var viewport_size := get_viewport_rect().size
+	if not force and viewport_size.is_equal_approx(_camera_viewport_size):
+		return
+	_camera_viewport_size = viewport_size
+
+	# Calculate from the current viewport directly. The coordinator processes
+	# before the child HUD, so reading the HUD's cached transform would use the
+	# previous frame's scale during a live window resize.
+	var design_scale := maxf(minf(
+		viewport_size.x / HUD_DESIGN_SIZE.x,
+		viewport_size.y / HUD_DESIGN_SIZE.y
+	), 0.001)
+	var design_offset := (viewport_size - HUD_DESIGN_SIZE * design_scale) * 0.5
+	var scaled_margin := board_margin_design * design_scale
+	var safe_left := design_offset.x + scaled_margin
+	var safe_top := design_offset.y + hud_safe_top_design * design_scale
+	var safe_right := viewport_size.x - design_offset.x - scaled_margin
+	var safe_bottom := viewport_size.y - design_offset.y - scaled_margin
+	var safe_size := Vector2(
+		maxf(safe_right - safe_left, 1.0),
+		maxf(safe_bottom - safe_top, 1.0)
+	)
+	var fitted_zoom := minf(
+		safe_size.x / maxf(board_world_bounds.size.x, 1.0),
+		safe_size.y / maxf(board_world_bounds.size.y, 1.0)
+	)
+	fitted_zoom = minf(fitted_zoom, maximum_board_zoom)
+	fitted_zoom = maxf(fitted_zoom, 0.01)
+	board_camera.zoom = Vector2.ONE * fitted_zoom
+
+	var safe_center := Vector2(
+		(safe_left + safe_right) * 0.5,
+		(safe_top + safe_bottom) * 0.5
+	)
+	var viewport_center := viewport_size * 0.5
+	board_camera.position = board_world_bounds.get_center() \
+		- (safe_center - viewport_center) / fitted_zoom
+
+
+func _on_viewport_size_changed() -> void:
+	_fit_board_camera(true)
 
 
 func _toggle_pause() -> void:

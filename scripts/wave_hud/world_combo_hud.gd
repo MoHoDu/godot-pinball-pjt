@@ -10,9 +10,11 @@ const DESIGN_SIZE := Vector2(1920.0, 1080.0)
 
 
 func render(snapshot: Dictionary, anchor_design_position: Vector2) -> void:
-	var max_combo := maxi(int(snapshot.get(&"max_combo", 0)), 0)
-	visible = bool(snapshot.get(&"combo_anchor_visible", false)) and max_combo > 0
-	_combo_value.text = "x%d" % max_combo
+	var active_combo := maxi(int(snapshot.get(&"active_combo", 0)), 0)
+	visible = bool(snapshot.get(&"combo_anchor_visible", false)) \
+		and bool(snapshot.get(&"combo_visible", false)) \
+		and active_combo > 0
+	_combo_value.text = "x%d" % active_combo
 	var desired := anchor_design_position - Vector2(size.x * 0.5, size.y + 22.0)
 	position = Vector2(
 		clampf(desired.x, SAFE_MARGIN, DESIGN_SIZE.x - SAFE_MARGIN - size.x),

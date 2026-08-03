@@ -81,4 +81,4 @@ func _refresh() -> void:
 		guide_label.text = "B: 웨이브 클리어    V: 남은 공 계속 사용"
 	else:
 		title_label.text = "다음 공 선택"
-		guide_label.text = "A/D 또는 ←/→: 선택    Enter: 조준 시작"
+		guide_label.text = "A/D 또는 ←/→: 선택    Space: 조준 시작"

@@ -27,6 +27,7 @@ func _run() -> void:
 	var combo := board.get_node_or_null("ComboSystem") as ComboSystem
 	var hud := board.get_node_or_null("HUD/BallSelectionHud") as BallSelectionHud
 	var launcher := board.get_node_or_null("PinballLauncher") as PinballLauncher
+	var selector := board.get_node_or_null("FlipperSelector") as FlipperSelector
 
 	_expect(inventory != null and flow != null and combo_wave != null and manager != null, "Main board should contain the manager-led wave system.")
 	_expect(hud != null and hud.visible, "Main board should show ball selection before aiming.")
@@ -34,6 +35,17 @@ func _run() -> void:
 	_expect(manager.current_state == WaveManager.State.SELECTING_BALL, "Wave manager should own the initial selection state.")
 	_expect(inventory.total_remaining == 3, "Main board should own three selectable balls.")
 	_expect(not launcher.is_aiming, "Main board must not aim before ball confirmation.")
+	_expect(selector != null and not selector.input_enabled,
+		"Flipper selection must be disabled while choosing a ball.")
+	if selector != null:
+		for controller: FlipperController in selector.controllers:
+			_expect(not controller.input_enabled,
+				"Flipper activation must be disabled while choosing a ball.")
+	for action: StringName in [&"ball_select_confirm", &"ball_launch_confirm"]:
+		var events := InputMap.action_get_events(action)
+		_expect(events.size() == 1 and events[0] is InputEventKey \
+			and (events[0] as InputEventKey).physical_keycode == KEY_SPACE,
+			"%s must be mapped exclusively to Space." % action)
 
 	var confirm := InputEventAction.new()
 	confirm.action = &"ball_select_confirm"
@@ -41,11 +53,18 @@ func _run() -> void:
 	flow._unhandled_input(confirm)
 	_expect(flow.current_state == WaveBallFlowController.State.AIMING, "Main board confirm should enter aiming.")
 	_expect(manager.current_state == WaveManager.State.AIMING, "Wave manager should mirror the aiming phase.")
+	_expect(not selector.input_enabled,
+		"Flipper selection must stay disabled while aiming the launch.")
 	_expect(board.get(&"ball") == flow.active_ball, "Board collision and drain logic should track dynamic active ball.")
 	_expect(collision_bridge.get(&"_ball") == flow.active_ball, "Collision bridge should bind the selected dynamic ball.")
 	_expect(launcher.launch_prepared_ball(), "Main board selected ball should launch.")
 	_expect(flow.current_state == WaveBallFlowController.State.IN_PLAY, "Main board launch should enter play.")
 	_expect(manager.current_state == WaveManager.State.IN_PLAY, "Wave manager should enter pinball/combat play.")
+	_expect(selector.input_enabled,
+		"Flipper selection must become available only after launch.")
+	for controller: FlipperController in selector.controllers:
+		_expect(controller.input_enabled,
+			"Flipper activation must become available only in play.")
 	_expect(combo_wave.ball_is_active, "Main board launch should automatically notify combo wave.")
 	var active := flow.active_ball
 	var flipper := board.get_node("FlipperSelector/BottomController/LeftFlipper")
@@ -59,6 +78,8 @@ func _run() -> void:
 	_expect(active != flow.active_ball, "Main board drain should release the previous ball.")
 	_expect(flow.current_state == WaveBallFlowController.State.SELECTING, "Main board drain should return to selection.")
 	_expect(manager.current_state == WaveManager.State.SELECTING_BALL, "Manager should repeat from remaining-ball selection.")
+	_expect(not selector.input_enabled,
+		"Flipper input must lock again after drain returns to selection.")
 	_expect(collision_bridge.get(&"_ball") == null, "Drain should disconnect the bridge from the previous ball.")
 
 	flow._unhandled_input(confirm)
