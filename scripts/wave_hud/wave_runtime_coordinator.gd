@@ -9,9 +9,6 @@ const HUD_DESIGN_SIZE := Vector2(1920.0, 1080.0)
 	"WaveHudStateSource"
 ) as WaveHudStateSource
 @onready var wave_hud: WaveHud = get_node_or_null("HUD/WaveHud") as WaveHud
-@onready var combo_anchor: Node2D = get_node_or_null(
-	"Bumpers/BumperCenter"
-) as Node2D
 @onready var board_camera: Camera2D = get_node_or_null("Camera2D") as Camera2D
 
 
@@ -36,13 +33,11 @@ func _ready() -> void:
 	_connect_hud_state_inputs()
 	_initialize_hud_state()
 	_fit_board_camera(true)
-	_update_combo_anchor()
 
 
 func _process(delta: float) -> void:
 	super(delta)
 	_fit_board_camera()
-	_update_combo_anchor()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -166,6 +161,8 @@ func _on_manager_wave_retried() -> void:
 
 
 func _on_combo_changed(combo_count: int, _tier: int, _time_remaining: float) -> void:
+	if combo_count > 0:
+		_update_combo_anchor_from_ball()
 	hud_state.observe_combo(combo_count)
 
 
@@ -182,11 +179,11 @@ func _on_score_changed(total_score: int, _added_score: int) -> void:
 	hud_state.set_score(total_score, wave_manager.target_score)
 
 
-func _update_combo_anchor() -> void:
-	if not is_instance_valid(combo_anchor):
+func _update_combo_anchor_from_ball() -> void:
+	if not is_instance_valid(ball):
 		hud_state.set_combo_anchor(Vector2.ZERO, false)
 		return
-	var viewport_position := combo_anchor.get_global_transform_with_canvas().origin
+	var viewport_position := ball.get_global_transform_with_canvas().origin
 	hud_state.set_combo_anchor(viewport_position, true)
 
 

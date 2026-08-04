@@ -27,8 +27,8 @@ func _run() -> void:
 	await _test_board_camera_safe_area(wave)
 	_test_combo_and_score_connection(wave)
 	await _test_life_connection(wave)
-	_test_world_anchor(wave)
 	await _test_pause_connection(wave)
+	await _test_world_anchor_and_hit_fade(wave)
 
 	wave.queue_free()
 	await process_frame
@@ -116,8 +116,8 @@ func _test_combo_and_score_connection(wave: WaveRuntimeCoordinator) -> void:
 	var combo_hud := wave.get_node(
 		"HUD/WaveHud/DesignSpace/WorldComboHud"
 	) as WaveWorldComboHud
-	_expect(combo_hud.visible,
-		"An active combo must display the world combo UI.")
+	_expect(not combo_hud.visible,
+		"A synthetic combo without an active ball must not show a stale world anchor.")
 
 	var settlement_snapshots: Array[Dictionary] = []
 	wave.hud_state.snapshot_changed.connect(func(next_snapshot: Dictionary) -> void:
@@ -145,7 +145,8 @@ func _test_combo_and_score_connection(wave: WaveRuntimeCoordinator) -> void:
 
 	source.register_contact(99)
 	source.release_contact(99)
-	_expect(combo_hud.visible, "A new combo must show the world UI again.")
+	_expect(not combo_hud.visible,
+		"A synthetic chain without an active ball must keep the world UI hidden.")
 	wave.reset_combo_test()
 	snapshot = wave.hud_state.get_snapshot()
 	_expect(int(snapshot[&"active_combo"]) == 0 \
@@ -263,18 +264,70 @@ func _test_pause_connection(wave: WaveRuntimeCoordinator) -> void:
 	_expect(not paused, "Settings button must remain able to resume while paused.")
 
 
-func _test_world_anchor(wave: WaveRuntimeCoordinator) -> void:
-	wave.call(&"_update_combo_anchor")
+func _test_world_anchor_and_hit_fade(wave: WaveRuntimeCoordinator) -> void:
+	wave.reset_combo_test()
+	_expect(is_instance_valid(wave.ball),
+		"The anchor test requires the active ball launched by the pause test.")
+	if not is_instance_valid(wave.ball):
+		return
+	var source := wave.get_node(
+		"Bumpers/BumperCenter/ComboHitSource"
+	) as ComboHitSource
+	var first_world_position := Vector2(-620.0, -180.0)
+	wave.ball.global_position = first_world_position
+	source.register_contact(1001)
+	source.release_contact(1001)
 	var snapshot := wave.hud_state.get_snapshot()
 	_expect(bool(snapshot[&"combo_anchor_visible"]),
-		"Center bumper projection must publish a visible combo anchor.")
+		"A valid combo hit must publish a visible combo anchor.")
+	var first_viewport_position: Vector2 = snapshot[&"combo_anchor_viewport"]
+	var expected_first := wave.ball.get_global_transform_with_canvas().origin
+	_expect(first_viewport_position.distance_to(expected_first) < 0.5,
+		"The combo anchor must use the ball position at the accepted hit.")
 	var combo_hud := wave.get_node(
 		"HUD/WaveHud/DesignSpace/WorldComboHud"
 	) as WaveWorldComboHud
+	_expect(is_equal_approx(combo_hud.modulate.a, 1.0),
+		"A new combo hit must display the floating UI at full opacity.")
+
+	await create_timer(0.25).timeout
+	_expect(combo_hud.modulate.a < 1.0 \
+		and combo_hud.modulate.a > WaveWorldComboHud.RESTING_ALPHA,
+		"The floating UI must fade gradually during the first 0.5 seconds.")
+
+	wave.ball.global_position = Vector2(640.0, 220.0)
+	source.register_contact(1002)
+	source.release_contact(1002)
+	snapshot = wave.hud_state.get_snapshot()
+	var second_viewport_position: Vector2 = snapshot[&"combo_anchor_viewport"]
+	var expected_second := wave.ball.get_global_transform_with_canvas().origin
+	_expect(second_viewport_position.distance_to(expected_second) < 0.5,
+		"Each new combo hit must replace the previous floating UI anchor.")
+	_expect(second_viewport_position.distance_to(first_viewport_position) > 1.0,
+		"Separated hits must not reuse a fixed combo anchor.")
+	_expect(is_equal_approx(combo_hud.modulate.a, 1.0),
+		"A hit during the fade must restart the UI at full opacity.")
+
+	await create_timer(WaveWorldComboHud.HIT_FADE_DURATION + 0.1).timeout
+	_expect(is_equal_approx(
+		combo_hud.modulate.a,
+		WaveWorldComboHud.RESTING_ALPHA
+	), "The floating UI must settle at the configured resting opacity.")
 	_expect(combo_hud.position.x >= 28.0 and combo_hud.position.x <= 1672.0,
 		"World combo must stay inside horizontal safe bounds.")
 	_expect(combo_hud.position.y >= 150.0 and combo_hud.position.y <= 976.0,
 		"World combo must stay inside vertical safe bounds.")
+
+	wave.combo_system.finish_combo(ComboSystem.EndReason.TIMEOUT)
+	_expect(not combo_hud.visible,
+		"A combo timeout must hide the floating UI immediately.")
+	source.register_contact(1003)
+	source.release_contact(1003)
+	_expect(combo_hud.visible,
+		"A new chain must show the floating UI after a timeout.")
+	wave.combo_system.on_ball_drained()
+	_expect(not combo_hud.visible,
+		"A ball drain must hide the floating UI immediately.")
 
 
 func _find_life_slot(slots: Array, ball_type: StringName) -> Dictionary:
