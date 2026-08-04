@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://ckvjrw1dg7ute"]
+[gd_scene load_steps=15 format=3 uid="uid://ckvjrw1dg7ute"]
 
 [ext_resource type="Script" uid="uid://biqih0rqfyrig" path="res://scripts/bumper-system/bumper_test_controller.gd" id="1_controller"]
 [ext_resource type="PackedScene" path="res://Resources/balls/base/base_ball.tscn" id="2_ball"]
@@ -7,7 +7,10 @@
 [ext_resource type="PackedScene" path="res://scenes/bumper_system/spring_doll_bumper.tscn" id="5_spring"]
 [ext_resource type="PackedScene" path="res://scenes/bumper_system/toy_drum_bumper.tscn" id="6_drum"]
 [ext_resource type="PackedScene" path="res://scenes/bumper_system/clockwork_toy_cannon.tscn" id="7_cannon"]
-[ext_resource type="PackedScene" path="res://scenes/bumper_system/repair_part.tscn" id="8_repair"]
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/starlight_brooch_bumper.tscn" id="8_starlight"]
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/golden_gears_bumper.tscn" id="9_gears"]
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/crescent_needle_bumper.tscn" id="10_needle"]
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/forgotten_star_bell_bumper.tscn" id="11_bell"]
 
 [sub_resource type="StyleBoxFlat" id="Style_top"]
 bg_color = Color(0.047, 0.102, 0.145, 0.96)
@@ -40,7 +43,7 @@ border_color = Color(0.26, 0.43, 0.51, 1)
 
 [node name="BumperTest" type="Node2D"]
 script = ExtResource("1_controller")
-bumper_scenes = Array[PackedScene]([ExtResource("3_button"), ExtResource("4_cotton"), ExtResource("5_spring"), ExtResource("6_drum"), ExtResource("7_cannon"), ExtResource("8_repair")])
+bumper_scenes = Array[PackedScene]([ExtResource("3_button"), ExtResource("4_cotton"), ExtResource("5_spring"), ExtResource("6_drum"), ExtResource("7_cannon"), ExtResource("8_starlight"), ExtResource("9_gears"), ExtResource("10_needle"), ExtResource("11_bell")])
 ball_scene = ExtResource("2_ball")
 
 [node name="TestRig" type="Node2D" parent="."]
@@ -91,7 +94,7 @@ theme_override_styles/panel = SubResource("Style_top")
 layout_mode = 2
 theme_override_colors/font_color = Color(0.91, 0.94, 0.85, 1)
 theme_override_font_sizes/font_size = 18
-text = "<  01 / 06   단추 범퍼  >"
+text = "<  01 / 09   단추 범퍼  >"
 horizontal_alignment = 1
 vertical_alignment = 1
 

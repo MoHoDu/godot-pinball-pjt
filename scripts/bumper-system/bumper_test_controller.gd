@@ -303,9 +303,15 @@ func _build_status_text() -> String:
 		if is_instance_valid(current_ball)
 		else 0.0
 	)
+	var repair_part_status := (
+		"YES · reward / own / place"
+		if current_bumper.is_repair_part()
+		else "NO · stage only"
+	)
 	return (
 		"TEST  %s\n"
-		+ "TYPE  %s\n\n"
+		+ "TYPE  %s\n"
+		+ "REPAIR PART  %s\n\n"
 		+ "score              %d\n"
 		+ "durability         %d / %d\n"
 		+ "speed multiplier   %.2fx\n"
@@ -319,6 +325,7 @@ func _build_status_text() -> String:
 	) % [
 		get_selected_display_name(),
 		BumperSettings.BumperType.keys()[current_bumper.settings.bumper_type],
+		repair_part_status,
 		current_bumper.get_base_score(),
 		current_bumper.current_durability,
 		current_bumper.get_max_durability(),
