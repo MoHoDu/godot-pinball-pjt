@@ -26,6 +26,16 @@ var reward_choice_count: int = 3
 @export var reward_random_seed: int = 0
 
 
+@export_group("디버그")
+
+## 개발용 즉시 클리어 키입니다. 빼려면 KEY_NONE으로 두면 됩니다.
+@export var debug_clear_wave_key: Key = KEY_G
+
+
+## 점수를 목표까지 밀어 올릴 때 반복할 최대 횟수입니다. 무한 루프 방지용입니다.
+const MAX_SCORE_INJECT_STEPS := 8
+
+
 var relic_inventory: RelicInventory
 var relic_runtime: RelicRuntime
 var reward_controller: RewardChoiceController
@@ -35,6 +45,81 @@ var reward_hud: RewardChoiceHud
 func _ready() -> void:
 	super()
 	_build_reward_system()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	super(event)
+	if get_tree().paused or debug_clear_wave_key == KEY_NONE:
+		return
+	var key_event := event as InputEventKey
+	if key_event == null or not key_event.pressed or key_event.echo:
+		return
+	if key_event.keycode != debug_clear_wave_key:
+		return
+	if force_wave_clear():
+		get_viewport().set_input_as_handled()
+
+
+## 진행 중인 웨이브를 즉시 클리어합니다. 개발용입니다.
+##
+## 기존 스크립트를 고치지 않으려고 정상 경로를 그대로 흉내냅니다.
+##   1) 목표 점수까지 점수를 채우고
+##   2) 공 한 번의 수명주기(발사 → 낙하)를 성립시켜 클리어 선택을 띄운 뒤
+##   3) 클리어를 확정합니다.
+## 특히 3)이 중요합니다. ComboWaveController.choose_clear()가 ball_flow.end_wave()를
+## 불러 주어야 공 흐름이 INACTIVE가 되고, 그래야 다음 enter_wave()가 성공합니다.
+func force_wave_clear() -> bool:
+	if wave_manager == null or not is_instance_valid(wave_manager):
+		return false
+	if wave_manager.current_state in [
+		WaveManager.State.INACTIVE,
+		WaveManager.State.WON,
+		WaveManager.State.LOST,
+	]:
+		return false
+
+	_inject_clear_score()
+
+	if wave_manager.current_state == WaveManager.State.CLEAR_CHOICE:
+		return wave_manager.choose_clear()
+
+	if wave_ball_flow.current_state == WaveBallFlowController.State.AIMING:
+		# 조준 중이라면 준비된 공을 실제로 쏴야 낙하 처리로 이어집니다.
+		launcher.launch_prepared_ball()
+
+	if wave_ball_flow.current_state == WaveBallFlowController.State.IN_PLAY:
+		wave_ball_flow.on_ball_drained(wave_ball_flow.active_ball)
+	elif wave_manager.combo_wave != null:
+		# 공이 보드에 없는 상태(공 선택 중)라면 공 한 번을 그대로 흉내냅니다.
+		wave_manager.combo_wave.on_ball_launched()
+		wave_manager.combo_wave.on_ball_drained(wave_manager.remaining_balls)
+
+	if wave_manager.current_state == WaveManager.State.CLEAR_CHOICE:
+		return wave_manager.choose_clear()
+	return wave_manager.current_state == WaveManager.State.WON
+
+
+## 목표 점수에 닿을 때까지 콤보를 만들어 정산합니다.
+func _inject_clear_score() -> void:
+	var target_score := wave_manager.target_score
+	if target_score <= 0 or not is_instance_valid(combo_system):
+		return
+	var rules: Resource = combo_system.rules
+	if rules == null:
+		return
+	for _step in MAX_SCORE_INJECT_STEPS:
+		var missing := target_score - wave_manager.current_score
+		if missing <= 0:
+			return
+		var base_score := maxi(combo_system.stage_base_score, 1)
+		var tier: int = rules.call(&"get_tier", combo_system.combo_count + 1)
+		var multiplier := maxf(
+			float(rules.call(&"get_score_multiplier", tier)),
+			0.0001
+		)
+		var weight := ceilf(float(missing) / (float(base_score) * multiplier))
+		combo_system.register_hit(maxf(weight, 1.0))
+		combo_system.finish_combo(ComboSystem.EndReason.MANUAL)
 
 
 func get_relic_summary() -> String:
