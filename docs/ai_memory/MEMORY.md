@@ -1,17 +1,21 @@
 # MEMORY
 
 Pinball_Logue (NAN AI 해커톤, 팀 Hire us Pls) 프로젝트 메모리.
-스냅샷 시점 **2026-08-04** — 유물 보상 시스템 구현 완료, 형락님 인게임 확인까지 끝남.
+스냅샷 시점 **2026-08-04 (2차)** — `VFX/ball_bump_effect` 를 `resource_ball_VFX` 로 병합.
+패링 파동(VFX ③)과 공별 VFX 프로필이 이제 한 브랜치에 있다.
+
+**작업 브랜치는 `resource_ball_VFX`** (워크트리 `.worktrees\ball-vfx`).
+문서 곳곳에 남아 있는 `VFX/Test` 표기는 옛 것이다.
 
 ## 먼저 읽을 것 (순서대로)
 
-1. ★ [인계 메모 HANDOFF](HANDOFF.md) — **이어받는 사람은 이것부터.** 이번 세션에 한 일 / 밟기 쉬운 지뢰 4개 /
-   지금 걸려 있는 것 / 다음 순번(VFX ③ 패링 파동) / 엔진 테스트 명령어
+1. ★ [인계 메모 HANDOFF](HANDOFF.md) — **이어받는 사람은 이것부터.** 이번 세션에 한 일 / 밟기 쉬운 지뢰 /
+   지금 걸려 있는 것 / 엔진 테스트 명령어
 2. [Pinball_Logue 프로젝트](project_pinball_logue.md) — 컨셉·비주얼 방향·스펙 수치·현재 진척 요약
 3. [작업 진행 규칙](feedback_workflow.md) — **승인 없이 산출물 만들지 않는다.** 계획 → 승인 → 실행
 4. [3단계 파이프라인](feedback_staged_pipeline.md) — 아트·VFX·SFX 전부 형태 → 텍스처 → 디테일. 단계마다 검수
-5. [Godot 컨테이너 검증](reference_godot_install_blocked.md) — **2026-08-04 다시 열렸다.** 받는 법과
-   프로젝트를 통째로 옮기지 않고 테스트·스크린샷까지 돌리는 법
+5. [Godot 컨테이너 검증](reference_godot_install_blocked.md) — **세션마다 갈린다.** 08-04 오전엔 받아졌고
+   같은 날 오후엔 다시 막혔다. 1분 안에 확인하고 안 되면 대체 검증으로 넘어간다
 
 ## 규칙 · 피드백
 
@@ -22,7 +26,7 @@ Pinball_Logue (NAN AI 해커톤, 팀 Hire us Pls) 프로젝트 메모리.
 
 ## 레퍼런스
 
-- [Godot 컨테이너 검증](reference_godot_install_blocked.md) — 다운로드 재개통. 자리표시자 에셋으로 헤드리스·스크린샷 검증
+- [Godot 컨테이너 검증](reference_godot_install_blocked.md) — 될 때도 안 될 때도 있다. 자리표시자 에셋으로 헤드리스·스크린샷 검증
 - [아트 파이프라인](reference_art_pipeline.md) — Leonardo/GPT/Canva 툴 체인과 리소스 검수 통과 기준
 - [코드베이스 컨벤션](reference_codebase_conventions.md) — 폴더·코드 스타일·연출 노드 패턴·테스트 형식, GL Compatibility 제약
 - [테스트 씬 조작키](reference_test_scene_controls.md) — 공 종류 전환 1~7, 패링 모드 0~3. **VFX 검수는 여기서 한다**
@@ -43,9 +47,16 @@ Pinball_Logue (NAN AI 해커톤, 팀 Hire us Pls) 프로젝트 메모리.
 ## VFX
 
 - [공 VFX 3종](project_vfx01_ball_trail.md) — 테두리·꼬리·파동 공통 규격과 시그널 연결 지점
+- [공별 VFX 프로필](project_ball_vfx_profile.md) — `BallVfxProfile`. 아트·프리셋과 실제 노드를 잇는 유일한 통로.
+  우선순위는 **씬 지정 > 프로필 > 기본값**
 - [VFX ① 안개 오라](project_vfx01_mist_aura.md) — Line2D 링 → 셰이더 안개. 외곽 40px 확정, llvmpipe 셰이더 검증법
 - [VFX ② 이동 꼬리](project_vfx02_trail.md) — 2겹 레이저+블룸, 길이 140px / 레이저 9px / 블룸 60px. 두께 3배는 시도 후 롤백
-- ③ 패링 원형 파동 — **미착수.** 규격은 `project_vfx02_trail.md` 마지막 절
+- ③ 패링 원형 파동 — **구현 완료** (전용 문서 없음. 근거는 `ball_parry_wave.gd` 헤더 주석에 전부 있다).
+  `scripts/ball_base_system/vfx/ball_parry_wave.gd` **파일 하나로 끝난다** — 셰이더도 규칙도 그 안에 있고
+  씬 아무 데나 붙인 Node2D 하나가 `parry_resolved` 를 자동으로 찾아 PERFECT 만 받는다.
+  공의 자식이 아니다(패링 직후 공이 날아가 "그 자리에서 터졌다"로 안 읽히기 때문).
+  확정값: 시작 27px → 종료 90px · 지속 **0.42초** · 링 **12px** · 플래시 0.06초 · 밴드 5단 · 중심 이동 없음(안 A).
+  지속·링 두께는 가이드(0.12~0.20 / 4~8)를 **가시성 개정 2차로 의도적으로 넘긴 값**이다
 
 ## SFX
 
