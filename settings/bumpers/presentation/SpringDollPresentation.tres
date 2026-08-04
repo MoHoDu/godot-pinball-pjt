@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BumperPresentationSettings" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/bumper-system/bumper_presentation_settings.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+visual_style = 2
+fill_color = Color(0.75, 0.82, 0.72, 1)
+rim_color = Color(0.98, 0.84, 0.35, 1)
+accent_color = Color(0.88, 0.62, 0.16, 1)
+curse_color = Color(0.42, 0.2, 0.5, 1)
+label = "용수철 인형"
+

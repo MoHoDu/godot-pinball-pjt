@@ -7,18 +7,12 @@ signal wall_contact_registered(wall: Node, ball: RigidBody2D)
 
 
 const FLIPPER_GROUP: StringName = &"combo_flippers"
-const WALL_GROUP: StringName = &"combo_timer_refresh_walls"
+const WALL_GROUP: StringName = &"combo_walls"
 const FLIPPER_IDLE_STATE := 0
 
 
 @export var combo_system_path: NodePath
 @export var ball_path: NodePath
-@export_range(0.0, 100.0, 0.05, "suffix:x")
-var flipper_score_weight := 1.0:
-	set(value):
-		flipper_score_weight = maxf(value, 0.0)
-
-
 var _combo_system: Node
 var _ball: RigidBody2D
 var _flipper_contacts: Dictionary = {}
@@ -39,8 +33,7 @@ func _ready() -> void:
 
 func bind_combo_system(combo_system: Node) -> bool:
 	if combo_system == null \
-			or not combo_system.has_method(&"register_hit") \
-			or not combo_system.has_method(&"refresh_combo_timer"):
+			or not combo_system.has_method(&"refresh_combo_timer_from_flipper"):
 		return false
 	_combo_system = combo_system
 	return true
@@ -158,7 +151,7 @@ func _register_flipper_contact(flipper: Node, is_physical: bool) -> bool:
 	var contact: Dictionary = _flipper_contacts.get(ball_id, {})
 	var physical_ids: Dictionary = contact.get(&"physical", {})
 	var swept_ids: Dictionary = contact.get(&"swept", {})
-	var was_active := not physical_ids.is_empty() or not swept_ids.is_empty()
+	var had_swept_contact := not swept_ids.is_empty()
 
 	if is_physical:
 		physical_ids[flipper_id] = true
@@ -168,9 +161,11 @@ func _register_flipper_contact(flipper: Node, is_physical: bool) -> bool:
 	contact[&"swept"] = swept_ids
 	_flipper_contacts[ball_id] = contact
 
-	if was_active:
+	# 일반 물리 접촉은 대기·복귀 플리퍼에서도 발생하므로 콤보 상태를 바꾸지 않습니다.
+	# ACTIVE 회전 스윕이 실제 임펄스를 적용했을 때만 조건부 타이머 갱신을 요청합니다.
+	if is_physical or had_swept_contact:
 		return false
-	_combo_system.call(&"register_hit", flipper_score_weight)
+	_combo_system.call(&"refresh_combo_timer_from_flipper")
 	flipper_contact_registered.emit(flipper, _ball)
 	return true
 
@@ -261,19 +256,16 @@ func _is_ball_overlapping_flipper(flipper: Node) -> bool:
 
 
 func _register_wall_contact(wall: Node) -> bool:
-	if not is_instance_valid(_combo_system) \
-			or not is_instance_valid(_ball) \
+	if not is_instance_valid(_ball) \
 			or not is_instance_valid(wall):
 		return false
 	var wall_id := wall.get_instance_id()
 	if _wall_contacts.has(wall_id):
 		return false
 
-	# 비활성 콤보에서도 접촉 세션은 기록합니다. 벽에 계속 붙은 상태에서 다른
-	# 타격으로 콤보가 시작돼도 새 벽 접촉처럼 시간을 갱신하지 않기 위함입니다.
+	# 벽은 물리 반사만 담당합니다. 접촉 신호는 관찰용으로 유지하되 콤보 상태에는
+	# 어떤 변경도 요청하지 않습니다.
 	_wall_contacts[wall_id] = true
-	if not bool(_combo_system.call(&"refresh_combo_timer")):
-		return false
 	wall_contact_registered.emit(wall, _ball)
 	return true
 

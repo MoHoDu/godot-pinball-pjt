@@ -45,6 +45,10 @@ Pinball_Logue (NAN AI 해커톤, 팀 Hire us Pls) 프로젝트 메모리.
 
 - [공 SFX 파일럿](project_sfx01_ball_pilot.md) — AI 사운드는 최소 0.5초라 어택을 못 만든다. 어택·길이는 절차적, AI는 재질음만
 
+## 범퍼 · 수리 부품
+
+- [수리 부품 시스템](project_repair_parts_system.md) — 범퍼 합성 구조로 4계열 구현(2026-08-04). 엔진 테스트는 로컬에서 미실행
+
 ## 보드 · 벽
 
 - [보드 스펙](project_board_spec.md) — 기준 캔버스 2240×1260 월드유닛, 두 보드 정점 좌표, 플리퍼 크기 3종 충돌

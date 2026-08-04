@@ -2,6 +2,8 @@ extends SceneTree
 
 
 const WAVE_SCENE := "res://scenes/wave/wave.tscn"
+const WAVE_NORMAL_BALL_SCENE := \
+	"res://Resources/balls/mass_var/normal_ball.tscn"
 
 var _failures: Array[String] = []
 
@@ -23,28 +25,48 @@ func _run() -> void:
 	await process_frame
 	await process_frame
 
+	_test_standalone_scene_source()
 	_test_scene_structure(wave)
+	_test_korean_selection_hud(wave)
+	_test_bumper_loadout(wave)
+	await _test_low_speed_wave_balls_release_from_flipper(wave)
 	await _test_board_camera_safe_area(wave)
 	_test_combo_and_score_connection(wave)
 	await _test_life_connection(wave)
-	_test_world_anchor(wave)
 	await _test_pause_connection(wave)
+	await _test_bumper_runtime_integration(wave)
+	await _test_world_anchor_and_hit_fade(wave)
 
 	wave.queue_free()
 	await process_frame
 	_finish()
 
 
+func _test_standalone_scene_source() -> void:
+	var scene_source := FileAccess.get_file_as_string(WAVE_SCENE)
+	var coordinator_source := FileAccess.get_file_as_string(
+		"res://scripts/wave_hud/wave_runtime_coordinator.gd"
+	)
+	_expect(scene_source.contains("[node name=\"Wave\" type=\"Node2D\""),
+		"Wave scene root must be authored directly as Node2D.")
+	_expect(not scene_source.contains("res://scenes/test_flipper/"),
+		"Wave scene must not inherit or instance a test board.")
+	_expect(not scene_source.contains("res://tests/"),
+		"Wave scene resources must not depend on test code.")
+	_expect(not coordinator_source.contains("res://tests/"),
+		"Wave runtime coordinator must not inherit test code.")
+
+
 func _test_scene_structure(wave: WaveRuntimeCoordinator) -> void:
 	_expect(String(ProjectSettings.get_setting(&"application/run/main_scene")) == WAVE_SCENE,
 		"The project main scene must run the integrated Wave HUD scene.")
-	_expect(not wave.get_node("HUD/GuideLabel").visible,
-		"Legacy guide HUD must be hidden in the Wave scene.")
-	_expect(not wave.get_node("HUD/ComboHud").visible,
-		"Legacy ComboHud must be hidden in the Wave scene.")
+	_expect(wave.get_node_or_null("HUD/GuideLabel") == null,
+		"Standalone Wave scene must not retain the legacy guide HUD.")
+	_expect(wave.get_node_or_null("HUD/ComboHud") == null,
+		"Standalone Wave scene must not retain the legacy ComboHud.")
 	var snapshot := wave.hud_state.get_snapshot()
-	_expect(int(snapshot[&"target_score"]) == 250000,
-		"Wave 1 target must come from ComboStageSettings through the controller.")
+	_expect(int(snapshot[&"target_score"]) == 650000,
+		"Wave 3 target must come from ComboStageSettings through the controller.")
 	_expect((snapshot[&"life_slots"] as Array).size() == 3,
 		"Runtime session must expose the actual three-ball inventory.")
 	_expect(wave.wave_manager.current_state == WaveManager.State.SELECTING_BALL,
@@ -55,6 +77,126 @@ func _test_scene_structure(wave: WaveRuntimeCoordinator) -> void:
 		"Integrated Wave scene must contain one ball flow controller.")
 	_expect(wave.find_children("ComboWaveController", "", true, false).size() == 1,
 		"Integrated Wave scene must contain one combo wave policy.")
+
+
+func _test_korean_selection_hud(wave: WaveRuntimeCoordinator) -> void:
+	var hud := wave.ball_selection_hud
+	_expect(hud.visible,
+		"Ball selection HUD must be visible while choosing the first ball.")
+	_expect(hud.title_label.text == "다음 공 선택",
+		"Ball selection title must retain the authored Korean copy.")
+	_expect(hud.ball_name_label.text in ["가벼운 공", "보통 공", "무거운 공"],
+		"Selected ball name must use a Korean inventory label.")
+	_expect(hud.stock_label.text.contains("이 공") \
+		and hud.stock_label.text.contains("전체") \
+		and hud.stock_label.text.contains("남음"),
+		"Ball stock label must retain the complete Korean copy.")
+	_expect(hud.guide_label.text == "A/D 또는 방향키: 선택    Space: 조준 시작",
+		"Ball selection guide must retain the supported Korean instruction text.")
+
+
+func _test_bumper_loadout(wave: WaveRuntimeCoordinator) -> void:
+	var bumpers := wave.get_bumpers()
+	_expect(bumpers.size() == 6,
+		"Standalone Wave 3 board must contain six production bumpers.")
+	_expect(wave.is_current_bumper_loadout_valid(),
+		"Authored bumpers must satisfy the Stage 01 Wave 3 loadout contract.")
+	var normal_count := 0
+	var bounce_count := 0
+	var shot_count := 0
+	var kind_counts: Dictionary = {}
+	for bumper: Bumper in bumpers:
+		_expect(bumper.get_script() != null,
+			"Every authored bumper must use the production Bumper runtime.")
+		_expect(bumper.combo_hit_source != null,
+			"Every authored bumper must expose a ComboHitSource.")
+		var kind_id := bumper.settings.bumper_kind_id
+		kind_counts[kind_id] = int(kind_counts.get(kind_id, 0)) + 1
+		match bumper.settings.bumper_type:
+			BumperSettings.BumperType.NORMAL:
+				normal_count += 1
+			BumperSettings.BumperType.BOUNCE:
+				bounce_count += 1
+			BumperSettings.BumperType.SHOT:
+				shot_count += 1
+	_expect(normal_count == 3 and bounce_count == 2 and shot_count == 1,
+		"Wave 3 must expose three Normal, two Bounce, and one Shot bumper.")
+	_expect(kind_counts == {
+		&"stage01_button": 2,
+		&"stage01_cotton": 1,
+		&"stage01_spring_doll": 1,
+		&"stage01_toy_drum": 1,
+		&"stage01_clockwork_cannon": 1,
+	}, "Wave 3 must contain the exact authored Stage 01 bumper kinds.")
+
+
+func _test_low_speed_wave_balls_release_from_flipper(
+	wave: WaveRuntimeCoordinator
+) -> void:
+	var flipper := wave.get_node(
+		"FlipperSelector/BottomController/RightFlipper"
+	) as PinballFlipper
+	_expect(flipper != null, "Wave board must expose the bottom-right flipper.")
+	if flipper == null:
+		return
+
+	var registered_flippers := get_nodes_in_group(&"combo_flippers")
+	for node: Node in registered_flippers:
+		(node as PinballFlipper).set_physics_process(false)
+	flipper.set_physics_process(true)
+
+	var packed_ball := load(WAVE_NORMAL_BALL_SCENE) as PackedScene
+	var ball := packed_ball.instantiate() as Pinball
+	wave.add_child(ball)
+	ball.freeze = true
+	# 첨부 이미지처럼 우측 하단 플리퍼 끝의 둥근 면에 저속으로 붙은 위치입니다.
+	ball.global_position = flipper.global_position + Vector2(-220.0, 60.0)
+	ball.linear_velocity = Vector2.ZERO
+	await physics_frame
+	ball.freeze = false
+	ball.sleeping = false
+	for _settle_frame in 10:
+		await physics_frame
+
+	var stuck_position := ball.global_position
+	_expect(ball.linear_velocity.length() < 80.0,
+		"Wave regression ball must settle at low speed before activation. " \
+		+ "(velocity=%s)" % ball.linear_velocity)
+	var activated := flipper.request_activation(
+		PinballFlipper.issue_activation_token()
+	)
+	_expect(activated, "The Wave flipper must accept a low-speed release activation.")
+	var peak_release_speed := 0.0
+	for _active_frame in 15:
+		await physics_frame
+		peak_release_speed = maxf(peak_release_speed, ball.linear_velocity.length())
+
+	var ball_collision := ball.get_node("CollisionShape2D") as CollisionShape2D
+	var ball_circle := ball_collision.shape as CircleShape2D
+	var ball_radius := ball_circle.radius * ball_collision.global_scale.abs().x
+	_expect(ball.global_position.distance_to(stuck_position) >= 48.0,
+		"A low-speed Wave ball must physically separate from the flipper. " \
+		+ "(start=%s, end=%s)" % [stuck_position, ball.global_position])
+	_expect(not flipper.is_circle_overlapping_at_rotation(
+		ball_collision.global_position,
+		ball_radius,
+		flipper.rotation
+	), "A released Wave ball must not remain overlapping the active flipper.")
+	var minimum_active_hit_speed := float(
+		flipper.state_rules.get(&"minimum_active_hit_speed")
+	)
+	_expect(peak_release_speed + 0.1 >= minimum_active_hit_speed,
+		"A low-speed Wave flipper hit must reach the shared minimum active hit speed. " \
+		+ "(minimum=%s, peak=%s)" % [
+			minimum_active_hit_speed,
+			peak_release_speed,
+		])
+	ball.queue_free()
+	await process_frame
+
+	for node: Node in registered_flippers:
+		if is_instance_valid(node):
+			(node as PinballFlipper).set_physics_process(true)
 
 
 func _test_board_camera_safe_area(wave: WaveRuntimeCoordinator) -> void:
@@ -116,8 +258,8 @@ func _test_combo_and_score_connection(wave: WaveRuntimeCoordinator) -> void:
 	var combo_hud := wave.get_node(
 		"HUD/WaveHud/DesignSpace/WorldComboHud"
 	) as WaveWorldComboHud
-	_expect(combo_hud.visible,
-		"An active combo must display the world combo UI.")
+	_expect(not combo_hud.visible,
+		"A synthetic combo without an active ball must not show a stale world anchor.")
 
 	var settlement_snapshots: Array[Dictionary] = []
 	wave.hud_state.snapshot_changed.connect(func(next_snapshot: Dictionary) -> void:
@@ -145,7 +287,8 @@ func _test_combo_and_score_connection(wave: WaveRuntimeCoordinator) -> void:
 
 	source.register_contact(99)
 	source.release_contact(99)
-	_expect(combo_hud.visible, "A new combo must show the world UI again.")
+	_expect(not combo_hud.visible,
+		"A synthetic chain without an active ball must keep the world UI hidden.")
 	wave.reset_combo_test()
 	snapshot = wave.hud_state.get_snapshot()
 	_expect(int(snapshot[&"active_combo"]) == 0 \
@@ -263,18 +406,114 @@ func _test_pause_connection(wave: WaveRuntimeCoordinator) -> void:
 	_expect(not paused, "Settings button must remain able to resume while paused.")
 
 
-func _test_world_anchor(wave: WaveRuntimeCoordinator) -> void:
-	wave.call(&"_update_combo_anchor")
+func _test_bumper_runtime_integration(wave: WaveRuntimeCoordinator) -> void:
+	wave.reset_combo_test()
+	_expect(is_instance_valid(wave.ball),
+		"Bumper integration requires the active Wave ball.")
+	if not is_instance_valid(wave.ball):
+		return
+
+	var bumper := wave.get_node("Bumpers/BumperCenter") as Bumper
+	bumper.reset_for_new_ball()
+	var starting_durability := bumper.current_durability
+	wave.ball.linear_velocity = Vector2(0.0, 500.0)
+	var context := BallImpactContext.new(
+		wave.ball,
+		wave.ball.linear_velocity,
+		Vector2.ZERO,
+		Vector2.UP,
+		bumper.global_position
+	)
+	bumper.get_ball_impact(context)
+	await process_frame
+	_expect(wave.combo_system.combo_count == 1,
+		"A production Wave bumper impact must register one combo hit.")
+	_expect(bumper.current_durability == starting_durability - 1,
+		"A production Wave bumper impact must reduce durability once.")
+	bumper.get_ball_impact(context)
+	await process_frame
+	_expect(wave.combo_system.combo_count == 1,
+		"Repeated contact with the same ball must not duplicate combo hits.")
+	_expect(bumper.current_durability == starting_durability - 1,
+		"Repeated contact with the same ball must not duplicate durability damage.")
+	bumper.release_contact(wave.ball.get_instance_id())
+	bumper.reset_for_new_ball()
+
+	var cannon := wave.get_node("Bumpers/BumperCannon") as ShotBumper
+	cannon.call(&"_begin_selection", wave.ball)
+	await process_frame
+	_expect(not wave.flipper_selector.input_enabled,
+		"Shot bumper control must suspend flipper input.")
+	cannon.reset_for_new_ball()
+	await process_frame
+	_expect(wave.flipper_selector.input_enabled,
+		"Ending Shot bumper control must restore in-play flipper input.")
+
+
+func _test_world_anchor_and_hit_fade(wave: WaveRuntimeCoordinator) -> void:
+	wave.reset_combo_test()
+	_expect(is_instance_valid(wave.ball),
+		"The anchor test requires the active ball launched by the pause test.")
+	if not is_instance_valid(wave.ball):
+		return
+	var source := wave.get_node(
+		"Bumpers/BumperCenter/ComboHitSource"
+	) as ComboHitSource
+	var first_world_position := Vector2(-620.0, -180.0)
+	wave.ball.global_position = first_world_position
+	source.register_contact(1001)
+	source.release_contact(1001)
 	var snapshot := wave.hud_state.get_snapshot()
 	_expect(bool(snapshot[&"combo_anchor_visible"]),
-		"Center bumper projection must publish a visible combo anchor.")
+		"A valid combo hit must publish a visible combo anchor.")
+	var first_viewport_position: Vector2 = snapshot[&"combo_anchor_viewport"]
+	var expected_first := wave.ball.get_global_transform_with_canvas().origin
+	_expect(first_viewport_position.distance_to(expected_first) < 0.5,
+		"The combo anchor must use the ball position at the accepted hit.")
 	var combo_hud := wave.get_node(
 		"HUD/WaveHud/DesignSpace/WorldComboHud"
 	) as WaveWorldComboHud
+	_expect(is_equal_approx(combo_hud.modulate.a, 1.0),
+		"A new combo hit must display the floating UI at full opacity.")
+
+	await create_timer(0.25).timeout
+	_expect(combo_hud.modulate.a < 1.0 \
+		and combo_hud.modulate.a > WaveWorldComboHud.RESTING_ALPHA,
+		"The floating UI must fade gradually during the first 0.5 seconds.")
+
+	wave.ball.global_position = Vector2(640.0, 220.0)
+	source.register_contact(1002)
+	source.release_contact(1002)
+	snapshot = wave.hud_state.get_snapshot()
+	var second_viewport_position: Vector2 = snapshot[&"combo_anchor_viewport"]
+	var expected_second := wave.ball.get_global_transform_with_canvas().origin
+	_expect(second_viewport_position.distance_to(expected_second) < 0.5,
+		"Each new combo hit must replace the previous floating UI anchor.")
+	_expect(second_viewport_position.distance_to(first_viewport_position) > 1.0,
+		"Separated hits must not reuse a fixed combo anchor.")
+	_expect(is_equal_approx(combo_hud.modulate.a, 1.0),
+		"A hit during the fade must restart the UI at full opacity.")
+
+	await create_timer(WaveWorldComboHud.HIT_FADE_DURATION + 0.1).timeout
+	_expect(is_equal_approx(
+		combo_hud.modulate.a,
+		WaveWorldComboHud.RESTING_ALPHA
+	), "The floating UI must settle at the configured resting opacity.")
 	_expect(combo_hud.position.x >= 28.0 and combo_hud.position.x <= 1672.0,
 		"World combo must stay inside horizontal safe bounds.")
 	_expect(combo_hud.position.y >= 150.0 and combo_hud.position.y <= 976.0,
 		"World combo must stay inside vertical safe bounds.")
+
+	wave.combo_system.finish_combo(ComboSystem.EndReason.TIMEOUT)
+	_expect(not combo_hud.visible,
+		"A combo timeout must hide the floating UI immediately.")
+	source.register_contact(1003)
+	source.release_contact(1003)
+	_expect(combo_hud.visible,
+		"A new chain must show the floating UI after a timeout.")
+	wave.combo_system.on_ball_drained()
+	_expect(not combo_hud.visible,
+		"A ball drain must hide the floating UI immediately.")
 
 
 func _find_life_slot(slots: Array, ball_type: StringName) -> Dictionary:

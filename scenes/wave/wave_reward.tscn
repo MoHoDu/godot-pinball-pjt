@@ -1,34 +1,10 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=4 format=3]
 
-[ext_resource type="PackedScene" path="res://scenes/test_flipper/test_flipper_wave_board.tscn" id="1_board"]
+[ext_resource type="PackedScene" uid="uid://6fbf244c58gg" path="res://scenes/wave/wave.tscn" id="1_board"]
 [ext_resource type="Script" path="res://scripts/wave_hud/wave_reward_coordinator.gd" id="2_coordinator"]
-[ext_resource type="Script" path="res://scripts/wave_hud/wave_hud_state_source.gd" id="3_state"]
-[ext_resource type="PackedScene" path="res://scenes/wave_hud/wave_hud.tscn" id="4_hud"]
-[ext_resource type="Script" path="res://scripts/combo_system/combo_stage_settings.gd" id="5_stage_settings"]
-
-[sub_resource type="Resource" id="StageSettings_wave"]
-script = ExtResource("5_stage_settings")
-stage_id = &"cursed_toy_demo"
-stage_base_score = 100
-wave_target_scores = PackedInt32Array(250000, 400000, 650000, 1000000)
+[ext_resource type="Resource" path="res://settings/reward_shop/WaveShopBumperLayout_Demo.tres" id="3_bumper_layout"]
 
 [node name="WaveReward" instance=ExtResource("1_board")]
 script = ExtResource("2_coordinator")
-wave_stage_settings = SubResource("StageSettings_wave")
-
-[node name="GuideLabel" parent="HUD" parent_id_path=PackedInt32Array(2130486477) index="0"]
-visible = false
-
-[node name="StatusLabel" parent="HUD" parent_id_path=PackedInt32Array(2130486477) index="1"]
-visible = false
-
-[node name="ComboHud" parent="HUD" parent_id_path=PackedInt32Array(2130486477) index="2"]
-visible = false
-
-[node name="ComboInspector" parent="HUD" parent_id_path=PackedInt32Array(2130486477) index="3"]
-visible = false
-
-[node name="WaveHud" parent="HUD" parent_id_path=PackedInt32Array(2130486477) index="5" instance=ExtResource("4_hud")]
-
-[node name="WaveHudStateSource" type="Node" parent="." index="15"]
-script = ExtResource("3_state")
+bumper_stage_settings = ExtResource("3_bumper_layout")
+wave_stage_index = 0

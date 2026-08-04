@@ -72,7 +72,7 @@ func _refresh() -> void:
 		return
 	var definition := _inventory.selected_definition
 	ball_name_label.text = definition.display_name if definition != null else "선택 가능한 공 없음"
-	stock_label.text = "이 공 %d개 · 전체 %d개 남음" % [
+	stock_label.text = "이 공 %d개 / 전체 %d개 남음" % [
 		_inventory.selected_remaining,
 		_inventory.total_remaining,
 	]
@@ -81,4 +81,4 @@ func _refresh() -> void:
 		guide_label.text = "B: 웨이브 클리어    V: 남은 공 계속 사용"
 	else:
 		title_label.text = "다음 공 선택"
-		guide_label.text = "A/D 또는 ←/→: 선택    Space: 조준 시작"
+		guide_label.text = "A/D 또는 방향키: 선택    Space: 조준 시작"

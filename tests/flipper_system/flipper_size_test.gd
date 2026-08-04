@@ -41,6 +41,9 @@ func _run() -> void:
 	_test_scaled_geometry(right_flipper, 776.0)
 	_test_length_clamp(left_flipper)
 	_test_instances_keep_independent_sizes(left_scene, left_flipper)
+	await _test_pre_tree_instance_resize_keeps_source_offset(left_scene)
+	await _test_pre_tree_manual_position_override_is_preserved(left_scene)
+	await _test_collapsed_polygon_does_not_corrupt_source_position(left_scene)
 	await _test_export_value_applies_after_children_are_restored()
 	await _test_controller_instance_overrides_are_applied()
 	_test_missing_nodes_are_reported_safely()
@@ -163,6 +166,79 @@ func _test_instances_keep_independent_sizes(
 
 	first_flipper.set(&"flipper_length", EXPECTED_DEFAULT_LENGTH)
 	second_flipper.free()
+
+
+func _test_pre_tree_instance_resize_keeps_source_offset(
+	packed_scene: PackedScene
+) -> void:
+	var flipper := packed_scene.instantiate() as PinballFlipper
+	var collision := flipper.get_node("CollisionPolygon2D") as CollisionPolygon2D
+	var original_length := float(flipper.flipper_length)
+	var original_position := collision.position
+	var target_length := 328.0
+
+	# PackedScene 인스턴스 오버라이드는 트리에 들어가기 전에 복원됩니다.
+	# 이 순서에서도 상속받은 충돌체 위치가 새 길이에 비례해야 합니다.
+	flipper.flipper_length = target_length
+	root.add_child(flipper)
+	await process_frame
+
+	_expect_vector(
+		collision.position,
+		original_position * target_length / original_length,
+		"트리 진입 전 길이 오버라이드가 이전 크기의 충돌체 위치를 보존하면 안 된다."
+	)
+	flipper.queue_free()
+	await process_frame
+
+
+func _test_pre_tree_manual_position_override_is_preserved(
+	packed_scene: PackedScene
+) -> void:
+	var flipper := packed_scene.instantiate() as PinballFlipper
+	var collision := flipper.get_node("CollisionPolygon2D") as CollisionPolygon2D
+	var original_length := float(flipper.flipper_length)
+	var overridden_position := collision.position + Vector2(18.0, -7.0)
+	var target_length := 328.0
+
+	# editable child 위치 오버라이드는 새 길이가 적용되기 전의 좌표계로 저장됩니다.
+	# 첫 갱신에서도 이를 단순 복원 순서로 오인해 덮어쓰면 안 됩니다.
+	collision.position = overridden_position
+	flipper.flipper_length = target_length
+	root.add_child(flipper)
+	await process_frame
+
+	_expect_vector(
+		collision.position,
+		overridden_position * target_length / original_length,
+		"트리 진입 전 자식 위치 오버라이드는 새 길이에 비례해 보존되어야 한다."
+	)
+	flipper.queue_free()
+	await process_frame
+
+
+func _test_collapsed_polygon_does_not_corrupt_source_position(
+	packed_scene: PackedScene
+) -> void:
+	var flipper := packed_scene.instantiate() as PinballFlipper
+	var collision := flipper.get_node("CollisionPolygon2D") as CollisionPolygon2D
+	var collapsed_polygon := collision.polygon.duplicate()
+	for index in collapsed_polygon.size():
+		collapsed_polygon[index] = Vector2.ZERO
+	collision.polygon = collapsed_polygon
+	collision.position += Vector2(18.0, -7.0)
+
+	flipper.flipper_length = 328.0
+	root.add_child(flipper)
+	await process_frame
+
+	var source_position := flipper.get(&"_source_collision_position") as Vector2
+	_expect(collision.position.is_finite(), \
+		"붕괴된 폴리곤 배율로 콜라이더 위치를 0으로 나누면 안 된다.")
+	_expect(source_position.is_finite(), \
+		"붕괴된 폴리곤 배율이 저장 원본 위치를 INF/NaN으로 오염시키면 안 된다.")
+	flipper.queue_free()
+	await process_frame
 
 
 func _test_export_value_applies_after_children_are_restored() -> void:

@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/bumper_base.tscn" id="1"]
+[ext_resource type="Resource" path="res://settings/bumpers/stage_01/CottonBumper.tres" id="2"]
+
+[node name="CottonBumper" instance=ExtResource("1")]
+bumper_id = &"cotton_bumper"
+settings = ExtResource("2")
+

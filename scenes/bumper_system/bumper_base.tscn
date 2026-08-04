@@ -1,0 +1,51 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/bumper-system/bumper.gd" id="1_bumper"]
+[ext_resource type="Script" path="res://scripts/bumper-system/bumper_visual.gd" id="2_visual"]
+[ext_resource type="Script" path="res://scripts/combo_system/combo_hit_source.gd" id="3_combo"]
+
+[sub_resource type="CircleShape2D" id="Circle_collision"]
+resource_local_to_scene = true
+radius = 44.0
+
+[sub_resource type="CircleShape2D" id="Circle_hit"]
+resource_local_to_scene = true
+radius = 48.0
+
+[sub_resource type="CircleShape2D" id="Circle_safe"]
+resource_local_to_scene = true
+radius = 84.0
+
+[node name="Bumper" type="AnimatableBody2D" groups=["bumper_objects"]]
+script = ExtResource("1_bumper")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("Circle_collision")
+
+[node name="HitArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitArea"]
+shape = SubResource("Circle_hit")
+
+[node name="SafeRespawnArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SafeRespawnArea"]
+shape = SubResource("Circle_safe")
+
+[node name="ComboHitSource" type="Node" parent="."]
+script = ExtResource("3_combo")
+
+[node name="Visual" type="Node2D" parent="."]
+z_index = 2
+script = ExtResource("2_visual")
+
+[node name="RespawnTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="TelegraphTimer" type="Timer" parent="."]
+one_shot = true
+

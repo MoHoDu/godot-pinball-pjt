@@ -35,11 +35,17 @@ var reward_choice_count: int = 3
 ## 점수를 목표까지 밀어 올릴 때 반복할 최대 횟수입니다. 무한 루프 방지용입니다.
 const MAX_SCORE_INJECT_STEPS := 8
 
+## 화면에 남겨 두는 이벤트 로그 줄 수입니다.
+const EVENT_LOG_MAX_LINES := 6
+
 
 var relic_inventory: RelicInventory
 var relic_runtime: RelicRuntime
 var reward_controller: RewardChoiceController
 var reward_hud: RewardChoiceHud
+
+var _event_log_label: Label
+var _event_log_lines: PackedStringArray = PackedStringArray()
 
 
 func _ready() -> void:
@@ -173,6 +179,38 @@ func _build_reward_system() -> void:
 
 func _find_flippers() -> Array[Node]:
 	return find_children("*", "PinballFlipper", true, false)
+
+
+## 옛 테스트 보드의 이벤트 로그를 대신하는 간이 로그입니다.
+## 독립형 wave.tscn에는 이벤트 로그 UI가 없으므로 HUD에 라벨을 만들어 씁니다.
+func _append_event(message: String) -> void:
+	print("[wave] %s" % message)
+	if _event_log_label == null:
+		_build_event_log_label()
+	if _event_log_label == null:
+		return
+	_event_log_lines.append(message)
+	while _event_log_lines.size() > EVENT_LOG_MAX_LINES:
+		_event_log_lines.remove_at(0)
+	_event_log_label.text = "\n".join(_event_log_lines)
+
+
+func _build_event_log_label() -> void:
+	var hud_root := get_node_or_null(^"HUD")
+	if hud_root == null:
+		return
+	_event_log_label = Label.new()
+	_event_log_label.name = "EventLogLabel"
+	_event_log_label.position = Vector2(24.0, 300.0)
+	_event_log_label.add_theme_font_size_override(&"font_size", 20)
+	_event_log_label.add_theme_color_override(
+		&"font_color", Color(0.78, 0.82, 0.86)
+	)
+	_event_log_label.add_theme_color_override(
+		&"font_outline_color", Color(0.05, 0.06, 0.08)
+	)
+	_event_log_label.add_theme_constant_override(&"outline_size", 5)
+	hud_root.add_child(_event_log_label)
 
 
 func _on_relic_chosen(definition: RelicDefinition, stack_count: int) -> void:

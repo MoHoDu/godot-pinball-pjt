@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="BumperSettings" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/bumper-system/bumper_settings.gd" id="1"]
+[ext_resource type="Resource" path="res://settings/bumpers/presentation/ButtonPresentation.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+bumper_kind_id = &"stage01_button"
+display_name = "단추 범퍼"
+bumper_type = 0
+is_repair_part = false
+base_score = 100
+score_weight = 1.0
+max_durability = 2
+durability_damage_per_hit = 1
+respawn_delay = 3.0
+respawn_telegraph_duration = 0.4
+speed_multiplier = 1.1
+minimum_release_speed = 0.0
+maximum_response_speed = 1540.0
+collision_diameter = 88.0
+visual_diameter = 92.0
+respawn_safe_margin = 40.0
+presentation = ExtResource("2")

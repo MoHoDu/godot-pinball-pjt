@@ -54,8 +54,12 @@ func _run() -> void:
 	await process_frame
 
 	_test_board_structure(board)
+	_test_flipper_collision_geometry(board)
 	_test_board_art(board)
 	_test_octagonal_walls(board)
+	await _test_idle_pivot_does_not_trap_ball(board)
+	await _test_active_flipper_releases_adjacent_ball(board)
+	await _test_active_flipper_reflects_toward_board(board)
 	await _test_reset_and_launcher(board)
 	await _test_bumper_speed_only(board)
 
@@ -243,6 +247,234 @@ func _test_octagonal_walls(board: Node) -> void:
 			and right_cap.position.is_equal_approx(Vector2(378.0, 0.0)),
 			"%s 오른쪽 캡은 벽의 346~410px 구간에 있어야 한다." % wall_name
 		)
+
+
+func _test_flipper_collision_geometry(board: Node) -> void:
+	var left := board.get_node_or_null(
+		"FlipperSelector/BottomController/LeftFlipper"
+	) as PinballFlipper
+	var right := board.get_node_or_null(
+		"FlipperSelector/BottomController/RightFlipper"
+	) as PinballFlipper
+	var ball := board.get_node_or_null("PinballBall") as Pinball
+	_expect(left != null and right != null and ball != null, \
+		"QA 충돌 형상 검사에는 하단 플리퍼 쌍과 실제 공이 필요하다.")
+	if left == null or right == null or ball == null:
+		return
+
+	for flipper: PinballFlipper in [left, right]:
+		var collision := flipper.get_node("CollisionPolygon2D") as CollisionPolygon2D
+		var maximum_radius := 0.0
+		for point: Vector2 in collision.transform * collision.polygon:
+			maximum_radius = maxf(maximum_radius, point.length())
+		_expect(
+			maximum_radius <= flipper.flipper_length * 0.8,
+			"플리퍼 콜라이더가 스프라이트 길이보다 중앙 갭 쪽으로 돌출되면 안 된다. " \
+			+ "(flipper=%s, radius=%.2f)" % [flipper.name, maximum_radius]
+		)
+
+	var ball_radius := _get_ball_radius(ball)
+	var gap_center := Vector2(
+		(left.global_position.x + right.global_position.x) * 0.5,
+		maxf(left.global_position.y, right.global_position.y) + ball_radius
+	)
+	for flipper: PinballFlipper in [left, right]:
+		var gap_hit := flipper.find_rotation_sweep_hit(
+			gap_center,
+			ball_radius,
+			deg_to_rad(flipper.initial_angle_degrees),
+			deg_to_rad(flipper.maximum_angle_degrees),
+			true
+		)
+		_expect(gap_hit.is_empty(), \
+			"중앙 갭을 통과하는 공을 플리퍼 스윕 충돌로 판정하면 안 된다. " \
+			+ "(flipper=%s, hit=%s)" % [flipper.name, gap_hit])
+
+
+func _test_idle_pivot_does_not_trap_ball(board: Node) -> void:
+	var flipper := board.get_node_or_null(
+		"FlipperSelector/BottomController/LeftFlipper"
+	) as PinballFlipper
+	var ball := board.get_node_or_null("PinballBall") as Pinball
+	if flipper == null or ball == null:
+		return
+
+	_configure_qa_ball(ball, 0.35, true)
+	ball.global_position = flipper.global_position + Vector2(70.0, -24.0)
+	ball.linear_velocity = Vector2.ZERO
+	ball.reset_physics_interpolation()
+	var start_position := ball.global_position
+	await physics_frame
+	ball.freeze = false
+	ball.sleeping = false
+
+	for _frame in 90:
+		await physics_frame
+
+	_expect(
+		ball.global_position.distance_to(start_position) >= 24.0,
+		"대기 플리퍼 축 옆에 놓인 공이 포켓에 안착해 정지하면 안 된다. " \
+		+ "(start=%s, end=%s, velocity=%s)" % [
+			start_position,
+			ball.global_position,
+			ball.linear_velocity,
+		]
+	)
+	ball.freeze = true
+
+
+func _test_active_flipper_releases_adjacent_ball(board: Node) -> void:
+	var flipper := board.get_node_or_null(
+		"FlipperSelector/BottomController/LeftFlipper"
+	) as PinballFlipper
+	var ball := board.get_node_or_null("PinballBall") as Pinball
+	if flipper == null or ball == null:
+		return
+
+	flipper.set_physics_process(false)
+	_configure_qa_ball(ball, 0.0, false)
+	var start_rotation := deg_to_rad(flipper.initial_angle_degrees)
+	var end_rotation := deg_to_rad(flipper.maximum_angle_degrees)
+	var adjacent_position := _find_sweep_test_position(
+		flipper,
+		_get_ball_radius(ball),
+		start_rotation,
+		end_rotation,
+		true,
+		100.0
+	)
+	_expect(not adjacent_position.is_zero_approx(), \
+		"축 인접 저속 공을 배치할 실제 충돌 위치를 찾아야 한다.")
+	if adjacent_position.is_zero_approx():
+		flipper.set_physics_process(true)
+		return
+
+	ball.global_position = adjacent_position
+	ball.linear_velocity = Vector2.ZERO
+	ball.reset_physics_interpolation()
+	ball.freeze = false
+	ball.sleeping = false
+	var resolved := flipper.resolve_rotation_sweep(
+		start_rotation,
+		end_rotation,
+		1.0 / 60.0,
+		0.0
+	)
+	await physics_frame
+
+	_expect(resolved == 1, \
+		"축 인접 저속 공은 작동 첫 스윕이 한 번 소유해야 한다.")
+	_expect(ball.linear_velocity.length() >= 100.0, \
+		"축 인접 저속 공은 플리퍼 타격 뒤 정지 상태를 벗어나야 한다. " \
+		+ "(velocity=%s)" % ball.linear_velocity)
+	_expect(ball.linear_velocity.y < 0.0, \
+		"하단 플리퍼는 축 인접 공도 보드 안쪽으로 타격해야 한다. " \
+		+ "(velocity=%s)" % ball.linear_velocity)
+	ball.freeze = true
+	ball.collision_layer = 1
+	ball.collision_mask = 1
+	flipper.set_physics_process(true)
+
+
+func _test_active_flipper_reflects_toward_board(board: Node) -> void:
+	var flipper := board.get_node_or_null(
+		"FlipperSelector/BottomController/RightFlipper"
+	) as PinballFlipper
+	var ball := board.get_node_or_null("PinballBall") as Pinball
+	if flipper == null or ball == null:
+		return
+
+	flipper.set_physics_process(false)
+	_configure_qa_ball(ball, 0.0, false)
+	var start_rotation := deg_to_rad(flipper.initial_angle_degrees)
+	var end_rotation := deg_to_rad(flipper.maximum_angle_degrees)
+	var sweep_position := _find_sweep_test_position(
+		flipper,
+		_get_ball_radius(ball),
+		start_rotation,
+		end_rotation,
+		false,
+		INF
+	)
+	_expect(not sweep_position.is_zero_approx(), \
+		"우측 플리퍼의 실제 회전 궤도 안에서 방향 검사 위치를 찾아야 한다.")
+	if sweep_position.is_zero_approx():
+		flipper.set_physics_process(true)
+		return
+
+	ball.global_position = sweep_position
+	ball.linear_velocity = Vector2(0.0, 120.0)
+	ball.reset_physics_interpolation()
+	ball.freeze = false
+	ball.sleeping = false
+	var resolved := flipper.resolve_rotation_sweep(
+		start_rotation,
+		end_rotation,
+		1.0 / 60.0,
+		0.0
+	)
+	await physics_frame
+
+	_expect(resolved == 1, "우측 플리퍼 회전 궤도의 공을 한 번 타격해야 한다.")
+	_expect(ball.linear_velocity.y < 0.0, \
+		"우측 하단 플리퍼 타격은 공을 보드 바깥쪽으로 꺾으면 안 된다. " \
+		+ "(velocity=%s)" % ball.linear_velocity)
+	ball.freeze = true
+	ball.collision_layer = 1
+	ball.collision_mask = 1
+	flipper.set_physics_process(true)
+
+
+func _find_sweep_test_position(
+	flipper: PinballFlipper,
+	ball_radius: float,
+	start_rotation: float,
+	end_rotation: float,
+	include_initial_overlap: bool,
+	maximum_pivot_distance: float
+) -> Vector2:
+	for y_offset in range(-150, 21, 10):
+		for x_distance in range(50, 251, 10):
+			var direction := 1.0 if flipper.name == &"LeftFlipper" else -1.0
+			var candidate := flipper.global_position + Vector2(
+				direction * float(x_distance),
+				float(y_offset)
+			)
+			if candidate.distance_to(flipper.global_position) > maximum_pivot_distance:
+				continue
+			var hit := flipper.find_rotation_sweep_hit(
+				candidate,
+				ball_radius,
+				start_rotation,
+				end_rotation,
+				include_initial_overlap
+			)
+			if not hit.is_empty():
+				return candidate
+	return Vector2.ZERO
+
+
+func _configure_qa_ball(
+	ball: Pinball,
+	gravity_scale: float,
+	use_physics_collision: bool
+) -> void:
+	ball.freeze = true
+	ball.collision_layer = 1 if use_physics_collision else 0
+	ball.collision_mask = 1 if use_physics_collision else 0
+	ball.stats.minimum_speed = 0.0
+	ball.stats.maximum_speed = 5000.0
+	ball.stats.gravity_scale = gravity_scale
+	ball.stats.elasticity = 0.9
+	ball.linear_velocity = Vector2.ZERO
+	ball.angular_velocity = 0.0
+	ball.sleeping = false
+
+
+func _get_ball_radius(ball: Pinball) -> float:
+	var collision := ball.get_node("CollisionShape2D") as CollisionShape2D
+	var circle := collision.shape as CircleShape2D
+	return circle.radius * collision.global_scale.abs().x
 
 func _test_reset_and_launcher(board: Node) -> void:
 	var ball := board.get_node_or_null("PinballBall") as RigidBody2D

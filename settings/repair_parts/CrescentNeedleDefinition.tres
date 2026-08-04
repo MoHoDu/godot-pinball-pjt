@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="RepairPartDefinition" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/repair_parts/data/repair_part_definition.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/repair_parts/data/repair_part_rank_data.gd" id="2"]
+
+[sub_resource type="Resource" id="Rank1"]
+script = ExtResource("2")
+window_seconds = 3.0
+echo_delay = 0.0
+cooldown_seconds = 0.0
+score_weight = 0.0
+contact_boost = 0.0
+overdrive_boost = 0.0
+max_stack = 3
+
+[sub_resource type="Resource" id="Rank2"]
+script = ExtResource("2")
+window_seconds = 4.0
+echo_delay = 0.0
+cooldown_seconds = 0.0
+score_weight = 0.25
+contact_boost = 0.0
+overdrive_boost = 0.0
+max_stack = 3
+
+[sub_resource type="Resource" id="Rank3"]
+script = ExtResource("2")
+window_seconds = 5.0
+echo_delay = 0.0
+cooldown_seconds = 0.0
+score_weight = 0.5
+contact_boost = 0.0
+overdrive_boost = 0.0
+max_stack = 3
+
+[resource]
+script = ExtResource("1")
+part_id = &"crescent_needle"
+family = 2
+display_name = "초승달 바늘"
+bumper_kind_id = &"crescent_needle"
+action_line = "제한 시간 안에 다음 부품을 맞히면 봉합이 완성됩니다"
+rank_data = [SubResource("Rank1"), SubResource("Rank2"), SubResource("Rank3")]
