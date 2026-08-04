@@ -1,0 +1,340 @@
+extends SceneTree
+
+
+const BUTTON_SCENE := preload("res://scenes/bumper_system/button_bumper.tscn")
+const COTTON_SCENE := preload("res://scenes/bumper_system/cotton_bumper.tscn")
+const SPRING_SCENE := preload("res://scenes/bumper_system/spring_doll_bumper.tscn")
+const DRUM_SCENE := preload("res://scenes/bumper_system/toy_drum_bumper.tscn")
+const CANNON_SCENE := preload("res://scenes/bumper_system/clockwork_toy_cannon.tscn")
+const REPAIR_PART_SCENE := preload("res://scenes/bumper_system/repair_part.tscn")
+const BUMPER_TEST_SCENE := preload("res://scenes/bumper_system/bumper_test.tscn")
+const STAGE_LAYOUT := preload("res://settings/bumpers/stage_01/Stage01BumperLayout.tres")
+const BUMPER_WAVE_LOADOUT_SCRIPT := preload(
+	"res://scripts/bumper-system/bumper_wave_loadout.gd"
+)
+const EPSILON := 0.001
+
+
+var _failures: Array[String] = []
+var _fixture_root: Node2D
+var _ball: RigidBody2D
+
+
+func _init() -> void:
+	call_deferred(&"_run")
+
+
+func _run() -> void:
+	_fixture_root = Node2D.new()
+	root.add_child(_fixture_root)
+	_ball = _create_ball()
+	_fixture_root.add_child(_ball)
+	await process_frame
+
+	await _test_stage01_settings_and_strategies()
+	await _test_contact_lifecycle_and_overrides()
+	await _test_repair_part_inheritance()
+	await _test_shot_control_and_deferred_destruction()
+	_test_stage01_wave_layout()
+	_test_bumper_test_scene_contract()
+
+	_fixture_root.queue_free()
+	await process_frame
+	_finish()
+
+
+func _test_stage01_settings_and_strategies() -> void:
+	var button := await _spawn(BUTTON_SCENE)
+	var cotton := await _spawn(COTTON_SCENE)
+	var spring := await _spawn(SPRING_SCENE)
+	var drum := await _spawn(DRUM_SCENE)
+	var cannon := await _spawn(CANNON_SCENE)
+
+	_expect(button.settings.bumper_type == BumperSettings.BumperType.NORMAL,
+		"단추는 Normal 타입이어야 한다.")
+	_expect(cotton.settings.bumper_type == BumperSettings.BumperType.NORMAL,
+		"솜은 Normal 타입이어야 한다.")
+	_expect(spring.settings.bumper_type == BumperSettings.BumperType.BOUNCE,
+		"용수철 인형은 Bounce 타입이어야 한다.")
+	_expect(drum.settings.bumper_type == BumperSettings.BumperType.BOUNCE,
+		"장난감 북은 Bounce 타입이어야 한다.")
+	_expect(cannon.settings.bumper_type == BumperSettings.BumperType.SHOT,
+		"태엽 장난감 대포는 Shot 타입이어야 한다.")
+
+	var context := BallImpactContext.new(
+		_ball,
+		Vector2(0.0, 940.0),
+		Vector2.ZERO,
+		Vector2.UP,
+		Vector2.ZERO
+	)
+	var original_velocity := _ball.linear_velocity
+	var button_response := button.response_strategy.build_response(context, button)
+	var cotton_response := cotton.response_strategy.build_response(context, cotton)
+	var spring_response := spring.response_strategy.build_response(context, spring)
+	var drum_response := drum.response_strategy.build_response(context, drum)
+
+	_expect(button_response is BumperResponse,
+		"전략은 BumperResponse를 반환해야 한다.")
+	_expect_float(button_response.speed_multiplier, 1.10,
+		"단추 반사 배율은 1.10이어야 한다.")
+	_expect_float(cotton_response.speed_multiplier, 0.90,
+		"솜 반사 배율은 0.90이어야 한다.")
+	_expect_float(spring_response.speed_multiplier, 1.25,
+		"용수철 인형 반사 배율은 1.25여야 한다.")
+	_expect_float(spring_response.minimum_speed, 1150.0,
+		"용수철 인형 최저 방출 속력은 1150이어야 한다.")
+	_expect_float(drum_response.speed_multiplier, 1.50,
+		"장난감 북 반사 배율은 1.50이어야 한다.")
+	_expect_float(drum_response.minimum_speed, 1400.0,
+		"장난감 북 최저 방출 속력은 1400이어야 한다.")
+	_expect(_ball.linear_velocity == original_velocity,
+		"전략 계산 자체는 공의 속도를 직접 변경하면 안 된다.")
+	_expect(button.response_strategy is NormalResponseStrategy,
+		"Normal 범퍼는 NormalResponseStrategy를 공유해야 한다.")
+	_expect(cotton.response_strategy is NormalResponseStrategy,
+		"같은 Normal 타입은 같은 전략 클래스를 사용해야 한다.")
+	_expect(spring.response_strategy is BounceResponseStrategy,
+		"Bounce 범퍼는 BounceResponseStrategy를 공유해야 한다.")
+	_expect(drum.response_strategy is BounceResponseStrategy,
+		"같은 Bounce 타입은 같은 전략 클래스를 사용해야 한다.")
+
+	for bumper: Bumper in [button, cotton, spring, drum, cannon]:
+		bumper.queue_free()
+	await process_frame
+
+
+func _test_contact_lifecycle_and_overrides() -> void:
+	var button := await _spawn(BUTTON_SCENE)
+	var hit_count := [0]
+	button.valid_hit_registered.connect(func(
+		_bumper_id: StringName,
+		_ball_value: RigidBody2D,
+		_contact_id: int,
+		_base_score: int
+	) -> void:
+		hit_count[0] += 1
+	)
+
+	_expect(button.current_durability == 2,
+		"단추는 최대 내구도 2로 시작해야 한다.")
+	_expect(button.register_valid_hit(_ball, 101),
+		"새 접촉은 유효 타격으로 등록되어야 한다.")
+	_expect(button.current_durability == 1,
+		"첫 타격에서 내구도가 한 번 감소해야 한다.")
+	_expect(not button.register_valid_hit(_ball, 101),
+		"지속 접촉은 중복 타격으로 거절해야 한다.")
+	_expect(hit_count[0] == 1,
+		"지속 접촉에서 이벤트는 한 번만 발생해야 한다.")
+	_expect(button.release_contact(101),
+		"실제 분리 시 접촉 잠금을 해제할 수 있어야 한다.")
+	_expect(button.register_valid_hit(_ball, 101),
+		"분리 후 재접촉은 새 타격이어야 한다.")
+	_expect(button.state == Bumper.BumperState.DESTROYED_TIMER,
+		"내구도 소진 후 파괴 타이머 상태로 전환해야 한다.")
+	_expect(not button.register_valid_hit(_ball, 202),
+		"파괴 상태에서는 새 타격을 받으면 안 된다.")
+
+	button.respawn_timer.stop()
+	button.begin_safe_respawn_wait()
+	_expect(button.state == Bumper.BumperState.SAFE_RESPAWN_WAIT,
+		"최소 복구 시간 후 안전 복구 대기로 전환해야 한다.")
+	_ball.freeze = false
+	_ball.global_position = button.global_position
+	_ball.linear_velocity = Vector2(600.0, 0.0)
+	_expect(not button.can_reactivate(),
+		"공이 복구 위치와 겹치면 범퍼를 활성화하면 안 된다.")
+	_ball.global_position = button.global_position + Vector2(1000.0, 0.0)
+	_ball.linear_velocity = Vector2(600.0, 0.0)
+	await physics_frame
+	await physics_frame
+	_expect(button.can_reactivate(),
+		"공과 짧은 예상 경로가 안전 영역을 벗어나면 복구할 수 있어야 한다.")
+	button.reactivate()
+	_expect(button.state == Bumper.BumperState.ACTIVE,
+		"안전 조건 충족 후 활성 상태로 복구해야 한다.")
+	_expect(button.current_durability == 2,
+		"복구 시 내구도를 최대값으로 초기화해야 한다.")
+
+	var overrides := BumperInstanceOverrides.new()
+	overrides.speed_multiplier = 1.35
+	overrides.max_durability = 4
+	overrides.base_score = 175
+	button.instance_overrides = overrides
+	_expect_float(button.get_speed_multiplier(), 1.35,
+		"개별 Inspector 배율이 공용 설정을 덮어써야 한다.")
+	_expect(button.get_max_durability() == 4,
+		"개별 Inspector 내구도가 공용 설정을 덮어써야 한다.")
+	_expect(button.get_base_score() == 175,
+		"개별 Inspector 점수가 공용 설정을 덮어써야 한다.")
+
+	button.queue_free()
+	await process_frame
+
+
+func _test_repair_part_inheritance() -> void:
+	var repair_part := await _spawn(REPAIR_PART_SCENE) as RepairPart
+	_expect(repair_part is RepairPart,
+		"수리 부품 프리팹은 RepairPart여야 한다.")
+	_expect(repair_part is Bumper,
+		"RepairPart는 Bumper를 상속해야 한다.")
+	_expect(repair_part.definition != null and repair_part.definition.is_valid(),
+		"수리 부품은 정체성 Definition을 가져야 한다.")
+	_expect(
+		repair_part.definition.mechanics_status
+			== RepairPartDefinition.MechanicsStatus.CONCEPT_ONLY,
+		"미정 수리 부품 효과를 임의 구현하지 않고 CONCEPT_ONLY로 표시해야 한다."
+	)
+	repair_part.queue_free()
+	await process_frame
+
+
+func _test_shot_control_and_deferred_destruction() -> void:
+	var cannon := await _spawn(CANNON_SCENE) as ShotBumper
+	var anchors := cannon.get_launch_anchors()
+	var safe_count := 0
+	for anchor: ShotLaunchAnchor in anchors:
+		if anchor.is_safe_default:
+			safe_count += 1
+	_expect(anchors.size() == 3,
+		"캐논은 2~3개 범위 안인 발사 앵커 3개를 가져야 한다.")
+	_expect(safe_count == 1,
+		"캐논 안전 기본 방향은 정확히 하나여야 한다.")
+	_expect_float(cannon.get_selection_duration(), 0.8,
+		"캐논 방향 선택 시간은 0.8초여야 한다.")
+	_expect_float(cannon.get_launch_speed(), 1300.0,
+		"캐논 고정 발사 속력은 1300이어야 한다.")
+
+	_expect(cannon.register_valid_hit(_ball, 301),
+		"캐논 첫 접촉은 유효 타격이어야 한다.")
+	await process_frame
+	_expect(_ball.freeze,
+		"캐논 방향 선택 중에는 공을 포신 내부에 고정해야 한다.")
+	_expect(cannon.current_durability == 1,
+		"캐논 첫 사용 후 내구도는 1이어야 한다.")
+	_expect(cannon.release_controlled_ball(),
+		"스페이스 입력과 같은 즉시 발사 경로를 제공해야 한다.")
+	_expect_float(_ball.linear_velocity.length(), 1300.0,
+		"캐논은 진입 속도와 무관하게 1300으로 발사해야 한다.")
+	_ball.global_position = cannon.global_position + Vector2(500.0, 0.0)
+	await physics_frame
+	await physics_frame
+	_expect(cannon.state == Bumper.BumperState.ACTIVE,
+		"첫 사용의 안전 이탈 후 캐논은 활성 상태를 유지해야 한다.")
+
+	cannon.release_contact(301)
+	_ball.linear_velocity = Vector2(0.0, -600.0)
+	_expect(cannon.register_valid_hit(_ball, 302),
+		"캐논 두 번째 분리 후 접촉은 새 타격이어야 한다.")
+	await process_frame
+	_expect(cannon.current_durability == 0,
+		"캐논 두 번째 사용에서 내구도는 0이어야 한다.")
+	_expect(cannon.state == Bumper.BumperState.ACTIVE,
+		"캐논은 발사 전에 즉시 파괴되면 안 된다. (state=%s)" \
+			% Bumper.BumperState.keys()[cannon.state])
+	cannon.release_controlled_ball()
+	_ball.global_position = cannon.global_position + Vector2(500.0, 0.0)
+	await physics_frame
+	await physics_frame
+	_expect(cannon.state == Bumper.BumperState.DESTROYED_TIMER,
+		"두 번째 발사와 안전 이탈을 마친 뒤 파괴되어야 한다.")
+	cannon.reset_for_new_ball()
+	_expect(cannon.state == Bumper.BumperState.ACTIVE \
+			and cannon.current_durability == 2,
+		"새 발사 준비에서는 Shot 제어 상태와 타이머를 정리하고 즉시 복구해야 한다.")
+
+	cannon.queue_free()
+	await process_frame
+
+
+func _test_bumper_test_scene_contract() -> void:
+	var scene := BUMPER_TEST_SCENE.instantiate()
+	_expect(scene != null, "bumper_test.tscn을 인스턴스화할 수 있어야 한다.")
+	if scene == null:
+		return
+	var bumper_root := scene.get_node_or_null("Stage01Bumpers")
+	_expect(bumper_root != null,
+		"bumper_test.tscn에 Stage01Bumpers 루트가 필요하다.")
+	if bumper_root != null:
+		_expect(bumper_root.get_child_count() == 9,
+			"테스트 씬은 Stage 01 범퍼 5종과 수리 부품 4종을 포함해야 한다.")
+		var unique_ids: Dictionary = {}
+		for child: Node in bumper_root.get_children():
+			_expect(child is Bumper,
+				"Stage01Bumpers의 모든 배치 객체는 Bumper여야 한다.")
+			if child is Bumper:
+				var id := (child as Bumper).bumper_id
+				_expect(not unique_ids.has(id),
+					"보드 인스턴스 bumper_id는 중복되면 안 된다: %s" % id)
+				unique_ids[id] = true
+	_expect(scene.get_node_or_null("BumperTestController") != null,
+		"테스트 씬에 런타임 연결 컨트롤러가 필요하다.")
+	scene.free()
+
+
+func _test_stage01_wave_layout() -> void:
+	var layout: Resource = STAGE_LAYOUT
+	_expect(layout != null and bool(layout.call(&"is_valid")),
+		"Stage 01 웨이브 배치 Resource가 유효해야 한다.")
+	if layout == null:
+		return
+	var waves: Array = layout.get(&"waves")
+	_expect(waves.size() == 4,
+		"Stage 01은 일반 3웨이브와 보스 웨이브를 정의해야 한다.")
+	var wave1: Resource = layout.call(&"get_wave", 0)
+	var wave2: Resource = layout.call(&"get_wave", 1)
+	var wave3: Resource = layout.call(&"get_wave", 2)
+	var boss: Resource = layout.call(&"get_wave", 3)
+	_expect(wave1.get(&"normal_count_range") == Vector2i(4, 6) \
+			and wave1.get(&"bounce_count_range") == Vector2i.ZERO \
+			and wave1.get(&"shot_count_range") == Vector2i.ZERO,
+		"웨이브 1은 Normal 4~6개만 사용해야 한다.")
+	_expect(wave2.get(&"bounce_count_range") == Vector2i(2, 3) \
+			and wave2.get(&"shot_count_range") == Vector2i.ZERO,
+		"웨이브 2에서 Bounce 2~3개를 처음 도입해야 한다.")
+	_expect(wave3.get(&"board_shape") \
+			== BUMPER_WAVE_LOADOUT_SCRIPT.BoardShape.SQUARE \
+			and wave3.get(&"shot_count_range") == Vector2i(1, 2),
+		"웨이브 3은 사각 보드에서 Shot 1~2개를 도입해야 한다.")
+	_expect(boss.get(&"shot_count_range") == Vector2i(2, 2),
+		"보스 웨이브에는 Shot 범퍼 2개가 필요하다.")
+
+
+func _spawn(scene: PackedScene) -> Bumper:
+	var bumper := scene.instantiate() as Bumper
+	_fixture_root.add_child(bumper)
+	await process_frame
+	return bumper
+
+
+func _create_ball() -> RigidBody2D:
+	var ball := RigidBody2D.new()
+	ball.add_to_group(&"pinball_balls")
+	var collision := CollisionShape2D.new()
+	var circle := CircleShape2D.new()
+	circle.radius = 22.0
+	collision.shape = circle
+	ball.add_child(collision)
+	ball.linear_velocity = Vector2(0.0, 940.0)
+	return ball
+
+
+func _expect_float(actual: float, expected: float, message: String) -> void:
+	_expect(absf(actual - expected) <= EPSILON,
+		"%s (expected=%s, actual=%s)" % [message, expected, actual])
+
+
+func _expect(condition: bool, message: String) -> void:
+	if condition:
+		return
+	_failures.append(message)
+	push_error(message)
+
+
+func _finish() -> void:
+	if _failures.is_empty():
+		print("PASS: bumper_system_test")
+		quit(0)
+		return
+	print("FAIL: bumper_system_test (%d failures)" % _failures.size())
+	quit(1)
