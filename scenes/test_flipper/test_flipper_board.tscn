@@ -73,7 +73,7 @@ polygon = PackedVector2Array(1096, -22, 1120, -22, 1120, 22, 1096, 22)
 
 [node name="Walls" type="Node2D" parent="." unique_id=262200944]
 
-[node name="TopRightDiagonal" type="StaticBody2D" parent="Walls" groups=["combo_timer_refresh_walls"] unique_id=1286810749]
+[node name="TopRightDiagonal" type="StaticBody2D" parent="Walls" groups=["combo_walls"] unique_id=1286810749]
 position = Vector2(735, -490)
 rotation = 0.348772
 
@@ -83,7 +83,7 @@ shape = SubResource("RectangleShape_diagonal")
 
 [node name="Visual" parent="Walls/TopRightDiagonal" unique_id=1986772914 instance=ExtResource("10_wall_visual")]
 
-[node name="BottomRightDiagonal" type="StaticBody2D" parent="Walls" groups=["combo_timer_refresh_walls"] unique_id=10598488]
+[node name="BottomRightDiagonal" type="StaticBody2D" parent="Walls" groups=["combo_walls"] unique_id=10598488]
 position = Vector2(735, 490)
 rotation = 2.7928207
 
@@ -93,7 +93,7 @@ shape = SubResource("RectangleShape_diagonal")
 
 [node name="Visual" parent="Walls/BottomRightDiagonal" unique_id=1280937662 instance=ExtResource("10_wall_visual")]
 
-[node name="BottomLeftDiagonal" type="StaticBody2D" parent="Walls" groups=["combo_timer_refresh_walls"] unique_id=2088105206]
+[node name="BottomLeftDiagonal" type="StaticBody2D" parent="Walls" groups=["combo_walls"] unique_id=2088105206]
 position = Vector2(-735, 490)
 rotation = -2.7928207
 
@@ -103,7 +103,7 @@ shape = SubResource("RectangleShape_diagonal")
 
 [node name="Visual" parent="Walls/BottomLeftDiagonal" unique_id=24145458 instance=ExtResource("10_wall_visual")]
 
-[node name="TopLeftDiagonal" type="StaticBody2D" parent="Walls" groups=["combo_timer_refresh_walls"] unique_id=1475565543]
+[node name="TopLeftDiagonal" type="StaticBody2D" parent="Walls" groups=["combo_walls"] unique_id=1475565543]
 position = Vector2(-735, -490)
 rotation = -0.348772
 
