@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="RelicDefinition" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/reward_system/relic_definition.gd" id="1_definition"]
+[ext_resource type="Script" path="res://scripts/reward_system/effects/relic_effect_parry_window.gd" id="2_effect"]
+
+[sub_resource type="Resource" id="Effect_curved_needle"]
+script = ExtResource("2_effect")
+bonus_per_stack = 0.35
+
+[resource]
+script = ExtResource("1_definition")
+relic_id = &"curved_needle"
+display_name = "곡선 바늘"
+flavor_text = "터진 솔기를 다시 꿰매던 봉합 도구."
+effect = SubResource("Effect_curved_needle")
+max_stack = 2
