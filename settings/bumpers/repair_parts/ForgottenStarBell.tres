@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="RepairPartDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/bumper-system/repair_part_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+repair_part_id = &"forgotten_star_bell"
+display_name = "잊혀진 별방울"
+kind = 3
+concept_role = "울림과 반응"
+theme_keywords = PackedStringArray("울림", "소리", "반응", "여운")
+mechanics_status = 0
+

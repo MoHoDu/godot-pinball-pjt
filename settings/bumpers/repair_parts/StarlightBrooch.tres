@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="RepairPartDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/bumper-system/repair_part_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+repair_part_id = &"starlight_brooch"
+display_name = "별빛 브로치"
+kind = 0
+concept_role = "완성과 장식"
+theme_keywords = PackedStringArray("별", "마감", "완성", "축복")
+mechanics_status = 0
+

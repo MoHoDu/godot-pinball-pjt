@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="BumperSettings" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/bumper-system/bumper_settings.gd" id="1"]
+[ext_resource type="Resource" path="res://settings/bumpers/presentation/SpringDollPresentation.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+bumper_kind_id = &"stage01_spring_doll"
+display_name = "용수철 인형"
+bumper_type = 1
+base_score = 150
+score_weight = 1.5
+max_durability = 2
+durability_damage_per_hit = 1
+respawn_delay = 4.0
+respawn_telegraph_duration = 0.4
+speed_multiplier = 1.25
+minimum_release_speed = 1150.0
+maximum_response_speed = 1540.0
+collision_diameter = 104.0
+visual_diameter = 112.0
+respawn_safe_margin = 40.0
+presentation = ExtResource("2")
+
