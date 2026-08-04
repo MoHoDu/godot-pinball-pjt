@@ -1,29 +1,63 @@
 ---
 name: godot-install-blocked
-description: 컨테이너에서 Godot 설치 불가 — 릴리스 에셋 호스트 차단. 엔진 없이 하는 대체 검증 목록
+description: 컨테이너 Godot 설치 — 2026-08-04 재개통. 받는 법과 프로젝트를 통째로 옮기지 않고 검증하는 법
 type: reference
 ---
 
-# Godot 컨테이너 설치는 막혀 있다 (2026-08-03 재확인)
+# ★ 2026-08-04 — 다시 열렸다. 먼저 받아 볼 것
 
-`github.com` 자체는 200이지만 릴리스 에셋이 **`release-assets.githubusercontent.com`** 으로
-302되고 **그 호스트가 차단**된다. 4.2 / 4.3 / 4.7.1 전부 같다.
-npm·PyPI·apt 어디에도 Godot 바이너리를 직접 배포하는 패키지가 없다
+파일 이름은 "blocked"지만 **지금은 받아진다.** 세션마다 다를 수 있으니 **1분 안에 확인하고** 넘어간다.
+
+```bash
+curl -sL -o /tmp/godot.zip \
+  "https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable/Godot_v4.7.1-stable_linux.x86_64.zip"
+cd /tmp && unzip -q godot.zip && chmod +x Godot_v4.7.1-stable_linux.x86_64
+```
+
+## 프로젝트를 통째로 스테이징하지 않는다
+
+아트가 수백 MB라 `device_stage_files` 한도에 걸린다. **코드·씬·설정만** 옮기고,
+`.tscn`/`.tres` 가 참조하는 이미지 경로를 훑어 **자리표시자 PNG를 생성**한 뒤 `--import` 한다.
+파일명의 `256x40` 같은 숫자를 크기로 쓰면 레이아웃도 얼추 맞는다.
+
+**주의**: 자리표시자로는 **아트 검증 테스트(`pinball_size_test` 등)가 의미 없다.**
+텍스처 크기·알파 bbox를 보는 테스트는 실제 아트를 스테이징하거나 로컬에서 돌린다.
+
+## 새 `class_name` 은 `--import` 를 한 번 더 돌려야 인식된다
+
+스크립트를 새로 추가하면 `.godot/global_script_class_cache.cfg` 에 등록되기 전까지
+`Identifier "X" not declared in the current scope` 파스 에러가 난다. **코드 문제가 아니다.**
+
+`.uid` 파일을 안 옮기면 `invalid UID ... using text path instead` 경고가 뜨는데, 경로로 폴백하므로 무해하다.
+
+## 스크린샷 검증도 된다
+
+```bash
+xvfb-run -a /tmp/Godot_v4.7.1-stable_linux.x86_64 --path <프로젝트> \
+  --rendering-driver opengl3 --resolution 1920x1080 --script res://<shot>.gd
+```
+
+스크립트 안에서 `RenderingServer.force_draw()` 뒤 `root.get_texture().get_image().save_png(...)`.
+UI 작업은 이걸로 눈으로 확인하고 넘긴다. 한글은 기본 폰트로도 정상 출력됐다.
+
+---
+
+## 이전 상태 (2026-08-03) — 이력
+
+당시에는 `github.com` 은 200이지만 릴리스 에셋이 **`release-assets.githubusercontent.com`** 으로
+302되고 그 호스트가 차단됐다. npm·PyPI·apt 어디에도 Godot 바이너리를 직접 배포하는 패키지가 없다
 (npm의 godot-* 패키지들은 전부 GitHub에서 받아오므로 같이 막힌다).
 
-| 호스트 | 상태 |
+| 호스트 | 2026-08-03 상태 |
 |---|---|
 | `github.com` | 200 (세션에 따라 CONNECT 403이 되기도 한다) |
 | `objects.githubusercontent.com` | 도달 가능 (구 에셋 호스트, 지금은 안 씀) |
 | `pypi.org` / `files.pythonhosted.org` / `registry.npmjs.org` | 200 |
-| `release-assets.githubusercontent.com` | **차단** |
-| `raw.githubusercontent.com` / `downloads.godotengine.org` / `deb.debian.org` | **차단** |
+| `release-assets.githubusercontent.com` | 차단 → **2026-08-04 200** |
+| `raw.githubusercontent.com` / `downloads.godotengine.org` / `deb.debian.org` | 차단 |
 
-**Why**: `feedback_run_tests.md` 에 "릴리스 에셋 직링크는 200으로 열린다"고 적혀 있는데 **이제 아니다.**
-그걸 믿고 시간 쓰지 말 것. (2026-08-03 세션 중에도 한 번은 되고 한 번은 안 됐다 — 먼저 1분 안에 확인하고 넘어간다.)
-
-**How to apply**: 엔진이 필요한 검증은 형락님 로컬에서 돌리게 하고 명령어를 같이 넘긴다.
-엔진 없이 할 수 있는 것은 먼저 다 한다.
+**How to apply**: 엔진 다운로드가 다시 막히면 아래 대체 검증을 쓰고,
+엔진이 꼭 필요한 것만 형락님 로컬에서 돌리게 명령어를 같이 넘긴다.
 
 ## 엔진 없이 하는 대체 검증 (실제로 쓴 것)
 

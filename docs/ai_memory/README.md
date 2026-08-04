@@ -16,9 +16,16 @@ Cowork 세션의 **프로젝트 메모리**를 리포에 복사해 둔 것이다
 
 - **이건 스냅샷이다.** 이후 세션에서 메모리가 갱신되면 여기 사본은 낡는다.
 - 새 컴퓨터에서 작업을 마칠 때는 **라이브 메모리와 이 폴더를 함께 갱신**해야 다음 컴퓨터로 따라간다.
-- 스냅샷 시점: **2026-08-03** (공 SFX 파일럿 ① 형태 단계 완료, 형락님 검수 대기)
+- 스냅샷 시점: **2026-08-04** (유물 보상 시스템 구현 완료, 형락님 인게임 확인까지 끝남)
 
-## 이 스냅샷에서 갱신된 것
+## 이 스냅샷에서 갱신된 것 (2026-08-04)
+
+- 신규: `project_wave_reward_system.md`
+- 갱신: `HANDOFF.md`(2026-08-04 세션으로 교체) · `MEMORY.md`(스냅샷 시점 + 웨이브·보상 절) ·
+  `project_pinball_logue.md`(현재 진척 + 다음 할 일 + 결정 대기) ·
+  `reference_godot_install_blocked.md`(다운로드 재개통) · `feedback_run_tests.md`(같은 내용 반영)
+
+### 이전 스냅샷 (2026-08-03)
 
 - 신규: `HANDOFF.md` · `feedback_staged_pipeline.md` · `reference_godot_install_blocked.md` ·
   `reference_test_scene_controls.md` · `project_ball_texture_fixed.md` · `project_vfx02_trail.md` ·

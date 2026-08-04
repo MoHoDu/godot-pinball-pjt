@@ -1,16 +1,17 @@
 # MEMORY
 
 Pinball_Logue (NAN AI 해커톤, 팀 Hire us Pls) 프로젝트 메모리.
-스냅샷 시점 **2026-08-03** — 공 SFX 파일럿 ① 형태 단계 완료, 형락님 검수 대기.
+스냅샷 시점 **2026-08-04** — 유물 보상 시스템 구현 완료, 형락님 인게임 확인까지 끝남.
 
 ## 먼저 읽을 것 (순서대로)
 
-1. ★ [인계 메모 HANDOFF](HANDOFF.md) — **이어받는 사람은 이것부터.** 이번 세션에 한 일 / 밟기 쉬운 지뢰 3개 /
+1. ★ [인계 메모 HANDOFF](HANDOFF.md) — **이어받는 사람은 이것부터.** 이번 세션에 한 일 / 밟기 쉬운 지뢰 4개 /
    지금 걸려 있는 것 / 다음 순번(VFX ③ 패링 파동) / 엔진 테스트 명령어
 2. [Pinball_Logue 프로젝트](project_pinball_logue.md) — 컨셉·비주얼 방향·스펙 수치·현재 진척 요약
 3. [작업 진행 규칙](feedback_workflow.md) — **승인 없이 산출물 만들지 않는다.** 계획 → 승인 → 실행
 4. [3단계 파이프라인](feedback_staged_pipeline.md) — 아트·VFX·SFX 전부 형태 → 텍스처 → 디테일. 단계마다 검수
-5. [Godot 설치 차단](reference_godot_install_blocked.md) — 컨테이너에 엔진을 못 받는다. 엔진 없이 하는 대체 검증 목록
+5. [Godot 컨테이너 검증](reference_godot_install_blocked.md) — **2026-08-04 다시 열렸다.** 받는 법과
+   프로젝트를 통째로 옮기지 않고 테스트·스크린샷까지 돌리는 법
 
 ## 규칙 · 피드백
 
@@ -21,11 +22,16 @@ Pinball_Logue (NAN AI 해커톤, 팀 Hire us Pls) 프로젝트 메모리.
 
 ## 레퍼런스
 
-- [Godot 설치 차단](reference_godot_install_blocked.md) — 릴리스 에셋 호스트 막힘. 엔진 없이 하는 검증 목록
+- [Godot 컨테이너 검증](reference_godot_install_blocked.md) — 다운로드 재개통. 자리표시자 에셋으로 헤드리스·스크린샷 검증
 - [아트 파이프라인](reference_art_pipeline.md) — Leonardo/GPT/Canva 툴 체인과 리소스 검수 통과 기준
 - [코드베이스 컨벤션](reference_codebase_conventions.md) — 폴더·코드 스타일·연출 노드 패턴·테스트 형식, GL Compatibility 제약
 - [테스트 씬 조작키](reference_test_scene_controls.md) — 공 종류 전환 1~7, 패링 모드 0~3. **VFX 검수는 여기서 한다**
 - [경로 대소문자 문제](reference_path_case_issue.md) — `res://resources` 소문자 참조 17곳, Linux/macOS 익스포트 시 전부 깨짐
+
+## 웨이브 · 보상
+
+- [유물 보상 시스템](project_wave_reward_system.md) — 웨이브 사이 부품 선택. 붙는 지점 3곳, 효과 4종,
+  **밟기 쉬운 함정 3개**(stage_base_score 덮어쓰기 / 패링 창 clamp 순서 / 라이프 슬롯 5개 상한)
 
 ## 공
 
