@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="CoinSpawnLayout" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/coin_system/coin_spawn_layout.gd" id="1_layout"]
+
+[resource]
+script = ExtResource("1_layout")
+coin_value = 2
+main_path_positions = PackedVector2Array(-800, -350, -500, -500, -200, -560, 100, -560, 400, -500, 700, -350, -350, -150, 0, -100, 350, -150)
+risk_path_positions = PackedVector2Array(-1050, -580, 1050, -580, 0, -640)
