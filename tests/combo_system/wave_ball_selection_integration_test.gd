@@ -60,10 +60,6 @@ func _run() -> void:
 	_expect(hud.bind_ball_flow(flow), "HUD should bind ball flow.")
 	var selection_font := hud.title_label.get_theme_font(&"font")
 	_expect(selection_font != null, "Selection HUD should resolve its runtime font.")
-	if selection_font != null:
-		for character in ["한", "글", "공"]:
-			_expect(selection_font.has_char(character.unicode_at(0)),
-				"Selection HUD font should contain the %s glyph." % character)
 
 	var clear_count := {&"value": 0}
 	var clear_state_at_emit := {&"value": WaveBallFlowController.State.INACTIVE}
@@ -75,6 +71,8 @@ func _run() -> void:
 	_expect(hud.visible, "Selection HUD should be visible before aiming.")
 	_expect(hud.ball_name_label.text == "가벼운 공", "HUD should show selected ball name.")
 	_expect("전체 2개" in hud.stock_label.text, "HUD should show total remaining stock.")
+	if selection_font != null:
+		_expect_labels_use_supported_glyphs(hud, selection_font)
 
 	_send_action(flow, &"ball_select_confirm")
 	_expect(flow.current_state == WaveBallFlowController.State.AIMING, "Confirm input should enter aiming.")
@@ -131,6 +129,22 @@ func _send_action(flow: WaveBallFlowController, action: StringName) -> void:
 	event.action = action
 	event.pressed = true
 	flow._unhandled_input(event)
+
+
+func _expect_labels_use_supported_glyphs(hud: BallSelectionHud, font: Font) -> void:
+	var checked_characters: Dictionary[String, bool] = {}
+	for label: Label in [
+		hud.title_label,
+		hud.ball_name_label,
+		hud.stock_label,
+		hud.guide_label,
+	]:
+		for character in label.text:
+			if character == " " or checked_characters.has(character):
+				continue
+			checked_characters[character] = true
+			_expect(font.has_char(character.unicode_at(0)),
+				"Selection HUD font should contain the %s glyph." % character)
 
 
 func _send_wave_action(combo_wave: ComboWaveController, action: StringName) -> void:
