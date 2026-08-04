@@ -31,7 +31,7 @@ func _run() -> void:
 	_test_hit_accumulation(combo_system)
 	_test_zero_combo_state(combo_system)
 	_test_timer_timeout(combo_system)
-	_test_timer_refresh(combo_system)
+	_test_flipper_timer_refresh_entitlement(combo_system)
 	_test_timer_suspension(combo_system)
 	_test_lifecycle_and_score_signals(combo_system)
 	_test_boss_hit_integration(combo_system)
@@ -102,14 +102,16 @@ func _test_timer_timeout(combo_system: Node) -> void:
 		"시간 초과로 종료된 콤보도 즉시 점수를 정산해야 한다.")
 
 
-func _test_timer_refresh(combo_system: Node) -> void:
+func _test_flipper_timer_refresh_entitlement(combo_system: Node) -> void:
 	combo_system.call(&"reset_run")
-	_expect(not bool(combo_system.call(&"refresh_combo_timer")), \
-		"0콤보의 시간 갱신 요청은 비활성 상태를 유지해야 한다.")
+	_expect(not bool(combo_system.call(&"refresh_combo_timer_from_flipper")), \
+		"0콤보의 플리퍼 시간 갱신 요청은 비활성 상태를 유지해야 한다.")
 	_expect_float(float(combo_system.get(&"time_remaining")), 0.0, \
 		"0콤보에서는 시간 갱신 요청이 타이머를 시작하면 안 된다.")
 
 	combo_system.call(&"register_hit", 2.5)
+	_expect(bool(combo_system.get(&"flipper_timer_refresh_available")), \
+		"유효 타격은 플리퍼 타이머 갱신 권한을 1회 부여해야 한다.")
 	combo_system.call(&"advance_time", 1.25)
 	var combo_signal_count := {&"value": 0}
 	var timer_signal_count := {&"value": 0}
@@ -127,8 +129,8 @@ func _test_timer_refresh(combo_system: Node) -> void:
 		timer_signal_count.value += 1
 	, CONNECT_ONE_SHOT)
 
-	_expect(bool(combo_system.call(&"refresh_combo_timer")), \
-		"활성 콤보의 시간 갱신 요청은 성공해야 한다.")
+	_expect(bool(combo_system.call(&"refresh_combo_timer_from_flipper")), \
+		"권한이 있는 활성 콤보의 플리퍼 시간 갱신 요청은 성공해야 한다.")
 	_expect(int(combo_system.get(&"combo_count")) == 1, \
 		"시간 갱신은 콤보 카운트를 증가시키면 안 된다.")
 	_expect_float(float(combo_system.get(&"total_score_weight")), 2.5, \
@@ -139,6 +141,21 @@ func _test_timer_refresh(combo_system: Node) -> void:
 		"시간만 갱신할 때 타격·콤보 변화 신호를 발생시키면 안 된다.")
 	_expect(int(timer_signal_count.value) == 1, \
 		"시간 갱신은 타이머 변화 신호를 정확히 한 번 발생시켜야 한다.")
+	_expect(not bool(combo_system.get(&"flipper_timer_refresh_available")), \
+		"플리퍼 시간 갱신은 사용한 권한을 즉시 소비해야 한다.")
+
+	combo_system.call(&"advance_time", 0.5)
+	_expect(not bool(combo_system.call(&"refresh_combo_timer_from_flipper")), \
+		"새 유효 타격 전 반복 플리퍼 타격은 시간을 다시 갱신하면 안 된다.")
+	_expect_float(float(combo_system.get(&"time_remaining")), 2.5, \
+		"권한 없는 반복 플리퍼 타격은 남은 시간을 유지해야 한다.")
+
+	combo_system.call(&"register_hit", 1.0)
+	combo_system.call(&"advance_time", 1.0)
+	_expect(bool(combo_system.call(&"refresh_combo_timer_from_flipper")), \
+		"다음 유효 타격은 플리퍼 갱신 권한을 다시 1회 부여해야 한다.")
+	_expect_float(float(combo_system.get(&"time_remaining")), 3.0, \
+		"재부여된 권한은 타이머를 공용 유지 시간으로 완전히 갱신해야 한다.")
 
 
 func _test_timer_suspension(combo_system: Node) -> void:
