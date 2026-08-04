@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="RewardBallSceneMap" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/reward_shop/reward_ball_scene_map.gd" id="1_map"]
+[ext_resource type="PackedScene" uid="uid://csrwlhfpki4fs" path="res://Resources/balls/mass_var/normal_ball.tscn" id="2_clockwork"]
+[ext_resource type="PackedScene" uid="uid://5hanx60oos03" path="res://Resources/balls/elastic_var/rubber_ball.tscn" id="3_rubber"]
+[ext_resource type="PackedScene" uid="uid://cpch6xwastfm0" path="res://Resources/balls/elastic_var/dead_ball.tscn" id="4_gel"]
+[ext_resource type="PackedScene" uid="uid://bjccffqopu0ej" path="res://Resources/balls/mass_var/heavy_ball.tscn" id="5_lead"]
+[ext_resource type="PackedScene" uid="uid://5v4byhqjcnno" path="res://Resources/balls/mass_var/light_ball.tscn" id="6_hollow_bell"]
+
+[resource]
+script = ExtResource("1_map")
+display_names = {
+&"clockwork": "정속 태엽눈",
+&"gel": "완충 젤 유리눈",
+&"hollow_bell": "속빈 방울눈",
+&"lead": "납심 유리눈",
+&"rubber": "고무막 유리눈"
+}
+scenes = {
+&"clockwork": ExtResource("2_clockwork"),
+&"gel": ExtResource("4_gel"),
+&"hollow_bell": ExtResource("6_hollow_bell"),
+&"lead": ExtResource("5_lead"),
+&"rubber": ExtResource("3_rubber")
+}
