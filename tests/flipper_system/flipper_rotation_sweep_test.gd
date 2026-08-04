@@ -107,23 +107,34 @@ func _test_degenerate_release_preserves_reflection_direction(
 ) -> void:
 	var valid_low_speed := Vector2(90.0, -40.0)
 	var unchanged: Vector2 = flipper.call(
-		&"_ensure_minimum_active_release_velocity",
+		&"_ensure_minimum_active_hit_velocity",
 		valid_low_speed,
 		Vector2(0.0, -1000.0)
 	)
-	_expect_vector(unchanged, valid_low_speed, \
-		"유효한 저속 반사의 방향과 크기는 능동 이탈 보정이 바꾸면 안 된다.")
+	_expect_float(unchanged.length(), 320.0, \
+		"활성 타격 결과가 설정값보다 느리면 최소 출사 속력으로 올려야 한다.")
+	_expect_vector(unchanged.normalized(), valid_low_speed.normalized(), \
+		"최소 출사 속도 보정은 계산된 반사 방향을 유지해야 한다.")
 
-	var degenerate_reflection := Vector2(30.0, 0.0)
+	var degenerate_reflection := Vector2.ZERO
 	var released: Vector2 = flipper.call(
-		&"_ensure_minimum_active_release_velocity",
+		&"_ensure_minimum_active_hit_velocity",
 		degenerate_reflection,
 		Vector2(0.0, -1000.0)
 	)
-	_expect_float(released.x, degenerate_reflection.x, \
-		"접선 이탈 보정은 기존 법선 반사 성분을 보존해야 한다.")
+	_expect_float(released.x, 0.0, \
+		"방향이 사라진 결과는 플리퍼 표면 이동 방향만 사용해야 한다.")
 	_expect_float(released.y, -320.0, \
-		"거의 무효인 타격만 표면 진행 방향의 최소 이탈 성분을 보충해야 한다.")
+		"방향이 사라진 타격은 표면 진행 방향으로 최소 출사 속력을 보장해야 한다.")
+
+	var fast_reflection := Vector2(300.0, -400.0)
+	var fast_result: Vector2 = flipper.call(
+		&"_ensure_minimum_active_hit_velocity",
+		fast_reflection,
+		Vector2(0.0, -1000.0)
+	)
+	_expect_vector(fast_result, fast_reflection, \
+		"이미 최소값 이상인 활성 타격 결과는 변경하면 안 된다.")
 
 
 func _test_contact_position_percent(flipper: PinballFlipper) -> void:

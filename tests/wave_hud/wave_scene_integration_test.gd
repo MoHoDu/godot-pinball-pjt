@@ -96,8 +96,10 @@ func _test_low_speed_wave_balls_release_from_flipper(
 		PinballFlipper.issue_activation_token()
 	)
 	_expect(activated, "The Wave flipper must accept a low-speed release activation.")
+	var peak_release_speed := 0.0
 	for _active_frame in 15:
 		await physics_frame
+		peak_release_speed = maxf(peak_release_speed, ball.linear_velocity.length())
 
 	var ball_collision := ball.get_node("CollisionShape2D") as CollisionShape2D
 	var ball_circle := ball_collision.shape as CircleShape2D
@@ -110,6 +112,15 @@ func _test_low_speed_wave_balls_release_from_flipper(
 		ball_radius,
 		flipper.rotation
 	), "A released Wave ball must not remain overlapping the active flipper.")
+	var minimum_active_hit_speed := float(
+		flipper.state_rules.get(&"minimum_active_hit_speed")
+	)
+	_expect(peak_release_speed + 0.1 >= minimum_active_hit_speed,
+		"A low-speed Wave flipper hit must reach the shared minimum active hit speed. " \
+		+ "(minimum=%s, peak=%s)" % [
+			minimum_active_hit_speed,
+			peak_release_speed,
+		])
 	ball.queue_free()
 	await process_frame
 
