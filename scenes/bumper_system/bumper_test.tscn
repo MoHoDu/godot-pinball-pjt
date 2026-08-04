@@ -1,7 +1,18 @@
-[gd_scene format=3 uid="uid://ckvjrw1dg7ute"]
+[gd_scene load_steps=18 format=3 uid="uid://ckvjrw1dg7ute"]
 
 [ext_resource type="PackedScene" path="res://scenes/wave/wave.tscn" id="1_t34vu"]
 [ext_resource type="Script" uid="uid://ce2wax7g2gio8" path="res://scripts/ball_base_system/pinball_stats.gd" id="2_p3v3v"]
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/button_bumper.tscn" id="3_button"]
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/cotton_bumper.tscn" id="4_cotton"]
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/spring_doll_bumper.tscn" id="5_spring"]
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/toy_drum_bumper.tscn" id="6_drum"]
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/clockwork_toy_cannon.tscn" id="7_cannon"]
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/repair_part.tscn" id="8_repair"]
+[ext_resource type="Resource" path="res://settings/bumpers/repair_parts/GoldenGears.tres" id="9_gears"]
+[ext_resource type="Resource" path="res://settings/bumpers/repair_parts/CrescentNeedle.tres" id="10_needle"]
+[ext_resource type="Resource" path="res://settings/bumpers/repair_parts/ForgottenStarBell.tres" id="11_bell"]
+[ext_resource type="Script" path="res://scripts/bumper-system/bumper_test_controller.gd" id="12_controller"]
+[ext_resource type="Resource" path="res://settings/bumpers/stage_01/Stage01BumperLayout.tres" id="13_layout"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_03743"]
 resource_local_to_scene = true
@@ -41,27 +52,49 @@ board_margin_design = 24.0
 wave_stage_index = 0
 ball_drain_area_path = NodePath("BallDrainArea")
 
+[node name="BumperCenter" parent="Bumpers" parent_id_path=PackedInt32Array(525693520) index="0"]
+visible = false
+collision_layer = 0
+collision_mask = 0
+
 [node name="CollisionShape2D" parent="Bumpers/BumperCenter" parent_id_path=PackedInt32Array(1050007271) index="0" unique_id=637540678]
+disabled = true
 shape = SubResource("CircleShape2D_03743")
 
 [node name="CollisionShape2D" parent="Bumpers/BumperCenter/SpeedDetectionArea" parent_id_path=PackedInt32Array(1641841581) index="0" unique_id=342771053]
+disabled = true
 shape = SubResource("CircleShape2D_2mgwh")
 
+[node name="BumperLeft" parent="Bumpers" parent_id_path=PackedInt32Array(525693520) index="1"]
+visible = false
+collision_layer = 0
+collision_mask = 0
+
 [node name="CollisionShape2D" parent="Bumpers/BumperLeft" parent_id_path=PackedInt32Array(1034082624) index="0" unique_id=1416908033]
+disabled = true
 shape = SubResource("CircleShape2D_03743")
 
 [node name="CollisionShape2D" parent="Bumpers/BumperLeft/SpeedDetectionArea" parent_id_path=PackedInt32Array(746818323) index="0" unique_id=1122045982]
+disabled = true
 shape = SubResource("CircleShape2D_2mgwh")
 
+[node name="BumperRight" parent="Bumpers" parent_id_path=PackedInt32Array(525693520) index="2"]
+visible = false
+collision_layer = 0
+collision_mask = 0
+
 [node name="CollisionShape2D" parent="Bumpers/BumperRight" parent_id_path=PackedInt32Array(965244053) index="0" unique_id=1571238968]
+disabled = true
 shape = SubResource("CircleShape2D_03743")
 
 [node name="CollisionShape2D" parent="Bumpers/BumperRight/SpeedDetectionArea" parent_id_path=PackedInt32Array(344627012) index="0" unique_id=143861581]
+disabled = true
 shape = SubResource("CircleShape2D_2mgwh")
 
 [node name="PinballBall" parent="." index="6" unique_id=1525149773]
 physics_material_override = SubResource("PhysicsMaterial_dy37f")
 stats = SubResource("Resource_ixvt3")
+ball_diameter = 44.0
 
 [node name="TopDrain" parent="BallDrainArea" index="0"]
 shape = SubResource("RectangleShape2D_q6bd5")
@@ -74,3 +107,61 @@ shape = SubResource("RectangleShape2D_up7sl")
 
 [node name="RightDrain" parent="BallDrainArea" index="3"]
 shape = SubResource("RectangleShape2D_up7sl")
+
+[node name="Stage01Bumpers" type="Node2D" parent="." index="16"]
+
+[node name="Button" parent="Stage01Bumpers" instance=ExtResource("3_button")]
+position = Vector2(-520, -280)
+bumper_id = &"stage01_button_a"
+
+[node name="Cotton" parent="Stage01Bumpers" instance=ExtResource("4_cotton")]
+position = Vector2(0, -330)
+bumper_id = &"stage01_cotton_a"
+
+[node name="SpringDoll" parent="Stage01Bumpers" instance=ExtResource("5_spring")]
+position = Vector2(520, -280)
+bumper_id = &"stage01_spring_doll_a"
+
+[node name="ToyDrum" parent="Stage01Bumpers" instance=ExtResource("6_drum")]
+position = Vector2(-350, 30)
+bumper_id = &"stage01_toy_drum_a"
+
+[node name="ClockworkCannon" parent="Stage01Bumpers" instance=ExtResource("7_cannon")]
+position = Vector2(350, 30)
+bumper_id = &"stage01_cannon_a"
+
+[node name="StarlightBrooch" parent="Stage01Bumpers" instance=ExtResource("8_repair")]
+position = Vector2(-300, 350)
+bumper_id = &"repair_starlight_brooch"
+
+[node name="GoldenGears" parent="Stage01Bumpers" instance=ExtResource("8_repair")]
+position = Vector2(-100, 350)
+bumper_id = &"repair_golden_gears"
+definition = ExtResource("9_gears")
+
+[node name="CrescentNeedle" parent="Stage01Bumpers" instance=ExtResource("8_repair")]
+position = Vector2(100, 350)
+bumper_id = &"repair_crescent_needle"
+definition = ExtResource("10_needle")
+
+[node name="ForgottenStarBell" parent="Stage01Bumpers" instance=ExtResource("8_repair")]
+position = Vector2(300, 350)
+bumper_id = &"repair_forgotten_star_bell"
+definition = ExtResource("11_bell")
+
+[node name="BumperTestController" type="Node" parent="." index="17"]
+script = ExtResource("12_controller")
+stage_layout = ExtResource("13_layout")
+
+[node name="BumperStatusPanel" type="PanelContainer" parent="HUD" index="6"]
+offset_left = 1360.0
+offset_top = 210.0
+offset_right = 1900.0
+offset_bottom = 470.0
+
+[node name="StatusLabel" type="Label" parent="HUD/BumperStatusPanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.91, 0.79, 1)
+theme_override_font_sizes/font_size = 16
+text = "범퍼 모듈 준비 중"
+vertical_alignment = 1
