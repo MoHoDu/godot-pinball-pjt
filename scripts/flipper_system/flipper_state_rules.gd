@@ -4,6 +4,7 @@ extends Resource
 
 
 var _return_reflection_multiplier: float = 0.5
+var _minimum_active_release_speed: float = 320.0
 var _activation_time: float = 0.07
 var _hold_time: float = 0.04
 var _return_time: float = 0.12
@@ -20,6 +21,17 @@ var return_reflection_multiplier: float:
 		return _return_reflection_multiplier
 	set(value):
 		_return_reflection_multiplier = clampf(value, 0.0, 5.0)
+		emit_changed()
+
+@export_group("능동 타격")
+
+## 회전 표면과 거의 접선으로 맞은 저속 공도 접촉면에서 떼어낼 최소 속력입니다.
+@export_range(0.0, 5000.0, 1.0, "suffix:px/s")
+var minimum_active_release_speed: float:
+	get:
+		return _minimum_active_release_speed
+	set(value):
+		_minimum_active_release_speed = clampf(value, 0.0, 5000.0)
 		emit_changed()
 
 @export_group("상태 시간")

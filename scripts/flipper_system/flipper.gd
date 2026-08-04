@@ -58,6 +58,7 @@ const DEFAULT_SWEEP_INTERVAL: float = 8.0
 const MAX_ROTATION_SWEEP_STEPS: int = 128
 const MOTION_SWEEP_REFINEMENT_STEPS: int = 10
 const ACTIVE_START_ELAPSED_EPSILON: float = 0.0001
+const ACTIVE_RELEASE_FALLBACK_TRIGGER_RATIO: float = 0.25
 const PIVOT_COLLISION_RADIUS_RATIO: float = 0.1
 const CONTACT_ZONE_COLORS: Array[Color] = [
 	Color(0.3, 0.75, 1.0, 0.9),
@@ -1238,6 +1239,10 @@ func _resolve_swept_ball(
 		resolved_velocity,
 		parry_grade
 	)
+	resolved_velocity = _ensure_minimum_active_release_velocity(
+		resolved_velocity,
+		surface_velocity
+	)
 	resolved_velocity = apply_parry_maximum_speed(
 		resolved_velocity,
 		parry_grade
@@ -1259,6 +1264,34 @@ func _resolve_swept_ball(
 	ball.sleeping = false
 	ball.apply_central_impulse(velocity_change * ball.mass)
 	return true
+
+
+## 플리퍼 끝의 둥근 면처럼 회전 속도가 접선 방향인 지점에서는 정상 반사량이
+## 거의 0이 될 수 있습니다. 능동 타격을 이미 소유한 저속 공은 표면 진행 방향의
+## 최소 속력을 보장해 접촉면에 붙은 채 남지 않게 합니다.
+func _ensure_minimum_active_release_velocity(
+	resolved_velocity: Vector2,
+	surface_velocity: Vector2
+) -> Vector2:
+	var minimum_speed := float(
+		state_rules.get(&"minimum_active_release_speed")
+	)
+	var fallback_trigger_speed := (
+		minimum_speed * ACTIVE_RELEASE_FALLBACK_TRIGGER_RATIO
+	)
+	if minimum_speed <= 0.0 \
+			or resolved_velocity.length() >= fallback_trigger_speed \
+			or surface_velocity.is_zero_approx():
+		return resolved_velocity
+
+	# 기존 법선 반사와 구역/패링 각도 성분은 보존하고, 공을 실제로 운반하는
+	# 표면 진행 성분만 부족한 만큼 보충합니다.
+	var release_direction := surface_velocity.normalized()
+	var current_release_speed := resolved_velocity.dot(release_direction)
+	if current_release_speed >= minimum_speed:
+		return resolved_velocity
+	return resolved_velocity \
+		+ release_direction * (minimum_speed - current_release_speed)
 
 
 ## 회전 끝점처럼 모서리가 뾰족한 곳은 샘플 시점의 최근접 면 법선이

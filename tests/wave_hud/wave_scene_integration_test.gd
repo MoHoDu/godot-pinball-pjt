@@ -2,6 +2,8 @@ extends SceneTree
 
 
 const WAVE_SCENE := "res://scenes/wave/wave.tscn"
+const WAVE_NORMAL_BALL_SCENE := \
+	"res://Resources/balls/mass_var/normal_ball.tscn"
 
 var _failures: Array[String] = []
 
@@ -24,6 +26,7 @@ func _run() -> void:
 	await process_frame
 
 	_test_scene_structure(wave)
+	await _test_low_speed_wave_balls_release_from_flipper(wave)
 	await _test_board_camera_safe_area(wave)
 	_test_combo_and_score_connection(wave)
 	await _test_life_connection(wave)
@@ -55,6 +58,64 @@ func _test_scene_structure(wave: WaveRuntimeCoordinator) -> void:
 		"Integrated Wave scene must contain one ball flow controller.")
 	_expect(wave.find_children("ComboWaveController", "", true, false).size() == 1,
 		"Integrated Wave scene must contain one combo wave policy.")
+
+
+func _test_low_speed_wave_balls_release_from_flipper(
+	wave: WaveRuntimeCoordinator
+) -> void:
+	var flipper := wave.get_node(
+		"FlipperSelector/BottomController/RightFlipper"
+	) as PinballFlipper
+	_expect(flipper != null, "Wave board must expose the bottom-right flipper.")
+	if flipper == null:
+		return
+
+	var registered_flippers := get_nodes_in_group(&"combo_flippers")
+	for node: Node in registered_flippers:
+		(node as PinballFlipper).set_physics_process(false)
+	flipper.set_physics_process(true)
+
+	var packed_ball := load(WAVE_NORMAL_BALL_SCENE) as PackedScene
+	var ball := packed_ball.instantiate() as Pinball
+	wave.add_child(ball)
+	ball.freeze = true
+	# 첨부 이미지처럼 우측 하단 플리퍼 끝의 둥근 면에 저속으로 붙은 위치입니다.
+	ball.global_position = flipper.global_position + Vector2(-220.0, 60.0)
+	ball.linear_velocity = Vector2.ZERO
+	await physics_frame
+	ball.freeze = false
+	ball.sleeping = false
+	for _settle_frame in 10:
+		await physics_frame
+
+	var stuck_position := ball.global_position
+	_expect(ball.linear_velocity.length() < 80.0,
+		"Wave regression ball must settle at low speed before activation. " \
+		+ "(velocity=%s)" % ball.linear_velocity)
+	var activated := flipper.request_activation(
+		PinballFlipper.issue_activation_token()
+	)
+	_expect(activated, "The Wave flipper must accept a low-speed release activation.")
+	for _active_frame in 15:
+		await physics_frame
+
+	var ball_collision := ball.get_node("CollisionShape2D") as CollisionShape2D
+	var ball_circle := ball_collision.shape as CircleShape2D
+	var ball_radius := ball_circle.radius * ball_collision.global_scale.abs().x
+	_expect(ball.global_position.distance_to(stuck_position) >= 48.0,
+		"A low-speed Wave ball must physically separate from the flipper. " \
+		+ "(start=%s, end=%s)" % [stuck_position, ball.global_position])
+	_expect(not flipper.is_circle_overlapping_at_rotation(
+		ball_collision.global_position,
+		ball_radius,
+		flipper.rotation
+	), "A released Wave ball must not remain overlapping the active flipper.")
+	ball.queue_free()
+	await process_frame
+
+	for node: Node in registered_flippers:
+		if is_instance_valid(node):
+			(node as PinballFlipper).set_physics_process(true)
 
 
 func _test_board_camera_safe_area(wave: WaveRuntimeCoordinator) -> void:

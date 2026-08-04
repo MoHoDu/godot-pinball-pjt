@@ -62,6 +62,7 @@ func _test_rules_contract(rules_script: Script, default_rules: Resource) -> void
 
 	var required_properties := [
 		&"return_reflection_multiplier",
+		&"minimum_active_release_speed",
 		&"activation_time",
 		&"hold_time",
 		&"return_time",
@@ -74,6 +75,8 @@ func _test_rules_contract(rules_script: Script, default_rules: Resource) -> void
 
 	_expect_float(float(default_rules.get(&"return_reflection_multiplier")), 0.5, \
 		"기본 복귀 반사 배율은 0.5여야 한다.")
+	_expect_float(float(default_rules.get(&"minimum_active_release_speed")), 320.0, \
+		"능동 타격은 저속 공을 떼어낼 최소 속력 320px/s를 사용해야 한다.")
 
 
 func _test_individual_editor_contract(flipper: PinballFlipper) -> void:

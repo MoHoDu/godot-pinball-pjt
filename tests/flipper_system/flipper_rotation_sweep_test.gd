@@ -53,6 +53,7 @@ func _run() -> void:
 
 	if _failures.is_empty():
 		_test_physical_sweep_reflection(flipper)
+		_test_degenerate_release_preserves_reflection_direction(flipper)
 		_test_contact_position_percent(flipper)
 		_test_contact_zone_boundaries(flipper)
 		_test_contact_zone_speed_multipliers(flipper)
@@ -99,6 +100,30 @@ func _test_physical_sweep_reflection(flipper: PinballFlipper) -> void:
 		"움직이는 플리퍼 표면은 상대 속도 반사를 통해 공에 추가 속도를 전달해야 한다.")
 	_expect(absf(moving_result.x - incoming_velocity.x) <= EPSILON, \
 		"플리퍼 타격이 공의 기존 횡방향 속도 성분을 임의의 고정 방향으로 덮어쓰면 안 된다.")
+
+
+func _test_degenerate_release_preserves_reflection_direction(
+	flipper: PinballFlipper
+) -> void:
+	var valid_low_speed := Vector2(90.0, -40.0)
+	var unchanged: Vector2 = flipper.call(
+		&"_ensure_minimum_active_release_velocity",
+		valid_low_speed,
+		Vector2(0.0, -1000.0)
+	)
+	_expect_vector(unchanged, valid_low_speed, \
+		"유효한 저속 반사의 방향과 크기는 능동 이탈 보정이 바꾸면 안 된다.")
+
+	var degenerate_reflection := Vector2(30.0, 0.0)
+	var released: Vector2 = flipper.call(
+		&"_ensure_minimum_active_release_velocity",
+		degenerate_reflection,
+		Vector2(0.0, -1000.0)
+	)
+	_expect_float(released.x, degenerate_reflection.x, \
+		"접선 이탈 보정은 기존 법선 반사 성분을 보존해야 한다.")
+	_expect_float(released.y, -320.0, \
+		"거의 무효인 타격만 표면 진행 방향의 최소 이탈 성분을 보충해야 한다.")
 
 
 func _test_contact_position_percent(flipper: PinballFlipper) -> void:
