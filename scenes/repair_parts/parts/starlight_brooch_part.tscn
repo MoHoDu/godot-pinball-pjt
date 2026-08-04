@@ -1,0 +1,21 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/starlight_brooch_bumper.tscn" id="1"]
+[ext_resource type="Resource" path="res://settings/repair_parts/RepairPartBoardOverrides.tres" id="2"]
+[ext_resource type="Script" path="res://scripts/repair_parts/runtime/repair_part_hit_source.gd" id="3"]
+[ext_resource type="Resource" path="res://settings/repair_parts/StarlightBroochDefinition.tres" id="4"]
+[ext_resource type="Script" path="res://scripts/repair_parts/runtime/repair_part_runtime.gd" id="5"]
+[ext_resource type="Script" path="res://scripts/repair_parts/ui/repair_part_feedback.gd" id="6"]
+
+[node name="StarlightBroochPart" instance=ExtResource("1")]
+instance_overrides = ExtResource("2")
+
+[node name="ComboHitSource" parent="." index="3"]
+script = ExtResource("3")
+
+[node name="RepairPartRuntime" type="Node" parent="."]
+script = ExtResource("5")
+definition = ExtResource("4")
+
+[node name="_RepairPartFeedback" type="Node2D" parent="."]
+script = ExtResource("6")
