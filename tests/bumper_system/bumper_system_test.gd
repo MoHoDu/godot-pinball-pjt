@@ -6,7 +6,18 @@ const COTTON_SCENE := preload("res://scenes/bumper_system/cotton_bumper.tscn")
 const SPRING_SCENE := preload("res://scenes/bumper_system/spring_doll_bumper.tscn")
 const DRUM_SCENE := preload("res://scenes/bumper_system/toy_drum_bumper.tscn")
 const CANNON_SCENE := preload("res://scenes/bumper_system/clockwork_toy_cannon.tscn")
-const REPAIR_PART_SCENE := preload("res://scenes/bumper_system/repair_part.tscn")
+const STARLIGHT_SCENE := preload(
+	"res://scenes/bumper_system/starlight_brooch_bumper.tscn"
+)
+const GOLDEN_GEARS_SCENE := preload(
+	"res://scenes/bumper_system/golden_gears_bumper.tscn"
+)
+const CRESCENT_NEEDLE_SCENE := preload(
+	"res://scenes/bumper_system/crescent_needle_bumper.tscn"
+)
+const FORGOTTEN_STAR_BELL_SCENE := preload(
+	"res://scenes/bumper_system/forgotten_star_bell_bumper.tscn"
+)
 const BUMPER_TEST_SCENE := preload("res://scenes/bumper_system/bumper_test.tscn")
 const STAGE_LAYOUT := preload("res://settings/bumpers/stage_01/Stage01BumperLayout.tres")
 const BUMPER_WAVE_LOADOUT_SCRIPT := preload(
@@ -33,7 +44,7 @@ func _run() -> void:
 
 	await _test_stage01_settings_and_strategies()
 	await _test_contact_lifecycle_and_overrides()
-	await _test_repair_part_inheritance()
+	await _test_repair_part_eligibility()
 	await _test_shot_control_and_deferred_destruction()
 	_test_stage01_wave_layout()
 	await _test_bumper_test_scene_contract()
@@ -172,20 +183,81 @@ func _test_contact_lifecycle_and_overrides() -> void:
 	await process_frame
 
 
-func _test_repair_part_inheritance() -> void:
-	var repair_part := await _spawn(REPAIR_PART_SCENE) as RepairPart
-	_expect(repair_part is RepairPart,
-		"수리 부품 프리팹은 RepairPart여야 한다.")
-	_expect(repair_part is Bumper,
-		"RepairPart는 Bumper를 상속해야 한다.")
-	_expect(repair_part.definition != null and repair_part.definition.is_valid(),
-		"수리 부품은 정체성 Definition을 가져야 한다.")
-	_expect(
-		repair_part.definition.mechanics_status
-			== RepairPartDefinition.MechanicsStatus.CONCEPT_ONLY,
-		"미정 수리 부품 효과를 임의 구현하지 않고 CONCEPT_ONLY로 표시해야 한다."
-	)
-	repair_part.queue_free()
+func _test_repair_part_eligibility() -> void:
+	var button := await _spawn(BUTTON_SCENE)
+	var spring := await _spawn(SPRING_SCENE)
+	var cannon := await _spawn(CANNON_SCENE) as ShotBumper
+	var repair_scenes: Array[PackedScene] = [
+		STARLIGHT_SCENE,
+		GOLDEN_GEARS_SCENE,
+		CRESCENT_NEEDLE_SCENE,
+		FORGOTTEN_STAR_BELL_SCENE,
+	]
+	var repair_bumpers: Array[Bumper] = []
+	var reward_table: Array[BumperSettings] = [button.settings]
+	var unique_ids: Dictionary = {}
+
+	_expect(not button.is_repair_part(),
+		"Stage 01 단추의 수리 부품 자격은 명시적으로 false여야 한다.")
+	_expect(not button.settings.is_reward_candidate(),
+		"수리 부품이 아닌 범퍼는 보상 후보에서 제외되어야 한다.")
+
+	for repair_scene: PackedScene in repair_scenes:
+		var bumper := await _spawn(repair_scene)
+		repair_bumpers.append(bumper)
+		reward_table.append(bumper.settings)
+		_expect(bumper.get_script() == Bumper,
+			"수리 부품 자격 범퍼는 별도 하위 타입이 아닌 Bumper여야 한다.")
+		_expect(bumper.is_repair_part(),
+			"플레이어 보상·보유·배치 범퍼는 수리 부품 자격이 true여야 한다.")
+		_expect(bumper.settings.is_reward_candidate(),
+			"보상 시스템 공개 계약이 수리 부품 범퍼를 후보로 반환해야 한다.")
+		_expect(
+			bumper.settings.mechanics_status
+				== BumperSettings.MechanicsStatus.CONCEPT_ONLY,
+			"미정 고유 효과는 BumperSettings에서 CONCEPT_ONLY로 보존해야 한다."
+		)
+		_expect(not unique_ids.has(bumper.settings.bumper_kind_id),
+			"보상 시스템이 비교할 bumper_kind_id는 중복되면 안 된다.")
+		unique_ids[bumper.settings.bumper_kind_id] = true
+
+	var reward_cannon_settings := cannon.settings.duplicate(true) as BumperSettings
+	reward_cannon_settings.is_repair_part = true
+	cannon.settings = reward_cannon_settings
+	reward_table.append(cannon.settings)
+	_expect(cannon.is_repair_part(),
+		"ShotBumper도 설정에 따라 수리 부품이 될 수 있어야 한다.")
+	_expect(cannon.response_strategy is ShotResponseStrategy,
+		"수리 부품 자격은 Shot 충돌 전략을 변경하면 안 된다.")
+
+	var reward_spring_settings := spring.settings.duplicate(true) as BumperSettings
+	reward_spring_settings.is_repair_part = true
+	spring.settings = reward_spring_settings
+	var spring_overrides := BumperInstanceOverrides.new()
+	spring_overrides.speed_multiplier = 1.75
+	spring.instance_overrides = spring_overrides
+	reward_table.append(spring.settings)
+	_expect(spring.is_repair_part(),
+		"Bounce 범퍼도 설정에 따라 수리 부품이 될 수 있어야 한다.")
+	_expect(spring.response_strategy is BounceResponseStrategy,
+		"수리 부품 자격과 인스턴스 오버라이드는 Bounce 전략을 변경하면 안 된다.")
+	_expect_float(spring.get_speed_multiplier(), 1.75,
+		"인스턴스 밸런스 오버라이드는 수리 부품 자격과 독립적으로 적용되어야 한다.")
+
+	var reward_candidate_ids: Array[StringName] = []
+	for settings: BumperSettings in reward_table:
+		if settings.is_reward_candidate():
+			reward_candidate_ids.append(settings.bumper_kind_id)
+	_expect(reward_candidate_ids.size() == 6,
+		"테이블형 보상 목록은 자격 속성만으로 후보 6개를 필터링해야 한다.")
+	_expect(not reward_candidate_ids.has(button.settings.bumper_kind_id),
+		"보상 필터는 수리 부품 자격이 없는 범퍼를 포함하면 안 된다.")
+
+	button.queue_free()
+	spring.queue_free()
+	cannon.queue_free()
+	for bumper: Bumper in repair_bumpers:
+		bumper.queue_free()
 	await process_frame
 
 
@@ -252,8 +324,19 @@ func _test_bumper_test_scene_contract() -> void:
 	_expect(scene != null, "bumper_test.tscn을 인스턴스화할 수 있어야 한다.")
 	if scene == null:
 		return
-	_expect(scene.bumper_scenes.size() == 6,
-		"Inspector 목록에 Stage 01 범퍼 5종과 수리 부품 프리팹이 필요하다.")
+	_expect(scene.bumper_scenes.size() == 9,
+		"Inspector 목록에 Stage 01 범퍼 5종과 자격 범퍼 4종이 필요하다.")
+	var eligible_count := 0
+	for bumper_scene: PackedScene in scene.bumper_scenes:
+		var preview := bumper_scene.instantiate() as Bumper
+		_expect(preview != null,
+			"테스트 목록의 모든 프리팹 루트는 Bumper여야 한다.")
+		if preview != null:
+			if preview.is_repair_part():
+				eligible_count += 1
+			preview.free()
+	_expect(eligible_count == 4,
+		"테스트 목록은 별도 타입 없이 수리 부품 자격 범퍼 4종을 포함해야 한다.")
 	_expect(scene.ball_scene != null,
 		"낙하 테스트에 사용할 Pinball Scene이 필요하다.")
 	_expect(scene.get_node_or_null("TestRig/BumperSlot") != null,
