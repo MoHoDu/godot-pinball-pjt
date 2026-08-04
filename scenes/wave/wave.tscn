@@ -1,34 +1,107 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene format=3 uid="uid://6fbf244c58gg"]
 
 [ext_resource type="PackedScene" path="res://scenes/test_flipper/test_flipper_wave_board.tscn" id="1_board"]
-[ext_resource type="Script" path="res://scripts/wave_hud/wave_runtime_coordinator.gd" id="2_coordinator"]
-[ext_resource type="Script" path="res://scripts/wave_hud/wave_hud_state_source.gd" id="3_state"]
+[ext_resource type="Script" uid="uid://b35gfy37afi7d" path="res://scripts/wave_hud/wave_runtime_coordinator.gd" id="2_coordinator"]
+[ext_resource type="Script" uid="uid://cmwexv5v1ailv" path="res://scripts/wave_hud/wave_hud_state_source.gd" id="3_state"]
+[ext_resource type="Script" uid="uid://ce2wax7g2gio8" path="res://scripts/ball_base_system/pinball_stats.gd" id="4_gnljk"]
 [ext_resource type="PackedScene" path="res://scenes/wave_hud/wave_hud.tscn" id="4_hud"]
-[ext_resource type="Script" path="res://scripts/combo_system/combo_stage_settings.gd" id="5_stage_settings"]
+[ext_resource type="Script" uid="uid://d1ru6gfxnmw1r" path="res://scripts/combo_system/combo_stage_settings.gd" id="5_stage_settings"]
 
 [sub_resource type="Resource" id="StageSettings_wave"]
 script = ExtResource("5_stage_settings")
 stage_id = &"cursed_toy_demo"
-stage_base_score = 100
 wave_target_scores = PackedInt32Array(250000, 400000, 650000, 1000000)
 
-[node name="Wave" instance=ExtResource("1_board")]
+[sub_resource type="CircleShape2D" id="CircleShape2D_jw183"]
+resource_local_to_scene = true
+radius = 64.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_pgv8t"]
+resource_local_to_scene = true
+radius = 68.0
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_q5yh5"]
+resource_local_to_scene = true
+bounce = 0.9
+
+[sub_resource type="Resource" id="Resource_h8w0t"]
+resource_local_to_scene = true
+script = ExtResource("4_gnljk")
+mass = 1.0
+elasticity = 0.9
+gravity_scale = 0.35
+initial_speed = 940.0
+minimum_speed = 320.0
+maximum_speed = 1540.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_prwav"]
+resource_local_to_scene = true
+size = Vector2(2600, 160)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wh5bm"]
+resource_local_to_scene = true
+size = Vector2(160, 1600)
+
+[node name="Wave" unique_id=242104030 instance=ExtResource("1_board")]
 script = ExtResource("2_coordinator")
+board_world_bounds = Rect2(-1180, -700, 2360, 1400)
+maximum_board_zoom = 0.494
+hud_safe_top_design = 190.0
+board_margin_design = 24.0
 wave_stage_settings = SubResource("StageSettings_wave")
+wave_stage_index = 0
+ball_drain_area_path = NodePath("BallDrainArea")
 
-[node name="GuideLabel" parent="HUD" parent_id_path=PackedInt32Array(2130486477) index="0"]
-visible = false
+[node name="CollisionShape2D" parent="Bumpers/BumperCenter" parent_id_path=PackedInt32Array(1050007271) index="0" unique_id=637540678]
+shape = SubResource("CircleShape2D_jw183")
 
-[node name="StatusLabel" parent="HUD" parent_id_path=PackedInt32Array(2130486477) index="1"]
-visible = false
+[node name="CollisionShape2D" parent="Bumpers/BumperCenter/SpeedDetectionArea" parent_id_path=PackedInt32Array(1641841581) index="0" unique_id=342771053]
+shape = SubResource("CircleShape2D_pgv8t")
 
-[node name="ComboHud" parent="HUD" parent_id_path=PackedInt32Array(2130486477) index="2"]
-visible = false
+[node name="CollisionShape2D" parent="Bumpers/BumperLeft" parent_id_path=PackedInt32Array(1034082624) index="0" unique_id=1416908033]
+shape = SubResource("CircleShape2D_jw183")
 
-[node name="ComboInspector" parent="HUD" parent_id_path=PackedInt32Array(2130486477) index="3"]
-visible = false
+[node name="CollisionShape2D" parent="Bumpers/BumperLeft/SpeedDetectionArea" parent_id_path=PackedInt32Array(746818323) index="0" unique_id=1122045982]
+shape = SubResource("CircleShape2D_pgv8t")
 
-[node name="WaveHud" parent="HUD" parent_id_path=PackedInt32Array(2130486477) index="5" instance=ExtResource("4_hud")]
+[node name="CollisionShape2D" parent="Bumpers/BumperRight" parent_id_path=PackedInt32Array(965244053) index="0" unique_id=1571238968]
+shape = SubResource("CircleShape2D_jw183")
 
-[node name="WaveHudStateSource" type="Node" parent="." index="15"]
+[node name="CollisionShape2D" parent="Bumpers/BumperRight/SpeedDetectionArea" parent_id_path=PackedInt32Array(344627012) index="0" unique_id=143861581]
+shape = SubResource("CircleShape2D_pgv8t")
+
+[node name="PinballBall" parent="." index="6" unique_id=1525149773]
+physics_material_override = SubResource("PhysicsMaterial_q5yh5")
+stats = SubResource("Resource_h8w0t")
+
+[node name="WaveHudStateSource" type="Node" parent="." index="15" unique_id=854915690]
 script = ExtResource("3_state")
+
+[node name="BallDrainArea" parent="." index="17"]
+visible = false
+
+[node name="TopDrain" parent="BallDrainArea" index="0"]
+shape = SubResource("RectangleShape2D_prwav")
+
+[node name="BottomDrain" parent="BallDrainArea" index="1"]
+shape = SubResource("RectangleShape2D_prwav")
+
+[node name="LeftDrain" parent="BallDrainArea" index="2"]
+shape = SubResource("RectangleShape2D_wh5bm")
+
+[node name="RightDrain" parent="BallDrainArea" index="3"]
+shape = SubResource("RectangleShape2D_wh5bm")
+
+[node name="GuideLabel" parent="HUD" parent_id_path=PackedInt32Array(2130486477) index="0" unique_id=1815472958]
+visible = false
+
+[node name="StatusLabel" parent="HUD" parent_id_path=PackedInt32Array(2130486477) index="1" unique_id=2062526515]
+visible = false
+
+[node name="ComboHud" parent="HUD" parent_id_path=PackedInt32Array(2130486477) index="2" unique_id=1301318280]
+visible = false
+
+[node name="ComboInspector" parent="HUD" parent_id_path=PackedInt32Array(2130486477) index="3" unique_id=1079446609]
+visible = false
+
+[node name="WaveHud" parent="HUD" parent_id_path=PackedInt32Array(2130486477) index="5" unique_id=648303246 instance=ExtResource("4_hud")]
