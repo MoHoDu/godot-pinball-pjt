@@ -48,6 +48,13 @@ var physics_rules: PinballPhysicsRules:
 	set(value):
 		_set_stats(value)
 
+## 이 공이 쓸 VFX 묶음입니다. 비우면 기본 연출을 씁니다.
+##
+## 연출 노드(_GlowOutline / _Trail)가 _ready() 에서 한 번만 읽습니다.
+## 코드로 공을 만들어 꽂을 때는 반드시 add_child() **전에** 대입해야 합니다.
+## 씬 인스펙터에서 연출 노드에 규칙을 직접 꽂았다면 그쪽이 이깁니다.
+@export var vfx_profile: BallVfxProfile
+
 
 @export_category("공 외형 및 충돌")
 
@@ -93,8 +100,49 @@ func _ready() -> void:
 	max_contacts_reported = 8	# 한 물리 프레임에 최대 8개의 접촉점 기록
 	_set_physics_rules(_physics_rules)
 	_set_stats(_stats)
+	# 그림을 먼저 갈아끼운 뒤에 크기를 맞춥니다.
+	# 순서를 뒤집으면 배율이 옛 텍스처 기준으로 잡혀 공이 다른 크기로 그려집니다.
+	refresh_profile_art()
 	refresh_ball_size()
 	refresh_physics_properties()
+
+
+## `vfx_profile` 의 공 그림을 시각 노드에 반영합니다.
+##
+## 껍질은 `Visual/Sprite2D` 의 텍스처를 바꾸고, 동공은 그 위에 `PupilSprite` 를 얹습니다.
+## 껍질과 동공은 같은 캔버스에 제자리로 그려져 있어서 위치 계산이 필요 없습니다.
+## 배율만 같이 맞추면 됩니다 (`refresh_ball_size()` 가 처리).
+##
+## 프로필이 없거나 body_texture 가 비면 씬에 박힌 그림을 그대로 둡니다.
+func refresh_profile_art() -> void:
+	var sprite := get_node_or_null("Visual/Sprite2D") as Sprite2D
+	if sprite == null:
+		return
+
+	if vfx_profile != null and vfx_profile.body_texture != null:
+		sprite.texture = vfx_profile.body_texture
+
+	var pupil_texture: Texture2D = null
+	if vfx_profile != null:
+		pupil_texture = vfx_profile.pupil_texture
+
+	var pupil := sprite.get_node_or_null(^"PupilSprite") as Sprite2D
+	if pupil_texture == null:
+		# 프로필을 비운 공으로 되돌렸을 때 앞 공의 동공이 남지 않게 지웁니다.
+		# queue_free() 만 하면 이번 프레임 동안 경로에 그대로 잡혀서
+		# 바로 뒤에 다시 만들면 동공이 두 장 겹칩니다. 트리에서 먼저 뗍니다.
+		if pupil != null:
+			sprite.remove_child(pupil)
+			pupil.queue_free()
+		return
+
+	if pupil == null:
+		pupil = Sprite2D.new()
+		pupil.name = "PupilSprite"
+		# 껍질의 자식이라 껍질 배율을 그대로 물려받습니다. 따로 스케일하지 않습니다.
+		sprite.add_child(pupil)
+
+	pupil.texture = pupil_texture
 
 
 ## 현재 공 지름을 시각 이미지와 원형 충돌 범위에 즉시 반영합니다.

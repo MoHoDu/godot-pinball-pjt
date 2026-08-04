@@ -113,7 +113,7 @@ git 리모트 `https://github.com/MoHoDu/godot-pinball-pjt.git`, 작업 브랜�
 6. **배경 코너 4개** — 팔각형 바깥 삼각형 4개(화면의 15%)를 무엇으로 채울지 미정
 7. **경로 대소문자 17곳** — Linux/macOS 익스포트 시 전부 깨짐 → [[path-case-issue]]
 
-## 현재 진척 (2026-08-03 세션 종료 시점)
+## 현재 진척 (2026-08-04 세션 종료 시점)
 
 > **상세 인계 메모는 [[HANDOFF]](HANDOFF.md) 에 있다. 이어받는 사람은 그걸 먼저 읽는 게 빠르다.**
 > 이 절은 요약이다.
@@ -133,6 +133,9 @@ git 리모트 `https://github.com/MoHoDu/godot-pinball-pjt.git`, 작업 브랜�
 - **보드 아트**: 사각형(팔각형) 마스킹까지 → [[board-step-pipeline]]
 - **테스트 씬 공 종류 전환**: `test_ball_physics` 에서 숫자키 1~7. VFX 검수는 여기서 → [[test-scene-controls]]
 - **공 SFX ① 형태 단계 (정속 태엽눈 파일럿)**: 공통 어택 3 + 충돌 3 + 패링 1 → [[sfx01-ball-pilot]]
+- **유물 보상 시스템**: 웨이브 사이 수리 부품 3장 중 1택 → 다음 웨이브 적용. 신규 파일 23개,
+  기존 스크립트 수정 0건. 개발용 `G` 즉시 클리어 포함. 인게임 확인 완료 → [[wave-reward-system]]
+  - 카드 아트는 아직 없다. 도형 + 텍스트 임시 UI다
 
 **다음에 이어서 할 일**
 
@@ -144,14 +147,21 @@ git 리모트 `https://github.com/MoHoDu/godot-pinball-pjt.git`, 작업 브랜�
    형락님이 직접 생성해 `docs/ball_guides/sfx/raw/` 에 넣기로 했다. **승인 전 나머지 4종 양산 금지**
 3. **`AudioController` 노드 신설** — 문서 12-3 구조. 현재 `base_ball.tscn` 은 Sprite2D + `_Trail` 뿐
 4. **삼각형 보드** (2026-08-02 지시상 원래 1순위였으나 계속 밀렸다)
-5. 범퍼·유물·코인·보스 아트
+5. **유물 카드 아트** — 시스템은 끝났고 UI만 임시다. `reward_choice_hud.gd` 의 `_create_card` 만 갈면 된다
+6. 범퍼·코인·보스 아트
 
 **결정 대기**: 보상 공 5종을 코드의 6종(`elastic_var` 3 + `mass_var` 3)에 어떻게 매핑할지.
 정속 태엽눈이 대응 없고 `super_ball`·`normal_ball` 이 남는다.
 
+**결정 대기**: 유물 효과 수치. 지금 값(점수 +25% / 발사 속력 +10% / 패링 창 +35% / 공 +1)은
+컨셉 기획서에 수치가 없어 임시로 정한 것이다. `settings/reward/relics/*.tres` 에서 숫자만 바꾸면 된다.
+
 **정리 가능**: `Resources/Art/balls/` 의 `ball.png` · `cats_eye_ball.png` · `industrial_steel_ball.png`
 — 코드·씬 참조 0건. 그리고 `industrial_steel_flipper.png`.
 
-**엔진 테스트가 전부 밀려 있다** — VFX ①②, 공 v6, 보상 공 5종, 새 테스트
+**아트 계열 엔진 테스트는 아직 밀려 있다** — VFX ①②, 공 v6, 보상 공 5종, 새 테스트
 (`ball_trail_test.gd` 12종 · `test_ball_physics_scene_test.gd` 6종) 전부 **미실행**이다.
-컨테이너에 Godot을 못 받는다 → [[godot-install-blocked]]. 명령어 목록은 [[HANDOFF]] §3.
+2026-08-04부터 컨테이너에서 엔진을 받을 수 있게 됐지만, 이 테스트들은 **실제 텍스처가 있어야
+의미가 있다**(자리표시자로는 통과해도 검증이 안 된다) → [[godot-install-blocked]]. 명령어는 [[HANDOFF]] §3.
+
+웨이브·보상 계열 테스트는 전부 실행해 통과했다 → [[wave-reward-system]].
