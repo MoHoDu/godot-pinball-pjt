@@ -48,6 +48,8 @@ var _history: PackedVector2Array = PackedVector2Array()
 var _ages: PackedFloat32Array = PackedFloat32Array()
 var _fade: float = 0.0
 var _built_diameter: float = -1.0
+## 씬에서 규칙을 직접 꽂았는지입니다. 꽂았으면 프로필이 덮어쓰지 못합니다.
+var _explicit_rules: bool = false
 
 
 ## 꼬리 규칙입니다. 씬에 내장하거나 .tres 프리셋으로 교체할 수 있습니다.
@@ -56,6 +58,7 @@ var _built_diameter: float = -1.0
 		return _trail_rules
 	set(value):
 		_trail_rules = value if value != null else DEFAULT_TRAIL_RULES
+		_explicit_rules = value != null
 		_built_diameter = -1.0
 		update_configuration_warnings()
 
@@ -71,8 +74,29 @@ func _ready() -> void:
 		return
 
 	_ball = get_parent() as Node2D
+	_adopt_profile_rules()
 	_build_line()
 	_refresh_line()
+
+
+## 공에 VFX 프로필이 꽂혀 있으면 그 규칙을 가져옵니다.
+##
+## 씬에서 규칙을 직접 지정했다면 그쪽이 이깁니다. 프로필은 "기본값 대체"이지
+## "씬 설정 덮어쓰기"가 아닙니다. 특정 공 하나만 손보는 길을 막으면 안 됩니다.
+func _adopt_profile_rules() -> void:
+	if _explicit_rules or not is_instance_valid(_ball):
+		return
+
+	var profile_value: Variant = _ball.get(&"vfx_profile")
+	if profile_value == null:
+		return
+
+	var profile := profile_value as BallVfxProfile
+	if profile == null or profile.trail_rules == null:
+		return
+
+	_trail_rules = profile.trail_rules
+	_built_diameter = -1.0
 
 
 func _physics_process(delta: float) -> void:

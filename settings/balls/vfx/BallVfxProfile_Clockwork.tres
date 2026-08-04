@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="BallVfxProfile" format=3]
+
+[ext_resource type="Script" path="res://scripts/ball_base_system/vfx/ball_vfx_profile.gd" id="1_1"]
+[ext_resource type="Resource" path="res://settings/balls/glow/BallGlowOutlineRules_Clockwork.tres" id="2_2"]
+[ext_resource type="Resource" path="res://settings/balls/trail/BallTrailRules_Clockwork.tres" id="3_3"]
+[ext_resource type="Texture2D" path="res://Resources/Art/vfx/balls/ParryRing_Clockwork.png" id="4_4"]
+[ext_resource type="Texture2D" path="res://Resources/Art/vfx/balls/HitSpark_Clockwork.png" id="5_5"]
+[ext_resource type="Texture2D" path="res://Resources/Art/vfx/balls/ComboStar_Clockwork.png" id="6_6"]
+[ext_resource type="Texture2D" path="res://Resources/Art/vfx/balls/Particle_Clockwork_dust.png" id="7_7"]
+[ext_resource type="Texture2D" path="res://Resources/Art/vfx/balls/Particle_Clockwork_gear.png" id="8_8"]
+[ext_resource type="Texture2D" path="res://Resources/Art/balls/variants/Ball_Clockwork_Body.png" id="9_9"]
+[ext_resource type="Texture2D" path="res://Resources/Art/balls/variants/Ball_Clockwork_Pupil.png" id="10_10"]
+
+[resource]
+script = ExtResource("1_1")
+ball_id = &"clockwork"
+display_name = "정속 태엽눈"
+body_texture = ExtResource("9_9")
+pupil_texture = ExtResource("10_10")
+glow_rules = ExtResource("2_2")
+trail_rules = ExtResource("3_3")
+parry_ring = ExtResource("4_4")
+hit_spark = ExtResource("5_5")
+combo_star = ExtResource("6_6")
+particles = Array[Texture2D]([ExtResource("7_7"), ExtResource("8_8")])
