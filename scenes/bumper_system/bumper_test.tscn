@@ -1,167 +1,151 @@
-[gd_scene load_steps=18 format=3 uid="uid://ckvjrw1dg7ute"]
+[gd_scene load_steps=12 format=3 uid="uid://ckvjrw1dg7ute"]
 
-[ext_resource type="PackedScene" path="res://scenes/wave/wave.tscn" id="1_t34vu"]
-[ext_resource type="Script" uid="uid://ce2wax7g2gio8" path="res://scripts/ball_base_system/pinball_stats.gd" id="2_p3v3v"]
+[ext_resource type="Script" uid="uid://biqih0rqfyrig" path="res://scripts/bumper-system/bumper_test_controller.gd" id="1_controller"]
+[ext_resource type="PackedScene" path="res://Resources/balls/base/base_ball.tscn" id="2_ball"]
 [ext_resource type="PackedScene" path="res://scenes/bumper_system/button_bumper.tscn" id="3_button"]
 [ext_resource type="PackedScene" path="res://scenes/bumper_system/cotton_bumper.tscn" id="4_cotton"]
 [ext_resource type="PackedScene" path="res://scenes/bumper_system/spring_doll_bumper.tscn" id="5_spring"]
 [ext_resource type="PackedScene" path="res://scenes/bumper_system/toy_drum_bumper.tscn" id="6_drum"]
 [ext_resource type="PackedScene" path="res://scenes/bumper_system/clockwork_toy_cannon.tscn" id="7_cannon"]
 [ext_resource type="PackedScene" path="res://scenes/bumper_system/repair_part.tscn" id="8_repair"]
-[ext_resource type="Resource" path="res://settings/bumpers/repair_parts/GoldenGears.tres" id="9_gears"]
-[ext_resource type="Resource" path="res://settings/bumpers/repair_parts/CrescentNeedle.tres" id="10_needle"]
-[ext_resource type="Resource" path="res://settings/bumpers/repair_parts/ForgottenStarBell.tres" id="11_bell"]
-[ext_resource type="Script" path="res://scripts/bumper-system/bumper_test_controller.gd" id="12_controller"]
-[ext_resource type="Resource" path="res://settings/bumpers/stage_01/Stage01BumperLayout.tres" id="13_layout"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_03743"]
-resource_local_to_scene = true
-radius = 64.0
+[sub_resource type="StyleBoxFlat" id="Style_top"]
+bg_color = Color(0.047, 0.102, 0.145, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.22, 0.37, 0.46, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_2mgwh"]
-resource_local_to_scene = true
-radius = 68.0
+[sub_resource type="StyleBoxFlat" id="Style_panel"]
+bg_color = Color(0.043, 0.086, 0.118, 0.94)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.18, 0.31, 0.39, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
 
-[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_dy37f"]
-resource_local_to_scene = true
-bounce = 0.9
+[sub_resource type="StyleBoxFlat" id="Style_instruction"]
+bg_color = Color(0.059, 0.121, 0.157, 0.96)
+border_width_top = 1
+border_color = Color(0.26, 0.43, 0.51, 1)
 
-[sub_resource type="Resource" id="Resource_ixvt3"]
-resource_local_to_scene = true
-script = ExtResource("2_p3v3v")
-mass = 1.0
-elasticity = 0.9
-gravity_scale = 0.35
-initial_speed = 940.0
-minimum_speed = 320.0
-maximum_speed = 1540.0
+[node name="BumperTest" type="Node2D"]
+script = ExtResource("1_controller")
+bumper_scenes = Array[PackedScene]([ExtResource("3_button"), ExtResource("4_cotton"), ExtResource("5_spring"), ExtResource("6_drum"), ExtResource("7_cannon"), ExtResource("8_repair")])
+ball_scene = ExtResource("2_ball")
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_q6bd5"]
-resource_local_to_scene = true
-size = Vector2(2600, 160)
+[node name="TestRig" type="Node2D" parent="."]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_up7sl"]
-resource_local_to_scene = true
-size = Vector2(160, 1600)
+[node name="BumperSlot" type="Node2D" parent="TestRig"]
+position = Vector2(576, 405)
 
-[node name="Wave" unique_id=1393984606 instance=ExtResource("1_t34vu")]
-board_world_bounds = Rect2(-1180, -700, 2360, 1400)
-maximum_board_zoom = 0.494
-hud_safe_top_design = 190.0
-board_margin_design = 24.0
-wave_stage_index = 0
-ball_drain_area_path = NodePath("BallDrainArea")
+[node name="Balls" type="Node2D" parent="TestRig"]
 
-[node name="BumperCenter" parent="Bumpers" parent_id_path=PackedInt32Array(525693520) index="0"]
-visible = false
-collision_layer = 0
-collision_mask = 0
+[node name="DropCaption" type="Label" parent="TestRig"]
+offset_left = 548.0
+offset_top = 145.0
+offset_right = 604.0
+offset_bottom = 173.0
+theme_override_colors/font_color = Color(0.75, 0.83, 0.86, 1)
+theme_override_font_sizes/font_size = 13
+text = "DROP"
+horizontal_alignment = 1
 
-[node name="CollisionShape2D" parent="Bumpers/BumperCenter" parent_id_path=PackedInt32Array(1050007271) index="0" unique_id=637540678]
-disabled = true
-shape = SubResource("CircleShape2D_03743")
+[node name="HUD" type="CanvasLayer" parent="."]
 
-[node name="CollisionShape2D" parent="Bumpers/BumperCenter/SpeedDetectionArea" parent_id_path=PackedInt32Array(1641841581) index="0" unique_id=342771053]
-disabled = true
-shape = SubResource("CircleShape2D_2mgwh")
+[node name="Title" type="Label" parent="HUD"]
+offset_left = 32.0
+offset_top = 22.0
+offset_right = 320.0
+offset_bottom = 50.0
+theme_override_colors/font_color = Color(0.94, 0.83, 0.54, 1)
+theme_override_font_sizes/font_size = 20
+text = "BUMPER LAB"
 
-[node name="BumperLeft" parent="Bumpers" parent_id_path=PackedInt32Array(525693520) index="1"]
-visible = false
-collision_layer = 0
-collision_mask = 0
+[node name="Subtitle" type="Label" parent="HUD"]
+offset_left = 32.0
+offset_top = 50.0
+offset_right = 420.0
+offset_bottom = 72.0
+theme_override_colors/font_color = Color(0.48, 0.62, 0.69, 1)
+theme_override_font_sizes/font_size = 13
+text = "Single-object drop response harness"
 
-[node name="CollisionShape2D" parent="Bumpers/BumperLeft" parent_id_path=PackedInt32Array(1034082624) index="0" unique_id=1416908033]
-disabled = true
-shape = SubResource("CircleShape2D_03743")
+[node name="TopBar" type="PanelContainer" parent="HUD"]
+offset_left = 300.0
+offset_top = 22.0
+offset_right = 852.0
+offset_bottom = 76.0
+theme_override_styles/panel = SubResource("Style_top")
 
-[node name="CollisionShape2D" parent="Bumpers/BumperLeft/SpeedDetectionArea" parent_id_path=PackedInt32Array(746818323) index="0" unique_id=1122045982]
-disabled = true
-shape = SubResource("CircleShape2D_2mgwh")
-
-[node name="BumperRight" parent="Bumpers" parent_id_path=PackedInt32Array(525693520) index="2"]
-visible = false
-collision_layer = 0
-collision_mask = 0
-
-[node name="CollisionShape2D" parent="Bumpers/BumperRight" parent_id_path=PackedInt32Array(965244053) index="0" unique_id=1571238968]
-disabled = true
-shape = SubResource("CircleShape2D_03743")
-
-[node name="CollisionShape2D" parent="Bumpers/BumperRight/SpeedDetectionArea" parent_id_path=PackedInt32Array(344627012) index="0" unique_id=143861581]
-disabled = true
-shape = SubResource("CircleShape2D_2mgwh")
-
-[node name="PinballBall" parent="." index="6" unique_id=1525149773]
-physics_material_override = SubResource("PhysicsMaterial_dy37f")
-stats = SubResource("Resource_ixvt3")
-ball_diameter = 44.0
-
-[node name="TopDrain" parent="BallDrainArea" index="0"]
-shape = SubResource("RectangleShape2D_q6bd5")
-
-[node name="BottomDrain" parent="BallDrainArea" index="1"]
-shape = SubResource("RectangleShape2D_q6bd5")
-
-[node name="LeftDrain" parent="BallDrainArea" index="2"]
-shape = SubResource("RectangleShape2D_up7sl")
-
-[node name="RightDrain" parent="BallDrainArea" index="3"]
-shape = SubResource("RectangleShape2D_up7sl")
-
-[node name="Stage01Bumpers" type="Node2D" parent="." index="16"]
-
-[node name="Button" parent="Stage01Bumpers" instance=ExtResource("3_button")]
-position = Vector2(-520, -280)
-bumper_id = &"stage01_button_a"
-
-[node name="Cotton" parent="Stage01Bumpers" instance=ExtResource("4_cotton")]
-position = Vector2(0, -330)
-bumper_id = &"stage01_cotton_a"
-
-[node name="SpringDoll" parent="Stage01Bumpers" instance=ExtResource("5_spring")]
-position = Vector2(520, -280)
-bumper_id = &"stage01_spring_doll_a"
-
-[node name="ToyDrum" parent="Stage01Bumpers" instance=ExtResource("6_drum")]
-position = Vector2(-350, 30)
-bumper_id = &"stage01_toy_drum_a"
-
-[node name="ClockworkCannon" parent="Stage01Bumpers" instance=ExtResource("7_cannon")]
-position = Vector2(350, 30)
-bumper_id = &"stage01_cannon_a"
-
-[node name="StarlightBrooch" parent="Stage01Bumpers" instance=ExtResource("8_repair")]
-position = Vector2(-300, 350)
-bumper_id = &"repair_starlight_brooch"
-
-[node name="GoldenGears" parent="Stage01Bumpers" instance=ExtResource("8_repair")]
-position = Vector2(-100, 350)
-bumper_id = &"repair_golden_gears"
-definition = ExtResource("9_gears")
-
-[node name="CrescentNeedle" parent="Stage01Bumpers" instance=ExtResource("8_repair")]
-position = Vector2(100, 350)
-bumper_id = &"repair_crescent_needle"
-definition = ExtResource("10_needle")
-
-[node name="ForgottenStarBell" parent="Stage01Bumpers" instance=ExtResource("8_repair")]
-position = Vector2(300, 350)
-bumper_id = &"repair_forgotten_star_bell"
-definition = ExtResource("11_bell")
-
-[node name="BumperTestController" type="Node" parent="." index="17"]
-script = ExtResource("12_controller")
-stage_layout = ExtResource("13_layout")
-
-[node name="BumperStatusPanel" type="PanelContainer" parent="HUD" index="6"]
-offset_left = 1360.0
-offset_top = 210.0
-offset_right = 1900.0
-offset_bottom = 470.0
-
-[node name="StatusLabel" type="Label" parent="HUD/BumperStatusPanel"]
+[node name="SelectionLabel" type="Label" parent="HUD/TopBar"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.88, 0.91, 0.79, 1)
-theme_override_font_sizes/font_size = 16
-text = "범퍼 모듈 준비 중"
+theme_override_colors/font_color = Color(0.91, 0.94, 0.85, 1)
+theme_override_font_sizes/font_size = 18
+text = "<  01 / 06   단추 범퍼  >"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StatusPanel" type="PanelContainer" parent="HUD"]
+offset_left = 24.0
+offset_top = 92.0
+offset_right = 282.0
+offset_bottom = 592.0
+theme_override_styles/panel = SubResource("Style_panel")
+
+[node name="Margin" type="MarginContainer" parent="HUD/StatusPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 18
+
+[node name="StatusLabel" type="Label" parent="HUD/StatusPanel/Margin"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.76, 0.84, 0.83, 1)
+theme_override_font_sizes/font_size = 14
+text = "범퍼 상태"
+
+[node name="EventPanel" type="PanelContainer" parent="HUD"]
+offset_left = 870.0
+offset_top = 92.0
+offset_right = 1128.0
+offset_bottom = 592.0
+theme_override_styles/panel = SubResource("Style_panel")
+
+[node name="Margin" type="MarginContainer" parent="HUD/EventPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 18
+
+[node name="EventLabel" type="Label" parent="HUD/EventPanel/Margin"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.71, 0.8, 0.84, 1)
+theme_override_font_sizes/font_size = 13
+text = "EVENT LOG"
+autowrap_mode = 2
+
+[node name="InstructionBar" type="PanelContainer" parent="HUD"]
+offset_top = 608.0
+offset_right = 1152.0
+offset_bottom = 648.0
+theme_override_styles/panel = SubResource("Style_instruction")
+
+[node name="InstructionLabel" type="Label" parent="HUD/InstructionBar"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.86, 0.9, 0.81, 1)
+theme_override_font_sizes/font_size = 14
+text = "←/→ 또는 A/D  언제든 범퍼 선택     SPACE/ENTER  낙하 시작     R  동일 범퍼 즉시 재시작     캐논: W/A/D + SPACE"
+horizontal_alignment = 1
 vertical_alignment = 1

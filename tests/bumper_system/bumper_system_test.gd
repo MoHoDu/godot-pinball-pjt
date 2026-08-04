@@ -36,7 +36,7 @@ func _run() -> void:
 	await _test_repair_part_inheritance()
 	await _test_shot_control_and_deferred_destruction()
 	_test_stage01_wave_layout()
-	_test_bumper_test_scene_contract()
+	await _test_bumper_test_scene_contract()
 
 	_fixture_root.queue_free()
 	await process_frame
@@ -248,28 +248,109 @@ func _test_shot_control_and_deferred_destruction() -> void:
 
 
 func _test_bumper_test_scene_contract() -> void:
-	var scene := BUMPER_TEST_SCENE.instantiate()
+	var scene := BUMPER_TEST_SCENE.instantiate() as BumperTestController
 	_expect(scene != null, "bumper_test.tscn을 인스턴스화할 수 있어야 한다.")
 	if scene == null:
 		return
-	var bumper_root := scene.get_node_or_null("Stage01Bumpers")
-	_expect(bumper_root != null,
-		"bumper_test.tscn에 Stage01Bumpers 루트가 필요하다.")
-	if bumper_root != null:
-		_expect(bumper_root.get_child_count() == 9,
-			"테스트 씬은 Stage 01 범퍼 5종과 수리 부품 4종을 포함해야 한다.")
-		var unique_ids: Dictionary = {}
-		for child: Node in bumper_root.get_children():
-			_expect(child is Bumper,
-				"Stage01Bumpers의 모든 배치 객체는 Bumper여야 한다.")
-			if child is Bumper:
-				var id := (child as Bumper).bumper_id
-				_expect(not unique_ids.has(id),
-					"보드 인스턴스 bumper_id는 중복되면 안 된다: %s" % id)
-				unique_ids[id] = true
-	_expect(scene.get_node_or_null("BumperTestController") != null,
-		"테스트 씬에 런타임 연결 컨트롤러가 필요하다.")
-	scene.free()
+	_expect(scene.bumper_scenes.size() == 6,
+		"Inspector 목록에 Stage 01 범퍼 5종과 수리 부품 프리팹이 필요하다.")
+	_expect(scene.ball_scene != null,
+		"낙하 테스트에 사용할 Pinball Scene이 필요하다.")
+	_expect(scene.get_node_or_null("TestRig/BumperSlot") != null,
+		"선택 범퍼를 교체할 단일 BumperSlot이 필요하다.")
+	_expect(scene.get_node_or_null("TestRig/Balls") != null,
+		"낙하 공을 생성할 Balls 루트가 필요하다.")
+
+	_fixture_root.add_child(scene)
+	await process_frame
+	_expect(scene.current_state == BumperTestController.TestState.SELECTING,
+		"테스트 씬은 범퍼 선택 상태로 시작해야 한다.")
+	_expect(scene.current_bumper is Bumper,
+		"첫 Inspector 목록 범퍼가 즉시 미리보기 되어야 한다.")
+	var first_scene := scene.get_selected_scene()
+	await _send_key(KEY_RIGHT)
+	_expect(scene.current_index == 1 \
+			and scene.get_selected_scene() != first_scene,
+		"좌우 선택은 Inspector 목록의 다음 범퍼로 교체해야 한다.")
+	await _send_key(KEY_SPACE)
+	_expect(scene.current_state == BumperTestController.TestState.RUNNING,
+		"Space 입력 후 테스트 상태는 RUNNING이어야 한다.")
+	_expect(is_instance_valid(scene.current_ball),
+		"선택 범퍼 위에 실제 Pinball을 생성해야 한다.")
+	if is_instance_valid(scene.current_ball) and is_instance_valid(scene.current_bumper):
+		_expect(scene.current_ball.global_position.y \
+				< scene.current_bumper.global_position.y,
+			"공은 선택 범퍼 바로 위에서 낙하를 시작해야 한다.")
+	for _frame in 120:
+		if scene.hit_count > 0:
+			break
+		await physics_frame
+	_expect(scene.hit_count == 1,
+		"수직 낙하한 공은 선택 범퍼에 실제 타격을 한 번 등록해야 한다.")
+	var previous_ball := scene.current_ball
+	var previous_bumper := scene.current_bumper
+	await _send_key(KEY_R)
+	_expect(is_instance_valid(scene.current_ball) \
+			and scene.current_ball != previous_ball \
+			and scene.current_bumper != previous_bumper \
+			and scene.current_index == 1,
+		"재시작은 선택을 유지하고 공과 범퍼를 새 인스턴스로 교체해야 한다.")
+
+	await _send_key(KEY_A)
+	_expect(scene.current_index == 0 \
+			and scene.current_state == BumperTestController.TestState.SELECTING,
+		"실행 중 범퍼 전환은 현재 테스트를 중단하고 선택 상태로 돌아가야 한다.")
+	await _send_key(KEY_ENTER)
+	_expect(scene.current_state == BumperTestController.TestState.RUNNING,
+		"Enter 입력으로도 공 낙하를 시작할 수 있어야 한다.")
+
+	while scene.current_index != 4:
+		await _send_key(KEY_D)
+	_expect(scene.current_bumper is ShotBumper,
+		"Inspector 목록의 캐논 항목은 ShotBumper여야 한다.")
+	await _send_key(KEY_SPACE)
+	_expect(scene.current_state == BumperTestController.TestState.RUNNING,
+		"캐논 테스트도 Space 입력으로 시작해야 한다.")
+	var cannon := scene.current_bumper as ShotBumper
+	cannon.call(&"_begin_selection", scene.current_ball)
+	await process_frame
+	_expect(scene.current_ball.freeze,
+		"캐논 입력 검증은 실제 Shot 제어 상태에서 실행해야 한다.")
+	var cannon_index := scene.current_index
+	await _send_key(KEY_A)
+	_expect(scene.current_index == cannon_index \
+			and cannon.get_selected_launch_direction().dot(Vector2.LEFT) > 0.99,
+		"캐논이 공을 제어할 때 A/D는 범퍼 선택에 소비되면 안 된다.")
+	await _send_key(KEY_D)
+	_expect(scene.current_index == cannon_index \
+			and cannon.get_selected_launch_direction().dot(Vector2.RIGHT) > 0.99,
+		"캐논 제어 중 D 입력은 오른쪽 발사 앵커를 선택해야 한다.")
+	await _send_key(KEY_SPACE)
+	_expect(not scene.current_ball.freeze \
+			and scene.current_ball.linear_velocity.dot(Vector2.RIGHT) > 0.0,
+		"캐논 제어 중 Space 입력은 선택 방향으로 공을 발사해야 한다.")
+
+	var saved_scenes := scene.bumper_scenes
+	scene.bumper_scenes = []
+	_expect(not scene.select_next() and not scene.restart_test(),
+		"빈 Inspector 목록은 선택과 재시작을 안전하게 거절해야 한다.")
+	scene.bumper_scenes = [null]
+	scene.current_index = 0
+	scene.call(&"_prepare_selected_bumper")
+	_expect(scene.current_bumper == null,
+		"null Inspector 항목은 오류 없이 거절해야 한다.")
+	var invalid_scene := PackedScene.new()
+	var invalid_root := Node2D.new()
+	invalid_scene.pack(invalid_root)
+	invalid_root.free()
+	scene.bumper_scenes = [invalid_scene]
+	scene.call(&"_prepare_selected_bumper")
+	_expect(scene.current_bumper == null,
+		"Bumper가 아닌 PackedScene 항목은 오류 없이 거절해야 한다.")
+	scene.bumper_scenes = saved_scenes
+
+	scene.queue_free()
+	await process_frame
 
 
 func _test_stage01_wave_layout() -> void:
@@ -317,6 +398,23 @@ func _create_ball() -> RigidBody2D:
 	ball.add_child(collision)
 	ball.linear_velocity = Vector2(0.0, 940.0)
 	return ball
+
+
+func _pressed_key(keycode: Key) -> InputEventKey:
+	var event := InputEventKey.new()
+	event.physical_keycode = keycode
+	event.pressed = true
+	return event
+
+
+func _send_key(keycode: Key) -> void:
+	Input.parse_input_event(_pressed_key(keycode))
+	await process_frame
+	var release := InputEventKey.new()
+	release.physical_keycode = keycode
+	release.pressed = false
+	Input.parse_input_event(release)
+	await process_frame
 
 
 func _expect_float(actual: float, expected: float, message: String) -> void:
