@@ -1,19 +1,20 @@
 class_name WaveRuntimeCoordinator
-extends "res://tests/combo_system/test_flipper_wave_board.gd"
+extends Node2D
 
 
 const HUD_DESIGN_SIZE := Vector2(1920.0, 1080.0)
+const COTTON_KIND_ID: StringName = &"stage01_cotton"
+const TOY_DRUM_KIND_ID: StringName = &"stage01_toy_drum"
 
 
-@onready var hud_state: WaveHudStateSource = get_node_or_null(
-	"WaveHudStateSource"
-) as WaveHudStateSource
-@onready var wave_hud: WaveHud = get_node_or_null("HUD/WaveHud") as WaveHud
-@onready var combo_anchor: Node2D = get_node_or_null(
-	"Bumpers/BumperCenter"
-) as Node2D
-@onready var board_camera: Camera2D = get_node_or_null("Camera2D") as Camera2D
+@export_category("Wave Configuration")
+@export var wave_stage_settings: ComboStageSettings
+@export var bumper_stage_settings: BumperStageSettings
+@export_range(0, 99, 1) var wave_stage_index := 0
+@export var expected_bumper_kind_ids: Array[StringName] = []
 
+@export_category("Wave Board Nodes")
+@export_node_path("Area2D") var ball_drain_area_path: NodePath = ^"BallDrainArea"
 
 @export_category("Wave Board Camera")
 @export var board_world_bounds := Rect2(-1180.0, -700.0, 2360.0, 1400.0)
@@ -22,39 +23,267 @@ const HUD_DESIGN_SIZE := Vector2(1920.0, 1080.0)
 @export_range(0.0, 256.0, 1.0) var board_margin_design := 24.0
 
 
+@onready var launcher: PinballLauncher = get_node_or_null(
+	^"PinballLauncher"
+) as PinballLauncher
+@onready var combo_system: ComboSystem = get_node_or_null(
+	^"ComboSystem"
+) as ComboSystem
+@onready var combo_collision_bridge: ComboCollisionBridge = get_node_or_null(
+	^"ComboCollisionBridge"
+) as ComboCollisionBridge
+@onready var wave_ball_inventory: WaveBallInventory = get_node_or_null(
+	^"WaveBallInventory"
+) as WaveBallInventory
+@onready var wave_ball_flow: WaveBallFlowController = get_node_or_null(
+	^"WaveBallFlowController"
+) as WaveBallFlowController
+@onready var combo_wave_controller: ComboWaveController = get_node_or_null(
+	^"ComboWaveController"
+) as ComboWaveController
+@onready var wave_manager: WaveManager = get_node_or_null(
+	^"WaveManager"
+) as WaveManager
+@onready var flipper_selector: FlipperSelector = get_node_or_null(
+	^"FlipperSelector"
+) as FlipperSelector
+@onready var ball_selection_hud: BallSelectionHud = get_node_or_null(
+	^"HUD/BallSelectionHud"
+) as BallSelectionHud
+@onready var ball_drain_area: Area2D = get_node_or_null(
+	ball_drain_area_path
+) as Area2D
+@onready var hud_state: WaveHudStateSource = get_node_or_null(
+	^"WaveHudStateSource"
+) as WaveHudStateSource
+@onready var wave_hud: WaveHud = get_node_or_null(
+	^"HUD/WaveHud"
+) as WaveHud
+@onready var board_camera: Camera2D = get_node_or_null(
+	^"Camera2D"
+) as Camera2D
+
+
+var ball: Pinball
+var _wave_settings := ComboStageSettings.new()
 var _selection_committed := false
 var _camera_viewport_size := Vector2.ZERO
+var _drain_pending := false
+var _active_shot_controls := 0
 
 
 func _ready() -> void:
-	super()
-	assert(is_instance_valid(hud_state), "Wave scene requires WaveHudStateSource.")
-	assert(is_instance_valid(wave_hud), "Wave scene requires WaveHud.")
+	_assert_required_nodes()
+	_bind_bumper_runtime()
+	_bind_wave_runtime()
 	wave_hud.bind_state_source(hud_state)
 	wave_hud.settings_requested.connect(_toggle_pause)
 	get_viewport().size_changed.connect(_on_viewport_size_changed)
 	_connect_hud_state_inputs()
+	ball_selection_hud.bind_ball_flow(wave_ball_flow)
+	_set_flipper_input_enabled(false)
+
+	if wave_stage_settings == null:
+		_wave_settings.stage_id = &"main_demo_stage"
+		_wave_settings.stage_base_score = 100
+		_wave_settings.wave_target_scores = PackedInt32Array([500])
+	else:
+		_wave_settings = wave_stage_settings
+
+	assert(
+		is_current_bumper_loadout_valid(),
+		"Wave scene bumper instances must satisfy the configured stage loadout."
+	)
+	wave_manager.enter_wave(_wave_settings, wave_stage_index)
 	_initialize_hud_state()
 	_fit_board_camera(true)
-	_update_combo_anchor()
 
 
-func _process(delta: float) -> void:
-	super(delta)
+func _process(_delta: float) -> void:
 	_fit_board_camera()
-	_update_combo_anchor()
 
 
-func _unhandled_input(event: InputEvent) -> void:
+func _unhandled_input(_event: InputEvent) -> void:
 	if get_tree().paused:
 		return
-	super(event)
 
 
 func reset_combo_test() -> void:
-	super()
+	if is_instance_valid(combo_system):
+		combo_system.reset_wave()
 	if is_instance_valid(hud_state):
 		hud_state.reset_combo()
+
+
+func reset_ball() -> void:
+	if not is_instance_valid(wave_ball_flow) or not is_instance_valid(wave_manager):
+		return
+	if wave_manager.current_state == WaveManager.State.IN_PLAY:
+		_handle_ball_drained("R manual drain")
+		return
+	if wave_manager.current_state in [
+		WaveManager.State.WON,
+		WaveManager.State.LOST,
+	]:
+		wave_manager.retry_wave()
+
+
+func get_bumpers() -> Array[Bumper]:
+	var result: Array[Bumper] = []
+	var bumpers_root := get_node_or_null(^"Bumpers")
+	if bumpers_root == null:
+		return result
+	for child: Node in bumpers_root.get_children():
+		if child is Bumper:
+			result.append(child as Bumper)
+	return result
+
+
+func is_current_bumper_loadout_valid() -> bool:
+	if bumper_stage_settings == null:
+		return false
+	var loadout := bumper_stage_settings.get_wave(wave_stage_index) as BumperWaveLoadout
+	if loadout == null or not loadout.is_valid():
+		return false
+
+	var bumpers := get_bumpers()
+	var normal_count := 0
+	var bounce_count := 0
+	var shot_count := 0
+	var kind_counts: Dictionary = {}
+	for bumper: Bumper in bumpers:
+		if bumper.settings == null or not bumper.settings.is_valid():
+			return false
+		var kind_id := bumper.settings.bumper_kind_id
+		kind_counts[kind_id] = int(kind_counts.get(kind_id, 0)) + 1
+		if bumper.settings.maximum_per_board > 0 \
+				and int(kind_counts[kind_id]) > bumper.settings.maximum_per_board:
+			return false
+		match bumper.settings.bumper_type:
+			BumperSettings.BumperType.NORMAL:
+				normal_count += 1
+			BumperSettings.BumperType.BOUNCE:
+				bounce_count += 1
+			BumperSettings.BumperType.SHOT:
+				shot_count += 1
+	var expected_kind_counts: Dictionary = {}
+	for kind_id: StringName in expected_bumper_kind_ids:
+		expected_kind_counts[kind_id] = int(
+			expected_kind_counts.get(kind_id, 0)
+		) + 1
+
+	return (
+		_is_count_in_range(bumpers.size(), loadout.total_count_range)
+		and _is_count_in_range(normal_count, loadout.normal_count_range)
+		and _is_count_in_range(bounce_count, loadout.bounce_count_range)
+		and _is_count_in_range(shot_count, loadout.shot_count_range)
+		and int(kind_counts.get(COTTON_KIND_ID, 0)) <= loadout.maximum_cotton_count
+		and int(kind_counts.get(TOY_DRUM_KIND_ID, 0))
+			<= loadout.maximum_toy_drum_count
+		and (expected_kind_counts.is_empty() or kind_counts == expected_kind_counts)
+	)
+
+
+func _assert_required_nodes() -> void:
+	assert(is_instance_valid(launcher), "Wave scene requires PinballLauncher.")
+	assert(is_instance_valid(combo_system), "Wave scene requires ComboSystem.")
+	assert(is_instance_valid(combo_collision_bridge),
+		"Wave scene requires ComboCollisionBridge.")
+	assert(is_instance_valid(wave_ball_inventory),
+		"Wave scene requires WaveBallInventory.")
+	assert(is_instance_valid(wave_ball_flow),
+		"Wave scene requires WaveBallFlowController.")
+	assert(is_instance_valid(combo_wave_controller),
+		"Wave scene requires ComboWaveController.")
+	assert(is_instance_valid(wave_manager), "Wave scene requires WaveManager.")
+	assert(is_instance_valid(flipper_selector), "Wave scene requires FlipperSelector.")
+	assert(is_instance_valid(ball_selection_hud), "Wave scene requires BallSelectionHud.")
+	assert(is_instance_valid(ball_drain_area), "Wave scene requires BallDrainArea.")
+	assert(is_instance_valid(hud_state), "Wave scene requires WaveHudStateSource.")
+	assert(is_instance_valid(wave_hud), "Wave scene requires WaveHud.")
+	assert(is_instance_valid(board_camera), "Wave scene requires Camera2D.")
+
+
+func _bind_wave_runtime() -> void:
+	if not ball_drain_area.body_entered.is_connected(
+		_on_ball_drain_area_body_entered
+	):
+		ball_drain_area.body_entered.connect(_on_ball_drain_area_body_entered)
+	wave_manager.active_ball_changed.connect(_on_active_ball_changed)
+	wave_manager.state_changed.connect(_on_wave_manager_state_changed)
+
+
+func _bind_bumper_runtime() -> void:
+	for bumper: Bumper in get_bumpers():
+		var source := bumper.combo_hit_source
+		if source != null:
+			combo_system.bind_hit_source(source)
+		if bumper is ShotBumper:
+			var shot := bumper as ShotBumper
+			shot.control_started.connect(_on_shot_control_started)
+			shot.control_ended.connect(_on_shot_control_ended)
+
+
+func _reset_bumpers_for_new_ball() -> void:
+	for bumper: Bumper in get_bumpers():
+		bumper.reset_for_new_ball()
+
+
+func _on_ball_drain_area_body_entered(body: Node2D) -> void:
+	if _drain_pending or body != ball or ball.freeze:
+		return
+	_drain_pending = true
+	call_deferred(&"_handle_ball_drained", "custom drain area")
+
+
+func _handle_ball_drained(_source_name: String) -> void:
+	if not is_instance_valid(ball) or not is_instance_valid(wave_ball_flow):
+		_drain_pending = false
+		return
+	var drained_ball := ball
+	if wave_ball_flow.on_ball_drained(drained_ball):
+		_reset_bumpers_for_new_ball()
+	_drain_pending = false
+
+
+func _on_active_ball_changed(next_ball: Pinball) -> void:
+	ball = next_ball
+	combo_collision_bridge.bind_ball(next_ball)
+	if is_instance_valid(next_ball):
+		_reset_bumpers_for_new_ball()
+
+
+func _on_wave_manager_state_changed(
+	_previous_state: WaveManager.State,
+	current_state: WaveManager.State
+) -> void:
+	_set_flipper_input_enabled(
+		current_state == WaveManager.State.IN_PLAY and _active_shot_controls == 0
+	)
+
+
+func _on_shot_control_started(
+	_bumper: ShotBumper,
+	_controlled_ball: RigidBody2D
+) -> void:
+	_active_shot_controls += 1
+	_set_flipper_input_enabled(false)
+
+
+func _on_shot_control_ended(
+	_bumper: ShotBumper,
+	_controlled_ball: RigidBody2D
+) -> void:
+	_active_shot_controls = maxi(_active_shot_controls - 1, 0)
+	_set_flipper_input_enabled(
+		wave_manager.current_state == WaveManager.State.IN_PLAY
+		and _active_shot_controls == 0
+	)
+
+
+func _set_flipper_input_enabled(is_enabled: bool) -> void:
+	if is_instance_valid(flipper_selector):
+		flipper_selector.set_input_enabled(is_enabled)
 
 
 func _connect_hud_state_inputs() -> void:
@@ -124,8 +353,6 @@ func _on_inventory_ball_consumed(
 	_remaining_for_type: int,
 	_total_remaining: int
 ) -> void:
-	# Inventory may preselect another type while confirm_selection() is still
-	# committing the active ball. Keep the launched ball highlighted until drain.
 	_selection_committed = true
 
 
@@ -151,6 +378,7 @@ func _on_manager_wave_entered(
 	wave_index: int,
 	target_score: int
 ) -> void:
+	_reset_bumpers_for_new_ball()
 	hud_state.begin_batch()
 	hud_state.reset_combo()
 	hud_state.set_wave_index(wave_index)
@@ -159,6 +387,7 @@ func _on_manager_wave_entered(
 
 
 func _on_manager_wave_retried() -> void:
+	_reset_bumpers_for_new_ball()
 	hud_state.begin_batch()
 	hud_state.reset_combo()
 	hud_state.set_score(wave_manager.current_score, wave_manager.target_score)
@@ -166,6 +395,8 @@ func _on_manager_wave_retried() -> void:
 
 
 func _on_combo_changed(combo_count: int, _tier: int, _time_remaining: float) -> void:
+	if combo_count > 0:
+		_update_combo_anchor_from_ball()
 	hud_state.observe_combo(combo_count)
 
 
@@ -182,11 +413,11 @@ func _on_score_changed(total_score: int, _added_score: int) -> void:
 	hud_state.set_score(total_score, wave_manager.target_score)
 
 
-func _update_combo_anchor() -> void:
-	if not is_instance_valid(combo_anchor):
+func _update_combo_anchor_from_ball() -> void:
+	if not is_instance_valid(ball):
 		hud_state.set_combo_anchor(Vector2.ZERO, false)
 		return
-	var viewport_position := combo_anchor.get_global_transform_with_canvas().origin
+	var viewport_position := ball.get_global_transform_with_canvas().origin
 	hud_state.set_combo_anchor(viewport_position, true)
 
 
@@ -198,9 +429,6 @@ func _fit_board_camera(force := false) -> void:
 		return
 	_camera_viewport_size = viewport_size
 
-	# Calculate from the current viewport directly. The coordinator processes
-	# before the child HUD, so reading the HUD's cached transform would use the
-	# previous frame's scale during a live window resize.
 	var design_scale := maxf(minf(
 		viewport_size.x / HUD_DESIGN_SIZE.x,
 		viewport_size.y / HUD_DESIGN_SIZE.y
@@ -240,3 +468,7 @@ func _toggle_pause() -> void:
 	var next_paused := not get_tree().paused
 	get_tree().paused = next_paused
 	hud_state.set_paused(next_paused)
+
+
+func _is_count_in_range(value: int, range_value: Vector2i) -> bool:
+	return value >= range_value.x and value <= range_value.y

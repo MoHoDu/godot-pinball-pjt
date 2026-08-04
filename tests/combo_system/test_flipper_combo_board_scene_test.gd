@@ -63,8 +63,8 @@ func _test_integrated_structure(board: Node) -> void:
 	_expect(walls != null, "콤보 보드에 벽 루트가 필요하다.")
 	if walls != null:
 		for wall: Node in walls.get_children():
-			_expect(wall.is_in_group(&"combo_timer_refresh_walls"), \
-				"모든 보드 벽은 최초 접촉 시간 갱신 대상으로 표시되어야 한다.")
+			_expect(wall.is_in_group(&"combo_walls"), \
+				"모든 보드 벽은 콤보 비갱신 물리 접촉 대상으로 표시되어야 한다.")
 
 	var bumpers := board.get_node_or_null("Bumpers")
 	_expect(bumpers != null and bumpers.get_child_count() == 3, \

@@ -5,6 +5,7 @@
 [resource]
 script = ExtResource("1_rules")
 return_reflection_multiplier = 0.5
+minimum_active_hit_speed = 320.0
 activation_time = 0.1
 hold_time = 0.05
 return_time = 0.2

@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="BumperSettings" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/bumper-system/bumper_settings.gd" id="1"]
+[ext_resource type="Resource" path="res://settings/bumpers/presentation/GoldenGearsPresentation.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+bumper_kind_id = &"golden_gears"
+display_name = "황금 톱니바퀴"
+bumper_type = 0
+is_repair_part = true
+mechanics_status = 0
+concept_role = "구동과 생동"
+theme_keywords = PackedStringArray("구동", "리듬", "생동", "장난감 심장")
+base_score = 0
+score_weight = 0.0
+max_durability = 1
+durability_damage_per_hit = 1
+respawn_delay = 3.0
+respawn_telegraph_duration = 0.4
+speed_multiplier = 1.0
+minimum_release_speed = 0.0
+maximum_response_speed = 1540.0
+collision_diameter = 80.0
+visual_diameter = 88.0
+respawn_safe_margin = 36.0
+presentation = ExtResource("2")

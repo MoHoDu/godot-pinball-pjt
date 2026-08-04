@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="BumperSettings" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/bumper-system/bumper_settings.gd" id="1"]
+[ext_resource type="Resource" path="res://settings/bumpers/presentation/ToyDrumPresentation.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+bumper_kind_id = &"stage01_toy_drum"
+display_name = "장난감 북"
+bumper_type = 1
+is_repair_part = false
+base_score = 200
+score_weight = 2.0
+max_durability = 1
+durability_damage_per_hit = 1
+respawn_delay = 6.0
+respawn_telegraph_duration = 0.4
+speed_multiplier = 1.5
+minimum_release_speed = 1400.0
+maximum_response_speed = 1540.0
+collision_diameter = 120.0
+visual_diameter = 128.0
+respawn_safe_margin = 44.0
+maximum_per_board = 1
+presentation = ExtResource("2")

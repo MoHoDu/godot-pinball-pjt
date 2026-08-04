@@ -32,6 +32,7 @@ var _total_score_weight: float = 0.0
 var _time_remaining: float = 0.0
 var _total_score: int = 0
 var _timer_suspension_depth: int = 0
+var _flipper_timer_refresh_available: bool = false
 
 
 ## 프로젝트 전체가 공유하는 단계, 점수, 피해 규칙입니다.
@@ -73,6 +74,10 @@ var is_timer_suspended: bool:
 	get:
 		return _timer_suspension_depth > 0
 
+var flipper_timer_refresh_available: bool:
+	get:
+		return _flipper_timer_refresh_available
+
 
 func _ready() -> void:
 	add_to_group(&"combo_systems")
@@ -90,6 +95,7 @@ func register_hit(score_weight: float = 1.0) -> int:
 	_combo_count += 1
 	_total_score_weight += maxf(score_weight, 0.0)
 	_time_remaining = _get_hold_time()
+	_flipper_timer_refresh_available = true
 	var next_tier := current_tier
 
 	if previous_tier != next_tier:
@@ -100,11 +106,12 @@ func register_hit(score_weight: float = 1.0) -> int:
 	return _combo_count
 
 
-## 콤보를 증가시키지 않고 활성 콤보의 유지 시간만 초기값으로 갱신합니다.
-## 벽처럼 시간 갱신만 담당하는 오브젝트가 사용하며 0콤보에서는 아무 상태도 만들지 않습니다.
-func refresh_combo_timer() -> bool:
-	if _combo_count <= 0:
+## 콤보 대상의 직전 유효 타격이 부여한 1회 권한을 소비해 유지 시간을 갱신합니다.
+## 플리퍼만 호출하며, 추가 유효 타격 전의 반복 타격은 시간을 무기한 유지할 수 없습니다.
+func refresh_combo_timer_from_flipper() -> bool:
+	if _combo_count <= 0 or not _flipper_timer_refresh_available:
 		return false
+	_flipper_timer_refresh_available = false
 	_time_remaining = _get_hold_time()
 	combo_timer_changed.emit(_time_remaining, _get_hold_time())
 	_refresh_processing()
@@ -253,6 +260,7 @@ func _clear_active_combo() -> void:
 	_total_score_weight = 0.0
 	_time_remaining = 0.0
 	_timer_suspension_depth = 0
+	_flipper_timer_refresh_available = false
 	combo_changed.emit(0, ComboRulesClass.Tier.NONE, 0.0)
 	combo_timer_changed.emit(0.0, _get_hold_time())
 	timer_suspension_changed.emit(false, 0.0)
