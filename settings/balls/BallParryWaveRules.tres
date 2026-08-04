@@ -1,0 +1,41 @@
+[gd_resource type="Resource" script_class="BallParryWaveRules" format=3]
+
+[ext_resource type="Script" path="res://scripts/ball_base_system/vfx/ball_parry_wave_rules.gd" id="1_parry"]
+
+[resource]
+script = ExtResource("1_parry")
+start_radius_ratio = 1.227
+end_radius_ratio = 4.318
+duration = 0.26
+expand_exp = 1.5
+fade_start = 0.7
+fade_exp = 1.3
+ring_width_ratio = 0.409
+ring_width_shrink = 0.12
+gap_count = 1
+gap_width = 0.1
+wobble_amount = 0.022
+wobble_lobes = 7
+band_count = 5
+sub_delay = 0.18
+sub_width_scale = 0.5
+sub_appear = 0.2
+spoke_count = 10
+spoke_inner_mul = 1.06
+spoke_outer_mul = 1.26
+spoke_width_deg = 2.6
+spoke_appear = 0.05
+spark_count = 5
+spark_length_ratio = 0.545
+spark_width_ratio = 0.18
+spark_appear = 0.1
+spark_vanish = 0.8
+flash_time = 0.06
+flash_hollow = false
+center_shift_ratio = 0.0
+quad_padding = 1.2
+max_concurrent = 6
+ring_color = Color(0.435, 0.89, 0.784, 1)
+sub_color = Color(1, 0.78, 0.12, 1)
+flash_color = Color(0.941, 0.878, 0.765, 1)
+spark_color = Color(0.941, 0.878, 0.765, 1)
