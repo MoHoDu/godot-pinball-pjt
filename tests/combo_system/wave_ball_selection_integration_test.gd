@@ -58,6 +58,12 @@ func _run() -> void:
 	_expect(combo_wave.bind_ball_flow(flow), "Combo wave should bind ball flow.")
 	_expect(combo_wave.configure_wave(stage, 0), "Combo wave should configure target.")
 	_expect(hud.bind_ball_flow(flow), "HUD should bind ball flow.")
+	var selection_font := hud.title_label.get_theme_font(&"font")
+	_expect(selection_font != null, "Selection HUD should resolve its runtime font.")
+	if selection_font != null:
+		for character in ["한", "글", "공"]:
+			_expect(selection_font.has_char(character.unicode_at(0)),
+				"Selection HUD font should contain the %s glyph." % character)
 
 	var clear_count := {&"value": 0}
 	var clear_state_at_emit := {&"value": WaveBallFlowController.State.INACTIVE}

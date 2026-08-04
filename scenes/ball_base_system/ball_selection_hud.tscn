@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/ball_base_system/ball_selection_hud.gd" id="1_hud"]
+[ext_resource type="Theme" path="res://Resources/ui/wave_hud_runtime_dark/wave_hud_theme.tres" id="2_theme"]
 
 [node name="BallSelectionHud" type="Control"]
 layout_mode = 3
@@ -10,6 +11,7 @@ offset_top = 24.0
 offset_right = 424.0
 offset_bottom = 184.0
 mouse_filter = 2
+theme = ExtResource("2_theme")
 script = ExtResource("1_hud")
 
 [node name="Panel" type="PanelContainer" parent="."]
