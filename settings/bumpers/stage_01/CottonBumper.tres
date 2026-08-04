@@ -8,6 +8,7 @@ script = ExtResource("1")
 bumper_kind_id = &"stage01_cotton"
 display_name = "솜 범퍼"
 bumper_type = 0
+is_repair_part = false
 base_score = 100
 score_weight = 1.0
 max_durability = 1
@@ -22,4 +23,3 @@ visual_diameter = 104.0
 respawn_safe_margin = 40.0
 maximum_per_board = 1
 presentation = ExtResource("2")
-

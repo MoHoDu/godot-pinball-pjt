@@ -292,6 +292,11 @@ func get_base_score() -> int:
 	return settings.base_score if settings != null else 0
 
 
+## 수리 부품은 별도 런타임 타입이 아니라 범퍼 정의의 보상·보유·배치 자격입니다.
+func is_repair_part() -> bool:
+	return settings != null and settings.is_repair_part
+
+
 func get_score_weight() -> float:
 	if instance_overrides != null and instance_overrides.score_weight >= 0.0:
 		return instance_overrides.score_weight

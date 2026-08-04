@@ -9,7 +9,10 @@ enum VisualStyle {
 	SPRING_DOLL,
 	DRUM,
 	CANNON,
-	REPAIR_PART,
+	STARLIGHT_BROOCH,
+	GOLDEN_GEARS,
+	CRESCENT_NEEDLE,
+	FORGOTTEN_STAR_BELL,
 }
 
 
@@ -42,4 +45,3 @@ enum VisualStyle {
 	set(value):
 		label = value
 		emit_changed()
-

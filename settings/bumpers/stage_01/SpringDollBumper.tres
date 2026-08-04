@@ -8,6 +8,7 @@ script = ExtResource("1")
 bumper_kind_id = &"stage01_spring_doll"
 display_name = "용수철 인형"
 bumper_type = 1
+is_repair_part = false
 base_score = 150
 score_weight = 1.5
 max_durability = 2
@@ -21,4 +22,3 @@ collision_diameter = 104.0
 visual_diameter = 112.0
 respawn_safe_margin = 40.0
 presentation = ExtResource("2")
-

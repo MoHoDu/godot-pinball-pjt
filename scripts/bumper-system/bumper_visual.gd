@@ -50,8 +50,14 @@ func _draw() -> void:
 			_draw_drum(radius, fill, rim, accent, curse)
 		BumperPresentationSettings.VisualStyle.CANNON:
 			_draw_cannon(bumper, radius, fill, rim, accent, curse)
-		BumperPresentationSettings.VisualStyle.REPAIR_PART:
-			_draw_repair_part(bumper, radius, fill, rim, accent)
+		BumperPresentationSettings.VisualStyle.STARLIGHT_BROOCH:
+			_draw_starlight_brooch(radius, fill, rim, accent)
+		BumperPresentationSettings.VisualStyle.GOLDEN_GEARS:
+			_draw_golden_gears(radius, fill, rim, accent)
+		BumperPresentationSettings.VisualStyle.CRESCENT_NEEDLE:
+			_draw_crescent_needle(radius, rim, accent)
+		BumperPresentationSettings.VisualStyle.FORGOTTEN_STAR_BELL:
+			_draw_forgotten_star_bell(radius, fill, rim, accent)
 
 	_draw_durability(bumper, radius, curse)
 
@@ -136,38 +142,50 @@ func _draw_cannon(
 	draw_circle(Vector2.ZERO, radius * 0.2, curse)
 
 
-func _draw_repair_part(
-	bumper: Bumper,
+func _draw_starlight_brooch(
 	radius: float,
 	fill: Color,
 	rim: Color,
 	accent: Color
 ) -> void:
-	var kind := 0
-	if bumper.has_method(&"get_repair_part_kind"):
-		kind = int(bumper.call(&"get_repair_part_kind"))
-	match kind:
-		RepairPartDefinition.RepairPartKind.GOLDEN_GEARS:
-			draw_circle(Vector2.ZERO, radius * 0.76, fill)
-			for index in 8:
-				var angle := TAU * index / 8.0
-				draw_circle(Vector2.from_angle(angle) * radius * 0.72, radius * 0.2, rim)
-			draw_circle(Vector2.ZERO, radius * 0.24, accent)
-		RepairPartDefinition.RepairPartKind.CRESCENT_NEEDLE:
-			draw_arc(Vector2.ZERO, radius * 0.7, -2.2, 1.2, 32, rim, 8.0, true)
-			draw_circle(Vector2(-0.4, -0.5) * radius, radius * 0.12, accent)
-		RepairPartDefinition.RepairPartKind.FORGOTTEN_STAR_BELL:
-			draw_circle(Vector2.ZERO, radius * 0.62, fill)
-			draw_arc(Vector2.ZERO, radius * 0.62, 0.0, TAU, 32, rim, 6.0, true)
-			draw_circle(Vector2(0.0, 0.52) * radius, radius * 0.14, accent)
-		_:
-			var points := PackedVector2Array()
-			for index in 10:
-				var point_radius := radius * (0.82 if index % 2 == 0 else 0.38)
-				points.append(Vector2.from_angle(-PI * 0.5 + index * PI / 5.0) * point_radius)
-			draw_colored_polygon(points, fill)
-			draw_polyline(PackedVector2Array(Array(points) + [points[0]]), rim, 5.0, true)
-			draw_circle(Vector2.ZERO, radius * 0.16, accent)
+	var points := PackedVector2Array()
+	for index in 10:
+		var point_radius := radius * (0.82 if index % 2 == 0 else 0.38)
+		points.append(
+			Vector2.from_angle(-PI * 0.5 + index * PI / 5.0) * point_radius
+		)
+	draw_colored_polygon(points, fill)
+	draw_polyline(PackedVector2Array(Array(points) + [points[0]]), rim, 5.0, true)
+	draw_circle(Vector2.ZERO, radius * 0.16, accent)
+
+
+func _draw_golden_gears(
+	radius: float,
+	fill: Color,
+	rim: Color,
+	accent: Color
+) -> void:
+	draw_circle(Vector2.ZERO, radius * 0.76, fill)
+	for index in 8:
+		var angle := TAU * index / 8.0
+		draw_circle(Vector2.from_angle(angle) * radius * 0.72, radius * 0.2, rim)
+	draw_circle(Vector2.ZERO, radius * 0.24, accent)
+
+
+func _draw_crescent_needle(radius: float, rim: Color, accent: Color) -> void:
+	draw_arc(Vector2.ZERO, radius * 0.7, -2.2, 1.2, 32, rim, 8.0, true)
+	draw_circle(Vector2(-0.4, -0.5) * radius, radius * 0.12, accent)
+
+
+func _draw_forgotten_star_bell(
+	radius: float,
+	fill: Color,
+	rim: Color,
+	accent: Color
+) -> void:
+	draw_circle(Vector2.ZERO, radius * 0.62, fill)
+	draw_arc(Vector2.ZERO, radius * 0.62, 0.0, TAU, 32, rim, 6.0, true)
+	draw_circle(Vector2(0.0, 0.52) * radius, radius * 0.14, accent)
 
 
 func _draw_durability(bumper: Bumper, radius: float, color: Color) -> void:
@@ -184,4 +202,3 @@ func _draw_durability(bumper: Bumper, radius: float, color: Color) -> void:
 			stitch_color,
 			3.0
 		)
-

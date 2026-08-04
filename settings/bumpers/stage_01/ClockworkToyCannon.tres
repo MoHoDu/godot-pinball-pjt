@@ -8,6 +8,7 @@ script = ExtResource("1")
 bumper_kind_id = &"stage01_clockwork_cannon"
 display_name = "태엽 장난감 대포"
 bumper_type = 3
+is_repair_part = false
 base_score = 100
 score_weight = 1.0
 max_durability = 2
@@ -23,4 +24,3 @@ collision_diameter = 112.0
 visual_diameter = 128.0
 respawn_safe_margin = 52.0
 presentation = ExtResource("2")
-

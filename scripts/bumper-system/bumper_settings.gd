@@ -10,11 +10,26 @@ enum BumperType {
 	SHOT,
 }
 
+enum MechanicsStatus {
+	CONCEPT_ONLY,
+	IMPLEMENTED,
+}
+
 
 @export_category("Identity")
 @export var bumper_kind_id: StringName = &"bumper"
 @export var display_name: String = "Bumper"
 @export var bumper_type: BumperType = BumperType.NORMAL
+
+@export_category("Reward And Placement")
+## 플레이어가 스테이지 보상으로 획득하고 보유하여 직접 배치할 수 있는 범퍼입니다.
+## 충돌 타입과는 독립된 범퍼 정의 속성이며 인스턴스 오버라이드 대상이 아닙니다.
+@export var is_repair_part: bool = false
+
+@export_category("Design Status")
+@export var mechanics_status: MechanicsStatus = MechanicsStatus.IMPLEMENTED
+@export_multiline var concept_role: String = ""
+@export var theme_keywords: PackedStringArray = PackedStringArray()
 
 @export_category("Scoring")
 @export_range(0, 999999, 1) var base_score: int = 100
@@ -43,6 +58,11 @@ enum BumperType {
 @export var presentation: BumperPresentationSettings
 
 
+## 보상 시스템이 범퍼 설정을 인스턴스화하지 않고 후보 여부를 검사하는 계약입니다.
+func is_reward_candidate() -> bool:
+	return is_repair_part
+
+
 func is_valid() -> bool:
 	return (
 		not bumper_kind_id.is_empty()
@@ -52,4 +72,3 @@ func is_valid() -> bool:
 		and visual_diameter > 0.0
 		and maximum_response_speed > 0.0
 	)
-

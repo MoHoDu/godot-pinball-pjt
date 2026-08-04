@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="BumperPresentationSettings" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/bumper-system/bumper_presentation_settings.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+visual_style = 5
+fill_color = Color(0.95, 0.79, 0.3, 1)
+rim_color = Color(1, 0.93, 0.62, 1)
+accent_color = Color(0.29, 0.67, 0.65, 1)
+curse_color = Color(0.44, 0.22, 0.52, 1)
+label = "별빛 브로치"
