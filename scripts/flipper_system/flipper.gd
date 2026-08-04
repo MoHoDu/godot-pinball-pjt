@@ -342,6 +342,39 @@ func _build_scaled_collision_polygon(size_factor: float) -> PackedVector2Array:
 	return scaled_polygon
 
 
+## 저장된 원본 폴리곤과 현재 폴리곤이 같은 형상을 유지할 때 현재 배율을 구합니다.
+func _get_stored_collision_geometry_factor(
+	collision: CollisionPolygon2D
+) -> float:
+	if (
+		_source_collision_polygon.is_empty()
+		or collision.polygon.size() != _source_collision_polygon.size()
+	):
+		return NAN
+
+	var source_squared_length := 0.0
+	var source_current_dot := 0.0
+	for index in _source_collision_polygon.size():
+		var source_point := _source_collision_polygon[index]
+		source_squared_length += source_point.length_squared()
+		source_current_dot += source_point.dot(collision.polygon[index])
+
+	if source_squared_length <= MIN_SOURCE_SIZE:
+		return NAN
+
+	var geometry_factor := source_current_dot / source_squared_length
+	if not is_finite(geometry_factor) or geometry_factor <= MIN_SOURCE_SIZE:
+		return NAN
+
+	for index in _source_collision_polygon.size():
+		if not collision.polygon[index].is_equal_approx(
+			_source_collision_polygon[index] * geometry_factor
+		):
+			return NAN
+
+	return geometry_factor
+
+
 ## 스프라이트 중심과 별개로 조정된 충돌체 위치를 원본 길이 기준으로 보관합니다.
 ## 에디터에서 CollisionPolygon2D를 직접 옮긴 경우에도 새 위치를 다시 기억합니다.
 func _capture_collision_position_if_needed(
@@ -358,16 +391,38 @@ func _capture_collision_position_if_needed(
 		)
 	elif _has_source_collision_position:
 		var expected_position := _source_collision_position * current_size_factor
-		position_was_edited = not collision.position.is_equal_approx(expected_position)
+		if collision.position.is_equal_approx(expected_position):
+			return
+
+		# PackedScene 인스턴스는 루트의 flipper_length 오버라이드를 자식
+		# CollisionPolygon2D보다 먼저 복원할 수 있습니다. 현재 폴리곤이 나타내는
+		# 이전 배율과 위치가 함께 일치할 때만 복원 순서로 판단해야, 자식 위치를
+		# 직접 오버라이드한 경우도 원본 좌표로 다시 기억할 수 있습니다.
+		var restored_geometry_factor := \
+			_get_stored_collision_geometry_factor(collision)
+		if (
+			not is_nan(restored_geometry_factor)
+			and collision.position.is_equal_approx(
+				_source_collision_position * restored_geometry_factor
+			)
+		):
+			return
+		position_was_edited = true
 
 	if _has_source_collision_position and not position_was_edited:
 		return
 
 	var source_divisor := current_size_factor
-	if not _has_source_collision_position \
+	var restored_geometry_factor := \
+		_get_stored_collision_geometry_factor(collision)
+	if not is_nan(restored_geometry_factor):
+		source_divisor = restored_geometry_factor
+	elif not _has_source_collision_position \
 			and collision.scale.is_equal_approx(Vector2.ONE):
 		# 자식 노드가 export 값보다 늦게 복원되면 위치도 아직 원본 기준입니다.
 		source_divisor = 1.0
+	if not is_finite(source_divisor) or source_divisor <= MIN_SOURCE_SIZE:
+		return
 
 	_source_collision_position = collision.position / source_divisor
 	_has_source_collision_position = true

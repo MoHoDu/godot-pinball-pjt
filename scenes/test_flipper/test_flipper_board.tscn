@@ -164,12 +164,10 @@ script = ExtResource("5_controller")
 
 [node name="LeftFlipper" parent="FlipperSelector/BottomController" unique_id=1456684495 instance=ExtResource("6_left")]
 position = Vector2(-350, 72.00001)
-_source_collision_position = Vector2(2128.6719, -88.14147)
 flipper_length = 328.0
 
 [node name="RightFlipper" parent="FlipperSelector/BottomController" unique_id=1943189333 instance=ExtResource("7_right")]
 position = Vector2(350, 76.00001)
-_source_collision_position = Vector2(-2126.5242, 80.03048)
 flipper_length = 328.0
 
 [node name="TopController" type="Node2D" parent="FlipperSelector" unique_id=183453463]
@@ -179,12 +177,10 @@ script = ExtResource("5_controller")
 
 [node name="LeftFlipper" parent="FlipperSelector/TopController" unique_id=1999694581 instance=ExtResource("6_left")]
 position = Vector2(-350, 0)
-_source_collision_position = Vector2(2128.6719, -88.14147)
 flipper_length = 328.0
 
 [node name="RightFlipper" parent="FlipperSelector/TopController" unique_id=1424501983 instance=ExtResource("7_right")]
 position = Vector2(350, 0)
-_source_collision_position = Vector2(-2126.5242, 80.03048)
 flipper_length = 328.0
 
 [node name="LeftController" type="Node2D" parent="FlipperSelector" unique_id=1499529864]
@@ -194,12 +190,10 @@ script = ExtResource("5_controller")
 
 [node name="LeftFlipper" parent="FlipperSelector/LeftController" unique_id=73646635 instance=ExtResource("6_left")]
 position = Vector2(-350, 0)
-_source_collision_position = Vector2(2128.6719, -88.14147)
 flipper_length = 328.0
 
 [node name="RightFlipper" parent="FlipperSelector/LeftController" unique_id=1748286883 instance=ExtResource("7_right")]
 position = Vector2(350, 0)
-_source_collision_position = Vector2(-2126.5242, 80.03048)
 flipper_length = 328.0
 
 [node name="RightController" type="Node2D" parent="FlipperSelector" unique_id=1029836660]
@@ -209,12 +203,10 @@ script = ExtResource("5_controller")
 
 [node name="LeftFlipper" parent="FlipperSelector/RightController" unique_id=1462510913 instance=ExtResource("6_left")]
 position = Vector2(-350, 0)
-_source_collision_position = Vector2(2128.6719, -88.14147)
 flipper_length = 328.0
 
 [node name="RightFlipper" parent="FlipperSelector/RightController" unique_id=1093853158 instance=ExtResource("7_right")]
 position = Vector2(350, 0)
-_source_collision_position = Vector2(-2126.5242, 80.03048)
 flipper_length = 328.0
 
 [node name="PinballBall" parent="." unique_id=1525149773 instance=ExtResource("2_ball")]
