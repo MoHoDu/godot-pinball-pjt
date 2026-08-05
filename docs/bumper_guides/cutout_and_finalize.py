@@ -12,8 +12,8 @@
   3. 채움률을 찍는다. 가로/세로 중 하나가 100% 가 아니면 표시 지름 계산이
      그만큼 어긋나므로 눈으로 확인해야 한다.
 
-입력:  <루트>/step2_leonardo/<이름>/*.jpg
-출력:  <루트>/step2_cutout/<이름>/*.png
+입력:  <루트>/candidates/unmasked/<이름>/*.jpg
+출력:  <루트>/candidates/masked/<이름>/*.png
 
 실행:
   python docs/bumper_guides/cutout_and_finalize.py                 # 범퍼
@@ -29,8 +29,8 @@ import sys
 from PIL import Image, ImageDraw
 
 HERE = os.path.dirname(__file__)
-SRC_ROOT = os.path.join(HERE, "step2_leonardo")
-OUT_ROOT = os.path.join(HERE, "step2_cutout")
+SRC_ROOT = os.path.join(HERE, "candidates", "unmasked")
+OUT_ROOT = os.path.join(HERE, "candidates", "masked")
 
 CANVAS = 1024
 
@@ -176,8 +176,8 @@ def main() -> None:
     if "--root" in args:
         i = args.index("--root")
         root = os.path.abspath(args[i + 1])
-        src_root = os.path.join(root, "step2_leonardo")
-        out_root = os.path.join(root, "step2_cutout")
+        src_root = os.path.join(root, "candidates", "unmasked")
+        out_root = os.path.join(root, "candidates", "masked")
         del args[i : i + 2]
     targets = args
 
