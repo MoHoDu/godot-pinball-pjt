@@ -1,16 +1,46 @@
-[gd_resource type="Resource" script_class="BumperSettings" format=3 uid="uid://bos68nyaobd5j"]
+[gd_resource type="Resource" script_class="BumperSettings" load_steps=7 format=3]
 
-[ext_resource type="Script" uid="uid://dkco2v1hj7wk6" path="res://scripts/bumper-system/bumper_settings.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/bumper-system/bumper_settings.gd" id="1"]
 [ext_resource type="Resource" path="res://settings/bumpers/presentation/ClockworkCannonPresentation.tres" id="2"]
+[ext_resource type="Script" path="res://scripts/bumper-system/shot_launch_anchor.gd" id="3_anchor"]
+
+[sub_resource type="Resource" id="ShotDirection_up"]
+script = ExtResource("3_anchor")
+display_name = "위쪽"
+input_action = &"flipper_select_up"
+is_safe_default = true
+release_position = Vector2(0, -82)
+
+[sub_resource type="Resource" id="ShotDirection_left"]
+script = ExtResource("3_anchor")
+display_name = "왼쪽"
+input_action = &"flipper_select_left"
+release_position = Vector2(-82, 0)
+
+[sub_resource type="Resource" id="ShotDirection_right"]
+script = ExtResource("3_anchor")
+display_name = "오른쪽"
+input_action = &"flipper_select_right"
+release_position = Vector2(82, 0)
 
 [resource]
 script = ExtResource("1")
 bumper_kind_id = &"stage01_clockwork_cannon"
 display_name = "태엽 장난감 대포"
 bumper_type = 3
-theme_keywords = PackedStringArray()
+is_repair_part = false
+base_score = 100
+score_weight = 1.0
 max_durability = 2
+durability_damage_per_hit = 1
 respawn_delay = 6.0
+respawn_telegraph_duration = 0.4
+speed_multiplier = 1.0
+minimum_release_speed = 0.0
+maximum_response_speed = 1540.0
+selection_duration = 0.8
+launch_speed = 1300.0
+shot_launch_directions = Array[ExtResource("3_anchor")]([SubResource("ShotDirection_up"), SubResource("ShotDirection_left"), SubResource("ShotDirection_right")])
 collision_diameter = 112.0
 visual_diameter = 128.0
 respawn_safe_margin = 52.0

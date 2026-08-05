@@ -1,29 +1,10 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/bumper_system/bumper_base.tscn" id="1"]
 [ext_resource type="Resource" path="res://settings/bumpers/stage_01/ClockworkToyCannon.tres" id="2"]
 [ext_resource type="Script" path="res://scripts/bumper-system/shot_bumper.gd" id="3"]
-[ext_resource type="Script" path="res://scripts/bumper-system/shot_launch_anchor.gd" id="4"]
 
 [node name="ClockworkToyCannon" instance=ExtResource("1")]
 script = ExtResource("3")
 bumper_id = &"clockwork_toy_cannon"
 settings = ExtResource("2")
-
-[node name="LaunchAnchors" type="Node2D" parent="." index="8"]
-
-[node name="SafeUp" type="Marker2D" parent="LaunchAnchors"]
-rotation = -1.5707963
-script = ExtResource("4")
-input_action = &"flipper_select_up"
-is_safe_default = true
-
-[node name="ComboLeft" type="Marker2D" parent="LaunchAnchors"]
-rotation = 3.1415927
-script = ExtResource("4")
-input_action = &"flipper_select_left"
-
-[node name="ComboRight" type="Marker2D" parent="LaunchAnchors"]
-script = ExtResource("4")
-input_action = &"flipper_select_right"
-

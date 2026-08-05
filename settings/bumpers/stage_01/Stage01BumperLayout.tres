@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="BumperStageSettings" format=3 uid="uid://kyta8sf8rdxa"]
+[gd_resource type="Resource" script_class="BumperStageSettings" format=3 uid="uid://chsx6iwv1j6p3"]
 
 [ext_resource type="Script" uid="uid://b478txmiugopb" path="res://scripts/bumper-system/bumper_stage_settings.gd" id="1_stage"]
 [ext_resource type="Script" uid="uid://pa77c4vcvxgm" path="res://scripts/bumper-system/bumper_wave_loadout.gd" id="2_wave"]

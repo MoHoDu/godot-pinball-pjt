@@ -259,7 +259,7 @@ func _on_shot_selection_changed(
 	_bumper: ShotBumper,
 	anchor: ShotLaunchAnchor
 ) -> void:
-	_append_event("SHOT SELECT · %s" % anchor.name)
+	_append_event("SHOT SELECT · %s" % anchor.display_name)
 
 
 func _on_shot_control_ended(

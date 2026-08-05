@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="BumperSettings" format=3 uid="uid://doa5fnkw1rm7x"]
+[gd_resource type="Resource" script_class="BumperSettings" format=3 uid="uid://qi7gh48soj6e"]
 
 [ext_resource type="Script" uid="uid://dkco2v1hj7wk6" path="res://scripts/bumper-system/bumper_settings.gd" id="1"]
 [ext_resource type="Resource" path="res://settings/bumpers/presentation/ButtonPresentation.tres" id="2"]
