@@ -101,24 +101,11 @@ position = Vector2(0, 5)
 scale = Vector2(0.92, 0.92)
 texture = ExtResource("5_lkifm")
 
-[node name="GapGuides" type="Node2D" parent="." unique_id=2042777052]
-z_index = -5
+[node name="Area_Square" type="Node2D" parent="BoardBackground" unique_id=92781294]
+position = Vector2(0, -5.4347825)
+scale = Vector2(1.0869565, 1.0869565)
 
-[node name="TopGap" type="Polygon2D" parent="GapGuides" unique_id=1302898596]
-color = Color(0.65, 0.13, 0.18, 0.28)
-polygon = PackedVector2Array(-22, -630, 22, -630, 22, -606, -22, -606)
-
-[node name="BottomGap" type="Polygon2D" parent="GapGuides" unique_id=935310646]
-color = Color(0.65, 0.13, 0.18, 0.28)
-polygon = PackedVector2Array(-22, 606, 22, 606, 22, 630, -22, 630)
-
-[node name="LeftGap" type="Polygon2D" parent="GapGuides" unique_id=249252592]
-color = Color(0.65, 0.13, 0.18, 0.28)
-polygon = PackedVector2Array(-1120, -22, -1096, -22, -1096, 22, -1120, 22)
-
-[node name="RightGap" type="Polygon2D" parent="GapGuides" unique_id=715234534]
-color = Color(0.65, 0.13, 0.18, 0.28)
-polygon = PackedVector2Array(1096, -22, 1120, -22, 1120, 22, 1096, 22)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BoardBackground/Area_Square" unique_id=61779696]
 
 [node name="Bumpers" type="Node2D" parent="." unique_id=249523259]
 
