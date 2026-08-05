@@ -29,7 +29,10 @@
 | 구성 요소 | 책임 |
 |---|---|
 | `bumper.gd` | 접촉 중복 제거, 점수 신호, 내구도, 상태 전이, 안전 복구, 최종 반응 적용 |
-| `bumper_settings.gd` | 범퍼 정체성, 수리 부품 자격, 밸런스, 크기, 표현 리소스 |
+| `bumper_settings.gd` | 세 설정 리소스를 묶어 보상·저장 시스템에 제공하는 호환 계약 |
+| `bumper_object_settings.gd` | 크기, 충돌, 안전 여백, 배치 제한, 표현 리소스 |
+| `bumper_common_settings.gd` | 범퍼 정체성, 수리 부품 자격, 점수, 내구도, 복구 |
+| `bumper_type_settings.gd` | Normal, Bounce, Track, Shot 타입별 동작 설정 |
 | `bumper_instance_overrides.gd` | 보드에 배치된 특정 인스턴스의 선택적 밸런스 덮어쓰기 |
 | `bumper_response_strategy.gd` | 충돌 반응 전략의 추상 계약 |
 | `normal_response_strategy.gd` | 기본 물리 반사 방향을 유지하면서 속력 배율 적용 |
@@ -46,20 +49,24 @@
 공용 설정은 `settings/bumpers/`의 `BumperSettings` `.tres`에서 관리합니다.
 
 ```text
-BumperSettings.tres
-├─ 오브젝트 설정
+범퍼 루트 Inspector
+├─ Object Settings → BumperObjectSettings
 │  ├─ 외형·충돌 크기
 │  ├─ 안전 복구 여백·배치 제한
 │  └─ 표현 리소스
-├─ 공용 범퍼 설정
+├─ Common Bumper Settings → BumperCommonSettings
 │  ├─ ID·이름·수리 부품 자격
 │  ├─ 기획 상태
 │  └─ 점수·내구도·복구
-└─ 타입별 범퍼 설정
+└─ Type Settings → BumperTypeSettings
    ├─ Normal / Bounce 반응 수치
    ├─ Track 목표 위치
    └─ Shot 선택 시간·발사 속력·발사 방향 배열
 ```
+
+`BumperSettings`는 위 세 리소스를 묶어 보상·저장 시스템에 제공하지만 범퍼 노드
+Inspector에는 직접 표시하지 않습니다. 편집자는 반드시 범퍼 루트의 세 설정 슬롯을
+각각 펼쳐 수정합니다.
 
 Shot 발사 방향은 씬 자식 노드가 아니라 `BumperSettings.shot_launch_directions`의
 `ShotLaunchAnchor` 리소스 배열로 관리합니다. Inspector 배열에서 항목을 추가·삭제하고,
