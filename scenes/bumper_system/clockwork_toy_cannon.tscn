@@ -1,22 +1,22 @@
 [gd_scene format=3 uid="uid://sydhkxk7urne"]
 
 [ext_resource type="PackedScene" path="res://scenes/bumper_system/bumper_base.tscn" id="1"]
-[ext_resource type="Resource" path="res://settings/bumpers/stage_01/ClockworkToyCannon.tres" id="2"]
+[ext_resource type="Resource" uid="uid://c6tkb6xh48tnk" path="res://settings/bumpers/stage_01/ClockworkToyCannon.tres" id="2"]
 [ext_resource type="Script" uid="uid://3rci2j47b5aj" path="res://scripts/bumper-system/shot_bumper.gd" id="3"]
 [ext_resource type="Script" uid="uid://c2rm7omkmejhb" path="res://scripts/bumper-system/shot_response_strategy.gd" id="4_xr5a3"]
 
 [sub_resource type="Resource" id="Resource_dpt4t"]
 script = ExtResource("4_xr5a3")
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_hk207"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_xr5a3"]
 resource_local_to_scene = true
 radius = 56.0
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_ntvgm"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_dpt4t"]
 resource_local_to_scene = true
 radius = 60.0
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_f5csu"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_hk207"]
 resource_local_to_scene = true
 radius = 108.0
 
@@ -27,13 +27,13 @@ settings = ExtResource("2")
 response_strategy = SubResource("Resource_dpt4t")
 
 [node name="CollisionShape2D" parent="." index="0"]
-shape = SubResource("CircleShape2D_hk207")
+shape = SubResource("CircleShape2D_xr5a3")
 
 [node name="CollisionShape2D" parent="HitArea" index="0"]
-shape = SubResource("CircleShape2D_ntvgm")
+shape = SubResource("CircleShape2D_dpt4t")
 
 [node name="CollisionShape2D" parent="SafeRespawnArea" index="0"]
-shape = SubResource("CircleShape2D_f5csu")
+shape = SubResource("CircleShape2D_hk207")
 
 [node name="ComboHitSource" parent="." index="3"]
 source_id = &"clockwork_toy_cannon"

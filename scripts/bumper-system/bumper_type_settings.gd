@@ -72,13 +72,7 @@ func add_shot_direction() -> ShotLaunchAnchor:
 	var direction_index := shot_launch_directions.size()
 	var next_index := direction_index + 1
 	direction.display_name = "발사 방향 %d" % next_index
-	var default_actions: Array[StringName] = [
-		&"flipper_select_up",
-		&"flipper_select_right",
-		&"flipper_select_down",
-		&"flipper_select_left",
-	]
-	direction.input_action = default_actions[direction_index % default_actions.size()]
+	direction.input_action = &""
 	direction.is_safe_default = shot_launch_directions.is_empty()
 	var angle := -PI * 0.5 + TAU * float(direction_index) / 4.0
 	direction.release_position = Vector2.from_angle(angle) * 96.0

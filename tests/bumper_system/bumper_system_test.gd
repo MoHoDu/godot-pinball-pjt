@@ -311,11 +311,13 @@ func _test_shot_control_and_deferred_destruction() -> void:
 	var cannon := await _spawn(CANNON_SCENE) as ShotBumper
 	var anchors := cannon.get_launch_anchors()
 	var safe_count := 0
+	var safe_anchor: ShotLaunchAnchor
 	for anchor: ShotLaunchAnchor in anchors:
 		if anchor.is_safe_default:
 			safe_count += 1
-	_expect(anchors.size() == 3,
-		"캐논 기본 설정은 발사 방향 3개를 가져야 한다.")
+			safe_anchor = anchor
+	_expect(anchors.size() > 3,
+		"캐논은 기본 입력 키 수보다 많은 발사 방향을 설정할 수 있어야 한다.")
 	_expect(not cannon.has_node(^"LaunchAnchors"),
 		"Shot 발사 방향은 씬 자식 노드가 아닌 Settings 배열에서 관리해야 한다.")
 	_expect(safe_count == 1,
@@ -324,9 +326,10 @@ func _test_shot_control_and_deferred_destruction() -> void:
 		"캐논 방향 선택 시간은 0.8초여야 한다.")
 	_expect_float(cannon.get_launch_speed(), 1300.0,
 		"캐논 고정 발사 속력은 1300이어야 한다.")
-	_expect(anchors[0].release_position == Vector2(0.0, -82.0),
+	_expect(not safe_anchor.release_position.is_zero_approx(),
 		"캐논 안전 발사 위치는 Inspector에서 편집 가능한 좌표여야 한다.")
-	_expect(cannon.get_selected_launch_direction().is_equal_approx(Vector2.UP),
+	_expect(cannon.get_selected_launch_direction().is_equal_approx(
+			safe_anchor.get_local_launch_direction()),
 		"캐논 발사 위치 좌표가 실제 발사 방향에 적용되어야 한다.")
 	var editable_settings := cannon.settings.duplicate(true) as BumperSettings
 	var editable_directions := editable_settings.shot_launch_directions.duplicate()
@@ -337,9 +340,9 @@ func _test_shot_control_and_deferred_destruction() -> void:
 	diagonal_direction.release_position = Vector2(82.0, -82.0)
 	editable_directions.append(diagonal_direction)
 	editable_settings.shot_launch_directions = editable_directions
-	_expect(editable_settings.shot_launch_directions.size() == 3,
+	_expect(editable_settings.shot_launch_directions.size() == anchors.size(),
 		"Inspector 배열에서 Shot 방향을 삭제하고 새 방향을 추가할 수 있어야 한다.")
-	_expect(editable_settings.shot_launch_directions[2].display_name == "오른쪽 위",
+	_expect(editable_settings.shot_launch_directions[-1].display_name == "오른쪽 위",
 		"Inspector 배열에서 Shot 방향 속성을 수정할 수 있어야 한다.")
 	var direction_count_before_add := editable_settings.shot_launch_directions.size()
 	var mouse_editable_direction := editable_settings.type_settings.add_shot_direction()
@@ -349,8 +352,8 @@ func _test_shot_control_and_deferred_destruction() -> void:
 		"추가 버튼으로 만든 방향은 별도 Resource 파일을 요구하면 안 된다.")
 	_expect(mouse_editable_direction.release_position.length() > 0.0,
 		"새 방향은 2D 핸들로 즉시 편집할 수 있는 초기 위치를 가져야 한다.")
-	_expect(not mouse_editable_direction.input_action.is_empty(),
-		"새 방향에는 즉시 테스트할 수 있는 기본 입력 액션이 자동 지정되어야 한다.")
+	_expect(mouse_editable_direction.input_action.is_empty(),
+		"새 방향은 중복 입력 액션 없이 A/D 순환 선택으로 즉시 사용할 수 있어야 한다.")
 
 	var editor_settings := cannon.settings.duplicate(true) as BumperSettings
 	cannon.settings = editor_settings
@@ -366,6 +369,32 @@ func _test_shot_control_and_deferred_destruction() -> void:
 		"캐논 방향 선택 중에는 공을 포신 내부에 고정해야 한다.")
 	_expect(cannon.current_durability == 1,
 		"캐논 첫 사용 후 내구도는 1이어야 한다.")
+	var visited_anchors: Dictionary = {
+		cannon.get_selected_launch_anchor().get_instance_id(): true,
+	}
+	for _index in range(anchors.size() - 1):
+		var next_direction_event := InputEventAction.new()
+		next_direction_event.action = ShotBumper.NEXT_DIRECTION_ACTION
+		next_direction_event.pressed = true
+		cannon._unhandled_input(next_direction_event)
+		visited_anchors[
+			cannon.get_selected_launch_anchor().get_instance_id()
+		] = true
+	_expect(visited_anchors.size() == anchors.size(),
+		"Shot 방향이 네 개를 넘어도 D 입력으로 설정된 모든 방향을 순회해야 한다.")
+	var selected_before_previous := cannon.get_selected_launch_anchor()
+	var previous_direction_event := InputEventAction.new()
+	previous_direction_event.action = ShotBumper.PREVIOUS_DIRECTION_ACTION
+	previous_direction_event.pressed = true
+	cannon._unhandled_input(previous_direction_event)
+	_expect(cannon.get_selected_launch_anchor() != selected_before_previous,
+		"A 입력은 현재 방향의 이전 방향을 선택해야 한다.")
+	var default_direction_event := InputEventAction.new()
+	default_direction_event.action = ShotBumper.DEFAULT_DIRECTION_ACTION
+	default_direction_event.pressed = true
+	cannon._unhandled_input(default_direction_event)
+	_expect(cannon.get_selected_launch_anchor().is_safe_default,
+		"W 입력은 방향 개수와 관계없이 안전 기본 방향을 선택해야 한다.")
 	_expect(cannon.release_controlled_ball(),
 		"스페이스 입력과 같은 즉시 발사 경로를 제공해야 한다.")
 	_expect_float(_ball.linear_velocity.length(), 1300.0,
@@ -482,17 +511,25 @@ func _test_bumper_test_scene_contract() -> void:
 	_expect(scene.current_ball.freeze,
 		"캐논 입력 검증은 실제 Shot 제어 상태에서 실행해야 한다.")
 	var cannon_index := scene.current_index
+	var cannon_anchors := cannon.get_launch_anchors()
+	var initial_anchor := cannon.get_selected_launch_anchor()
+	var initial_anchor_index := cannon_anchors.find(initial_anchor)
 	await _send_key(KEY_A)
 	_expect(scene.current_index == cannon_index \
-			and cannon.get_selected_launch_direction().dot(Vector2.LEFT) > 0.99,
+			and cannon.get_selected_launch_anchor() \
+				== cannon_anchors[wrapi(
+					initial_anchor_index - 1, 0, cannon_anchors.size())],
 		"캐논이 공을 제어할 때 A/D는 범퍼 선택에 소비되면 안 된다.")
 	await _send_key(KEY_D)
 	_expect(scene.current_index == cannon_index \
-			and cannon.get_selected_launch_direction().dot(Vector2.RIGHT) > 0.99,
-		"캐논 제어 중 D 입력은 오른쪽 발사 앵커를 선택해야 한다.")
+			and cannon.get_selected_launch_anchor() == initial_anchor,
+		"캐논 제어 중 D 입력은 다음 발사 방향을 선택해야 한다.")
+	await _send_key(KEY_D)
+	var selected_launch_direction := cannon.get_selected_launch_direction()
 	await _send_key(KEY_SPACE)
 	_expect(not scene.current_ball.freeze \
-			and scene.current_ball.linear_velocity.dot(Vector2.RIGHT) > 0.0,
+			and scene.current_ball.linear_velocity.normalized() \
+				.dot(selected_launch_direction) > 0.99,
 		"캐논 제어 중 Space 입력은 선택 방향으로 공을 발사해야 한다.")
 
 	var saved_scenes := scene.bumper_scenes

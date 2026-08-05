@@ -70,7 +70,8 @@ Inspector에는 직접 표시하지 않습니다. 편집자는 반드시 범퍼 
 
 Shot 발사 방향은 씬 자식 노드가 아니라 `BumperSettings.shot_launch_directions`의
 `ShotLaunchAnchor` 리소스 배열로 관리합니다. Inspector 배열에서 항목을 추가·삭제하고,
-각 항목의 표시 이름, 입력 액션, 안전 기본 여부, 발사 위치를 수정하세요.
+각 항목의 표시 이름, 선택적 직접 입력 액션, 안전 기본 여부, 발사 위치를 수정하세요.
+런타임에서는 `A` / `D`로 배열의 모든 방향을 순환하므로 방향 개수에 제한이 없습니다.
 
 실제 범퍼 이미지는 `BumperObjectSettings.graphic_texture`에 지정합니다. 이미지는
 `visual_diameter × graphic_size_ratio` 안에 원본 비율을 유지해 직접 그리며, 범퍼 루트의
@@ -128,7 +129,8 @@ for settings: BumperSettings in stage_reward_table:
 | `Left` / `Right` 또는 `A` / `D` | Inspector 목록의 범퍼 선택 |
 | `Space` / `Enter` | 선택한 범퍼 위에서 공 낙하 시작 |
 | `R` | 같은 범퍼를 새 범퍼·새 공 인스턴스로 즉시 재시작 |
-| 캐논 제어 중 `W` / `A` / `D` | 발사 방향 선택 |
+| 캐논 제어 중 `A` / `D` | 설정된 모든 발사 방향을 이전 / 다음 순서로 선택 |
+| 캐논 제어 중 `W` | 안전 기본 발사 방향 선택 |
 | 캐논 제어 중 `Space` | 선택 방향으로 발사 |
 
 HUD의 `REPAIR PART` 항목에서 현재 범퍼의 보상·보유·배치 자격을 확인할 수 있습니다.
