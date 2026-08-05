@@ -212,6 +212,11 @@ func _rebuild_cards() -> void:
 	_clear_cards()
 	for offer_index in _shop.ball_offers.size():
 		var card := _make_card(_ball_card_text(offer_index), _cards.size())
+		# 공 카드에는 확정본 아트(본체+동공 합성)를 아이콘으로 함께 보여 줍니다.
+		# 원본(1024px)을 그대로 쓰면 카드 최소 크기가 폭주하므로 축소본을 씁니다.
+		card.icon = BallArtLibrary.icon_of(
+			_shop.ball_offers[offer_index].ball_id
+		)
 		_ball_row.add_child(card)
 		_cards.append(card)
 	for offer_index in _shop.part_offers.size():
@@ -323,6 +328,10 @@ func _refresh_card_states() -> void:
 
 func _clear_cards() -> void:
 	for card in _cards:
+		# queue_free만 하면 다음 프레임까지 자식으로 남아, 재구성 직후의
+		# 패널 최소 크기 계산에 유령 카드가 섞인다. 먼저 트리에서 떼어낸다.
+		if card.get_parent() != null:
+			card.get_parent().remove_child(card)
 		card.queue_free()
 	_cards.clear()
 	_selected_index = -1
