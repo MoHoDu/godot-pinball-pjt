@@ -11,6 +11,9 @@ extends WaveLifeHud
 
 func _rebuild_slots(life_slots: Array) -> void:
 	for child in _slots.get_children():
+		# queue_free만 하면 다음 프레임까지 자식으로 남아 새 슬롯 이름과
+		# 충돌하고, 한 프레임 동안 겹쳐 보인다. 먼저 트리에서 떼어낸다.
+		_slots.remove_child(child)
 		child.queue_free()
 	for index in life_slots.size():
 		var slot: Dictionary = life_slots[index]
