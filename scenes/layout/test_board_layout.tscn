@@ -54,27 +54,6 @@ position = Vector2(0, 5)
 scale = Vector2(0.92, 0.92)
 texture = ExtResource("3_a7c0b")
 
-[node name="GapGuides" type="Node2D" parent="." unique_id=655463945]
-z_index = -5
-
-[node name="TopGap" type="Polygon2D" parent="GapGuides" unique_id=1295286968]
-position = Vector2(0, -18)
-color = Color(0.65, 0.13, 0.18, 0.28)
-polygon = PackedVector2Array(-22, -630, 22, -630, 22, -606, -22, -606)
-
-[node name="BottomGap" type="Polygon2D" parent="GapGuides" unique_id=783219558]
-position = Vector2(0, -55)
-color = Color(0.65, 0.13, 0.18, 0.28)
-polygon = PackedVector2Array(-22, 606, 22, 606, 22, 630, -22, 630)
-
-[node name="LeftGap" type="Polygon2D" parent="GapGuides" unique_id=173239717]
-color = Color(0.65, 0.13, 0.18, 0.28)
-polygon = PackedVector2Array(-1120, -22, -1096, -22, -1096, 22, -1120, 22)
-
-[node name="RightGap" type="Polygon2D" parent="GapGuides" unique_id=609608203]
-color = Color(0.65, 0.13, 0.18, 0.28)
-polygon = PackedVector2Array(1096, -22, 1120, -22, 1120, 22, 1096, 22)
-
 [node name="Walls" type="Node2D" parent="." unique_id=262200944]
 
 [node name="Top" type="Node2D" parent="Walls" unique_id=216906921]
