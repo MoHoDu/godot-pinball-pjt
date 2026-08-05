@@ -130,6 +130,9 @@ func _on_shop_proceed() -> void:
 		return
 	shop_controller.close_shop()
 	_last_delay_coin = 0
+	# 이전 웨이브 점수가 남은 채 다음 웨이브를 구성하면 목표 재달성 판정으로
+	# 진입 즉시 클리어되어 버린다. 새 웨이브 점수는 0에서 시작한다.
+	combo_system.reset_wave()
 	var next_wave_index := wave_manager.current_wave_index + 1
 	if wave_manager.enter_wave(_wave_settings, next_wave_index, true):
 		_append_event("WAVE %02d 시작 · 다음 공을 선택하세요" % (next_wave_index + 1))
