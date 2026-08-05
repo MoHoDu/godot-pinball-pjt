@@ -15,6 +15,13 @@ extends WaveShopBallCoordinator
 ## 발사 전 공 선택이 확정될 때마다 발화합니다. (기획서 10-3 ball_selected)
 signal ball_selected(wave_id: int, launch_index: int, ball_id: StringName)
 
+## 실패 롤백이 끝나면 발화합니다. (기획서 10-3 stage_state_rolled_back)
+signal stage_state_rolled_back(
+	stage_id: StringName,
+	failure_wave: int,
+	snapshot_id: StringName
+)
+
 
 const DEFAULT_PART_SCENE_MAP := preload(
 	"res://settings/reward_shop/RepairPartSceneMap_Stage01.tres"
@@ -30,6 +37,9 @@ var repair_board: RepairBoardController
 var placement_controller: RepairPlacementController
 var placement_hud: RepairPlacementHud
 
+## 스테이지 입장 시점 상태입니다. 실패 시 이대로 복원합니다(10-1).
+var stage_entry_snapshot: StageEntrySnapshot
+
 ## 이번 웨이브에서 몇 번째 발사인지 셉니다. ball_selected 인자용입니다.
 var _launch_index := 0
 
@@ -40,6 +50,10 @@ func _ready() -> void:
 	_build_debug_key_guide()
 	wave_ball_flow.ball_selection_confirmed.connect(
 		_on_ball_selection_confirmed
+	)
+	# 스테이지 입장 시점을 기억해 둡니다. 코인 0·해금 없음·부품 이월분 상태.
+	stage_entry_snapshot = StageEntrySnapshot.capture(
+		&"stage01_entry", coin_wallet, stage_ball_inventory, part_inventory
 	)
 
 
@@ -214,9 +228,51 @@ func _on_repair_wave_won(_current_score: int, _target_score: int) -> void:
 	placement_controller.clear_board()
 
 
+## 실패하면 스테이지 진입 시점으로 롤백하고 일반 웨이브 1부터 재시작합니다(1장·10-1).
 func _on_repair_wave_lost(_current_score: int, _target_score: int) -> void:
 	placement_controller.finish_placement()
 	placement_controller.clear_board()
+	# 시그널 체인 안에서 enter_wave를 부르지 않도록 지연 호출합니다.
+	call_deferred(&"_rollback_to_stage_entry")
+
+
+func _rollback_to_stage_entry() -> void:
+	if wave_manager.current_state != WaveManager.State.LOST:
+		return
+	var failure_wave := wave_manager.current_wave_index
+	var snapshot := stage_entry_snapshot
+
+	# 코인·해금 공·부품을 스냅샷 전체로 복원합니다(개별 역산 없음).
+	coin_wallet.reset(snapshot.coin_balance)
+	part_inventory.restore(snapshot.part_counts)
+	var stage_v02 := stage_ball_inventory as StageBallInventoryV02
+	if stage_v02 != null:
+		stage_v02.restore_unlocked(snapshot.unlocked_ball_ids)
+	shop_controller.reset_unlocked_balls(snapshot.unlocked_ball_ids)
+	wave_ball_inventory.starting_stock = stage_ball_inventory.build_stock()
+
+	# 일반 웨이브 1부터 재시작. 점수는 0에서 시작합니다.
+	combo_system.reset_wave()
+	if wave_manager.enter_wave(_wave_settings, 0, true):
+		_append_event("실패 · 스테이지 진입 상태로 롤백 · 웨이브 01 재시작")
+	stage_state_rolled_back.emit(
+		StringName(_wave_settings.get(&"stage_id")),
+		failure_wave,
+		snapshot.snapshot_id
+	)
+
+
+## 스테이지 클리어 시 코인을 0으로 초기화합니다(10-1).
+## 기본 공 복귀는 부모가, 미사용 부품 유지는 인벤토리가 그대로 담당합니다.
+func _open_shop_after_win() -> void:
+	super()
+	var next_wave_index := wave_manager.current_wave_index + 1
+	if not _has_wave(next_wave_index):
+		coin_wallet.reset(0)
+		shop_controller.reset_unlocked_balls()
+		_append_event("스테이지 정산 · 코인 0 · 미사용 부품 %d개 이월" % [
+			part_inventory.total_count
+		])
 
 
 func _on_repair_layout_committed(
