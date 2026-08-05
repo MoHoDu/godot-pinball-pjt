@@ -349,6 +349,8 @@ func _test_shot_control_and_deferred_destruction() -> void:
 		"추가 버튼으로 만든 방향은 별도 Resource 파일을 요구하면 안 된다.")
 	_expect(mouse_editable_direction.release_position.length() > 0.0,
 		"새 방향은 2D 핸들로 즉시 편집할 수 있는 초기 위치를 가져야 한다.")
+	_expect(not mouse_editable_direction.input_action.is_empty(),
+		"새 방향에는 즉시 테스트할 수 있는 기본 입력 액션이 자동 지정되어야 한다.")
 
 	var editor_settings := cannon.settings.duplicate(true) as BumperSettings
 	cannon.settings = editor_settings

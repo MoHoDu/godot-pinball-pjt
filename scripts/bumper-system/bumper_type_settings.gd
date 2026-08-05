@@ -69,11 +69,18 @@ func _validate_property(property: Dictionary) -> void:
 
 func add_shot_direction() -> ShotLaunchAnchor:
 	var direction := ShotLaunchAnchor.new()
-	var next_index := shot_launch_directions.size() + 1
+	var direction_index := shot_launch_directions.size()
+	var next_index := direction_index + 1
 	direction.display_name = "발사 방향 %d" % next_index
-	direction.input_action = &""
+	var default_actions: Array[StringName] = [
+		&"flipper_select_up",
+		&"flipper_select_right",
+		&"flipper_select_down",
+		&"flipper_select_left",
+	]
+	direction.input_action = default_actions[direction_index % default_actions.size()]
 	direction.is_safe_default = shot_launch_directions.is_empty()
-	var angle := -PI * 0.5 + TAU * float(shot_launch_directions.size()) / 4.0
+	var angle := -PI * 0.5 + TAU * float(direction_index) / 4.0
 	direction.release_position = Vector2.from_angle(angle) * 96.0
 	var updated_directions := shot_launch_directions.duplicate()
 	updated_directions.append(direction)
