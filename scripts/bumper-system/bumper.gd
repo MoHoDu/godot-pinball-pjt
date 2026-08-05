@@ -64,7 +64,7 @@ var prediction_seconds := DEFAULT_PREDICTION_SECONDS
 	set(value):
 		show_editor_guides = value
 		queue_redraw()
-## 실제 공과 부딪히는 물리 충돌 범위를 빨간색으로 표시합니다.
+## 실제 공과 부딪히는 물리 충돌 범위를 주황색 실선으로 표시합니다.
 @export var show_collision_guide := true:
 	set(value):
 		show_collision_guide = value
@@ -74,7 +74,7 @@ var prediction_seconds := DEFAULT_PREDICTION_SECONDS
 	set(value):
 		show_hit_area_guide = value
 		queue_redraw()
-## 범퍼가 다시 생성되어도 안전한지 검사하는 범위를 파란색으로 표시합니다.
+## 범퍼가 다시 생성되어도 안전한지 검사하는 범위를 보라색 점선으로 표시합니다.
 @export var show_safe_respawn_guide := false:
 	set(value):
 		show_safe_respawn_guide = value
@@ -133,11 +133,15 @@ func _draw() -> void:
 	var visual_radius := settings.visual_diameter * 0.5
 	draw_arc(Vector2.ZERO, visual_radius, 0.0, TAU, 64, Color(0.3, 0.95, 0.95, 0.8), 2.0, true)
 	if show_collision_guide:
-		draw_arc(Vector2.ZERO, get_collision_radius(), 0.0, TAU, 64, Color(1.0, 0.3, 0.3, 0.9), 3.0, true)
+		draw_arc(Vector2.ZERO, get_collision_radius(), 0.0, TAU, 64, Color(1.0, 0.42, 0.08, 1.0), 4.0, true)
 	if show_hit_area_guide:
 		draw_arc(Vector2.ZERO, get_collision_radius() + 4.0, 0.0, TAU, 64, Color(1.0, 0.8, 0.2, 0.8), 2.0, true)
 	if show_safe_respawn_guide:
-		draw_arc(Vector2.ZERO, get_safe_respawn_radius(), 0.0, TAU, 64, Color(0.25, 0.55, 1.0, 0.65), 2.0, true)
+		_draw_dashed_circle(
+			get_safe_respawn_radius(),
+			Color(0.72, 0.35, 1.0, 0.95),
+			3.0
+		)
 	if settings.bumper_type == BumperSettings.BumperType.TRACK \
 			and not settings.track_target_offset.is_zero_approx():
 		_draw_direction_guide(
@@ -161,6 +165,14 @@ func _draw_direction_guide(from: Vector2, to: Vector2, color: Color) -> void:
 		to - direction * 14.0 - tangent * 7.0,
 	])
 	draw_colored_polygon(arrow, color)
+
+
+func _draw_dashed_circle(radius: float, color: Color, width: float) -> void:
+	const SEGMENT_COUNT := 48
+	for index in range(0, SEGMENT_COUNT, 2):
+		var from_angle := TAU * float(index) / float(SEGMENT_COUNT)
+		var to_angle := TAU * float(index + 1) / float(SEGMENT_COUNT)
+		draw_arc(Vector2.ZERO, radius, from_angle, to_angle, 3, color, width, true)
 
 
 func _physics_process(_delta: float) -> void:

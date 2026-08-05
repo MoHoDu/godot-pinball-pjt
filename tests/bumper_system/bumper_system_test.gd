@@ -71,6 +71,20 @@ func _test_stage01_settings_and_strategies() -> void:
 		"장난감 북은 Bounce 타입이어야 한다.")
 	_expect(cannon.settings.bumper_type == BumperSettings.BumperType.SHOT,
 		"태엽 장난감 대포는 Shot 타입이어야 한다.")
+	_expect(not _is_editor_property_visible(button.settings, &"track_target_offset"),
+		"Normal 범퍼 Inspector에는 Track 목표 위치가 표시되면 안 된다.")
+	_expect(not _is_editor_property_visible(button.settings, &"launch_speed"),
+		"Normal 범퍼 Inspector에는 Shot 발사 속력이 표시되면 안 된다.")
+	_expect(_is_editor_property_visible(cannon.settings, &"launch_speed"),
+		"Shot 범퍼 Inspector에는 발사 속력이 표시되어야 한다.")
+	_expect(not _is_editor_property_visible(cannon.settings, &"speed_multiplier"),
+		"Shot 범퍼 Inspector에는 사용하지 않는 일반 반응 배율이 표시되면 안 된다.")
+	var track_settings := button.settings.duplicate(true) as BumperSettings
+	track_settings.bumper_type = BumperSettings.BumperType.TRACK
+	_expect(_is_editor_property_visible(track_settings, &"track_target_offset"),
+		"Track 범퍼 Inspector에는 목표 위치가 표시되어야 한다.")
+	_expect(not _is_editor_property_visible(track_settings, &"selection_duration"),
+		"Track 범퍼 Inspector에는 Shot 선택 시간이 표시되면 안 된다.")
 
 	var context := BallImpactContext.new(
 		_ball,
@@ -514,6 +528,14 @@ func _send_key(keycode: Key) -> void:
 func _expect_float(actual: float, expected: float, message: String) -> void:
 	_expect(absf(actual - expected) <= EPSILON,
 		"%s (expected=%s, actual=%s)" % [message, expected, actual])
+
+
+func _is_editor_property_visible(resource: Resource, property_name: StringName) -> bool:
+	for property: Dictionary in resource.get_property_list():
+		if StringName(property.name) != property_name:
+			continue
+		return (int(property.usage) & PROPERTY_USAGE_EDITOR) != 0
+	return false
 
 
 func _expect(condition: bool, message: String) -> void:
