@@ -51,7 +51,7 @@ cost_text = "결과 편차와 통제 난도가 높습니다."
 
 [sub_resource type="Resource" id="Part_star_brooch"]
 script = ExtResource("3_part")
-part_id = &"star_brooch"
+part_id = &"starlight_brooch"
 display_name = "별빛 브로치"
 bundle_count = 1
 price = 11
@@ -63,7 +63,7 @@ needs_partner = true
 
 [sub_resource type="Resource" id="Part_clockwork_gear"]
 script = ExtResource("3_part")
-part_id = &"clockwork_gear"
+part_id = &"golden_gears"
 display_name = "황금 톱니바퀴"
 bundle_count = 2
 price = 12
@@ -75,7 +75,7 @@ needs_partner = false
 
 [sub_resource type="Resource" id="Part_curved_needle"]
 script = ExtResource("3_part")
-part_id = &"curved_needle"
+part_id = &"crescent_needle"
 display_name = "초승달 바늘"
 bundle_count = 2
 price = 10
@@ -87,7 +87,7 @@ needs_partner = true
 
 [sub_resource type="Resource" id="Part_bell"]
 script = ExtResource("3_part")
-part_id = &"bell"
+part_id = &"forgotten_star_bell"
 display_name = "잊혀진 별방울"
 bundle_count = 3
 price = 9

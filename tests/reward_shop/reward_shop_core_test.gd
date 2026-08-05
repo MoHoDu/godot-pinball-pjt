@@ -41,8 +41,8 @@ func _test_catalog_data() -> void:
 	for part in catalog.part_offers:
 		part_data[part.part_id] = [part.bundle_count, part.price]
 	_expect(part_data == {
-		&"star_brooch": [1, 11], &"clockwork_gear": [2, 12],
-		&"curved_needle": [2, 10], &"bell": [3, 9],
+		&"starlight_brooch": [1, 11], &"golden_gears": [2, 12],
+		&"crescent_needle": [2, 10], &"forgotten_star_bell": [3, 9],
 	}, "부품 수량·가격이 기획서 4-3과 같아야 한다. (%s)" % part_data)
 
 	_expect(
@@ -150,7 +150,7 @@ func _test_affordability_guard() -> void:
 		_find_ball(catalog, &"clockwork"), _find_ball(catalog, &"rubber"),
 	]
 	var expensive_parts: Array[RepairPartOffer] = [
-		_find_part(catalog, &"star_brooch"), _find_part(catalog, &"clockwork_gear"),
+		_find_part(catalog, &"starlight_brooch"), _find_part(catalog, &"golden_gears"),
 	]
 
 	# 지갑 18: 보정 후 살 수 있는 쌍이 반드시 생겨야 한다.
@@ -178,12 +178,15 @@ func _test_affordability_guard() -> void:
 
 	# 이미 살 수 있으면 후보를 건드리지 않는다.
 	var cheap_balls: Array[RewardBallOffer] = [_find_ball(catalog, &"lead")]
-	var cheap_parts: Array[RepairPartOffer] = [_find_part(catalog, &"bell")]
+	var cheap_parts: Array[RepairPartOffer] = [
+		_find_part(catalog, &"forgotten_star_bell")
+	]
 	RewardOfferGenerator.ensure_affordable_pair(
 		cheap_balls, cheap_parts, catalog, no_unlocked, 20
 	)
 	_expect(
-		cheap_balls[0].ball_id == &"lead" and cheap_parts[0].part_id == &"bell",
+		cheap_balls[0].ball_id == &"lead"
+			and cheap_parts[0].part_id == &"forgotten_star_bell",
 		"이미 구매 가능한 화면은 보정하지 않아야 한다."
 	)
 
