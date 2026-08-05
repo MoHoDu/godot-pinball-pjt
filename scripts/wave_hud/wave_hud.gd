@@ -3,6 +3,7 @@ extends Control
 
 
 signal settings_requested
+signal advance_stage_phase_requested
 
 
 const DESIGN_SIZE := Vector2(1920.0, 1080.0)
@@ -13,6 +14,9 @@ const DESIGN_SIZE := Vector2(1920.0, 1080.0)
 @onready var _combo_hud: WaveWorldComboHud = %WorldComboHud
 @onready var _settings_button: WaveSettingsButton = %SettingsButton
 @onready var _wave_label: Label = %WaveLabel
+@onready var _stage_phase_overlay: Control = %StagePhaseOverlay
+@onready var _stage_phase_title: Label = %StagePhaseTitle
+@onready var _stage_phase_button: Button = %StagePhaseButton
 
 var _state_source: Node
 var _snapshot: Dictionary = {}
@@ -25,6 +29,9 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_settings_button.settings_requested.connect(
 		func() -> void: settings_requested.emit()
+	)
+	_stage_phase_button.pressed.connect(
+		func() -> void: advance_stage_phase_requested.emit()
 	)
 	_update_design_transform()
 
@@ -68,12 +75,31 @@ func get_design_offset() -> Vector2:
 	return _design_offset
 
 
+func is_stage_phase_placeholder_visible() -> bool:
+	return _stage_phase_overlay.visible
+
+
+func get_stage_phase_title_text() -> String:
+	return _stage_phase_title.text
+
+
+func get_stage_phase_button() -> Button:
+	return _stage_phase_button
+
+
 func _on_snapshot_changed(snapshot: Dictionary) -> void:
 	_snapshot = snapshot.duplicate(true)
 	_life_hud.render(_snapshot)
 	_score_hud.render(_snapshot)
 	_settings_button.set_paused_state(bool(_snapshot.get(&"paused", false)))
 	_wave_label.text = "WAVE %02d" % (int(_snapshot.get(&"wave_index", 0)) + 1)
+	_stage_phase_title.text = String(_snapshot.get(&"stage_phase_title", ""))
+	_stage_phase_button.text = String(
+		_snapshot.get(&"stage_phase_button", "다음 단계")
+	)
+	_stage_phase_overlay.visible = bool(
+		_snapshot.get(&"stage_phase_placeholder_visible", false)
+	)
 	_render_world_combo()
 
 
