@@ -5,6 +5,13 @@ extends BallSelectionHud
 const DUMMY_BALL_ICON: Texture2D = preload(
 	"res://Resources/Art/balls/glass_eye_ball.png"
 )
+const SLOT_BUTTON_SCENE: PackedScene = preload(
+	"res://scenes/select-ball/select_ball_slot_button.tscn"
+)
+const COLOR_TEXT_PRIMARY := Color("f1e6cb")
+const COLOR_TEXT_SECONDARY := Color("c6bda8")
+const COLOR_TEXT_MUTED := Color("829b99")
+const COLOR_ACCENT := Color("67d8d0")
 
 
 @onready var slots_container: HBoxContainer = %SlotsContainer
@@ -150,13 +157,32 @@ func _sync_slots() -> void:
 		if button == null:
 			continue
 		var used := select_inventory.is_ball_used(definition.ball_id)
+		var selected := definition == _inventory.selected_definition
 		button.disabled = used
-		button.text = (
-			"%s\n이번 웨이브 사용됨" % definition.display_name
-			if used
-			else definition.display_name
+		button.button_pressed = selected
+		button.modulate = Color(1.0, 1.0, 1.0, 0.55 if used else 1.0)
+		(button.get_node("%BallIcon") as TextureRect).texture = DUMMY_BALL_ICON
+		(button.get_node("%FocusRing") as TextureRect).visible = selected
+		(button.get_node("%UsedSlash") as ColorRect).visible = used
+		var name_label := button.get_node("%BallName") as Label
+		name_label.text = definition.display_name
+		name_label.add_theme_color_override(
+			"font_color",
+			COLOR_TEXT_MUTED if used else COLOR_TEXT_PRIMARY
 		)
-		button.button_pressed = definition == _inventory.selected_definition
+		var status_text := button.get_node("%StatusText") as Label
+		status_text.text = (
+			"이번 웨이브 사용됨"
+			if used
+			else ("현재 선택" if selected else "사용 가능")
+		)
+		status_text.add_theme_color_override(
+			"font_color",
+			COLOR_TEXT_MUTED
+			if used
+			else (COLOR_ACCENT if selected else COLOR_TEXT_SECONDARY)
+		)
+		button.tooltip_text = "%s · %s" % [definition.display_name, status_text.text]
 
 
 func _rebuild_slots(owned_definitions: Array[BallDefinition]) -> void:
@@ -166,13 +192,9 @@ func _rebuild_slots(owned_definitions: Array[BallDefinition]) -> void:
 	_slot_buttons.clear()
 
 	for definition: BallDefinition in owned_definitions:
-		var button := Button.new()
+		var button := SLOT_BUTTON_SCENE.instantiate() as Button
 		button.name = "BallSlot_%s" % definition.ball_id
-		button.custom_minimum_size = Vector2(190.0, 104.0)
-		button.toggle_mode = true
 		button.button_group = _slot_button_group
-		button.icon = DUMMY_BALL_ICON
-		button.expand_icon = true
 		button.set_meta(&"ball_id", definition.ball_id)
 		button.pressed.connect(_on_slot_pressed.bind(definition.ball_id))
 		slots_container.add_child(button)

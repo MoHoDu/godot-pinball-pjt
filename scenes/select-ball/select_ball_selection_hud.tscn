@@ -1,7 +1,113 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/select_ball/select_ball_selection_hud.gd" id="1_script"]
 [ext_resource type="Theme" path="res://Resources/ui/wave_hud_runtime_dark/wave_hud_theme.tres" id="2_theme"]
+[ext_resource type="Texture2D" path="res://Resources/Art/ui/select_ball/overlays/selection_surface_overlay.png" id="3_overlay"]
+[ext_resource type="Texture2D" path="res://Resources/Art/ui/select_ball/effects/selection_confirm_burst.png" id="4_burst"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_modal"]
+bg_color = Color(0.082, 0.2, 0.231, 0.97)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.945, 0.902, 0.796, 1)
+corner_radius_top_left = 7
+corner_radius_top_right = 3
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 4
+shadow_color = Color(0.027, 0.11, 0.14, 0.82)
+shadow_size = 10
+shadow_offset = Vector2(8, 10)
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_info"]
+bg_color = Color(0.043, 0.153, 0.188, 0.96)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.337, 0.451, 0.435, 0.9)
+corner_radius_top_left = 3
+corner_radius_top_right = 6
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_stat"]
+bg_color = Color(0.11, 0.255, 0.29, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.337, 0.451, 0.435, 0.8)
+corner_radius_top_left = 2
+corner_radius_top_right = 5
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_confirm_area"]
+bg_color = Color(0.043, 0.153, 0.188, 0.72)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.337, 0.451, 0.435, 0.82)
+corner_radius_top_left = 5
+corner_radius_top_right = 2
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_confirm_normal"]
+bg_color = Color(1, 0.949, 0, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.027, 0.11, 0.14, 1)
+corner_radius_top_left = 7
+corner_radius_top_right = 2
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 3
+shadow_color = Color(0.027, 0.11, 0.14, 0.48)
+shadow_size = 3
+shadow_offset = Vector2(4, 5)
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_confirm_hover"]
+bg_color = Color(1, 0.976, 0.32, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.404, 0.847, 0.816, 1)
+corner_radius_top_left = 7
+corner_radius_top_right = 2
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 3
+shadow_color = Color(0.404, 0.847, 0.816, 0.3)
+shadow_size = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_confirm_pressed"]
+bg_color = Color(0.882, 0.722, 0.29, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.027, 0.11, 0.14, 1)
+corner_radius_top_left = 7
+corner_radius_top_right = 2
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_confirm_disabled"]
+bg_color = Color(0.337, 0.451, 0.435, 0.55)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.51, 0.608, 0.6, 0.65)
+corner_radius_top_left = 7
+corner_radius_top_right = 2
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 3
 
 [node name="SelectBallSelectionHud" type="Control"]
 layout_mode = 3
@@ -22,7 +128,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0.027, 0.11, 0.14, 0.58)
+color = Color(0.016, 0.086, 0.11, 0.69)
 
 [node name="Center" type="CenterContainer" parent="."]
 layout_mode = 1
@@ -33,60 +139,230 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Panel" type="PanelContainer" parent="Center"]
-custom_minimum_size = Vector2(1080, 560)
+custom_minimum_size = Vector2(1040, 520)
 layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_modal")
+
+[node name="SurfaceOverlay" type="TextureRect" parent="Center/Panel"]
+layout_mode = 2
+mouse_filter = 2
+modulate = Color(1, 1, 1, 0.28)
+texture = ExtResource("3_overlay")
+expand_mode = 1
+stretch_mode = 6
 
 [node name="Margin" type="MarginContainer" parent="Center/Panel"]
 layout_mode = 2
-theme_override_constants/margin_left = 36
-theme_override_constants/margin_top = 30
-theme_override_constants/margin_right = 36
-theme_override_constants/margin_bottom = 30
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 18
 
 [node name="VBox" type="VBoxContainer" parent="Center/Panel/Margin"]
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 8
 
-[node name="TitleLabel" type="Label" parent="Center/Panel/Margin/VBox"]
+[node name="Header" type="HBoxContainer" parent="Center/Panel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 54)
+layout_mode = 2
+alignment = 1
+
+[node name="TitleGroup" type="VBoxContainer" parent="Center/Panel/Margin/VBox/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 1
+
+[node name="EyebrowLabel" type="Label" parent="Center/Panel/Margin/VBox/Header/TitleGroup"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.404, 0.847, 0.816, 1)
+theme_override_font_sizes/font_size = 13
+text = "WAVE · BALL SELECT"
+
+[node name="TitleLabel" type="Label" parent="Center/Panel/Margin/VBox/Header/TitleGroup"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_colors/font_color = Color(0.945, 0.902, 0.796, 1)
 theme_override_font_sizes/font_size = 28
-text = "다음 공 선택"
-horizontal_alignment = 1
+text = "다음 공을 선택하세요"
+
+[node name="RuleHint" type="Label" parent="Center/Panel/Margin/VBox/Header"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.776, 0.741, 0.659, 1)
+theme_override_font_sizes/font_size = 14
+text = "첫 사용 가능 공이 자동으로 선택됩니다"
+vertical_alignment = 1
+
+[node name="Divider" type="ColorRect" parent="Center/Panel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+mouse_filter = 2
+color = Color(0.337, 0.451, 0.435, 0.9)
 
 [node name="SlotsContainer" type="HBoxContainer" parent="Center/Panel/Margin/VBox"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 220)
 layout_mode = 2
 theme_override_constants/separation = 12
 alignment = 1
 
-[node name="BallNameLabel" type="Label" parent="Center/Panel/Margin/VBox"]
+[node name="Bottom" type="HBoxContainer" parent="Center/Panel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="InfoPanel" type="PanelContainer" parent="Center/Panel/Margin/VBox/Bottom"]
+custom_minimum_size = Vector2(650, 150)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBox_info")
+
+[node name="InfoMargin" type="MarginContainer" parent="Center/Panel/Margin/VBox/Bottom/InfoPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 10
+
+[node name="InfoVBox" type="VBoxContainer" parent="Center/Panel/Margin/VBox/Bottom/InfoPanel/InfoMargin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="InfoTop" type="HBoxContainer" parent="Center/Panel/Margin/VBox/Bottom/InfoPanel/InfoMargin/InfoVBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="NameGroup" type="VBoxContainer" parent="Center/Panel/Margin/VBox/Bottom/InfoPanel/InfoMargin/InfoVBox/InfoTop"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+
+[node name="NameCaption" type="Label" parent="Center/Panel/Margin/VBox/Bottom/InfoPanel/InfoMargin/InfoVBox/InfoTop/NameGroup"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.404, 0.847, 0.816, 1)
+theme_override_font_sizes/font_size = 11
+text = "현재 선택"
+
+[node name="BallNameLabel" type="Label" parent="Center/Panel/Margin/VBox/Bottom/InfoPanel/InfoMargin/InfoVBox/InfoTop/NameGroup"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 26
-text = "공 이름"
+theme_override_colors/font_color = Color(0.945, 0.902, 0.796, 1)
+theme_override_font_sizes/font_size = 30
+text = "기본 유리눈"
 
-[node name="PhysicsRow" type="HBoxContainer" parent="Center/Panel/Margin/VBox"]
+[node name="MassPanel" type="PanelContainer" parent="Center/Panel/Margin/VBox/Bottom/InfoPanel/InfoMargin/InfoVBox/InfoTop"]
+custom_minimum_size = Vector2(130, 62)
 layout_mode = 2
-theme_override_constants/separation = 24
+theme_override_styles/panel = SubResource("StyleBox_stat")
 
-[node name="MassLabel" type="Label" parent="Center/Panel/Margin/VBox/PhysicsRow"]
+[node name="MassVBox" type="VBoxContainer" parent="Center/Panel/Margin/VBox/Bottom/InfoPanel/InfoMargin/InfoVBox/InfoTop/MassPanel"]
+layout_mode = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="MassCaption" type="Label" parent="Center/Panel/Margin/VBox/Bottom/InfoPanel/InfoMargin/InfoVBox/InfoTop/MassPanel/MassVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.51, 0.608, 0.6, 1)
+theme_override_font_sizes/font_size = 11
+text = "무게"
+horizontal_alignment = 1
+
+[node name="MassLabel" type="Label" parent="Center/Panel/Margin/VBox/Bottom/InfoPanel/InfoMargin/InfoVBox/InfoTop/MassPanel/MassVBox"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_colors/font_color = Color(0.945, 0.902, 0.796, 1)
 theme_override_font_sizes/font_size = 18
-text = "무게 -"
+text = "1.0 kg"
+horizontal_alignment = 1
 
-[node name="ElasticityLabel" type="Label" parent="Center/Panel/Margin/VBox/PhysicsRow"]
+[node name="ElasticityPanel" type="PanelContainer" parent="Center/Panel/Margin/VBox/Bottom/InfoPanel/InfoMargin/InfoVBox/InfoTop"]
+custom_minimum_size = Vector2(130, 62)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_stat")
+
+[node name="ElasticityVBox" type="VBoxContainer" parent="Center/Panel/Margin/VBox/Bottom/InfoPanel/InfoMargin/InfoVBox/InfoTop/ElasticityPanel"]
+layout_mode = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="ElasticityCaption" type="Label" parent="Center/Panel/Margin/VBox/Bottom/InfoPanel/InfoMargin/InfoVBox/InfoTop/ElasticityPanel/ElasticityVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.51, 0.608, 0.6, 1)
+theme_override_font_sizes/font_size = 11
+text = "탄성"
+horizontal_alignment = 1
+
+[node name="ElasticityLabel" type="Label" parent="Center/Panel/Margin/VBox/Bottom/InfoPanel/InfoMargin/InfoVBox/InfoTop/ElasticityPanel/ElasticityVBox"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_colors/font_color = Color(0.945, 0.902, 0.796, 1)
 theme_override_font_sizes/font_size = 18
-text = "탄성 -"
+text = "80%"
+horizontal_alignment = 1
 
-[node name="FeatureLabel" type="Label" parent="Center/Panel/Margin/VBox"]
-unique_name_in_owner = true
+[node name="FeatureGroup" type="VBoxContainer" parent="Center/Panel/Margin/VBox/Bottom/InfoPanel/InfoMargin/InfoVBox"]
 layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="FeatureCaption" type="Label" parent="Center/Panel/Margin/VBox/Bottom/InfoPanel/InfoMargin/InfoVBox/FeatureGroup"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.404, 0.847, 0.816, 1)
+theme_override_font_sizes/font_size = 11
 text = "핵심 특징"
+
+[node name="FeatureLabel" type="Label" parent="Center/Panel/Margin/VBox/Bottom/InfoPanel/InfoMargin/InfoVBox/FeatureGroup"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.945, 0.902, 0.796, 1)
+theme_override_font_sizes/font_size = 17
+text = "균형 잡힌 무게와 탄성으로 안정적인 궤적을 만듭니다."
 autowrap_mode = 2
+
+[node name="ConfirmArea" type="PanelContainer" parent="Center/Panel/Margin/VBox/Bottom"]
+custom_minimum_size = Vector2(300, 150)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_confirm_area")
+
+[node name="ConfirmMargin" type="MarginContainer" parent="Center/Panel/Margin/VBox/Bottom/ConfirmArea"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="ConfirmVBox" type="VBoxContainer" parent="Center/Panel/Margin/VBox/Bottom/ConfirmArea/ConfirmMargin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="ConfirmStateLabel" type="Label" parent="Center/Panel/Margin/VBox/Bottom/ConfirmArea/ConfirmMargin/ConfirmVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.776, 0.741, 0.659, 1)
+theme_override_font_sizes/font_size = 14
+text = "정보를 확인한 뒤 확정하세요"
+horizontal_alignment = 1
+
+[node name="ConfirmButton" type="Button" parent="Center/Panel/Margin/VBox/Bottom/ConfirmArea/ConfirmMargin/ConfirmVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(230, 52)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.027, 0.11, 0.14, 1)
+theme_override_colors/font_hover_color = Color(0.027, 0.11, 0.14, 1)
+theme_override_colors/font_pressed_color = Color(0.027, 0.11, 0.14, 1)
+theme_override_colors/font_disabled_color = Color(0.027, 0.11, 0.14, 0.55)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBox_confirm_normal")
+theme_override_styles/hover = SubResource("StyleBox_confirm_hover")
+theme_override_styles/pressed = SubResource("StyleBox_confirm_pressed")
+theme_override_styles/disabled = SubResource("StyleBox_confirm_disabled")
+text = "✓  선택 확정"
+
+[node name="ConfirmHint" type="Label" parent="Center/Panel/Margin/VBox/Bottom/ConfirmArea/ConfirmMargin/ConfirmVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.51, 0.608, 0.6, 1)
+theme_override_font_sizes/font_size = 11
+text = "SPACE · 확정 후 AIMING"
+horizontal_alignment = 1
 
 [node name="StockLabel" type="Label" parent="Center/Panel/Margin/VBox"]
 unique_name_in_owner = true
@@ -94,15 +370,30 @@ visible = false
 layout_mode = 2
 text = "수량은 표시하지 않음"
 
-[node name="ConfirmButton" type="Button" parent="Center/Panel/Margin/VBox"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 58)
-layout_mode = 2
-theme_override_font_sizes/font_size = 20
-text = "선택 확정"
-
 [node name="GuideLabel" type="Label" parent="Center/Panel/Margin/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "A/D 또는 방향키: 공 선택    Space: 선택 확정"
+theme_override_colors/font_color = Color(0.776, 0.741, 0.659, 1)
+theme_override_font_sizes/font_size = 11
+text = "A / D 또는 ← / →  공 이동     ·     실제 조준과 발사는 확정 후 기존 입력으로 진행"
 horizontal_alignment = 1
+
+[node name="ConfirmBurst" type="TextureRect" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -90.0
+offset_top = -190.0
+offset_right = 90.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("4_burst")
+expand_mode = 1
+stretch_mode = 5

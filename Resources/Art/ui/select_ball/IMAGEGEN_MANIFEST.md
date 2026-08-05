@@ -21,6 +21,19 @@
 
 공통 생성 방식은 built-in `image_gen`과 `#00ff00` 크로마 배경 제거다. 확정본은 모두 RGBA이며 네 모서리가 완전 투명하고, 가시 영역에 key-green 픽셀이 없다.
 
+## Final UI mapping
+
+| 리소스 | Pencil 설계 | Godot 런타임 |
+| --- | --- | --- |
+| `selection_slot_pedestal.png` | 사용 가능·선택·사용 완료 슬롯 공통 받침 | `select_ball_slot_button.tscn`의 슬롯 받침 |
+| `selection_focus_sigil.png` | 현재 선택 슬롯에만 표시 | 선택된 버튼의 `FocusRing` 레이어 |
+| `selection_surface_overlay.png` | 중앙 팝업 외곽 위주의 희미한 스크래치 | 선택 패널의 저강도 표면 오버레이 |
+| `selection_confirm_burst.png` | 확정 직후 닫히기 전 일시 상태 | 런타임 `ConfirmBurst` 연출을 위한 비표시 기본 레이어 |
+
+추가 장식 이미지는 제작하지 않는다. 현재 네 리소스로 슬롯 구조, 선택 상태,
+패널 재질, 확정 피드백의 역할이 모두 분리되며, 리소스를 더 추가하면 인게임
+가독성과 최소 가림 원칙에 불리하다.
+
 ### Slot pedestal
 
 - 파일: `slots/selection_slot_pedestal.png`
