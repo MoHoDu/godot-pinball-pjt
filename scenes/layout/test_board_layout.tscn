@@ -59,7 +59,7 @@ texture = ExtResource("3_a7c0b")
 [node name="Top" type="Node2D" parent="Walls" unique_id=216906921]
 
 [node name="TopRightDiagonal" type="StaticBody2D" parent="Walls/Top" unique_id=1286810749 groups=["combo_walls"]]
-position = Vector2(655, -417)
+position = Vector2(661, -431)
 rotation = 0.34877196
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/TopRightDiagonal" unique_id=965608187]
@@ -69,7 +69,7 @@ shape = SubResource("RectangleShape_diagonal")
 [node name="Visual" parent="Walls/Top/TopRightDiagonal" unique_id=1986772914 instance=ExtResource("4_78rsi")]
 
 [node name="TopLeftDiagonal" type="StaticBody2D" parent="Walls/Top" unique_id=1475565543 groups=["combo_walls"]]
-position = Vector2(-655.0001, -417)
+position = Vector2(-661.0001, -431)
 rotation = -0.348772
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/TopLeftDiagonal" unique_id=1617611803]
@@ -80,7 +80,7 @@ shape = SubResource("RectangleShape_diagonal")
 position = Vector2(6.6, 2.4)
 
 [node name="TopRigthVertical" type="StaticBody2D" parent="Walls/Top" unique_id=1784488584 groups=["combo_walls"]]
-position = Vector2(352, -680)
+position = Vector2(358, -694)
 rotation = 2.0943952
 scale = Vector2(0.28, 1.042)
 
@@ -91,7 +91,7 @@ shape = SubResource("RectangleShape_diagonal")
 [node name="Visual" parent="Walls/Top/TopRigthVertical" unique_id=1589662412 instance=ExtResource("4_78rsi")]
 
 [node name="TopLeftVertical" type="StaticBody2D" parent="Walls/Top" unique_id=981368081 groups=["combo_walls"]]
-position = Vector2(-352, -688)
+position = Vector2(-358, -702)
 rotation = -2.0943952
 scale = Vector2(0.255, 1.042)
 
@@ -103,7 +103,7 @@ shape = SubResource("RectangleShape_diagonal")
 position = Vector2(0.00025431183, -7.278369e-13)
 
 [node name="TopLeftSide" type="StaticBody2D" parent="Walls/Top" unique_id=736692433 groups=["combo_walls"]]
-position = Vector2(-1208.0001, -328.00006)
+position = Vector2(-1214.0001, -342.00006)
 rotation = 0.20943952
 scale = Vector2(0.5, 1)
 
@@ -115,7 +115,7 @@ shape = SubResource("RectangleShape_diagonal")
 position = Vector2(0.00025431183, -7.278369e-13)
 
 [node name="TopRightSide" type="StaticBody2D" parent="Walls/Top" unique_id=1680993381 groups=["combo_walls"]]
-position = Vector2(-1208, 350.99997)
+position = Vector2(-1214, 356.99997)
 rotation = 2.8797934
 scale = Vector2(0.5, 1)
 
@@ -129,7 +129,7 @@ position = Vector2(0.00025431183, -7.278369e-13)
 [node name="Bottom" type="Node2D" parent="Walls" unique_id=99337356]
 
 [node name="BottomRightDiagonal" type="StaticBody2D" parent="Walls/Bottom" unique_id=10598488 groups=["combo_walls"]]
-position = Vector2(648, 435)
+position = Vector2(654, 441)
 rotation = 2.7928207
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom/BottomRightDiagonal" unique_id=2056627273]
@@ -139,7 +139,7 @@ shape = SubResource("RectangleShape_diagonal")
 [node name="Visual" parent="Walls/Bottom/BottomRightDiagonal" unique_id=1280937662 instance=ExtResource("4_78rsi")]
 
 [node name="BottomLeftDiagonal" type="StaticBody2D" parent="Walls/Bottom" unique_id=2088105206 groups=["combo_walls"]]
-position = Vector2(-648.0001, 435)
+position = Vector2(-654.0001, 441)
 rotation = -2.7928207
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom/BottomLeftDiagonal" unique_id=1052435425]
@@ -150,7 +150,7 @@ shape = SubResource("RectangleShape_diagonal")
 position = Vector2(-6.6, 2.4)
 
 [node name="BottomRightVertical" type="StaticBody2D" parent="Walls/Bottom" unique_id=1069315617 groups=["combo_walls"]]
-position = Vector2(336, 687)
+position = Vector2(342, 693)
 rotation = 1.0471976
 scale = Vector2(0.25, 1)
 
@@ -161,7 +161,7 @@ shape = SubResource("RectangleShape_diagonal")
 [node name="Visual" parent="Walls/Bottom/BottomRightVertical" unique_id=1585598759 instance=ExtResource("4_78rsi")]
 
 [node name="BottomLeftVertical" type="StaticBody2D" parent="Walls/Bottom" unique_id=989249592 groups=["combo_walls"]]
-position = Vector2(-336, 687)
+position = Vector2(-342, 693)
 rotation = -1.0471976
 scale = Vector2(0.25, 1.042)
 
@@ -173,7 +173,7 @@ shape = SubResource("RectangleShape_diagonal")
 position = Vector2(-24.999502, 0)
 
 [node name="BottomLeftSide" type="StaticBody2D" parent="Walls/Bottom" unique_id=1340986734 groups=["combo_walls"]]
-position = Vector2(1208, -320)
+position = Vector2(1214, -334.00006)
 rotation = -0.20943952
 scale = Vector2(0.5, 1)
 
@@ -185,7 +185,7 @@ shape = SubResource("RectangleShape_diagonal")
 position = Vector2(3.326577, -7.8251457)
 
 [node name="BottomRightSide" type="StaticBody2D" parent="Walls/Bottom" unique_id=901843951 groups=["combo_walls"]]
-position = Vector2(1192, 351.00003)
+position = Vector2(1198, 357.00003)
 rotation = 3.408628
 scale = Vector2(0.5, 1)
 
@@ -199,7 +199,7 @@ position = Vector2(0.00025431183, -7.278369e-13)
 [node name="Bumpers" type="Node2D" parent="." unique_id=525693520]
 
 [node name="BumperCenter" type="StaticBody2D" parent="Bumpers" unique_id=1050007271]
-position = Vector2(0, -163)
+position = Vector2(0, -177)
 script = ExtResource("5_8rqov")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Bumpers/BumperCenter" unique_id=637540678]
@@ -211,7 +211,7 @@ shape = SubResource("CircleShape_bumper")
 shape = SubResource("CircleShape_bumper_area")
 
 [node name="BumperLeft" type="StaticBody2D" parent="Bumpers" unique_id=1034082624]
-position = Vector2(-285, 74)
+position = Vector2(-291, 80)
 script = ExtResource("5_8rqov")
 fill_color = Color(0.66, 0.25, 0.58, 1)
 rim_color = Color(1, 0.66, 0.92, 1)
@@ -225,7 +225,7 @@ shape = SubResource("CircleShape_bumper")
 shape = SubResource("CircleShape_bumper_area")
 
 [node name="BumperRight" type="StaticBody2D" parent="Bumpers" unique_id=965244053]
-position = Vector2(285, 74)
+position = Vector2(291, 80)
 script = ExtResource("5_8rqov")
 fill_color = Color(0.82, 0.48, 0.14, 1)
 rim_color = Color(1, 0.88, 0.54, 1)
@@ -242,54 +242,54 @@ shape = SubResource("CircleShape_bumper_area")
 script = ExtResource("6_ag0jx")
 
 [node name="BottomController" type="Node2D" parent="FlipperSelector" unique_id=1804315096]
-position = Vector2(0, 495)
+position = Vector2(0, 501)
 script = ExtResource("7_iisq1")
 
 [node name="LeftFlipper" parent="FlipperSelector/BottomController" unique_id=1456684495 instance=ExtResource("8_kuf0c")]
-position = Vector2(-280.99988, 98)
+position = Vector2(-286.99988, 98)
 flipper_length = 360.0
 
 [node name="RightFlipper" parent="FlipperSelector/BottomController" unique_id=1943189333 instance=ExtResource("9_pp07n")]
-position = Vector2(281, 98)
+position = Vector2(287, 98)
 flipper_length = 360.0
 
 [node name="TopController" type="Node2D" parent="FlipperSelector" unique_id=183453463]
-position = Vector2(0, -568)
+position = Vector2(0, -582)
 rotation = 3.1415927
 script = ExtResource("7_iisq1")
 
 [node name="LeftFlipper" parent="FlipperSelector/TopController" unique_id=1999694581 instance=ExtResource("8_kuf0c")]
-position = Vector2(-281, 0)
+position = Vector2(-287, 0)
 flipper_length = 360.0
 
 [node name="RightFlipper" parent="FlipperSelector/TopController" unique_id=1424501983 instance=ExtResource("9_pp07n")]
-position = Vector2(279.99988, 0)
+position = Vector2(285.99988, 0)
 flipper_length = 360.0
 
 [node name="LeftController" type="Node2D" parent="FlipperSelector" unique_id=1499529864]
-position = Vector2(-1040, 0)
+position = Vector2(-1046, 0)
 rotation = 1.5707964
 script = ExtResource("7_iisq1")
 
 [node name="LeftFlipper" parent="FlipperSelector/LeftController" unique_id=73646635 instance=ExtResource("8_kuf0c")]
-position = Vector2(-273, -24)
+position = Vector2(-287, -24)
 flipper_length = 360.0
 
 [node name="RightFlipper" parent="FlipperSelector/LeftController" unique_id=1748286883 instance=ExtResource("9_pp07n")]
-position = Vector2(281, -24)
+position = Vector2(287, -24)
 flipper_length = 360.0
 
 [node name="RightController" type="Node2D" parent="FlipperSelector" unique_id=1029836660]
-position = Vector2(992, 0)
+position = Vector2(998, 0)
 rotation = -1.5707964
 script = ExtResource("7_iisq1")
 
 [node name="LeftFlipper" parent="FlipperSelector/RightController" unique_id=1462510913 instance=ExtResource("8_kuf0c")]
-position = Vector2(-280, 24)
+position = Vector2(-286, 24)
 flipper_length = 360.0
 
 [node name="RightFlipper" parent="FlipperSelector/RightController" unique_id=1093853158 instance=ExtResource("9_pp07n")]
-position = Vector2(273, 24)
+position = Vector2(287, 24)
 flipper_length = 360.0
 
 [node name="PinballBall" parent="." unique_id=1525149773 instance=ExtResource("10_h73i5")]
@@ -298,7 +298,7 @@ physics_material_override = SubResource("PhysicsMaterial_lg2nc")
 stats = SubResource("Resource_315rq")
 
 [node name="PinballLauncher" type="Node2D" parent="." unique_id=335207335]
-position = Vector2(0, 345)
+position = Vector2(0, 351)
 rotation = -2.14717
 script = ExtResource("12_1q1gl")
 
@@ -314,18 +314,18 @@ zoom = Vector2(0.43, 0.43)
 [node name="HUD" type="CanvasLayer" parent="." unique_id=2130486477]
 
 [node name="GuideLabel" type="Label" parent="HUD" unique_id=1815472958]
-offset_left = 18.0
+offset_left = 24.0
 offset_top = 16.0
-offset_right = 610.0
+offset_right = 616.0
 offset_bottom = 92.0
 theme_override_colors/font_color = Color(0.86, 0.95, 1, 1)
 theme_override_font_sizes/font_size = 18
 text = "[사각 플리퍼 자유 테스트]"
 
 [node name="StatusLabel" type="Label" parent="HUD" unique_id=2062526515]
-offset_left = 18.0
+offset_left = 24.0
 offset_top = 13.0
-offset_right = 580.0
+offset_right = 586.0
 offset_bottom = 65.0
 theme_override_colors/font_color = Color(1, 0.83, 0.32, 1)
 theme_override_font_sizes/font_size = 16
