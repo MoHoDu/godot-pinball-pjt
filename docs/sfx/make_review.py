@@ -24,7 +24,10 @@ from pathlib import Path
 import subprocess
 
 SR = 48000
-OUT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parent
+OUT = ROOT / "ball"
+AUDITION = ROOT / "audition"
+PROMPTS = ROOT / "prompts"
 
 HITS = [f"SFX_Ball_Clockwork_Hit_{i:02d}.wav" for i in (1, 2, 3)]
 ATTACKS = [f"SFX_Ball_Common_Attack_{i:02d}.wav" for i in (1, 2, 3)]
@@ -92,11 +95,11 @@ def build_audition():
 
     buf = buf[:int(t * SR)]
     buf /= max(1.0, np.max(np.abs(buf)) / 0.95)
-    wavfile.write(str(OUT / "SFX_Clockwork_audition.wav"), SR,
+    wavfile.write(str(AUDITION / "SFX_Clockwork_audition.wav"), SR,
                   (buf * 32767).astype(np.int16))
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error",
-                    "-i", str(OUT / "SFX_Clockwork_audition.wav"),
-                    "-b:a", "192k", str(OUT / "SFX_Clockwork_audition.mp3")], check=True)
+                    "-i", str(AUDITION / "SFX_Clockwork_audition.wav"),
+                    "-b:a", "192k", str(AUDITION / "SFX_Clockwork_audition.mp3")], check=True)
     return buf, marks
 
 
@@ -142,7 +145,7 @@ def sheet():
         for s in ax2.spines.values():
             s.set_color("#39424f")
 
-    fig.savefig(OUT / "sfx_pilot_clockwork_sheet.png", dpi=110,
+    fig.savefig(PROMPTS / "sfx_pilot_clockwork_sheet.png", dpi=110,
                 facecolor=fig.get_facecolor())
     plt.close(fig)
 

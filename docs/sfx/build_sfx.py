@@ -25,10 +25,15 @@ from scipy.io import wavfile
 from pathlib import Path
 
 SR = 48000
-OUT = Path(__file__).resolve().parent
-LAYERS = OUT / "layers"
-OUT.mkdir(parents=True, exist_ok=True)
-LAYERS.mkdir(parents=True, exist_ok=True)
+
+# 대상별로 폴더를 나눈다. 한 폴더에 다 쌓으면 어느 소리가 어느 계열인지 안 보인다.
+#   ROOT/ball  wall  flipper  audition  layers/<대상>  prompts  raw
+ROOT = Path(__file__).resolve().parent
+OUT = ROOT / "ball"
+LAYERS = ROOT / "layers" / "ball"
+AUDITION = ROOT / "audition"
+for _d in (OUT, LAYERS, AUDITION):
+    _d.mkdir(parents=True, exist_ok=True)
 
 # 목표 라우드니스 (75쪽 가이드 11.1: 충돌은 패링 대비 -8~-10dB)
 PARRY_PEAK_DBFS = -1.0

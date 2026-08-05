@@ -6,3 +6,7 @@
 /docs/**/*.import
 /tmp/**/*.import
 /tests/evidence/**/*.import
+
+# Python 캐시 (SFX 재현 스크립트)
+__pycache__/
+*.pyc
