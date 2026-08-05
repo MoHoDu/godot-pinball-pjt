@@ -21,10 +21,36 @@ const PERFORMANCE_GROUP_NAMES: Array[String] = ["안정형", "중간형", "도�
 var _preview: TextureRect
 var _info_label: Label
 
+## 활성 공이 있는 동안 보이는 안내입니다(7-2 잠금 안내).
+## 선택 패널은 SELECTING에서만 보이므로 패널 밖(부모 레이어)에 둡니다.
+var _play_hint_label: Label
+
 
 func _ready() -> void:
 	super()
 	_build_preview()
+	call_deferred(&"_attach_play_hint")
+
+
+func _attach_play_hint() -> void:
+	var hud_parent := get_parent()
+	if hud_parent == null:
+		return
+	_play_hint_label = Label.new()
+	_play_hint_label.name = "_BallChangeHintLabel"
+	_play_hint_label.position = Vector2(24.0, 24.0)
+	_play_hint_label.add_theme_font_size_override(&"font_size", 18)
+	_play_hint_label.add_theme_color_override(
+		&"font_color", Color(0.70, 0.76, 0.78)
+	)
+	_play_hint_label.add_theme_color_override(
+		&"font_outline_color", Color(0.05, 0.06, 0.08)
+	)
+	_play_hint_label.add_theme_constant_override(&"outline_size", 5)
+	_play_hint_label.text = "공 진행 중 · 다음 발사에서 공 변경 가능"
+	_play_hint_label.visible = false
+	hud_parent.add_child(_play_hint_label)
+	_refresh_play_hint()
 
 
 ## 패널 오른쪽 옆에 미리보기 이미지를 붙입니다. 씬 파일은 건드리지 않습니다.
@@ -58,10 +84,21 @@ func _build_preview() -> void:
 func _refresh() -> void:
 	super()
 	_refresh_preview()
+	_refresh_play_hint()
 	# v0.2 모델: 공 종류는 소모되지 않으므로(7-1) 종류별 개수 대신
 	# 생명 풀의 남은 발사 횟수를 보여 줍니다.
 	if visible and _inventory is WaveBallInventoryV02:
 		stock_label.text = "남은 발사 %d회" % _inventory.total_remaining
+
+
+## 활성 공이 있는 동안 "다음 발사에서 변경 가능"을 보여 줍니다(7-2).
+func _refresh_play_hint() -> void:
+	if _play_hint_label == null:
+		return
+	_play_hint_label.visible = (
+		_flow != null
+		and _flow.current_state == WaveBallFlowController.State.IN_PLAY
+	)
 
 
 func _refresh_preview() -> void:
