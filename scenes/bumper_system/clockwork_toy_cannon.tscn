@@ -17,13 +17,15 @@ rotation = -1.5707963
 script = ExtResource("4")
 input_action = &"flipper_select_up"
 is_safe_default = true
+release_position = Vector2(0, -82)
 
 [node name="ComboLeft" type="Marker2D" parent="LaunchAnchors"]
 rotation = 3.1415927
 script = ExtResource("4")
 input_action = &"flipper_select_left"
+release_position = Vector2(-82, 0)
 
 [node name="ComboRight" type="Marker2D" parent="LaunchAnchors"]
 script = ExtResource("4")
 input_action = &"flipper_select_right"
-
+release_position = Vector2(82, 0)

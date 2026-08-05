@@ -20,6 +20,23 @@ var _destroy_after_release := false
 var _is_releasing := false
 
 
+func _draw() -> void:
+	super()
+	if not Engine.is_editor_hint() or not show_editor_guides:
+		return
+	for anchor: ShotLaunchAnchor in get_launch_anchors():
+		var target := anchor.position
+		if target.is_zero_approx():
+			target = anchor.get_local_launch_direction() \
+				* (get_collision_radius() + 26.0)
+		var color := (
+			Color(0.3, 1.0, 0.55, 0.95)
+			if anchor.is_safe_default
+			else Color(0.5, 0.95, 0.8, 0.85)
+		)
+		_draw_direction_guide(Vector2.ZERO, target, color)
+
+
 func _ready() -> void:
 	super()
 	if response_strategy == null or not response_strategy is ShotResponseStrategy:
@@ -91,7 +108,7 @@ func get_selected_launch_direction() -> Vector2:
 	if not is_instance_valid(_selected_anchor):
 		return Vector2.UP.rotated(global_rotation)
 	return (global_transform.basis_xform(
-		Vector2.RIGHT.rotated(_selected_anchor.rotation)
+		_selected_anchor.get_local_launch_direction()
 	)).normalized()
 
 
@@ -119,8 +136,14 @@ func release_controlled_ball() -> bool:
 
 	var direction := get_selected_launch_direction()
 	var ball_radius := _get_ball_collision_radius(_controlled_ball)
-	_controlled_ball.global_position = global_position \
-		+ direction * (get_collision_radius() + ball_radius + 4.0)
+	var minimum_release_distance := get_collision_radius() + ball_radius + 4.0
+	var local_release_position := _selected_anchor.get_local_release_position(
+		minimum_release_distance
+	)
+	if local_release_position.length() < minimum_release_distance:
+		local_release_position = local_release_position.normalized() \
+			* minimum_release_distance
+	_controlled_ball.global_position = global_transform * local_release_position
 	_controlled_ball.freeze = false
 	_controlled_ball.sleeping = false
 	_controlled_ball.linear_velocity = Vector2.ZERO

@@ -276,6 +276,17 @@ func _test_shot_control_and_deferred_destruction() -> void:
 		"캐논 방향 선택 시간은 0.8초여야 한다.")
 	_expect_float(cannon.get_launch_speed(), 1300.0,
 		"캐논 고정 발사 속력은 1300이어야 한다.")
+	_expect(anchors[0].release_position == Vector2(0.0, -82.0),
+		"캐논 안전 발사 위치는 Inspector에서 편집 가능한 좌표여야 한다.")
+	_expect(cannon.get_selected_launch_direction().is_equal_approx(Vector2.UP),
+		"캐논 발사 위치 좌표가 실제 발사 방향에 적용되어야 한다.")
+
+	var editor_settings := cannon.settings.duplicate(true) as BumperSettings
+	cannon.settings = editor_settings
+	editor_settings.collision_diameter = 140.0
+	var cannon_shape := cannon.get_node(^"CollisionShape2D") as CollisionShape2D
+	_expect_float((cannon_shape.shape as CircleShape2D).radius, 70.0,
+		"Inspector 크기 변경은 물리 충돌 범위에 즉시 반영되어야 한다.")
 
 	_expect(cannon.register_valid_hit(_ball, 301),
 		"캐논 첫 접촉은 유효 타격이어야 한다.")
