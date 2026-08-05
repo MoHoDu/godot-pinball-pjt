@@ -23,9 +23,21 @@ const PART_ROW_LABEL := "수리 부품 — 다음 웨이브의 보드 배치"
 const COLOR_BACKGROUND := Color(0.07, 0.08, 0.10, 0.92)
 const COLOR_CARD := Color(0.13, 0.15, 0.19)
 const COLOR_CARD_SELECTED := Color(0.19, 0.23, 0.29)
+## 같은 행 구매 완료로 잠긴 카드는 더 어둡게 눕힙니다(5-4).
+const COLOR_CARD_LOCKED := Color(0.09, 0.10, 0.13)
 const COLOR_ACCENT := Color(0.35, 0.86, 0.80)
 const COLOR_GOLD := Color(0.90, 0.72, 0.25)
 const COLOR_DIM := Color(0.55, 0.58, 0.62)
+
+
+## 카드의 표시 상태입니다. (기획서 5-4)
+enum CardState {
+	AVAILABLE,      ## 구매 가능
+	SELECTED,       ## 선택 중 — 확인 단계
+	PURCHASED,      ## 이 카드를 구매 완료
+	ROW_LOCKED,     ## 같은 행에서 다른 카드를 구매해 잠김
+	INSUFFICIENT,   ## 코인 부족 — 설명은 읽을 수 있음
+}
 
 
 var _shop: RewardShopController
@@ -40,9 +52,15 @@ var _part_row: HBoxContainer
 var _proceed_button: Button
 var _cards: Array[Button] = []
 
+var _detail_label: Label
+
 var _selected_index := -1
 var _wave_result_text := ""
 var _earned_text := ""
+
+## 이번 보상 화면에서 구매한 카드 id입니다. 카드 상태 표시에 씁니다(5-4).
+var _purchased_ball_id: StringName = &""
+var _purchased_part_id: StringName = &""
 
 
 func _ready() -> void:
@@ -154,6 +172,13 @@ func _build_layout() -> void:
 	_part_row.add_theme_constant_override(&"separation", 6)
 	column.add_child(_part_row)
 
+	# 선택 중 카드의 상세와 구매 확인 안내를 보여 주는 영역입니다(5-4, 6-3).
+	_detail_label = Label.new()
+	_detail_label.add_theme_font_size_override(&"font_size", 11)
+	_detail_label.add_theme_color_override(&"font_color", COLOR_ACCENT)
+	_detail_label.custom_minimum_size = Vector2(0.0, 18.0)
+	column.add_child(_detail_label)
+
 	_proceed_button = Button.new()
 	_proceed_button.text = "다음 단계 (구매 없이 진행 가능)"
 	_proceed_button.add_theme_font_size_override(&"font_size", 12)
@@ -171,6 +196,8 @@ func _make_row_label(text: String) -> Label:
 
 func _on_shop_opened(_wave_id: int) -> void:
 	_selected_index = -1
+	_purchased_ball_id = &""
+	_purchased_part_id = &""
 	_rebuild_cards()
 	_refresh_header()
 	visible = true
@@ -186,12 +213,16 @@ func _on_shop_closed(_wave_id: int) -> void:
 
 
 func _on_card_purchased(
-	_category: StringName,
-	_item_id: StringName,
+	category: StringName,
+	item_id: StringName,
 	_price: int,
 	_bundle_count: int,
 	_wallet_after: int
 ) -> void:
+	if category == RewardShopController.CATEGORY_BALL:
+		_purchased_ball_id = item_id
+	else:
+		_purchased_part_id = item_id
 	_rebuild_cards()
 	_refresh_header()
 	call_deferred(&"_center_panel")
@@ -296,16 +327,12 @@ func _refresh_card_states() -> void:
 	var ball_count := _shop.ball_offers.size()
 	for card_index in _cards.size():
 		var card := _cards[card_index]
-		var purchasable := false
-		if card_index < ball_count:
-			purchasable = _shop.can_buy_ball(card_index)
-		else:
-			purchasable = _shop.can_buy_part(card_index - ball_count)
+		var state := _card_state_of(card_index)
 		# 코인 부족·행 잠금 카드도 설명은 읽을 수 있게 남깁니다(5-4).
-		card.disabled = not purchasable
+		card.disabled = state in [
+			CardState.PURCHASED, CardState.ROW_LOCKED, CardState.INSUFFICIENT,
+		]
 		var style := StyleBoxFlat.new()
-		style.bg_color = COLOR_CARD_SELECTED \
-			if card_index == _selected_index else COLOR_CARD
 		style.corner_radius_top_left = 8
 		style.corner_radius_top_right = 8
 		style.corner_radius_bottom_left = 8
@@ -314,16 +341,97 @@ func _refresh_card_states() -> void:
 		style.content_margin_right = 6.0
 		style.content_margin_top = 5.0
 		style.content_margin_bottom = 5.0
-		if card_index == _selected_index:
-			style.border_color = COLOR_ACCENT
-			style.set_border_width_all(2)
+		match state:
+			CardState.SELECTED:
+				style.bg_color = COLOR_CARD_SELECTED
+				style.border_color = COLOR_ACCENT
+				style.set_border_width_all(2)
+			CardState.PURCHASED:
+				style.bg_color = COLOR_CARD
+				style.border_color = COLOR_GOLD
+				style.set_border_width_all(2)
+			CardState.ROW_LOCKED:
+				style.bg_color = COLOR_CARD_LOCKED
+			_:
+				# 구매 가능·코인 부족 모두 기본 명도로 설명을 읽게 둡니다.
+				style.bg_color = COLOR_CARD
 		card.add_theme_stylebox_override(&"normal", style)
 		card.add_theme_stylebox_override(&"hover", style)
 		card.add_theme_stylebox_override(&"pressed", style)
 		card.add_theme_stylebox_override(&"disabled", style)
 		card.add_theme_color_override(
-			&"font_disabled_color", COLOR_DIM
+			&"font_disabled_color",
+			COLOR_GOLD if state == CardState.PURCHASED else COLOR_DIM
 		)
+	_refresh_detail_label()
+
+
+## 카드 하나의 표시 상태를 판정합니다(5-4).
+func _card_state_of(card_index: int) -> CardState:
+	var ball_count := _shop.ball_offers.size()
+	var is_ball := card_index < ball_count
+	if is_ball:
+		var ball_offer := _shop.ball_offers[card_index]
+		if ball_offer.ball_id == _purchased_ball_id:
+			return CardState.PURCHASED
+		if _shop.ball_purchase_used:
+			return CardState.ROW_LOCKED
+		if _shop.unlocked_ball_ids.has(ball_offer.ball_id):
+			return CardState.ROW_LOCKED
+		if not _shop.can_buy_ball(card_index):
+			return CardState.INSUFFICIENT
+	else:
+		var part_offer := _shop.part_offers[card_index - ball_count]
+		if part_offer.part_id == _purchased_part_id:
+			return CardState.PURCHASED
+		if _shop.part_purchase_used:
+			return CardState.ROW_LOCKED
+		if not _shop.can_buy_part(card_index - ball_count):
+			return CardState.INSUFFICIENT
+	if card_index == _selected_index:
+		return CardState.SELECTED
+	return CardState.AVAILABLE
+
+
+## 선택 중 카드의 상세와 다음 행동 안내를 갱신합니다(5-4 확인 단계, 6-3).
+func _refresh_detail_label() -> void:
+	if _detail_label == null:
+		return
+	if _selected_index < 0 or _selected_index >= _cards.size():
+		_detail_label.text = "카드를 선택하면 상세가 표시됩니다 · B: 다음 단계"
+		_detail_label.add_theme_color_override(&"font_color", COLOR_DIM)
+		return
+	var ball_count := _shop.ball_offers.size()
+	var display_name := ""
+	var price := 0
+	if _selected_index < ball_count:
+		var ball_offer := _shop.ball_offers[_selected_index]
+		display_name = ball_offer.display_name
+		price = ball_offer.price
+	else:
+		var part_offer := _shop.part_offers[_selected_index - ball_count]
+		display_name = part_offer.display_name
+		price = part_offer.price
+	var wallet_balance := _wallet.balance if _wallet != null else 0
+	match _card_state_of(_selected_index):
+		CardState.SELECTED, CardState.AVAILABLE:
+			_detail_label.text = "%s · %d코인 — 한 번 더 누르면 구매 확정" % [
+				display_name, price,
+			]
+			_detail_label.add_theme_color_override(&"font_color", COLOR_ACCENT)
+		CardState.PURCHASED:
+			_detail_label.text = "%s — 구매 완료" % display_name
+			_detail_label.add_theme_color_override(&"font_color", COLOR_GOLD)
+		CardState.ROW_LOCKED:
+			_detail_label.text = (
+				"%s — 이 줄은 이번 보상에서 이미 구매했습니다" % display_name
+			)
+			_detail_label.add_theme_color_override(&"font_color", COLOR_DIM)
+		CardState.INSUFFICIENT:
+			_detail_label.text = "%s — 코인 부족 (가격 %d · 보유 %d)" % [
+				display_name, price, wallet_balance,
+			]
+			_detail_label.add_theme_color_override(&"font_color", COLOR_DIM)
 
 
 func _clear_cards() -> void:
