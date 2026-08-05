@@ -1,0 +1,11 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/button_bumper.tscn" id="1_base"]
+[ext_resource type="Script" path="res://scripts/bumper-system/vfx/bumper_hit_feedback.gd" id="2_feedback"]
+[ext_resource type="Resource" path="res://settings/bumpers/vfx/ButtonHitVfx.tres" id="3_rules"]
+
+[node name="ButtonBumper" instance=ExtResource("1_base")]
+
+[node name="_HitFeedback" type="Node2D" parent="."]
+script = ExtResource("2_feedback")
+rules = ExtResource("3_rules")
