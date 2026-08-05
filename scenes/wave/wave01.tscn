@@ -31,6 +31,7 @@
 [ext_resource type="PackedScene" path="res://scenes/bumper_system/toy_drum_bumper.tscn" id="34_drum_bumper"]
 [ext_resource type="PackedScene" path="res://scenes/bumper_system/clockwork_toy_cannon.tscn" id="35_cannon_bumper"]
 [ext_resource type="Script" uid="uid://c2rm7omkmejhb" path="res://scripts/bumper-system/shot_response_strategy.gd" id="36_shot_strategy"]
+[ext_resource type="PackedScene" path="res://scenes/wave_hud/bumper_roster_hud.tscn" id="37_roster_hud"]
 
 [sub_resource type="Resource" id="StageSettings_wave"]
 script = ExtResource("2_bin77")
@@ -215,6 +216,9 @@ shape = SubResource("RectangleShape_drain_vertical")
 [node name="BallSelectionHud" parent="HUD" unique_id=1865861035 instance=ExtResource("29_acmd4")]
 
 [node name="WaveHud" parent="HUD" unique_id=205794630 instance=ExtResource("30_ljfd2")]
+
+[node name="BumperRosterHud" parent="HUD" instance=ExtResource("37_roster_hud")]
+wave_label = "WAVE 01 (기본 보드)"
 
 [node name="Walls" type="Node2D" parent="." unique_id=1054457750]
 
