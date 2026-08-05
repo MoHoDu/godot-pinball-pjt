@@ -41,6 +41,8 @@ extends Resource
 		shot_launch_directions = value
 		_connect_shot_directions()
 		emit_changed()
+## 별도 Resource 파일을 만들지 않고 새 발사 방향을 배열에 추가합니다. 추가 후 2D 화면의 핸들을 마우스로 드래그하세요.
+@export_tool_button("발사 방향 추가", "Add") var add_shot_direction_button := add_shot_direction
 ## Track 범퍼가 현재 위치를 기준으로 이동할 목표 위치입니다.
 @export var track_target_offset := Vector2.ZERO:
 	set(value):
@@ -56,12 +58,27 @@ func _validate_property(property: Dictionary) -> void:
 			hide = bumper_type not in [0, 1]
 		&"minimum_release_speed":
 			hide = bumper_type != 1
-		&"selection_duration", &"launch_speed", &"shot_launch_directions":
+		&"selection_duration", &"launch_speed", &"shot_launch_directions", \
+				&"add_shot_direction_button":
 			hide = bumper_type != 3
 		&"track_target_offset":
 			hide = bumper_type != 2
 	if hide:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
+
+
+func add_shot_direction() -> ShotLaunchAnchor:
+	var direction := ShotLaunchAnchor.new()
+	var next_index := shot_launch_directions.size() + 1
+	direction.display_name = "발사 방향 %d" % next_index
+	direction.input_action = &""
+	direction.is_safe_default = shot_launch_directions.is_empty()
+	var angle := -PI * 0.5 + TAU * float(shot_launch_directions.size()) / 4.0
+	direction.release_position = Vector2.from_angle(angle) * 96.0
+	var updated_directions := shot_launch_directions.duplicate()
+	updated_directions.append(direction)
+	shot_launch_directions = updated_directions
+	return direction
 
 
 func _connect_shot_directions() -> void:

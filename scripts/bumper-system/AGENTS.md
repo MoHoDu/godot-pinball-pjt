@@ -77,6 +77,11 @@ Shot 발사 방향은 씬 자식 노드가 아니라 `BumperSettings.shot_launch
 `scale`과 물리 충돌 Shape는 변경하지 않습니다. Texture가 비어 있을 때만 기존 더미
 도형을 표시합니다.
 
+Shot 방향을 추가할 때는 `Type Settings`의 `발사 방향 추가` 버튼을 사용합니다. 별도
+리소스 파일을 만들 필요가 없습니다. Shot 범퍼 루트가 선택된 상태에서 2D 화면의 원형
+핸들을 드래그하면 `release_position`과 발사 각도가 함께 갱신됩니다. 초록색 핸들은 안전
+기본 방향이고 하늘색 핸들은 일반 방향입니다.
+
 특정 씬 인스턴스만 조정할 때는 `BumperInstanceOverrides`를 사용합니다. 음수 값은 공용 `BumperSettings` 값을 사용한다는 뜻입니다.
 
 ## 보상 시스템 연동 계약

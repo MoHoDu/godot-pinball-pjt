@@ -89,6 +89,8 @@ func _test_stage01_settings_and_strategies() -> void:
 		"Normal 범퍼 Inspector에는 Shot 발사 속력이 표시되면 안 된다.")
 	_expect(_is_editor_property_visible(cannon.type_settings, &"launch_speed"),
 		"Shot 범퍼 Inspector에는 발사 속력이 표시되어야 한다.")
+	_expect(_is_editor_property_visible(cannon.type_settings, &"add_shot_direction_button"),
+		"Shot 범퍼 Inspector에는 파일 생성 없는 발사 방향 추가 버튼이 보여야 한다.")
 	_expect(not _is_editor_property_visible(cannon.type_settings, &"speed_multiplier"),
 		"Shot 범퍼 Inspector에는 사용하지 않는 일반 반응 배율이 표시되면 안 된다.")
 	var track_settings := button.settings.duplicate(true) as BumperSettings
@@ -339,6 +341,14 @@ func _test_shot_control_and_deferred_destruction() -> void:
 		"Inspector 배열에서 Shot 방향을 삭제하고 새 방향을 추가할 수 있어야 한다.")
 	_expect(editable_settings.shot_launch_directions[2].display_name == "오른쪽 위",
 		"Inspector 배열에서 Shot 방향 속성을 수정할 수 있어야 한다.")
+	var direction_count_before_add := editable_settings.shot_launch_directions.size()
+	var mouse_editable_direction := editable_settings.type_settings.add_shot_direction()
+	_expect(editable_settings.shot_launch_directions.size() == direction_count_before_add + 1,
+		"발사 방향 추가 버튼은 Shot 방향을 즉시 하나 추가해야 한다.")
+	_expect(mouse_editable_direction.resource_path.is_empty(),
+		"추가 버튼으로 만든 방향은 별도 Resource 파일을 요구하면 안 된다.")
+	_expect(mouse_editable_direction.release_position.length() > 0.0,
+		"새 방향은 2D 핸들로 즉시 편집할 수 있는 초기 위치를 가져야 한다.")
 
 	var editor_settings := cannon.settings.duplicate(true) as BumperSettings
 	cannon.settings = editor_settings
