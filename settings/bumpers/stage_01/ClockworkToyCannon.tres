@@ -1,6 +1,6 @@
-[gd_resource type="Resource" script_class="BumperSettings" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="BumperSettings" format=3 uid="uid://bos68nyaobd5j"]
 
-[ext_resource type="Script" path="res://scripts/bumper-system/bumper_settings.gd" id="1"]
+[ext_resource type="Script" uid="uid://dkco2v1hj7wk6" path="res://scripts/bumper-system/bumper_settings.gd" id="1"]
 [ext_resource type="Resource" path="res://settings/bumpers/presentation/ClockworkCannonPresentation.tres" id="2"]
 
 [resource]
@@ -8,18 +8,9 @@ script = ExtResource("1")
 bumper_kind_id = &"stage01_clockwork_cannon"
 display_name = "태엽 장난감 대포"
 bumper_type = 3
-is_repair_part = false
-base_score = 100
-score_weight = 1.0
+theme_keywords = PackedStringArray()
 max_durability = 2
-durability_damage_per_hit = 1
 respawn_delay = 6.0
-respawn_telegraph_duration = 0.4
-speed_multiplier = 1.0
-minimum_release_speed = 0.0
-maximum_response_speed = 1540.0
-selection_duration = 0.8
-launch_speed = 1300.0
 collision_diameter = 112.0
 visual_diameter = 128.0
 respawn_safe_margin = 52.0

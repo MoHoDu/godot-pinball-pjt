@@ -24,6 +24,9 @@ radius = 64.0
 resource_local_to_scene = true
 radius = 68.0
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_b4bke"]
+radius = 88.64536
+
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_lg2nc"]
 resource_local_to_scene = true
 bounce = 0.8
@@ -196,46 +199,161 @@ shape = SubResource("RectangleShape_diagonal")
 [node name="Visual" parent="Walls/Bottom/BottomRightSide" unique_id=1883645644 instance=ExtResource("4_78rsi")]
 position = Vector2(0.00025431183, -7.278369e-13)
 
-[node name="Bumpers" type="Node2D" parent="." unique_id=525693520]
+[node name="Bumpers (Test)" type="Node2D" parent="." unique_id=525693520]
 
-[node name="BumperCenter" type="StaticBody2D" parent="Bumpers" unique_id=1050007271]
-position = Vector2(0, -177)
+[node name="Socket Position" type="Node2D" parent="Bumpers (Test)" unique_id=1070897185]
+
+[node name="Bumper1" type="StaticBody2D" parent="Bumpers (Test)/Socket Position" unique_id=1050007271]
+position = Vector2(-543.99994, -224)
+scale = Vector2(0.99999994, 0.99999994)
 script = ExtResource("5_8rqov")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Bumpers/BumperCenter" unique_id=637540678]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bumpers (Test)/Socket Position/Bumper1" unique_id=637540678]
 shape = SubResource("CircleShape_bumper")
 
-[node name="SpeedDetectionArea" type="Area2D" parent="Bumpers/BumperCenter" unique_id=1641841581]
+[node name="SpeedDetectionArea" type="Area2D" parent="Bumpers (Test)/Socket Position/Bumper1" unique_id=1641841581]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Bumpers/BumperCenter/SpeedDetectionArea" unique_id=342771053]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bumpers (Test)/Socket Position/Bumper1/SpeedDetectionArea" unique_id=342771053]
 shape = SubResource("CircleShape_bumper_area")
 
-[node name="BumperLeft" type="StaticBody2D" parent="Bumpers" unique_id=1034082624]
-position = Vector2(-291, 80)
+[node name="Socket2" type="CollisionShape2D" parent="Bumpers (Test)/Socket Position" unique_id=740469262]
+position = Vector2(-408, 287.99997)
+scale = Vector2(0.7, 0.7)
+shape = SubResource("CircleShape2D_b4bke")
+
+[node name="Bumper2" type="StaticBody2D" parent="Bumpers (Test)/Socket Position/Socket2" unique_id=1034082624]
+position = Vector2(0.0001001358, 9.536743e-07)
+scale = Vector2(1.4285713, 1.4285713)
 script = ExtResource("5_8rqov")
 fill_color = Color(0.66, 0.25, 0.58, 1)
 rim_color = Color(1, 0.66, 0.92, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Bumpers/BumperLeft" unique_id=1416908033]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bumpers (Test)/Socket Position/Socket2/Bumper2" unique_id=1416908033]
 shape = SubResource("CircleShape_bumper")
 
-[node name="SpeedDetectionArea" type="Area2D" parent="Bumpers/BumperLeft" unique_id=746818323]
+[node name="SpeedDetectionArea" type="Area2D" parent="Bumpers (Test)/Socket Position/Socket2/Bumper2" unique_id=746818323]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Bumpers/BumperLeft/SpeedDetectionArea" unique_id=1122045982]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bumpers (Test)/Socket Position/Socket2/Bumper2/SpeedDetectionArea" unique_id=1122045982]
 shape = SubResource("CircleShape_bumper_area")
 
-[node name="BumperRight" type="StaticBody2D" parent="Bumpers" unique_id=965244053]
-position = Vector2(291, 80)
+[node name="Socket3" type="CollisionShape2D" parent="Bumpers (Test)/Socket Position" unique_id=1579903911]
+position = Vector2(544, -160)
+scale = Vector2(0.7, 0.7)
+shape = SubResource("CircleShape2D_b4bke")
+
+[node name="Bumper3" type="StaticBody2D" parent="Bumpers (Test)/Socket Position/Socket3" unique_id=965244053]
+position = Vector2(0, -9.536743e-07)
+scale = Vector2(1.4285713, 1.4285713)
 script = ExtResource("5_8rqov")
 fill_color = Color(0.82, 0.48, 0.14, 1)
 rim_color = Color(1, 0.88, 0.54, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Bumpers/BumperRight" unique_id=1571238968]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bumpers (Test)/Socket Position/Socket3/Bumper3" unique_id=1571238968]
 shape = SubResource("CircleShape_bumper")
 
-[node name="SpeedDetectionArea" type="Area2D" parent="Bumpers/BumperRight" unique_id=344627012]
+[node name="SpeedDetectionArea" type="Area2D" parent="Bumpers (Test)/Socket Position/Socket3/Bumper3" unique_id=344627012]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Bumpers/BumperRight/SpeedDetectionArea" unique_id=143861581]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bumpers (Test)/Socket Position/Socket3/Bumper3/SpeedDetectionArea" unique_id=143861581]
+shape = SubResource("CircleShape_bumper_area")
+
+[node name="Socket4" type="CollisionShape2D" parent="Bumpers (Test)/Socket Position" unique_id=1256331794]
+position = Vector2(544, 160)
+scale = Vector2(0.7, 0.7)
+shape = SubResource("CircleShape2D_b4bke")
+
+[node name="Bumper4" type="StaticBody2D" parent="Bumpers (Test)/Socket Position/Socket4" unique_id=323067977]
+position = Vector2(0, -3.0517578e-05)
+scale = Vector2(1.4285712, 1.4285712)
+script = ExtResource("5_8rqov")
+fill_color = Color(0.82, 0.48, 0.14, 1)
+rim_color = Color(1, 0.88, 0.54, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bumpers (Test)/Socket Position/Socket4/Bumper4" unique_id=867088982]
+shape = SubResource("CircleShape_bumper")
+
+[node name="SpeedDetectionArea" type="Area2D" parent="Bumpers (Test)/Socket Position/Socket4/Bumper4" unique_id=773263010]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bumpers (Test)/Socket Position/Socket4/Bumper4/SpeedDetectionArea" unique_id=1572592026]
+shape = SubResource("CircleShape_bumper_area")
+
+[node name="Socket5" type="CollisionShape2D" parent="Bumpers (Test)/Socket Position" unique_id=2112541471]
+position = Vector2(6.1035156e-05, -1.5258789e-05)
+scale = Vector2(0.7, 0.7)
+shape = SubResource("CircleShape2D_b4bke")
+
+[node name="Bumper5" type="StaticBody2D" parent="Bumpers (Test)/Socket Position/Socket5" unique_id=368573218]
+position = Vector2(-8.010864e-05, 2.1798269e-05)
+scale = Vector2(1.4285711, 1.4285711)
+script = ExtResource("5_8rqov")
+fill_color = Color(0.82, 0.48, 0.14, 1)
+rim_color = Color(1, 0.88, 0.54, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bumpers (Test)/Socket Position/Socket5/Bumper5" unique_id=365092092]
+shape = SubResource("CircleShape_bumper")
+
+[node name="SpeedDetectionArea" type="Area2D" parent="Bumpers (Test)/Socket Position/Socket5/Bumper5" unique_id=1612915538]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bumpers (Test)/Socket Position/Socket5/Bumper5/SpeedDetectionArea" unique_id=1397325965]
+shape = SubResource("CircleShape_bumper_area")
+
+[node name="Socket6" type="CollisionShape2D" parent="Bumpers (Test)/Socket Position" unique_id=1704388896]
+position = Vector2(-207.99998, -272)
+scale = Vector2(0.7, 0.7)
+shape = SubResource("CircleShape2D_b4bke")
+
+[node name="Bumper6" type="StaticBody2D" parent="Bumpers (Test)/Socket Position/Socket6" unique_id=928772497]
+position = Vector2(-4.359652e-06, -2.7247837e-05)
+scale = Vector2(1.428571, 1.428571)
+script = ExtResource("5_8rqov")
+fill_color = Color(0.82, 0.48, 0.14, 1)
+rim_color = Color(1, 0.88, 0.54, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bumpers (Test)/Socket Position/Socket6/Bumper6" unique_id=16090940]
+shape = SubResource("CircleShape_bumper")
+
+[node name="SpeedDetectionArea" type="Area2D" parent="Bumpers (Test)/Socket Position/Socket6/Bumper6" unique_id=684765474]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bumpers (Test)/Socket Position/Socket6/Bumper6/SpeedDetectionArea" unique_id=545469793]
+shape = SubResource("CircleShape_bumper_area")
+
+[node name="Socket7" type="CollisionShape2D" parent="Bumpers (Test)/Socket Position" unique_id=695371868]
+position = Vector2(-8.0000305, 191.99997)
+scale = Vector2(0.7, 0.7)
+shape = SubResource("CircleShape2D_b4bke")
+
+[node name="Bumper7" type="StaticBody2D" parent="Bumpers (Test)/Socket Position/Socket7" unique_id=1832549291]
+position = Vector2(-0.00018310547, -2.7247843e-06)
+scale = Vector2(1.4285709, 1.4285709)
+script = ExtResource("5_8rqov")
+fill_color = Color(0.82, 0.48, 0.14, 1)
+rim_color = Color(1, 0.88, 0.54, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bumpers (Test)/Socket Position/Socket7/Bumper7" unique_id=1674167927]
+shape = SubResource("CircleShape_bumper")
+
+[node name="SpeedDetectionArea" type="Area2D" parent="Bumpers (Test)/Socket Position/Socket7/Bumper7" unique_id=661558283]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bumpers (Test)/Socket Position/Socket7/Bumper7/SpeedDetectionArea" unique_id=1362767459]
+shape = SubResource("CircleShape_bumper_area")
+
+[node name="Socket8" type="CollisionShape2D" parent="Bumpers (Test)/Socket Position" unique_id=233805805]
+position = Vector2(704, 1.9073486e-06)
+scale = Vector2(0.7, 0.7)
+shape = SubResource("CircleShape2D_b4bke")
+
+[node name="Bumper8" type="StaticBody2D" parent="Bumpers (Test)/Socket Position/Socket8" unique_id=2113526575]
+position = Vector2(2.179827e-05, -3.8146973e-06)
+scale = Vector2(1.4285707, 1.4285707)
+script = ExtResource("5_8rqov")
+fill_color = Color(0.82, 0.48, 0.14, 1)
+rim_color = Color(1, 0.88, 0.54, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bumpers (Test)/Socket Position/Socket8/Bumper8" unique_id=1509484790]
+shape = SubResource("CircleShape_bumper")
+
+[node name="SpeedDetectionArea" type="Area2D" parent="Bumpers (Test)/Socket Position/Socket8/Bumper8" unique_id=1243711568]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bumpers (Test)/Socket Position/Socket8/Bumper8/SpeedDetectionArea" unique_id=1678217975]
 shape = SubResource("CircleShape_bumper_area")
 
 [node name="FlipperSelector" type="Node2D" parent="." unique_id=1315987330]
@@ -321,6 +439,7 @@ offset_bottom = 92.0
 theme_override_colors/font_color = Color(0.86, 0.95, 1, 1)
 theme_override_font_sizes/font_size = 18
 text = "[사각 플리퍼 자유 테스트]"
+metadata/_edit_use_anchors_ = true
 
 [node name="StatusLabel" type="Label" parent="HUD" unique_id=2062526515]
 offset_left = 24.0
@@ -330,3 +449,4 @@ offset_bottom = 65.0
 theme_override_colors/font_color = Color(1, 0.83, 0.32, 1)
 theme_override_font_sizes/font_size = 16
 text = "Space로 공을 발사하세요"
+metadata/_edit_use_anchors_ = true
