@@ -97,13 +97,26 @@ size = Vector2(2600, 160)
 resource_local_to_scene = true
 size = Vector2(160, 1600)
 
-[node name="RepairPartsBoardTest" type="Node2D"]
+[node name="RepairPartsBoardTest" type="Node2D" node_paths=PackedStringArray("launcher", "combo_system", "combo_collision_bridge", "wave_ball_inventory", "wave_ball_flow", "combo_wave_controller", "wave_manager", "flipper_selector", "ball_selection_hud", "ball_drain_area", "hud_state", "wave_hud", "board_camera", "bumpers_root")]
 script = ExtResource("1_coordinator")
 wave_stage_settings = SubResource("StageSettings_wave")
 bumper_stage_settings = ExtResource("4_bumper_stage")
-wave_stage_index = 2
+authored_bumper_wave_index = 2
 expected_bumper_kind_ids = Array[StringName]([&"stage01_button", &"stage01_button", &"stage01_cotton", &"stage01_spring_doll", &"stage01_toy_drum", &"stage01_clockwork_cannon"])
-ball_drain_area_path = NodePath("BallDrainArea")
+launcher = NodePath("PinballLauncher")
+combo_system = NodePath("ComboSystem")
+combo_collision_bridge = NodePath("ComboCollisionBridge")
+wave_ball_inventory = NodePath("WaveBallInventory")
+wave_ball_flow = NodePath("WaveBallFlowController")
+combo_wave_controller = NodePath("ComboWaveController")
+wave_manager = NodePath("WaveManager")
+flipper_selector = NodePath("FlipperSelector")
+ball_selection_hud = NodePath("HUD/BallSelectionHud")
+ball_drain_area = NodePath("BallDrainArea")
+hud_state = NodePath("WaveHudStateSource")
+wave_hud = NodePath("HUD/WaveHud")
+board_camera = NodePath("Camera2D")
+bumpers_root = NodePath("Bumpers")
 board_world_bounds = Rect2(-1180, -700, 2360, 1400)
 maximum_board_zoom = 0.494
 hud_safe_top_design = 190.0
@@ -278,28 +291,28 @@ zoom = Vector2(0.494, 0.494)
 [node name="ComboSystem" type="Node" parent="."]
 script = ExtResource("14_combo_system")
 
-[node name="ComboCollisionBridge" type="Node" parent="."]
+[node name="ComboCollisionBridge" type="Node" parent="." node_paths=PackedStringArray("configured_combo_system")]
 script = ExtResource("15_collision_bridge")
-combo_system_path = NodePath("../ComboSystem")
+configured_combo_system = NodePath("../ComboSystem")
 
 [node name="WaveBallInventory" type="Node" parent="."]
 script = ExtResource("16_inventory")
 starting_stock = Array[ExtResource("21_stock")]([SubResource("BallStock_light"), SubResource("BallStock_normal"), SubResource("BallStock_heavy")])
 
-[node name="WaveBallFlowController" type="Node" parent="."]
+[node name="WaveBallFlowController" type="Node" parent="." node_paths=PackedStringArray("configured_inventory", "configured_launcher")]
 script = ExtResource("17_flow")
-inventory_path = NodePath("../WaveBallInventory")
-launcher_path = NodePath("../PinballLauncher")
+configured_inventory = NodePath("../WaveBallInventory")
+configured_launcher = NodePath("../PinballLauncher")
 
 [node name="ComboWaveController" type="Node" parent="."]
 script = ExtResource("18_combo_wave")
 
-[node name="WaveManager" type="Node" parent="."]
+[node name="WaveManager" type="Node" parent="." node_paths=PackedStringArray("configured_ball_flow", "configured_combo_wave", "configured_combo_system", "configured_collision_bridge")]
 script = ExtResource("19_manager")
-ball_flow_path = NodePath("../WaveBallFlowController")
-combo_wave_path = NodePath("../ComboWaveController")
-combo_system_path = NodePath("../ComboSystem")
-collision_bridge_path = NodePath("../ComboCollisionBridge")
+configured_ball_flow = NodePath("../WaveBallFlowController")
+configured_combo_wave = NodePath("../ComboWaveController")
+configured_combo_system = NodePath("../ComboSystem")
+configured_collision_bridge = NodePath("../ComboCollisionBridge")
 
 [node name="WaveHudStateSource" type="Node" parent="."]
 script = ExtResource("2_state")
