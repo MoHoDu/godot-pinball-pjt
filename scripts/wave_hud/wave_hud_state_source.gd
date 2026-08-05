@@ -23,6 +23,9 @@ var _snapshot: Dictionary = {
 	&"combo_anchor_visible": false,
 	&"wave_index": 0,
 	&"paused": false,
+	&"stage_phase_title": "",
+	&"stage_phase_button": "다음 단계",
+	&"stage_phase_placeholder_visible": false,
 }
 var _batch_depth := 0
 var _publish_pending := false
@@ -198,6 +201,17 @@ func set_wave_index(wave_index: int) -> void:
 	if int(_snapshot[&"wave_index"]) == safe_index:
 		return
 	_snapshot[&"wave_index"] = safe_index
+	_publish()
+
+
+func set_stage_phase(title: String, button_text: String, is_visible: bool) -> void:
+	if String(_snapshot[&"stage_phase_title"]) == title \
+			and String(_snapshot[&"stage_phase_button"]) == button_text \
+			and bool(_snapshot[&"stage_phase_placeholder_visible"]) == is_visible:
+		return
+	_snapshot[&"stage_phase_title"] = title
+	_snapshot[&"stage_phase_button"] = button_text
+	_snapshot[&"stage_phase_placeholder_visible"] = is_visible
 	_publish()
 
 

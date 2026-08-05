@@ -12,16 +12,42 @@ func _init() -> void:
 
 
 func _run() -> void:
-	await _test_continue_to_victory_and_retry()
-	await _test_choose_clear_victory()
-	await _test_synchronous_choice_resolution()
+	await _test_live_target_reached_ends_immediately()
+	await _test_target_reached_ends_immediately_and_retry()
+	await _test_confirmed_stage_phase_sequence()
 	await _test_exhaustion_defeat()
+	await _test_stage_rejects_non_three_ball_inventory()
 	await _test_terminal_signal_reentrancy()
 	await _test_dependency_rebinding_cleanup()
 	_finish()
 
 
-func _test_continue_to_victory_and_retry() -> void:
+func _test_live_target_reached_ends_immediately() -> void:
+	var fixture := await _create_fixture(3, 100)
+	var manager: WaveManager = fixture.manager
+	var flow: WaveBallFlowController = fixture.flow
+	var launcher: PinballLauncher = fixture.launcher
+	var combo: ComboSystem = fixture.combo
+	var bridge: ComboCollisionBridge = fixture.bridge
+
+	_expect(manager.enter_wave(fixture.settings), "Live-clear fixture should enter.")
+	flow.confirm_selection()
+	launcher.launch_prepared_ball()
+	combo.register_hit(1.0)
+	combo.finish_combo(ComboSystem.EndReason.MANUAL)
+	await process_frame
+	_expect(manager.current_state == WaveManager.State.WON,
+		"A live target clear must not wait for the active ball to drain.")
+	_expect(manager.current_stage_phase == WaveManager.StagePhase.WAVE_RESULT,
+		"A live target clear must open result judgement immediately.")
+	_expect(flow.current_state == WaveBallFlowController.State.INACTIVE,
+		"A live target clear must close the active ball flow.")
+	_expect(manager.active_ball == null and bridge.get(&"_ball") == null,
+		"A live target clear must release its active ball references.")
+	await _destroy_fixture(fixture)
+
+
+func _test_target_reached_ends_immediately_and_retry() -> void:
 	var fixture := await _create_fixture(2, 100)
 	var manager: WaveManager = fixture.manager
 	var flow: WaveBallFlowController = fixture.flow
@@ -45,19 +71,15 @@ func _test_continue_to_victory_and_retry() -> void:
 	_expect(manager.current_state == WaveManager.State.IN_PLAY, "Launch should enter pinball/combat play.")
 	combo.register_hit(1.0)
 	_expect(flow.on_ball_drained(first_ball), "First active ball should drain.")
-	_expect(manager.current_state == WaveManager.State.CLEAR_CHOICE, "Reached target with stock should request a clear choice.")
-	_expect(flow.selection_locked, "Clear choice should lock the next ball selection.")
-	_expect(manager.choose_remaining_balls(), "Player should be able to keep the remaining balls.")
-	_expect(manager.current_state == WaveManager.State.SELECTING_BALL, "Continue choice should resume selection.")
-	_expect(not flow.selection_locked, "Continue choice should unlock ball selection.")
-
-	_expect(flow.confirm_selection(), "Second ball selection should be confirmed.")
-	var second_ball := flow.active_ball
-	_expect(launcher.launch_prepared_ball(), "Second prepared ball should launch.")
-	_expect(flow.on_ball_drained(second_ball), "Last active ball should drain.")
 	await process_frame
-	_expect(manager.current_state == WaveManager.State.WON, "Target reached and stock exhausted should win the wave.")
-	_expect(flow.current_state == WaveBallFlowController.State.EXHAUSTED, "Winning with the last ball should exhaust ball flow.")
+	_expect(manager.current_state == WaveManager.State.WON,
+		"Reaching the target must immediately finish the wave.")
+	_expect(manager.current_stage_phase == WaveManager.StagePhase.WAVE_RESULT,
+		"Immediate clear must open the result phase.")
+	_expect(flow.current_state == WaveBallFlowController.State.INACTIVE,
+		"Immediate clear must close ball flow without spending remaining balls.")
+	_expect(inventory.total_remaining == 1,
+		"Immediate clear must preserve the unused ball in the current result.")
 	_expect(visited_states.has(WaveManager.State.RESOLVING_BALL), "Drain should pass through the resolving state.")
 
 	_expect(manager.retry_wave(), "A won wave should be retryable.")
@@ -67,34 +89,58 @@ func _test_continue_to_victory_and_retry() -> void:
 	await _destroy_fixture(fixture)
 
 
-func _test_choose_clear_victory() -> void:
-	var fixture := await _create_fixture(2, 100)
+func _test_confirmed_stage_phase_sequence() -> void:
+	var fixture := await _create_fixture(3, 100)
 	var manager: WaveManager = fixture.manager
 	var flow: WaveBallFlowController = fixture.flow
 	var launcher: PinballLauncher = fixture.launcher
 	var combo: ComboSystem = fixture.combo
-	var won_count := {&"value": 0}
-	manager.wave_won.connect(func(_score: int, _target: int) -> void:
-		won_count.value += 1
-	)
+	var settings: ComboStageSettings = fixture.settings
+	settings.wave_target_scores = PackedInt32Array([100, 100, 100, 500])
 
-	_expect(manager.enter_wave(fixture.settings), "Clear-choice fixture should enter the wave.")
-	flow.confirm_selection()
-	var ball := flow.active_ball
-	launcher.launch_prepared_ball()
-	combo.register_hit(1.0)
-	flow.on_ball_drained(ball)
-	_expect(manager.current_state == WaveManager.State.CLEAR_CHOICE, "Target should offer clear before stock is exhausted.")
-	_expect(manager.choose_clear(), "Clear choice should be accepted.")
-	await process_frame
-	_expect(manager.current_state == WaveManager.State.WON, "Clear choice should finish the wave as won.")
-	_expect(flow.current_state == WaveBallFlowController.State.INACTIVE, "Explicit clear should close ball flow.")
-	_expect(won_count.value == 1, "Victory should emit exactly once.")
+	_expect(manager.enter_stage(settings), "Stage must begin at its first placeholder.")
+	_expect(manager.current_stage_phase == WaveManager.StagePhase.REPAIR_PLACEMENT,
+		"A stage must begin with repair placement.")
+	for wave_index in 3:
+		_expect(manager.current_wave_index == wave_index,
+			"Stage must expose the expected normal-wave index.")
+		_expect(manager.advance_stage_phase(),
+			"Repair placement placeholder must advance into ball selection.")
+		_expect(manager.current_stage_phase == WaveManager.StagePhase.BALL_SELECTION,
+			"Repair placement must lead to ball selection.")
+		flow.confirm_selection()
+		_expect(manager.current_stage_phase == WaveManager.StagePhase.BALL_LAUNCH,
+			"Confirmed ball selection must lead to launch.")
+		var ball := flow.active_ball
+		launcher.launch_prepared_ball()
+		_expect(manager.current_stage_phase == WaveManager.StagePhase.PINBALL,
+			"Launch must lead to pinball play.")
+		combo.register_hit(1.0)
+		flow.on_ball_drained(ball)
+		await process_frame
+		_expect(manager.current_stage_phase == WaveManager.StagePhase.WAVE_RESULT,
+			"A cleared wave must lead to result judgement.")
+		manager.advance_stage_phase()
+		_expect(manager.current_stage_phase == WaveManager.StagePhase.REWARD,
+			"A successful result must lead to reward.")
+		manager.advance_stage_phase()
+		var expected_phase := WaveManager.StagePhase.REPAIR_PLACEMENT \
+			if wave_index < 2 else WaveManager.StagePhase.BOSS
+		_expect(manager.current_stage_phase == expected_phase,
+			"Reward must lead to the next wave or boss.")
+
+	_expect(manager.advance_stage_phase(), "Boss placeholder must advance.")
+	_expect(manager.current_stage_phase == WaveManager.StagePhase.STAGE_COMPLETE,
+		"Boss must lead to stage completion.")
+	_expect(manager.advance_stage_phase(), "Stage completion must be restartable.")
+	_expect(manager.current_stage_phase == WaveManager.StagePhase.REPAIR_PLACEMENT \
+		and manager.current_wave_index == 0,
+		"Stage restart must return to Wave 1 repair placement.")
 	await _destroy_fixture(fixture)
 
 
 func _test_exhaustion_defeat() -> void:
-	var fixture := await _create_fixture(2, 300)
+	var fixture := await _create_fixture(3, 300)
 	var manager: WaveManager = fixture.manager
 	var flow: WaveBallFlowController = fixture.flow
 	var launcher: PinballLauncher = fixture.launcher
@@ -103,63 +149,42 @@ func _test_exhaustion_defeat() -> void:
 		lost_count.value += 1
 	)
 
-	_expect(manager.enter_wave(fixture.settings), "Defeat fixture should enter the wave.")
-	for index in 2:
+	_expect(manager.enter_stage(fixture.settings), "Defeat fixture should enter the stage.")
+	_expect(manager.advance_stage_phase(), "Repair placeholder should start the wave.")
+	for index in 3:
 		_expect(flow.confirm_selection(), "Defeat cycle %d should select a ball." % index)
 		var ball := flow.active_ball
 		_expect(launcher.launch_prepared_ball(), "Defeat cycle %d should launch." % index)
 		_expect(flow.on_ball_drained(ball), "Defeat cycle %d should drain." % index)
 	await process_frame
 	_expect(manager.current_state == WaveManager.State.LOST, "Missing the target with no balls should lose the wave.")
+	_expect(manager.current_stage_phase == WaveManager.StagePhase.WAVE_RESULT,
+		"Three-ball failure must still open result judgement.")
+	_expect(manager.advance_stage_phase(), "Failure result must remain navigable.")
+	_expect(manager.current_stage_phase == WaveManager.StagePhase.REPAIR_PLACEMENT,
+		"Failure result must return to the same wave's repair placement.")
+	_expect(manager.current_wave_index == 0,
+		"Failure must not skip to the next wave.")
+	_expect(manager.advance_stage_phase(),
+		"Repair placement must restart the failed wave.")
+	_expect(manager.current_stage_phase == WaveManager.StagePhase.BALL_SELECTION \
+		and flow.current_state == WaveBallFlowController.State.SELECTING,
+		"Failed-wave retry must restore three-ball selection.")
+	_expect((fixture.inventory as WaveBallInventory).total_remaining == 3,
+		"Failed-wave retry must restore exactly three balls.")
 	_expect(manager.current_score == 0, "No-hit defeat should award no score.")
 	_expect(lost_count.value == 1, "Defeat should emit exactly once.")
 	await _destroy_fixture(fixture)
 
 
-func _test_synchronous_choice_resolution() -> void:
-	var continue_fixture := await _create_fixture(2, 100)
-	var continue_manager: WaveManager = continue_fixture.manager
-	var continue_flow: WaveBallFlowController = continue_fixture.flow
-	var continue_launcher: PinballLauncher = continue_fixture.launcher
-	var continue_combo: ComboSystem = continue_fixture.combo
-	continue_manager.clear_choice_requested.connect(func(
-		_score: int,
-		_target: int,
-		_remaining: int
-	) -> void:
-		continue_manager.choose_remaining_balls()
-	)
-	continue_manager.enter_wave(continue_fixture.settings)
-	continue_flow.confirm_selection()
-	var continue_ball := continue_flow.active_ball
-	continue_launcher.launch_prepared_ball()
-	continue_combo.register_hit(1.0)
-	continue_flow.on_ball_drained(continue_ball)
-	_expect(continue_manager.current_state == WaveManager.State.SELECTING_BALL, "Synchronous continue choice should reconcile after drain.")
-	await _destroy_fixture(continue_fixture)
-
-	var clear_fixture := await _create_fixture(2, 100)
-	var clear_manager: WaveManager = clear_fixture.manager
-	var clear_flow: WaveBallFlowController = clear_fixture.flow
-	var clear_launcher: PinballLauncher = clear_fixture.launcher
-	var clear_combo: ComboSystem = clear_fixture.combo
-	clear_manager.clear_choice_requested.connect(func(
-		_score: int,
-		_target: int,
-		_remaining: int
-	) -> void:
-		clear_manager.choose_clear()
-	)
-	clear_manager.enter_wave(clear_fixture.settings)
-	clear_flow.confirm_selection()
-	var clear_ball := clear_flow.active_ball
-	clear_launcher.launch_prepared_ball()
-	clear_combo.register_hit(1.0)
-	clear_flow.on_ball_drained(clear_ball)
-	await process_frame
-	_expect(clear_manager.current_state == WaveManager.State.WON, "Synchronous clear choice should finish after the flow reaches selection.")
-	_expect(clear_flow.current_state == WaveBallFlowController.State.INACTIVE, "Synchronous clear should leave manager and flow in matching terminal states.")
-	await _destroy_fixture(clear_fixture)
+func _test_stage_rejects_non_three_ball_inventory() -> void:
+	var fixture := await _create_fixture(4, 100)
+	var manager: WaveManager = fixture.manager
+	_expect(not manager.enter_stage(fixture.settings),
+		"Confirmed stage flow must reject more than three wave balls.")
+	_expect(manager.current_stage_phase == WaveManager.StagePhase.INACTIVE,
+		"Rejected stage inventory must not begin a partial stage.")
+	await _destroy_fixture(fixture)
 
 
 func _test_terminal_signal_reentrancy() -> void:

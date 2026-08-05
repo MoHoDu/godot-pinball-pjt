@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://b35gfy37afi7d" path="res://scripts/wave_hud/wave_runtime_coordinator.gd" id="1_borfr"]
 [ext_resource type="Script" uid="uid://d1ru6gfxnmw1r" path="res://scripts/combo_system/combo_stage_settings.gd" id="2_bin77"]
-[ext_resource type="Resource" uid="uid://kyta8sf8rdxa" path="res://settings/bumpers/stage_01/Stage01BumperLayout.tres" id="3_ftx8i"]
+[ext_resource type="Resource" uid="uid://chsx6iwv1j6p3" path="res://settings/bumpers/stage_01/Stage01BumperLayout.tres" id="3_ftx8i"]
 [ext_resource type="Texture2D" uid="uid://cccmtg74eywpf" path="res://Resources/Art/backgrounds/cursed_circus_outside_background.png" id="4_b30we"]
 [ext_resource type="Texture2D" uid="uid://dsjw1kfs6d0xv" path="res://Resources/Art/board/octagonal_dark_wood_board.png" id="5_lkifm"]
 [ext_resource type="PackedScene" path="res://Resources/Art/walls/cursed_toy_frame_v1/wall_visual_820x40_cursed_toy_v1.tscn" id="6_av5ge"]

@@ -21,8 +21,11 @@ enum State {
 }
 
 
-@export_node_path("WaveBallInventory") var inventory_path: NodePath
-@export_node_path("PinballLauncher") var launcher_path: NodePath
+@export_category("Runtime Dependencies")
+@export var configured_inventory: WaveBallInventory
+@export var configured_launcher: PinballLauncher
+
+@export_category("Input")
 @export var previous_action: StringName = &"ball_select_previous"
 @export var next_action: StringName = &"ball_select_next"
 @export var confirm_action: StringName = &"ball_select_confirm"
@@ -43,10 +46,10 @@ var current_state: State:
 
 
 func _ready() -> void:
-	if not inventory_path.is_empty():
-		bind_inventory(get_node_or_null(inventory_path) as WaveBallInventory)
-	if not launcher_path.is_empty():
-		bind_launcher(get_node_or_null(launcher_path) as PinballLauncher)
+	if configured_inventory != null:
+		bind_inventory(configured_inventory)
+	if configured_launcher != null:
+		bind_launcher(configured_launcher)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -112,6 +115,25 @@ func end_wave() -> bool:
 	if _state not in [State.SELECTING, State.EXHAUSTED]:
 		return false
 	active_ball = null
+	set_selection_locked(false)
+	_set_state(State.INACTIVE)
+	return true
+
+
+func finish_wave_immediately() -> bool:
+	if _state not in [State.SELECTING, State.AIMING, State.IN_PLAY, State.EXHAUSTED]:
+		return false
+
+	var finished_ball := active_ball
+	active_ball = null
+	if _state == State.AIMING and launcher != null:
+		launcher.cancel_prepared_ball(free_drained_ball)
+	elif _state == State.IN_PLAY \
+			and free_drained_ball \
+			and is_instance_valid(finished_ball):
+		finished_ball.queue_free()
+	if is_instance_valid(finished_ball):
+		active_ball_changed.emit(null)
 	set_selection_locked(false)
 	_set_state(State.INACTIVE)
 	return true
