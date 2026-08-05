@@ -7,6 +7,7 @@ extends Polygon2D
 @export_multiline var reason := "Reserved gameplay space"
 @export_range(0.0, 512.0, 1.0, "suffix:px") var extra_clearance := 0.0
 @export var show_during_play := false
+@export var show_during_editing := true
 
 
 func _ready() -> void:

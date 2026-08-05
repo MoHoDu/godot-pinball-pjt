@@ -6,16 +6,33 @@
 
 - `board_system_demo.tscn`: 보드 경계, 영역, 12개 후보 소켓, 금지 영역, 수리 부품 6개를 독립적으로 확인하는 씬입니다.
 - `board_system_wave_integration.tscn`: 기존 `scenes/wave/wave.tscn`과 `BoardWavePlacementBridge`를 합성한 연결 검증 씬입니다.
+- `repair_part_placement_wave_demo.tscn`: 최신 `WaveManager.REPAIR_PLACEMENT` 단계에서 1920×1080 배치 UI, 수리 부품 인벤토리, 장착·해제·교체·확정까지 확인하는 완성형 테스트 씬입니다.
+
+## 실제 배치 UI 테스트
+
+1. Godot에서 `scenes/boards/repair_part_placement_wave_demo.tscn`을 엽니다.
+2. `F6`으로 현재 씬을 실행합니다. 웨이브는 공 선택 전 `REPAIR_PLACEMENT`에서 멈추며 기존 Wave HUD와 공 선택 HUD는 숨겨집니다.
+3. 반투명 영역 안의 네모 소켓을 클릭합니다. 소켓을 고르기 전에는 모든 부품 카드가 비활성화됩니다.
+4. 선택 영역에 허용된 카드만 밝아지는지 확인합니다. 허용되지 않은 카드와 보유 수량이 0인 카드는 계속 비활성화됩니다.
+5. 활성 카드를 클릭하면 선택 소켓에 장착됩니다. 카드를 누른 채 드래그하면 아이콘이 마우스를 따라오며, 활성 소켓에 놓으면 배치 또는 교체됩니다.
+6. 장착된 부품 우상단의 `×`를 클릭하면 인벤토리로 돌아옵니다. 같은 부품이 여러 개면 카드 우상단에 겹친 카드와 `×수량`이 표시됩니다.
+7. 중앙 탭을 눌러 서랍을 접고 펼칩니다. 닫힌 상태에서도 탭은 화면 하단에 남습니다.
+8. `배치 확정`을 누르면 수량 소모가 확정되고 기존 공 선택 단계와 HUD가 복귀합니다. 보드와 Camera2D의 위치·확대율은 변경되지 않습니다.
 
 ## 에디터 작업 순서
 
-1. `Resources/boards/square_board_layout.tscn`을 엽니다.
+1. 독립 데모는 `Resources/boards/square_board_layout.tscn`, 실제 웨이브용은 `Resources/boards/wave_repair_board_layout.tscn`을 엽니다.
 2. `Boundary` 또는 `Zones` 아래 `Polygon2D`를 선택하고 Godot의 폴리곤 편집 도구로 점을 마우스로 이동합니다.
 3. `Sockets` 아래 `BoardPlacementSocket`을 144px 격자에 맞춰 이동합니다. 소켓 예약 반경 기본값은 72px입니다.
 4. `Resources/boards/*_placeable.tscn` 프리팹을 `Placeables` 아래에 배치하고 `zone_id`, `socket_id`를 지정합니다.
 5. 저장할 때는 `BoardLayout` Inspector의 `Validate & Save` 버튼을 사용합니다. 검증 실패 시 저장을 실행하지 않습니다. `run_validation_before_save` 수동 preflight와 Inspector 경고도 동일한 검증기를 사용합니다.
 
 검증 실패 상태에서는 `BoardPlacementSession.commit()`이 거부되므로 첫 공 선택 잠금이 풀리지 않습니다.
+
+자동 검증은 다음 두 스크립트를 실행합니다.
+
+- `tests/board_system/board_system_integration_test.gd`: 경계·영역·격자·금지 영역·세션·WaveManager 연결
+- `tests/board_system/repair_part_placement_ui_test.gd`: 1920×1080 UI, 호환 상태, 스택, 장착·해제·교체, HUD 복귀와 카메라 유지
 
 런타임 편집 중에는 숫자 1~4로 부품을 고르고 빈 소켓을 좌클릭해 추가합니다. 기존 부품을 좌클릭한 다음 다른 소켓을 좌클릭하면 이동하며, 우클릭하면 인벤토리로 회수합니다. 커밋 이후에는 세 API가 모두 거부되고 배치물 transform도 커밋 위치로 복원됩니다.
 

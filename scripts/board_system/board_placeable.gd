@@ -3,6 +3,10 @@ class_name BoardPlaceable
 extends Node2D
 
 
+const REMOVE_BUTTON_CENTER := Vector2(48.0, -48.0)
+const REMOVE_BUTTON_RADIUS := 17.0
+
+
 @export var placement_id: StringName = &"placement"
 @export var zone_id: StringName = &"zone"
 @export var socket_id: StringName
@@ -83,15 +87,42 @@ func _restore_locked_transform() -> void:
 
 
 func _draw() -> void:
-	if not show_reserve_radius:
+	if show_reserve_radius:
+		var ring_color := (
+			Color(0.24, 0.88, 0.74, 0.75)
+			if committed
+			else Color(0.95, 0.78, 0.24, 0.75)
+		)
+		draw_arc(Vector2.ZERO, 58.0, 0.0, TAU, 64, ring_color, 3.0)
+	if committed:
 		return
-	var ring_color := (
-		Color(0.24, 0.88, 0.74, 0.75)
-		if committed
-		else Color(0.95, 0.78, 0.24, 0.75)
+	draw_circle(REMOVE_BUTTON_CENTER, REMOVE_BUTTON_RADIUS, Color("b83252"))
+	draw_arc(
+		REMOVE_BUTTON_CENTER,
+		REMOVE_BUTTON_RADIUS,
+		0.0,
+		TAU,
+		28,
+		Color("f1e6cb"),
+		2.0
 	)
-	draw_arc(Vector2.ZERO, reserve_radius, 0.0, TAU, 64, ring_color, 3.0)
-	draw_circle(Vector2.ZERO, 5.0, ring_color)
+	draw_line(
+		REMOVE_BUTTON_CENTER + Vector2(-6.0, -6.0),
+		REMOVE_BUTTON_CENTER + Vector2(6.0, 6.0),
+		Color("f1e6cb"),
+		3.0
+	)
+	draw_line(
+		REMOVE_BUTTON_CENTER + Vector2(6.0, -6.0),
+		REMOVE_BUTTON_CENTER + Vector2(-6.0, 6.0),
+		Color("f1e6cb"),
+		3.0
+	)
+
+
+func is_remove_button_hit(local_position: Vector2) -> bool:
+	return not committed \
+		and local_position.distance_to(REMOVE_BUTTON_CENTER) <= REMOVE_BUTTON_RADIUS
 
 
 func _get_configuration_warnings() -> PackedStringArray:

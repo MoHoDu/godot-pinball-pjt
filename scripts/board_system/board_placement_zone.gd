@@ -17,11 +17,15 @@ func _ready() -> void:
 func accepts(placeable: BoardPlaceable) -> bool:
 	if placeable == null:
 		return false
-	if repair_parts_only and not placeable.is_repair_part():
+	return accepts_kind(placeable.get_kind_id(), placeable.is_repair_part())
+
+
+func accepts_kind(kind_id: StringName, is_repair_part: bool) -> bool:
+	if repair_parts_only and not is_repair_part:
 		return false
 	if allowed_kind_ids.is_empty():
 		return true
-	return allowed_kind_ids.has(String(placeable.get_kind_id()))
+	return allowed_kind_ids.has(String(kind_id))
 
 
 func get_polygon_in(layout: Node2D) -> PackedVector2Array:

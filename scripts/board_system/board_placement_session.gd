@@ -131,6 +131,47 @@ func place_scene_at_socket(
 	return placeable
 
 
+func replace_scene_at_socket(
+	placeable_scene: PackedScene,
+	socket_id: StringName
+) -> BoardPlaceable:
+	if _state != State.EDITING or layout == null or placeable_scene == null:
+		return null
+	var socket := _find_socket(socket_id)
+	var existing := find_placeable_at_socket(socket_id)
+	if socket == null or not socket.enabled or existing == null:
+		return null
+	var root := layout.get_node_or_null(layout.placeables_path)
+	if root == null:
+		return null
+	var instance := placeable_scene.instantiate()
+	if not instance is BoardPlaceable:
+		if instance != null:
+			instance.free()
+		return null
+	var previous_index := existing.get_index()
+	root.remove_child(existing)
+	var replacement := instance as BoardPlaceable
+	replacement.zone_id = socket.zone_id
+	replacement.socket_id = socket.socket_id
+	replacement.placement_id = &"%s_%s" % [
+		replacement.get_kind_id(),
+		socket.socket_id,
+	]
+	root.add_child(replacement)
+	replacement.global_position = socket.global_position
+	var result := layout.validate_layout()
+	if not result.is_valid:
+		root.remove_child(replacement)
+		replacement.free()
+		root.add_child(existing)
+		root.move_child(existing, mini(previous_index, root.get_child_count() - 1))
+		placement_rejected.emit(result)
+		return null
+	existing.queue_free()
+	return replacement
+
+
 func move_placeable_to_socket(
 	placeable: BoardPlaceable,
 	socket_id: StringName
@@ -173,6 +214,15 @@ func remove_placeable(placeable: BoardPlaceable) -> bool:
 	return true
 
 
+func find_placeable_at_socket(socket_id: StringName) -> BoardPlaceable:
+	if layout == null:
+		return null
+	for placeable: BoardPlaceable in layout.get_placeables():
+		if placeable.socket_id == socket_id:
+			return placeable
+	return null
+
+
 func _find_socket(socket_id: StringName) -> BoardPlacementSocket:
 	for socket: BoardPlacementSocket in layout.get_sockets():
 		if socket.socket_id == socket_id:
@@ -181,10 +231,7 @@ func _find_socket(socket_id: StringName) -> BoardPlacementSocket:
 
 
 func _is_socket_occupied(socket_id: StringName) -> bool:
-	for placeable: BoardPlaceable in layout.get_placeables():
-		if placeable.socket_id == socket_id:
-			return true
-	return false
+	return find_placeable_at_socket(socket_id) != null
 
 
 func _set_state(next_state: State) -> void:

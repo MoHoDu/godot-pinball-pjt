@@ -155,7 +155,8 @@ func set_editing_enabled(value: bool) -> void:
 	for socket: BoardPlacementSocket in get_sockets():
 		socket.visible = value or (Engine.is_editor_hint() and socket.visible)
 	for area: BoardForbiddenArea in get_forbidden_areas():
-		area.visible = value or (Engine.is_editor_hint() and area.visible)
+		area.visible = (value and area.show_during_editing) \
+			or (Engine.is_editor_hint() and area.visible)
 	for placeable: BoardPlaceable in get_placeables():
 		placeable.set_committed(not value)
 	if changed:
@@ -203,9 +204,17 @@ func get_grid_points(zone_id: StringName = &"") -> PackedVector2Array:
 	for x_index in range(int(start_x), int(end_x) + 1):
 		for y_index in range(int(start_y), int(end_y) + 1):
 			var point := grid_origin + Vector2(x_index, y_index) * grid_cell_size
-			if not BoardGeometry.contains_point(board_polygon, point):
+			if not BoardGeometry.contains_circle(
+				board_polygon,
+				point,
+				grid_cell_size * 0.5
+			):
 				continue
-			if zone != null and not BoardGeometry.contains_point(zone_polygon, point):
+			if zone != null and not BoardGeometry.contains_circle(
+				zone_polygon,
+				point,
+				grid_cell_size * 0.5
+			):
 				continue
 			points.append(point)
 	return points
@@ -214,9 +223,13 @@ func get_grid_points(zone_id: StringName = &"") -> PackedVector2Array:
 func _draw() -> void:
 	if not show_grid:
 		return
+	var visual_size := grid_cell_size - 12.0
+	var half_size := Vector2.ONE * visual_size * 0.5
 	for zone: BoardPlacementZone in get_zones():
 		for point: Vector2 in get_grid_points(zone.zone_id):
-			draw_circle(point, 4.0, Color(0.36, 0.88, 0.78, 0.62))
+			var cell := Rect2(point - half_size, Vector2.ONE * visual_size)
+			draw_rect(cell, Color(0.18, 0.58, 0.62, 0.08), true)
+			draw_rect(cell, Color(0.40, 0.86, 0.82, 0.34), false, 2.0)
 
 
 func _get_configuration_warnings() -> PackedStringArray:

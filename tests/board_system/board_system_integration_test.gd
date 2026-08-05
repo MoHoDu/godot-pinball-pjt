@@ -224,24 +224,36 @@ func _test_wave_bridge() -> void:
 		"BoardWavePlacementBridge"
 	) as BoardWavePlacementBridge
 
-	_expect(wave.wave_manager.current_state == WaveManager.State.SELECTING_BALL,
-		"Composed board scene must preserve the existing WaveManager entry state.")
+	_expect(wave.wave_manager.current_state == WaveManager.State.INACTIVE,
+		"Repair placement must keep ball flow inactive before confirmation.")
+	_expect(wave.wave_manager.current_stage_phase \
+		== WaveManager.StagePhase.REPAIR_PLACEMENT,
+		"Composed board scene must enter the latest repair-placement phase.")
 	_expect(session.current_state == BoardPlacementSession.State.EDITING,
 		"Wave entry must open board placement before the first ball.")
 	_expect(layout.get_zones()[0].visible and layout.get_sockets()[0].visible,
 		"Placement zones and sockets must be visible only while editing.")
-	_expect(wave.wave_ball_flow.selection_locked,
-		"Wave ball selection must remain locked until board placement commits.")
-	_expect(not wave.wave_ball_flow.confirm_selection(),
-		"Direct first-ball selection must be rejected while placement is pending.")
+	_expect(not wave.wave_hud.visible \
+		and integration.get_node(
+			"PlacementHUD/RepairPartPlacementHud"
+		).visible,
+		"Repair placement must hide gameplay HUD and show placement UI.")
 	_expect(bridge.commit_placement(),
 		"Valid composed board layout must commit through the wave bridge.")
-	_expect(not wave.wave_ball_flow.selection_locked,
-		"Board commit must release the existing WaveBallFlowController.")
+	_expect(wave.wave_manager.current_state == WaveManager.State.SELECTING_BALL \
+		and wave.wave_manager.current_stage_phase \
+			== WaveManager.StagePhase.BALL_SELECTION,
+		"Board commit must advance the latest WaveManager into ball selection.")
 	_expect(session.current_state == BoardPlacementSession.State.COMMITTED,
 		"Wave bridge must preserve committed state until first launch.")
 	_expect(not layout.get_zones()[0].visible and not layout.get_sockets()[0].visible,
 		"Committed layouts must hide editor guides before gameplay.")
+	_expect(wave.wave_hud.visible \
+		and wave.ball_selection_hud.visible \
+		and not integration.get_node(
+			"PlacementHUD/RepairPartPlacementHud"
+		).visible,
+		"Gameplay HUD must return without changing the board layout.")
 	_expect(wave.wave_ball_flow.confirm_selection(),
 		"Existing ball selection must resume after board commit.")
 	_expect(wave.launcher.launch_prepared_ball(),

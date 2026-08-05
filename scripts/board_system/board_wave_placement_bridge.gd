@@ -7,36 +7,29 @@ signal placement_ready(wave_id: StringName, consumed_counts: Dictionary)
 signal placement_blocked(result: BoardValidationResult)
 
 
-@export_node_path("WaveManager") var wave_manager_path: NodePath
-@export_node_path("BoardPlacementSession") var placement_session_path: NodePath
-@export_node_path("Node") var combo_system_path: NodePath
+@export var wave_manager: WaveManager
+@export var placement_session: BoardPlacementSession
+@export var combo_system: Node
+@export var wave_hud: CanvasItem
+@export var ball_selection_hud: CanvasItem
+@export var placement_hud: RepairPartPlacementHud
 @export var commit_action: StringName = &"ui_accept"
 
 
-var wave_manager: WaveManager
-var placement_session: BoardPlacementSession
-var combo_system: Node
 var _placement_committed_for_wave := false
 
 
 func _ready() -> void:
-	wave_manager = get_node_or_null(wave_manager_path) as WaveManager
-	placement_session = get_node_or_null(
-		placement_session_path
-	) as BoardPlacementSession
-	combo_system = get_node_or_null(combo_system_path)
-	assert(wave_manager != null, "Board bridge requires WaveManager.")
-	assert(placement_session != null, "Board bridge requires BoardPlacementSession.")
+	_assert_dependencies()
 	if wave_manager == null or placement_session == null:
 		return
-	wave_manager.wave_entered.connect(_on_wave_entered)
+	wave_manager.stage_phase_changed.connect(_on_stage_phase_changed)
 	wave_manager.wave_retried.connect(_on_wave_retried)
-	wave_manager.state_changed.connect(_on_wave_state_changed)
 	wave_manager.ball_cycle_started.connect(_on_ball_cycle_started)
 	wave_manager.active_ball_changed.connect(_on_active_ball_changed)
 	placement_session.placement_committed.connect(_on_placement_committed)
 	placement_session.placement_rejected.connect(_on_placement_rejected)
-	_sync_existing_wave_state()
+	_sync_stage_phase(wave_manager.current_stage_phase)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -51,30 +44,34 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func commit_placement() -> bool:
-	return placement_session != null and placement_session.commit()
+	return placement_session != null \
+		and placement_session.current_state == BoardPlacementSession.State.EDITING \
+		and placement_session.commit()
 
 
-func _sync_existing_wave_state() -> void:
-	if wave_manager.current_state == WaveManager.State.SELECTING_BALL:
-		_begin_placement(_make_wave_id())
-
-
-func _on_wave_entered(
-	stage_id: StringName,
-	wave_index: int,
-	_target_score: int
+func _on_stage_phase_changed(
+	_previous_phase: WaveManager.StagePhase,
+	current_phase: WaveManager.StagePhase
 ) -> void:
-	_begin_placement(&"%s_wave_%d" % [stage_id, wave_index])
+	_sync_stage_phase(current_phase)
+
+
+func _sync_stage_phase(current_phase: WaveManager.StagePhase) -> void:
+	var is_placement := current_phase == WaveManager.StagePhase.REPAIR_PLACEMENT
+	_set_hud_visibility(is_placement)
+	if is_placement:
+		_begin_placement(_make_wave_id())
+	elif placement_session.current_state == BoardPlacementSession.State.EDITING:
+		placement_session.end_wave()
 
 
 func _on_wave_retried() -> void:
-	_begin_placement(_make_wave_id())
+	if wave_manager.current_stage_phase == WaveManager.StagePhase.REPAIR_PLACEMENT:
+		_begin_placement(_make_wave_id())
 
 
 func _begin_placement(wave_id: StringName) -> void:
 	_placement_committed_for_wave = false
-	if wave_manager.ball_flow != null:
-		wave_manager.ball_flow.set_selection_locked(true)
 	if placement_session.current_state != BoardPlacementSession.State.IDLE:
 		placement_session.end_wave()
 	if placement_session.begin_placement(wave_id):
@@ -88,9 +85,9 @@ func _on_placement_committed(
 ) -> void:
 	_placement_committed_for_wave = true
 	_bind_committed_bumpers()
-	if wave_manager.ball_flow != null:
-		wave_manager.ball_flow.set_selection_locked(false)
 	placement_ready.emit(wave_id, consumed_counts)
+	if not wave_manager.advance_stage_phase():
+		push_error("WaveManager rejected the committed repair placement phase.")
 
 
 func _on_placement_rejected(result: BoardValidationResult) -> void:
@@ -118,15 +115,6 @@ func _on_active_ball_changed(next_ball: Pinball) -> void:
 			bumper.reset_for_new_ball()
 
 
-func _on_wave_state_changed(
-	_previous_state: WaveManager.State,
-	current_state: WaveManager.State
-) -> void:
-	if current_state in [WaveManager.State.WON, WaveManager.State.LOST]:
-		placement_session.end_wave()
-		_placement_committed_for_wave = false
-
-
 func _bind_committed_bumpers() -> void:
 	if combo_system == null or placement_session.layout == null:
 		return
@@ -139,5 +127,22 @@ func _bind_committed_bumpers() -> void:
 			combo_system.call(&"bind_hit_source", bumper.combo_hit_source)
 
 
+func _set_hud_visibility(is_placement: bool) -> void:
+	if wave_hud != null:
+		wave_hud.visible = not is_placement
+	if is_placement and ball_selection_hud != null:
+		ball_selection_hud.visible = false
+	if placement_hud != null:
+		placement_hud.set_placement_visible(is_placement)
+
+
 func _make_wave_id() -> StringName:
 	return &"wave_%d" % wave_manager.current_wave_index
+
+
+func _assert_dependencies() -> void:
+	assert(wave_manager != null, "Board bridge requires WaveManager.")
+	assert(placement_session != null,
+		"Board bridge requires BoardPlacementSession.")
+	assert(placement_hud != null,
+		"Board bridge requires RepairPartPlacementHud.")
