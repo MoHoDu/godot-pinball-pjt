@@ -107,7 +107,7 @@ func open_shop(wave_id: int, reward_index: int) -> bool:
 		catalog, _unlocked_ball_ids, _reward_index, _rng
 	)
 	_part_offers = RewardOfferGenerator.generate_part_offers(
-		catalog, _reward_index, _rng
+		catalog, _reward_index, _rng, _owned_part_kinds()
 	)
 	var affordable := RewardOfferGenerator.ensure_affordable_pair(
 		_ball_offers, _part_offers, catalog, _unlocked_ball_ids, _wallet.balance
@@ -199,6 +199,17 @@ func can_buy_part(offer_index: int) -> bool:
 
 
 ## 스테이지 전환·실패 롤백에서 해금 목록을 통째로 바꿉니다(10-1).
+## 인벤토리에 있는 부품 종류 목록입니다. 보스 직전 보상 보장(6-2)에 씁니다.
+func _owned_part_kinds() -> Array[StringName]:
+	var kinds: Array[StringName] = []
+	if _part_inventory == null:
+		return kinds
+	for part_id: StringName in _part_inventory.snapshot():
+		kinds.append(part_id)
+	kinds.sort()
+	return kinds
+
+
 func reset_unlocked_balls(next_ids: Array[StringName] = []) -> void:
 	_unlocked_ball_ids = next_ids.duplicate()
 

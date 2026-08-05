@@ -28,6 +28,10 @@ extends Resource
 ## 다른 부품과의 연결을 요구하는 부품인지(6-2). 보상 2 이후 구성 보장에 씁니다.
 @export var needs_partner := false
 
+## 발동에 필요한 "서로 다른 다른 부품" 종류 수입니다(8-3 기준).
+## 별빛 브로치 2 · 초승달 바늘 1 · 단독형 0. 보스 직전 보상 보장(6-2)에 씁니다.
+@export_range(0, 3, 1) var required_partner_kinds := 0
+
 
 func is_valid() -> bool:
 	return part_id != &"" and price > 0 and bundle_count > 0

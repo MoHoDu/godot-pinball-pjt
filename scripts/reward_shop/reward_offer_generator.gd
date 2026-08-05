@@ -49,15 +49,22 @@ static func generate_ball_offers(
 	return _pick_random(pool, 3, rng)
 
 
+## 스테이지 01 기준으로 이 보상 인덱스부터 "보스 직전 보상"입니다(6-2).
+const BOSS_REWARD_INDEX := 2
+
+
 ## 부품 후보 3장을 뽑습니다. 네 종류 중 서로 다른 3종.
 ##
 ## - reward_index 0(보상 1): 단독 동작 부품(works_standalone) 최소 1장,
 ##   연결 필수 부품이 단독 필수처럼 보이지 않게 합니다.
 ## - 이후: 연결형 부품(needs_partner) 최소 1장.
+## - 보스 직전 보상: 보유 부품(owned_part_ids)과 결합해 보스전에서 실제로
+##   쓸 수 있는 카드가 최소 1장 있도록 보장합니다(6-2).
 static func generate_part_offers(
 	catalog: RewardShopCatalog,
 	reward_index: int,
-	rng: RandomNumberGenerator
+	rng: RandomNumberGenerator,
+	owned_part_ids: Array[StringName] = []
 ) -> Array[RepairPartOffer]:
 	var pool: Array[RepairPartOffer] = []
 	for offer in catalog.part_offers:
@@ -74,8 +81,45 @@ static func generate_part_offers(
 			continue
 		if reward_index > 0 and not _has_partner_type(picked):
 			continue
+		if reward_index >= BOSS_REWARD_INDEX \
+				and not _has_boss_usable(picked, owned_part_ids):
+			continue
 		return picked
-	return _pick_random_parts(pool, 3, rng)
+
+	# 시도 초과 시에도 보스 직전 보장은 강제합니다(카드 1장 교체).
+	var fallback := _pick_random_parts(pool, 3, rng)
+	if reward_index >= BOSS_REWARD_INDEX \
+			and not _has_boss_usable(fallback, owned_part_ids):
+		for offer in pool:
+			if _offer_boss_usable(offer, owned_part_ids) \
+					and not fallback.has(offer):
+				fallback[fallback.size() - 1] = offer
+				break
+	return fallback
+
+
+## 보유 부품과 결합했을 때 보스전에서 실제로 발동 가능한 카드인지 봅니다(6-2).
+static func _offer_boss_usable(
+	offer: RepairPartOffer,
+	owned_part_ids: Array[StringName]
+) -> bool:
+	if offer.works_standalone:
+		return true
+	var partner_kinds := 0
+	for owned_id in owned_part_ids:
+		if owned_id != offer.part_id:
+			partner_kinds += 1
+	return partner_kinds >= maxi(offer.required_partner_kinds, 1)
+
+
+static func _has_boss_usable(
+	offers: Array[RepairPartOffer],
+	owned_part_ids: Array[StringName]
+) -> bool:
+	for offer in offers:
+		if _offer_boss_usable(offer, owned_part_ids):
+			return true
+	return false
 
 
 ## 구매 가능성 검사(6-4). 지갑이 18코인 이상인데 살 수 있는
