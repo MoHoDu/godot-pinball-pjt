@@ -8,11 +8,6 @@ signal selection_changed(bumper: ShotBumper, anchor: ShotLaunchAnchor)
 signal control_ended(bumper: ShotBumper, ball: RigidBody2D)
 
 
-@onready var launch_anchors_root: Node2D = get_node_or_null(
-	^"LaunchAnchors"
-) as Node2D
-
-
 var _controlled_ball: RigidBody2D
 var _selected_anchor: ShotLaunchAnchor
 var _selection_time_remaining := 0.0
@@ -25,7 +20,7 @@ func _draw() -> void:
 	if not Engine.is_editor_hint() or not show_editor_guides:
 		return
 	for anchor: ShotLaunchAnchor in get_launch_anchors():
-		var target := anchor.position
+		var target := anchor.release_position
 		if target.is_zero_approx():
 			target = anchor.get_local_launch_direction() \
 				* (get_collision_radius() + 26.0)
@@ -94,11 +89,11 @@ func get_ball_impact(context: BallImpactContext) -> BumperResponse:
 
 func get_launch_anchors() -> Array[ShotLaunchAnchor]:
 	var result: Array[ShotLaunchAnchor] = []
-	if launch_anchors_root == null:
+	if settings == null:
 		return result
-	for child: Node in launch_anchors_root.get_children():
-		if child is ShotLaunchAnchor:
-			result.append(child as ShotLaunchAnchor)
+	for anchor: ShotLaunchAnchor in settings.shot_launch_directions:
+		if anchor != null:
+			result.append(anchor)
 	return result
 
 
@@ -189,7 +184,7 @@ func _begin_selection(ball: RigidBody2D) -> void:
 	_is_releasing = false
 	_selected_anchor = _find_safe_default_anchor()
 	if not is_instance_valid(_selected_anchor):
-		push_warning("ShotBumper에는 안전 기본 발사 앵커가 정확히 하나 필요합니다.")
+		push_warning("ShotBumper 설정에는 안전 기본 발사 방향이 정확히 하나 필요합니다.")
 		return
 	ball.add_collision_exception_with(self)
 	ball.freeze = true
@@ -242,14 +237,14 @@ func _find_safe_default_anchor() -> ShotLaunchAnchor:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := super()
 	var anchors := get_launch_anchors()
-	if anchors.size() < 2 or anchors.size() > 3:
-		warnings.append("ShotBumper에는 2~3개의 ShotLaunchAnchor가 필요합니다.")
+	if anchors.is_empty():
+		warnings.append("ShotBumper 설정에는 발사 방향이 하나 이상 필요합니다.")
 	var safe_count := 0
 	for anchor: ShotLaunchAnchor in anchors:
 		if anchor.is_safe_default:
 			safe_count += 1
 		if anchor.input_action.is_empty():
-			warnings.append("모든 발사 앵커에 input_action이 필요합니다.")
+			warnings.append("모든 발사 방향에 input_action이 필요합니다.")
 	if safe_count != 1:
-		warnings.append("is_safe_default 발사 앵커가 정확히 하나여야 합니다.")
+		warnings.append("안전 기본 발사 방향이 정확히 하나여야 합니다.")
 	return warnings
