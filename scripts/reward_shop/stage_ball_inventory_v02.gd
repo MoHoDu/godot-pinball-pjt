@@ -19,6 +19,12 @@ func selectable_unlocked_ids() -> Array[StringName]:
 	return unlocked_ids
 
 
+## 스냅샷 복원용 — 해금 목록을 통째로 바꿉니다(10-1 롤백).
+func restore_unlocked(ball_ids: Array[StringName]) -> void:
+	_unlocked_ids = ball_ids.duplicate()
+	unlocked_balls_changed.emit(unlocked_ids)
+
+
 ## 해금 종류의 BallDefinition 목록입니다. WaveBallInventoryV02에 넘깁니다.
 func unlocked_definitions() -> Array[BallDefinition]:
 	var definitions: Array[BallDefinition] = []
