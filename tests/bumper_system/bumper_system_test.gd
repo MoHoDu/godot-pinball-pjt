@@ -97,6 +97,24 @@ func _test_stage01_settings_and_strategies() -> void:
 		"Track 범퍼 Inspector에는 목표 위치가 표시되어야 한다.")
 	_expect(not _is_editor_property_visible(track_settings.type_settings, &"selection_duration"),
 		"Track 범퍼 Inspector에는 Shot 선택 시간이 표시되면 안 된다.")
+	_expect(_is_editor_property_visible(button.object_settings, &"graphic_texture"),
+		"Object Settings에는 실제 그래픽 Texture 교체 속성이 표시되어야 한다.")
+
+	button.settings = button.settings.duplicate(true) as BumperSettings
+	var original_collision_radius := button.get_collision_radius()
+	var original_bumper_scale := button.scale
+	var test_image := Image.create(200, 100, false, Image.FORMAT_RGBA8)
+	var test_texture := ImageTexture.create_from_image(test_image)
+	button.object_settings.graphic_texture = test_texture
+	button.object_settings.visual_diameter = 120.0
+	button.object_settings.graphic_size_ratio = 0.75
+	var graphic_rect := button.object_settings.get_graphic_draw_rect()
+	_expect(graphic_rect.size.is_equal_approx(Vector2(90.0, 45.0)),
+		"실제 이미지는 긴 변을 기준으로 목표 외형 크기 안에 비율 유지되어야 한다.")
+	_expect_float(button.get_collision_radius(), original_collision_radius,
+		"그래픽 크기 변경은 범퍼 충돌 반경을 바꾸면 안 된다.")
+	_expect(button.scale == original_bumper_scale,
+		"그래픽 맞춤은 범퍼 루트 Scale을 변경하면 안 된다.")
 
 	var context := BallImpactContext.new(
 		_ball,

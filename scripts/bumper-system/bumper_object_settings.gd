@@ -28,6 +28,38 @@ extends Resource
 	set(value):
 		presentation = value
 		emit_changed()
+## 더미 도형 대신 범퍼 외형으로 사용할 실제 이미지 Texture 리소스입니다. 비워 두면 기존 더미 외형을 표시합니다.
+@export var graphic_texture: Texture2D:
+	set(value):
+		graphic_texture = value
+		emit_changed()
+## 이미지의 긴 변이 Visual Diameter에서 차지할 비율입니다. 범퍼 노드 Scale이나 충돌 Shape에는 영향을 주지 않습니다.
+@export_range(0.1, 1.0, 0.01, "suffix:x") var graphic_size_ratio := 1.0:
+	set(value):
+		graphic_size_ratio = value
+		emit_changed()
+## 이미지 중심을 범퍼 중심에서 이동할 픽셀 거리입니다. 충돌 위치에는 영향을 주지 않습니다.
+@export var graphic_offset := Vector2.ZERO:
+	set(value):
+		graphic_offset = value
+		emit_changed()
+## 실제 이미지에 곱할 색상과 투명도입니다. 원본 색상을 유지하려면 흰색을 사용합니다.
+@export var graphic_modulate := Color.WHITE:
+	set(value):
+		graphic_modulate = value
+		emit_changed()
+
+
+func get_graphic_draw_rect() -> Rect2:
+	if graphic_texture == null:
+		return Rect2()
+	var texture_size := graphic_texture.get_size()
+	var longest_side := maxf(texture_size.x, texture_size.y)
+	if longest_side <= 0.0:
+		return Rect2()
+	var target_size := visual_diameter * graphic_size_ratio
+	var draw_size := texture_size * (target_size / longest_side)
+	return Rect2(graphic_offset - draw_size * 0.5, draw_size)
 
 
 func is_valid() -> bool:

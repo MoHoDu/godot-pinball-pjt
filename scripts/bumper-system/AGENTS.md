@@ -30,7 +30,7 @@
 |---|---|
 | `bumper.gd` | 접촉 중복 제거, 점수 신호, 내구도, 상태 전이, 안전 복구, 최종 반응 적용 |
 | `bumper_settings.gd` | 세 설정 리소스를 묶어 보상·저장 시스템에 제공하는 호환 계약 |
-| `bumper_object_settings.gd` | 크기, 충돌, 안전 여백, 배치 제한, 표현 리소스 |
+| `bumper_object_settings.gd` | 크기, 충돌, 안전 여백, 배치 제한, 실제 그래픽 Texture와 표현 리소스 |
 | `bumper_common_settings.gd` | 범퍼 정체성, 수리 부품 자격, 점수, 내구도, 복구 |
 | `bumper_type_settings.gd` | Normal, Bounce, Track, Shot 타입별 동작 설정 |
 | `bumper_instance_overrides.gd` | 보드에 배치된 특정 인스턴스의 선택적 밸런스 덮어쓰기 |
@@ -53,7 +53,7 @@
 ├─ Object Settings → BumperObjectSettings
 │  ├─ 외형·충돌 크기
 │  ├─ 안전 복구 여백·배치 제한
-│  └─ 표현 리소스
+│  └─ 실제 그래픽 Texture·맞춤 비율·표현 리소스
 ├─ Common Bumper Settings → BumperCommonSettings
 │  ├─ ID·이름·수리 부품 자격
 │  ├─ 기획 상태
@@ -71,6 +71,11 @@ Inspector에는 직접 표시하지 않습니다. 편집자는 반드시 범퍼 
 Shot 발사 방향은 씬 자식 노드가 아니라 `BumperSettings.shot_launch_directions`의
 `ShotLaunchAnchor` 리소스 배열로 관리합니다. Inspector 배열에서 항목을 추가·삭제하고,
 각 항목의 표시 이름, 입력 액션, 안전 기본 여부, 발사 위치를 수정하세요.
+
+실제 범퍼 이미지는 `BumperObjectSettings.graphic_texture`에 지정합니다. 이미지는
+`visual_diameter × graphic_size_ratio` 안에 원본 비율을 유지해 직접 그리며, 범퍼 루트의
+`scale`과 물리 충돌 Shape는 변경하지 않습니다. Texture가 비어 있을 때만 기존 더미
+도형을 표시합니다.
 
 특정 씬 인스턴스만 조정할 때는 `BumperInstanceOverrides`를 사용합니다. 음수 값은 공용 `BumperSettings` 값을 사용한다는 뜻입니다.
 
