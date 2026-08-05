@@ -48,6 +48,7 @@ Pinball_Logue (NAN AI 해커톤, 팀 Hire us Pls) 프로젝트 메모리.
 ## 범퍼 · 수리 부품
 
 - [수리 부품 시스템](project_repair_parts_system.md) — 범퍼 합성 구조로 4계열 구현(2026-08-04). 엔진 테스트는 로컬에서 미실행
+- [범퍼 아트 리소스](project_bumper_art_resources.md) — STEP1 형태 확정(2026-08-05). **기획서 7종과 코드 목록이 다르다**(기차 취소·미끄럼틀 슬롯 없음). 범퍼에는 **텍스처 슬롯 자체가 없다**
 
 ## 보드 · 벽
 
