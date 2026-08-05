@@ -53,19 +53,19 @@ script = ExtResource("2_script")
 script = ExtResource("3_inventory")
 starting_stock = Array[ExtResource("7_stock")]([SubResource("BallStock_light"), SubResource("BallStock_normal"), SubResource("BallStock_heavy")])
 
-[node name="WaveBallFlowController" type="Node" parent="." index="12"]
+[node name="WaveBallFlowController" type="Node" parent="." index="12" node_paths=PackedStringArray("configured_inventory", "configured_launcher")]
 script = ExtResource("4_flow")
-inventory_path = NodePath("../WaveBallInventory")
-launcher_path = NodePath("../PinballLauncher")
+configured_inventory = NodePath("../WaveBallInventory")
+configured_launcher = NodePath("../PinballLauncher")
 
 [node name="ComboWaveController" type="Node" parent="." index="13"]
 script = ExtResource("5_combo_wave")
 
-[node name="WaveManager" type="Node" parent="." index="14"]
+[node name="WaveManager" type="Node" parent="." index="14" node_paths=PackedStringArray("configured_ball_flow", "configured_combo_wave", "configured_combo_system", "configured_collision_bridge")]
 script = ExtResource("12_manager")
-ball_flow_path = NodePath("../WaveBallFlowController")
-combo_wave_path = NodePath("../ComboWaveController")
-combo_system_path = NodePath("../ComboSystem")
-collision_bridge_path = NodePath("../ComboCollisionBridge")
+configured_ball_flow = NodePath("../WaveBallFlowController")
+configured_combo_wave = NodePath("../ComboWaveController")
+configured_combo_system = NodePath("../ComboSystem")
+configured_collision_bridge = NodePath("../ComboCollisionBridge")
 
 [node name="BallSelectionHud" parent="HUD" index="4" instance=ExtResource("11_hud")]

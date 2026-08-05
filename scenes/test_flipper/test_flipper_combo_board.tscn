@@ -83,10 +83,10 @@ maximum_launch_angle_degrees = 45.0
 [node name="ComboSystem" type="Node" parent="." index="9" unique_id=206264385]
 script = ExtResource("3_combo_system")
 
-[node name="ComboCollisionBridge" type="Node" parent="." index="10"]
+[node name="ComboCollisionBridge" type="Node" parent="." index="10" node_paths=PackedStringArray("configured_combo_system", "configured_ball")]
 script = ExtResource("6_collision_bridge")
-combo_system_path = NodePath("../ComboSystem")
-ball_path = NodePath("../PinballBall")
+configured_combo_system = NodePath("../ComboSystem")
+configured_ball = NodePath("../PinballBall")
 
 [node name="ManualHitSource" type="Node" parent="." index="11" unique_id=756394642]
 script = ExtResource("4_hit_source")

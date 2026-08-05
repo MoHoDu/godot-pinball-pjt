@@ -11,8 +11,9 @@ const WALL_GROUP: StringName = &"combo_walls"
 const FLIPPER_IDLE_STATE := 0
 
 
-@export var combo_system_path: NodePath
-@export var ball_path: NodePath
+@export_category("Runtime Dependencies")
+@export var configured_combo_system: ComboSystem
+@export var configured_ball: RigidBody2D
 var _combo_system: Node
 var _ball: RigidBody2D
 var _flipper_contacts: Dictionary = {}
@@ -24,10 +25,10 @@ func _ready() -> void:
 	# 플리퍼가 새 물리 프레임의 회전 스윕을 처리하기 전에 지난 프레임의
 	# 합성 접촉이 실제로 분리됐는지 먼저 판정합니다.
 	process_physics_priority = -100
-	if not combo_system_path.is_empty():
-		bind_combo_system(get_node_or_null(combo_system_path))
-	if not ball_path.is_empty():
-		bind_ball(get_node_or_null(ball_path) as RigidBody2D)
+	if configured_combo_system != null:
+		bind_combo_system(configured_combo_system)
+	if configured_ball != null:
+		bind_ball(configured_ball)
 	_bind_registered_flippers()
 
 

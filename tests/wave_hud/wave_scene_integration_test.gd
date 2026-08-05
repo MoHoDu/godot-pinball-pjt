@@ -47,6 +47,12 @@ func _test_standalone_scene_source() -> void:
 	var coordinator_source := FileAccess.get_file_as_string(
 		"res://scripts/wave_hud/wave_runtime_coordinator.gd"
 	)
+	var manager_source := FileAccess.get_file_as_string(
+		"res://scripts/ball_base_system/wave_manager.gd"
+	)
+	var flow_source := FileAccess.get_file_as_string(
+		"res://scripts/ball_base_system/wave_ball_flow_controller.gd"
+	)
 	_expect(scene_source.contains("[node name=\"Wave\" type=\"Node2D\""),
 		"Wave scene root must be authored directly as Node2D.")
 	_expect(not scene_source.contains("res://scenes/test_flipper/"),
@@ -55,6 +61,14 @@ func _test_standalone_scene_source() -> void:
 		"Wave scene resources must not depend on test code.")
 	_expect(not coordinator_source.contains("res://tests/"),
 		"Wave runtime coordinator must not inherit test code.")
+	_expect(not coordinator_source.contains("get_node_or_null("),
+		"Wave runtime coordinator must use typed Inspector references.")
+	_expect(not manager_source.contains("@export_node_path") \
+		and not manager_source.contains("get_node_or_null("),
+		"Wave manager dependencies must not rely on string node paths.")
+	_expect(not flow_source.contains("@export_node_path") \
+		and not flow_source.contains("get_node_or_null("),
+		"Ball flow dependencies must not rely on string node paths.")
 
 
 func _test_scene_structure(wave: WaveRuntimeCoordinator) -> void:
@@ -65,12 +79,30 @@ func _test_scene_structure(wave: WaveRuntimeCoordinator) -> void:
 	_expect(wave.get_node_or_null("HUD/ComboHud") == null,
 		"Standalone Wave scene must not retain the legacy ComboHud.")
 	var snapshot := wave.hud_state.get_snapshot()
-	_expect(int(snapshot[&"target_score"]) == 650000,
-		"Wave 3 target must come from ComboStageSettings through the controller.")
+	_expect(int(snapshot[&"target_score"]) == 0,
+		"Repair placement must begin before a wave target is configured.")
 	_expect((snapshot[&"life_slots"] as Array).size() == 3,
 		"Runtime session must expose the actual three-ball inventory.")
+	_expect(wave.wave_manager.current_stage_phase \
+		== WaveManager.StagePhase.REPAIR_PLACEMENT,
+		"Integrated Wave scene must begin at repair placement.")
+	var phase_button := wave.wave_hud.get_stage_phase_button()
+	_expect(wave.wave_hud.is_stage_phase_placeholder_visible() \
+		and wave.wave_hud.get_stage_phase_title_text() == "수리 부품 배치 단계",
+		"Unimplemented repair placement must be visible as a named phase.")
+	_expect(phase_button.text == "다음 단계",
+		"Placeholder phases must expose a next-phase button.")
+	phase_button.emit_signal(&"pressed")
 	_expect(wave.wave_manager.current_state == WaveManager.State.SELECTING_BALL,
-		"Integrated Wave scene must enter through WaveManager.")
+		"Placeholder button must advance into the implemented selection flow.")
+	_expect(wave.wave_manager.current_stage_phase \
+		== WaveManager.StagePhase.BALL_SELECTION,
+		"Wave manager must report the implemented ball-selection phase.")
+	_expect(not wave.wave_hud.is_stage_phase_placeholder_visible(),
+		"Placeholder overlay must hide during implemented gameplay.")
+	snapshot = wave.hud_state.get_snapshot()
+	_expect(int(snapshot[&"target_score"]) == 250000,
+		"Wave 1 target must come from ComboStageSettings through the controller.")
 	_expect(wave.find_children("WaveManager", "", true, false).size() == 1,
 		"Integrated Wave scene must contain one WaveManager.")
 	_expect(wave.find_children("WaveBallFlowController", "", true, false).size() == 1,
@@ -448,6 +480,34 @@ func _test_bumper_runtime_integration(wave: WaveRuntimeCoordinator) -> void:
 	await process_frame
 	_expect(wave.flipper_selector.input_enabled,
 		"Ending Shot bumper control must restore in-play flipper input.")
+
+	cannon.call(&"_begin_selection", wave.ball)
+	await process_frame
+	wave.combo_system.stage_base_score = wave.wave_manager.target_score
+	wave.combo_system.register_hit(1.0)
+	wave.combo_system.finish_combo(ComboSystem.EndReason.MANUAL)
+	await process_frame
+	_expect(wave.wave_manager.current_stage_phase \
+		== WaveManager.StagePhase.WAVE_RESULT,
+		"Reaching the target during Shot bumper control must finish the wave.")
+	_expect(int(wave.get(&"_active_shot_controls")) == 0,
+		"Immediate wave clear must release aggregate Shot bumper control.")
+	_expect(not wave.flipper_selector.input_enabled,
+		"Flipper input must stay disabled on the wave-result phase.")
+
+	_expect(wave.wave_manager.advance_stage_phase(),
+		"A successful result must advance to the reward phase.")
+	_expect(wave.wave_manager.advance_stage_phase(),
+		"The reward placeholder must advance to the next repair phase.")
+	_expect(wave.wave_manager.advance_stage_phase(),
+		"The next repair placeholder must advance to ball selection.")
+	_expect(wave.wave_ball_flow.confirm_selection(),
+		"The next wave must prepare a newly selected ball.")
+	_expect(wave.launcher.launch_prepared_ball(),
+		"The next wave must launch its selected ball.")
+	await process_frame
+	_expect(wave.flipper_selector.input_enabled,
+		"The next wave must restore flipper input after an immediate clear.")
 
 
 func _test_world_anchor_and_hit_fade(wave: WaveRuntimeCoordinator) -> void:

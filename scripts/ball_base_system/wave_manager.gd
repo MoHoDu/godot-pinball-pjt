@@ -11,6 +11,9 @@ signal clear_choice_requested(current_score: int, target_score: int, remaining_b
 signal wave_won(current_score: int, target_score: int)
 signal wave_lost(current_score: int, target_score: int)
 signal wave_retried
+signal stage_entered(stage_id: StringName, wave_index: int)
+signal stage_phase_changed(previous_phase: StagePhase, current_phase: StagePhase)
+signal stage_completed(stage_id: StringName)
 
 
 enum State {
@@ -26,17 +29,32 @@ enum State {
 }
 
 
-@export_node_path("WaveBallFlowController") var ball_flow_path: NodePath
-@export_node_path("ComboWaveController") var combo_wave_path: NodePath
-@export_node_path("Node") var combo_system_path: NodePath
-@export_node_path("ComboCollisionBridge") var collision_bridge_path: NodePath
-@export var clear_action: StringName = &"wave_choose_clear"
-@export var continue_action: StringName = &"wave_choose_remaining_balls"
+enum StagePhase {
+	INACTIVE,
+	REPAIR_PLACEMENT,
+	BALL_SELECTION,
+	BALL_LAUNCH,
+	PINBALL,
+	WAVE_RESULT,
+	REWARD,
+	BOSS,
+	STAGE_COMPLETE,
+}
 
+
+const NORMAL_WAVE_COUNT := 3
+const BALLS_PER_WAVE := 3
+
+
+@export_category("Runtime Dependencies")
+@export var configured_ball_flow: WaveBallFlowController
+@export var configured_combo_wave: ComboWaveController
+@export var configured_combo_system: ComboSystem
+@export var configured_collision_bridge: ComboCollisionBridge
 
 var ball_flow: WaveBallFlowController
 var combo_wave: ComboWaveController
-var combo_system: Node
+var combo_system: ComboSystem
 var collision_bridge: ComboCollisionBridge
 var active_ball: Pinball
 var _state: State = State.INACTIVE
@@ -45,11 +63,18 @@ var _wave_index := 0
 var _clear_after_drain := false
 var _pending_terminal_state: State = State.INACTIVE
 var _terminal_finalize_queued := false
+var _stage_phase: StagePhase = StagePhase.INACTIVE
+var _stage_is_active := false
+var _last_wave_was_won := false
 
 
 var current_state: State:
 	get:
 		return _state
+
+var current_stage_phase: StagePhase:
+	get:
+		return _stage_phase
 
 var target_score: int:
 	get:
@@ -71,28 +96,14 @@ var remaining_balls: int:
 
 
 func _ready() -> void:
-	if not ball_flow_path.is_empty():
-		bind_ball_flow(get_node_or_null(ball_flow_path) as WaveBallFlowController)
-	if not combo_wave_path.is_empty():
-		bind_combo_wave(get_node_or_null(combo_wave_path) as ComboWaveController)
-	if not combo_system_path.is_empty():
-		bind_combo_system(get_node_or_null(combo_system_path))
-	if not collision_bridge_path.is_empty():
-		bind_collision_bridge(
-			get_node_or_null(collision_bridge_path) as ComboCollisionBridge
-		)
-
-
-func _unhandled_input(event: InputEvent) -> void:
-	if _state != State.CLEAR_CHOICE:
-		return
-	if event.is_action_pressed(clear_action):
-		if choose_clear():
-			get_viewport().set_input_as_handled()
-		return
-	if event.is_action_pressed(continue_action):
-		if choose_remaining_balls():
-			get_viewport().set_input_as_handled()
+	if configured_ball_flow != null:
+		bind_ball_flow(configured_ball_flow)
+	if configured_combo_wave != null:
+		bind_combo_wave(configured_combo_wave)
+	if configured_combo_system != null:
+		bind_combo_system(configured_combo_system)
+	if configured_collision_bridge != null:
+		bind_collision_bridge(configured_collision_bridge)
 
 
 func bind_ball_flow(next_flow: WaveBallFlowController) -> bool:
@@ -123,6 +134,7 @@ func bind_combo_wave(next_combo_wave: ComboWaveController) -> bool:
 	combo_wave.clear_choice_requested.connect(_on_clear_choice_requested)
 	combo_wave.clear_choice_resolved.connect(_on_clear_choice_resolved)
 	combo_wave.wave_clear_requested.connect(_on_wave_clear_requested)
+	combo_wave.target_score_reached.connect(_on_target_score_reached)
 	if combo_system != null:
 		combo_wave.bind_combo_system(combo_system)
 	if ball_flow != null:
@@ -130,7 +142,7 @@ func bind_combo_wave(next_combo_wave: ComboWaveController) -> bool:
 	return true
 
 
-func bind_combo_system(next_combo_system: Node) -> bool:
+func bind_combo_system(next_combo_system: ComboSystem) -> bool:
 	if next_combo_system == null:
 		return false
 	combo_system = next_combo_system
@@ -155,6 +167,99 @@ func bind_collision_bridge(next_bridge: ComboCollisionBridge) -> bool:
 	return true
 
 
+func enter_stage(stage_settings: Resource, start_wave_index := 0) -> bool:
+	if stage_settings == null \
+			or not stage_settings.has_method(&"get_wave_target_score") \
+			or ball_flow == null \
+			or combo_wave == null \
+			or combo_system == null \
+			or _stage_phase not in [StagePhase.INACTIVE, StagePhase.STAGE_COMPLETE]:
+		return false
+	if ball_flow.inventory == null \
+			or not ball_flow.inventory.reset_stock() \
+			or ball_flow.inventory.total_remaining != BALLS_PER_WAVE:
+		push_warning("Confirmed stage flow requires exactly three wave balls.")
+		return false
+
+	_stage_settings = stage_settings
+	_wave_index = clampi(start_wave_index, 0, NORMAL_WAVE_COUNT - 1)
+	_stage_is_active = true
+	_last_wave_was_won = false
+	combo_system.reset_wave()
+	_set_state(State.INACTIVE)
+	_set_stage_phase(StagePhase.REPAIR_PLACEMENT)
+	stage_entered.emit(
+		StringName(stage_settings.get(&"stage_id")),
+		_wave_index
+	)
+	return true
+
+
+func advance_stage_phase() -> bool:
+	if not _stage_is_active or _stage_settings == null:
+		return false
+	match _stage_phase:
+		StagePhase.REPAIR_PLACEMENT:
+			return enter_wave(_stage_settings, _wave_index, true)
+		StagePhase.WAVE_RESULT:
+			if _last_wave_was_won:
+				_set_stage_phase(StagePhase.REWARD)
+			else:
+				_set_stage_phase(StagePhase.REPAIR_PLACEMENT)
+			return true
+		StagePhase.REWARD:
+			if _wave_index + 1 < NORMAL_WAVE_COUNT:
+				_wave_index += 1
+				_set_stage_phase(StagePhase.REPAIR_PLACEMENT)
+			else:
+				_set_stage_phase(StagePhase.BOSS)
+			return true
+		StagePhase.BOSS:
+			_set_stage_phase(StagePhase.STAGE_COMPLETE)
+			stage_completed.emit(StringName(_stage_settings.get(&"stage_id")))
+			return true
+		StagePhase.STAGE_COMPLETE:
+			_stage_is_active = false
+			_set_stage_phase(StagePhase.INACTIVE)
+			return enter_stage(_stage_settings, 0)
+	return false
+
+
+func is_placeholder_phase() -> bool:
+	return _stage_phase in [
+		StagePhase.REPAIR_PLACEMENT,
+		StagePhase.WAVE_RESULT,
+		StagePhase.REWARD,
+		StagePhase.BOSS,
+		StagePhase.STAGE_COMPLETE,
+	]
+
+
+func get_stage_phase_title() -> String:
+	match _stage_phase:
+		StagePhase.REPAIR_PLACEMENT:
+			return "수리 부품 배치 단계"
+		StagePhase.BALL_SELECTION:
+			return "공 선택 단계"
+		StagePhase.BALL_LAUNCH:
+			return "공 발사 단계"
+		StagePhase.PINBALL:
+			return "핀볼 진행 단계"
+		StagePhase.WAVE_RESULT:
+			return "결과 판정 단계"
+		StagePhase.REWARD:
+			return "보상 단계"
+		StagePhase.BOSS:
+			return "보스 단계"
+		StagePhase.STAGE_COMPLETE:
+			return "스테이지 완료 단계"
+	return ""
+
+
+func get_stage_phase_button_text() -> String:
+	return "다음 단계"
+
+
 func enter_wave(
 	stage_settings: Resource,
 	wave_index := 0,
@@ -166,6 +271,7 @@ func enter_wave(
 			or combo_system == null \
 			or _state not in [State.INACTIVE, State.WON, State.LOST]:
 		return false
+	combo_system.reset_wave()
 	if not combo_wave.configure_wave(stage_settings, wave_index):
 		return false
 
@@ -198,9 +304,8 @@ func choose_clear() -> bool:
 
 
 func choose_remaining_balls() -> bool:
-	return _state == State.CLEAR_CHOICE \
-		and combo_wave != null \
-		and combo_wave.choose_remaining_balls()
+	# 확정된 흐름에서는 목표 점수 달성 즉시 결과 판정으로 이동합니다.
+	return false
 
 
 func retry_wave() -> bool:
@@ -267,6 +372,8 @@ func _unbind_combo_wave() -> void:
 		combo_wave.clear_choice_resolved.disconnect(_on_clear_choice_resolved)
 	if combo_wave.wave_clear_requested.is_connected(_on_wave_clear_requested):
 		combo_wave.wave_clear_requested.disconnect(_on_wave_clear_requested)
+	if combo_wave.target_score_reached.is_connected(_on_target_score_reached):
+		combo_wave.target_score_reached.disconnect(_on_target_score_reached)
 	combo_wave.unbind_ball_flow()
 	combo_wave.unbind_combo_system()
 	combo_wave.set_process_unhandled_input(true)
@@ -291,10 +398,13 @@ func _on_ball_flow_state_changed(
 				_set_state(State.SELECTING_BALL)
 			elif _state not in [State.CLEAR_CHOICE, State.WON, State.LOST]:
 				_set_state(State.SELECTING_BALL)
+				_set_stage_phase(StagePhase.BALL_SELECTION)
 		WaveBallFlowController.State.AIMING:
 			_set_state(State.AIMING)
+			_set_stage_phase(StagePhase.BALL_LAUNCH)
 		WaveBallFlowController.State.IN_PLAY:
 			_set_state(State.IN_PLAY)
+			_set_stage_phase(StagePhase.PINBALL)
 		WaveBallFlowController.State.EXHAUSTED:
 			if _state in [State.WON, State.LOST]:
 				return
@@ -326,12 +436,13 @@ func _on_flow_ball_drained(ball: Pinball, balls_remaining: int) -> void:
 
 
 func _on_clear_choice_requested(
-	score: int,
-	target: int,
-	balls_remaining: int
+	_score: int,
+	_target: int,
+	_balls_remaining: int
 ) -> void:
 	_set_state(State.CLEAR_CHOICE)
-	clear_choice_requested.emit(score, target, balls_remaining)
+	clear_choice_requested.emit(_score, _target, _balls_remaining)
+	choose_clear()
 
 
 func _on_clear_choice_resolved(use_remaining_balls: bool) -> void:
@@ -343,6 +454,11 @@ func _on_clear_choice_resolved(use_remaining_balls: bool) -> void:
 
 func _on_wave_clear_requested(_score: int, _target: int) -> void:
 	_queue_terminal_state(State.WON)
+
+
+func _on_target_score_reached(_score: int, _target: int) -> void:
+	if _state == State.IN_PLAY and combo_wave != null:
+		combo_wave.complete_reached_target()
 
 
 func _set_active_ball(next_ball: Pinball) -> void:
@@ -378,7 +494,9 @@ func _finish_won() -> void:
 	if _state == State.WON:
 		return
 	_clear_after_drain = false
+	_last_wave_was_won = true
 	_set_state(State.WON)
+	_set_stage_phase(StagePhase.WAVE_RESULT)
 	wave_won.emit(current_score, target_score)
 
 
@@ -386,7 +504,9 @@ func _finish_lost() -> void:
 	if _state == State.LOST:
 		return
 	_clear_after_drain = false
+	_last_wave_was_won = false
 	_set_state(State.LOST)
+	_set_stage_phase(StagePhase.WAVE_RESULT)
 	wave_lost.emit(current_score, target_score)
 
 
@@ -396,3 +516,11 @@ func _set_state(next_state: State) -> void:
 	var previous_state := _state
 	_state = next_state
 	state_changed.emit(previous_state, _state)
+
+
+func _set_stage_phase(next_phase: StagePhase) -> void:
+	if next_phase == _stage_phase:
+		return
+	var previous_phase := _stage_phase
+	_stage_phase = next_phase
+	stage_phase_changed.emit(previous_phase, _stage_phase)
