@@ -1,0 +1,366 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://b35gfy37afi7d" path="res://scripts/wave_hud/wave_runtime_coordinator.gd" id="1_borfr"]
+[ext_resource type="Script" uid="uid://d1ru6gfxnmw1r" path="res://scripts/combo_system/combo_stage_settings.gd" id="2_bin77"]
+[ext_resource type="Resource" uid="uid://kyta8sf8rdxa" path="res://settings/bumpers/stage_01/Stage01BumperLayout.tres" id="3_ftx8i"]
+[ext_resource type="Texture2D" uid="uid://cccmtg74eywpf" path="res://Resources/Art/backgrounds/cursed_circus_outside_background.png" id="4_b30we"]
+[ext_resource type="Texture2D" uid="uid://dsjw1kfs6d0xv" path="res://Resources/Art/board/octagonal_dark_wood_board.png" id="5_lkifm"]
+[ext_resource type="PackedScene" path="res://Resources/Art/walls/cursed_toy_frame_v1/wall_visual_820x40_cursed_toy_v1.tscn" id="6_av5ge"]
+[ext_resource type="Script" uid="uid://58k0flhnlg3" path="res://scripts/flipper_system/flipper_selector.gd" id="12_nt34j"]
+[ext_resource type="Script" uid="uid://lj3ocu4ruejo" path="res://scripts/flipper_system/flipper_controller.gd" id="13_7fouc"]
+[ext_resource type="PackedScene" uid="uid://ris3ga3vl6ci" path="res://Resources/flippers/sub_flipper/normal_flipper_left.tscn" id="14_jh417"]
+[ext_resource type="PackedScene" uid="uid://u4e8s8havfkw" path="res://Resources/flippers/sub_flipper/normal_flipper_right.tscn" id="15_kj6db"]
+[ext_resource type="Script" uid="uid://c1n1lurdkbtkj" path="res://scripts/ball_base_system/pinball_launcher.gd" id="16_oc07t"]
+[ext_resource type="Script" uid="uid://dirv1p0s1sce1" path="res://scripts/combo_system/combo_system.gd" id="17_oqbrq"]
+[ext_resource type="Script" uid="uid://b8m3vh7insfky" path="res://scripts/combo_system/combo_collision_bridge.gd" id="18_adgam"]
+[ext_resource type="Script" uid="uid://0iu2wd6prhg0" path="res://scripts/ball_base_system/wave_ball_inventory.gd" id="19_vgjxv"]
+[ext_resource type="Script" uid="uid://dbhskt37l73b5" path="res://scripts/ball_base_system/ball_stock.gd" id="20_uphcv"]
+[ext_resource type="PackedScene" uid="uid://5v4byhqjcnno" path="res://Resources/balls/mass_var/light_ball.tscn" id="21_al28r"]
+[ext_resource type="Script" uid="uid://s82gae2421um" path="res://scripts/ball_base_system/ball_definition.gd" id="22_dqvwb"]
+[ext_resource type="PackedScene" uid="uid://csrwlhfpki4fs" path="res://Resources/balls/mass_var/normal_ball.tscn" id="23_xpdmi"]
+[ext_resource type="PackedScene" uid="uid://bjccffqopu0ej" path="res://Resources/balls/mass_var/heavy_ball.tscn" id="24_bmqkw"]
+[ext_resource type="Script" uid="uid://c0a8g2k5ycoxp" path="res://scripts/ball_base_system/wave_ball_flow_controller.gd" id="25_bhnb0"]
+[ext_resource type="Script" uid="uid://cudkgw71kx8vj" path="res://scripts/combo_system/combo_wave_controller.gd" id="26_ucutp"]
+[ext_resource type="Script" uid="uid://cm3baeo6imaxa" path="res://scripts/ball_base_system/wave_manager.gd" id="27_qacv7"]
+[ext_resource type="Script" uid="uid://cmwexv5v1ailv" path="res://scripts/wave_hud/wave_hud_state_source.gd" id="28_ldohg"]
+[ext_resource type="PackedScene" path="res://scenes/ball_base_system/ball_selection_hud.tscn" id="29_acmd4"]
+[ext_resource type="PackedScene" path="res://scenes/wave_hud/wave_hud.tscn" id="30_ljfd2"]
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/button_bumper.tscn" id="31_button_bumper"]
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/cotton_bumper.tscn" id="32_cotton_bumper"]
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/spring_doll_bumper.tscn" id="33_spring_bumper"]
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/toy_drum_bumper.tscn" id="34_drum_bumper"]
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/clockwork_toy_cannon.tscn" id="35_cannon_bumper"]
+
+[sub_resource type="Resource" id="StageSettings_wave"]
+script = ExtResource("2_bin77")
+stage_id = &"cursed_toy_demo"
+wave_target_scores = PackedInt32Array(250000, 400000, 650000, 1000000)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ftx8i"]
+size = Vector2(1200, 630)
+
+[sub_resource type="Resource" id="BallDefinition_light"]
+script = ExtResource("22_dqvwb")
+ball_id = &"light"
+display_name = "가벼운 공"
+ball_scene = ExtResource("21_al28r")
+
+[sub_resource type="Resource" id="BallStock_light"]
+script = ExtResource("20_uphcv")
+definition = SubResource("BallDefinition_light")
+
+[sub_resource type="Resource" id="BallDefinition_normal"]
+script = ExtResource("22_dqvwb")
+ball_id = &"normal"
+display_name = "보통 공"
+ball_scene = ExtResource("23_xpdmi")
+
+[sub_resource type="Resource" id="BallStock_normal"]
+script = ExtResource("20_uphcv")
+definition = SubResource("BallDefinition_normal")
+
+[sub_resource type="Resource" id="BallDefinition_heavy"]
+script = ExtResource("22_dqvwb")
+ball_id = &"heavy"
+display_name = "무거운 공"
+ball_scene = ExtResource("24_bmqkw")
+
+[sub_resource type="Resource" id="BallStock_heavy"]
+script = ExtResource("20_uphcv")
+definition = SubResource("BallDefinition_heavy")
+
+[sub_resource type="RectangleShape2D" id="RectangleShape_drain_horizontal"]
+resource_local_to_scene = true
+size = Vector2(2600, 160)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape_drain_vertical"]
+resource_local_to_scene = true
+size = Vector2(160, 1600)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bin77"]
+size = Vector2(819.329, 24)
+
+[node name="Wave" type="Node2D"]
+script = ExtResource("1_borfr")
+wave_stage_settings = SubResource("StageSettings_wave")
+bumper_stage_settings = ExtResource("3_ftx8i")
+wave_stage_index = 2
+expected_bumper_kind_ids = Array[StringName]([&"stage01_button", &"stage01_button", &"stage01_cotton", &"stage01_spring_doll", &"stage01_toy_drum", &"stage01_clockwork_cannon"])
+ball_drain_area_path = NodePath("BallDrainArea")
+
+[node name="OutsideBackground" type="Sprite2D" parent="."]
+modulate = Color(0.82, 0.82, 0.82, 1)
+z_index = -20
+scale = Vector2(1.655, 1.654)
+texture = ExtResource("4_b30we")
+
+[node name="BoardBackground" type="Polygon2D" parent="."]
+modulate = Color(0.7, 0.7, 0.7, 1)
+z_index = -10
+antialiased = true
+texture = ExtResource("5_lkifm")
+texture_offset = Vector2(-1236.48, -581.52)
+texture_scale = Vector2(1.104, 1.104)
+polygon = PackedVector2Array(616.97, -372.07, 1014.45, 25.41, 255.24, 625, -255.24, 625, -1014.45, 25.41, -616.97, -372.07)
+
+[node name="Area_Square" type="Node2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area_Square"]
+shape = SubResource("RectangleShape2D_ftx8i")
+debug_color = Color(0.94972855, 0.16442639, 0.39801326, 0.41960785)
+
+[node name="Bumpers" type="Node2D" parent="."]
+
+[node name="BumperCenter" parent="Bumpers" instance=ExtResource("31_button_bumper")]
+position = Vector2(0, -270)
+
+[node name="BumperUpperLeft" parent="Bumpers" instance=ExtResource("32_cotton_bumper")]
+position = Vector2(-420, -190)
+
+[node name="BumperUpperRight" parent="Bumpers" instance=ExtResource("31_button_bumper")]
+position = Vector2(420, -190)
+bumper_id = &"button_bumper_right"
+
+[node name="BumperLowerLeft" parent="Bumpers" instance=ExtResource("33_spring_bumper")]
+position = Vector2(-460, 210)
+
+[node name="BumperLowerRight" parent="Bumpers" instance=ExtResource("34_drum_bumper")]
+position = Vector2(460, 210)
+
+[node name="BumperCannon" parent="Bumpers" instance=ExtResource("35_cannon_bumper")]
+position = Vector2(0, 190)
+
+[node name="PinballLauncher" type="Node2D" parent="."]
+position = Vector2(0, 400)
+rotation = -1.5707964
+script = ExtResource("16_oc07t")
+minimum_launch_angle_degrees = -45.0
+maximum_launch_angle_degrees = 45.0
+
+[node name="LauncherMarker" type="Polygon2D" parent="PinballLauncher"]
+z_index = -1
+color = Color(0.25, 0.85, 0.43, 0.25)
+polygon = PackedVector2Array(-42, -42, 42, -42, 42, 42, -42, 42)
+
+[node name="ComboSystem" type="Node" parent="."]
+script = ExtResource("17_oqbrq")
+
+[node name="ComboCollisionBridge" type="Node" parent="."]
+script = ExtResource("18_adgam")
+combo_system_path = NodePath("../ComboSystem")
+
+[node name="WaveBallInventory" type="Node" parent="."]
+script = ExtResource("19_vgjxv")
+starting_stock = Array[ExtResource("20_uphcv")]([SubResource("BallStock_light"), SubResource("BallStock_normal"), SubResource("BallStock_heavy")])
+
+[node name="WaveBallFlowController" type="Node" parent="."]
+script = ExtResource("25_bhnb0")
+inventory_path = NodePath("../WaveBallInventory")
+launcher_path = NodePath("../PinballLauncher")
+
+[node name="ComboWaveController" type="Node" parent="."]
+script = ExtResource("26_ucutp")
+
+[node name="WaveManager" type="Node" parent="."]
+script = ExtResource("27_qacv7")
+ball_flow_path = NodePath("../WaveBallFlowController")
+combo_wave_path = NodePath("../ComboWaveController")
+combo_system_path = NodePath("../ComboSystem")
+collision_bridge_path = NodePath("../ComboCollisionBridge")
+
+[node name="WaveHudStateSource" type="Node" parent="."]
+script = ExtResource("28_ldohg")
+
+[node name="BallDrainArea" type="Area2D" parent="."]
+visible = false
+collision_layer = 0
+
+[node name="TopDrain" type="CollisionShape2D" parent="BallDrainArea"]
+position = Vector2(0, -800)
+shape = SubResource("RectangleShape_drain_horizontal")
+
+[node name="BottomDrain" type="CollisionShape2D" parent="BallDrainArea"]
+position = Vector2(0, 800)
+shape = SubResource("RectangleShape_drain_horizontal")
+
+[node name="LeftDrain" type="CollisionShape2D" parent="BallDrainArea"]
+position = Vector2(-1280, 0)
+shape = SubResource("RectangleShape_drain_vertical")
+
+[node name="RightDrain" type="CollisionShape2D" parent="BallDrainArea"]
+position = Vector2(1280, 0)
+shape = SubResource("RectangleShape_drain_vertical")
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="BallSelectionHud" parent="HUD" instance=ExtResource("29_acmd4")]
+
+[node name="WaveHud" parent="HUD" instance=ExtResource("30_ljfd2")]
+
+[node name="Walls" type="Node2D" parent="."]
+
+[node name="Top" type="Node2D" parent="Walls"]
+
+[node name="TopWallLeft" type="StaticBody2D" parent="Walls/Top" groups=["combo_walls"]]
+position = Vector2(-290.37466, -346.06855)
+rotation = 3.1415927
+scale = Vector2(0.70881, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/TopWallLeft"]
+position = Vector2(0, 12)
+shape = SubResource("RectangleShape2D_bin77")
+
+[node name="Visual" parent="Walls/Top/TopWallLeft" instance=ExtResource("6_av5ge")]
+position = Vector2(0, 24)
+
+[node name="TopWallRight" type="StaticBody2D" parent="Walls/Top" groups=["combo_walls"]]
+position = Vector2(290.37466, -346.06855)
+rotation = 3.1415927
+scale = Vector2(0.70881, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/TopWallRight"]
+position = Vector2(0, 12)
+shape = SubResource("RectangleShape2D_bin77")
+
+[node name="Visual" parent="Walls/Top/TopWallRight" instance=ExtResource("6_av5ge")]
+position = Vector2(0, 24)
+
+[node name="UpperLeftUpperFlare" type="StaticBody2D" parent="Walls/Top" groups=["combo_walls"]]
+position = Vector2(-608.32648, -476.88331)
+rotation = 1.3089969
+scale = Vector2(0.25, 1.042)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/UpperLeftUpperFlare"]
+position = Vector2(0, 12)
+shape = SubResource("RectangleShape2D_bin77")
+
+[node name="Visual" parent="Walls/Top/UpperLeftUpperFlare" instance=ExtResource("6_av5ge")]
+position = Vector2(-24.999502, 0)
+
+[node name="UpperLeftLowerFlare" type="StaticBody2D" parent="Walls/Top" groups=["combo_walls"]]
+position = Vector2(-1091.98751, 6.77773)
+rotation = -2.8797932
+scale = Vector2(0.25, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/UpperLeftLowerFlare"]
+position = Vector2(0, 12)
+shape = SubResource("RectangleShape2D_bin77")
+
+[node name="Visual" parent="Walls/Top/UpperLeftLowerFlare" instance=ExtResource("6_av5ge")]
+
+[node name="UpperRightUpperFlare" type="StaticBody2D" parent="Walls/Top" groups=["combo_walls"]]
+position = Vector2(608.32648, -476.88331)
+rotation = -1.3089969
+scale = Vector2(0.25, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/UpperRightUpperFlare"]
+position = Vector2(0, 12)
+shape = SubResource("RectangleShape2D_bin77")
+
+[node name="Visual" parent="Walls/Top/UpperRightUpperFlare" instance=ExtResource("6_av5ge")]
+
+[node name="UpperRightLowerFlare" type="StaticBody2D" parent="Walls/Top" groups=["combo_walls"]]
+position = Vector2(1091.98751, 6.77773)
+rotation = 2.8797932
+scale = Vector2(0.25, 1.042)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/UpperRightLowerFlare"]
+position = Vector2(0, 12)
+shape = SubResource("RectangleShape2D_bin77")
+
+[node name="Visual" parent="Walls/Top/UpperRightLowerFlare" instance=ExtResource("6_av5ge")]
+position = Vector2(-24.999502, 0)
+
+[node name="Bottom" type="Node2D" parent="Walls"]
+
+[node name="LowerLeftWall" type="StaticBody2D" parent="Walls/Bottom" groups=["combo_walls"]]
+position = Vector2(-615.08638, 307.67745)
+rotation = 0.6684611
+scale = Vector2(1.07649, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom/LowerLeftWall"]
+position = Vector2(0, 12)
+shape = SubResource("RectangleShape2D_bin77")
+
+[node name="Visual" parent="Walls/Bottom/LowerLeftWall" instance=ExtResource("6_av5ge")]
+position = Vector2(0, 24)
+
+[node name="LowerRightWall" type="StaticBody2D" parent="Walls/Bottom" groups=["combo_walls"]]
+position = Vector2(615.08638, 307.67745)
+rotation = -0.6684611
+scale = Vector2(1.07649, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom/LowerRightWall"]
+position = Vector2(0, 12)
+shape = SubResource("RectangleShape2D_bin77")
+
+[node name="Visual" parent="Walls/Bottom/LowerRightWall" instance=ExtResource("6_av5ge")]
+position = Vector2(0, 24)
+
+[node name="BottomLeftVertical" type="StaticBody2D" parent="Walls/Bottom" groups=["combo_walls"]]
+position = Vector2(-342, 693)
+rotation = -1.0471976
+scale = Vector2(0.25, 1.042)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom/BottomLeftVertical"]
+position = Vector2(0, 12)
+shape = SubResource("RectangleShape2D_bin77")
+
+[node name="Visual" parent="Walls/Bottom/BottomLeftVertical" instance=ExtResource("6_av5ge")]
+position = Vector2(-24.999502, 0)
+
+[node name="BottomRightVertical" type="StaticBody2D" parent="Walls/Bottom" groups=["combo_walls"]]
+position = Vector2(342, 693)
+rotation = 1.0471976
+scale = Vector2(0.25, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom/BottomRightVertical"]
+position = Vector2(0, 12)
+shape = SubResource("RectangleShape2D_bin77")
+
+[node name="Visual" parent="Walls/Bottom/BottomRightVertical" instance=ExtResource("6_av5ge")]
+
+[node name="FlipperSelector" type="Node2D" parent="."]
+script = ExtResource("12_nt34j")
+
+[node name="BottomController" type="Node2D" parent="FlipperSelector"]
+position = Vector2(0, 501)
+script = ExtResource("13_7fouc")
+
+[node name="LeftFlipper" parent="FlipperSelector/BottomController" instance=ExtResource("14_jh417")]
+position = Vector2(-286.99988, 98)
+flipper_length = 360.0
+
+[node name="RightFlipper" parent="FlipperSelector/BottomController" instance=ExtResource("15_kj6db")]
+position = Vector2(287, 98)
+flipper_length = 360.0
+
+[node name="UpperLeftController" type="Node2D" parent="FlipperSelector"]
+position = Vector2(-714.39249, -99.28829)
+rotation = 2.3561945
+script = ExtResource("13_7fouc")
+
+[node name="LeftFlipper" parent="FlipperSelector/UpperLeftController" instance=ExtResource("14_jh417")]
+position = Vector2(-287, 98)
+flipper_length = 360.0
+
+[node name="RightFlipper" parent="FlipperSelector/UpperLeftController" instance=ExtResource("15_kj6db")]
+position = Vector2(287, 98)
+flipper_length = 360.0
+
+[node name="UpperRightController" type="Node2D" parent="FlipperSelector"]
+position = Vector2(714.39249, -99.28829)
+rotation = -2.3561945
+script = ExtResource("13_7fouc")
+
+[node name="LeftFlipper" parent="FlipperSelector/UpperRightController" instance=ExtResource("14_jh417")]
+position = Vector2(-287, 98)
+flipper_length = 360.0
+
+[node name="RightFlipper" parent="FlipperSelector/UpperRightController" instance=ExtResource("15_kj6db")]
+position = Vector2(287, 98)
+flipper_length = 360.0
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(0, 1)
+zoom = Vector2(0.43, 0.43)
