@@ -35,6 +35,10 @@ func _build_preview() -> void:
 func _refresh() -> void:
 	super()
 	_refresh_preview()
+	# v0.2 모델: 공 종류는 소모되지 않으므로(7-1) 종류별 개수 대신
+	# 생명 풀의 남은 발사 횟수를 보여 줍니다.
+	if visible and _inventory is WaveBallInventoryV02:
+		stock_label.text = "남은 발사 %d회" % _inventory.total_remaining
 
 
 func _refresh_preview() -> void:

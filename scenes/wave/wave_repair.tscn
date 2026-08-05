@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3]
+[gd_scene load_steps=30 format=3]
 
 [ext_resource type="PackedScene" uid="uid://6fbf244c58gg" path="res://scenes/wave/wave.tscn" id="1_board"]
 [ext_resource type="Script" path="res://scripts/wave_hud/wave_repair_coordinator.gd" id="2_coordinator"]
@@ -23,6 +23,21 @@
 [ext_resource type="Resource" path="res://settings/reward_shop/sockets/Socket_top_04.tres" id="21_top_04"]
 [ext_resource type="Script" path="res://scripts/ball_base_system/ball_selection_hud_v02.gd" id="22_selection_hud_v02"]
 [ext_resource type="Script" path="res://scripts/wave_hud/life_hud_v02.gd" id="23_life_hud_v02"]
+[ext_resource type="Script" path="res://scripts/ball_base_system/wave_ball_inventory_v02.gd" id="24_inventory_v02"]
+[ext_resource type="Script" path="res://scripts/ball_base_system/ball_definition.gd" id="25_definition"]
+[ext_resource type="Script" path="res://scripts/ball_base_system/ball_stock.gd" id="26_stock"]
+[ext_resource type="PackedScene" uid="uid://csrwlhfpki4fs" path="res://Resources/balls/mass_var/normal_ball.tscn" id="27_base_ball"]
+
+[sub_resource type="Resource" id="BallDefinition_base"]
+script = ExtResource("25_definition")
+ball_id = &"normal"
+display_name = "기본 유리눈"
+ball_scene = ExtResource("27_base_ball")
+
+[sub_resource type="Resource" id="BallStock_base"]
+script = ExtResource("26_stock")
+definition = SubResource("BallDefinition_base")
+count = 3
 
 [node name="WaveRepair" instance=ExtResource("1_board")]
 script = ExtResource("2_coordinator")
@@ -34,6 +49,10 @@ script = ExtResource("22_selection_hud_v02")
 
 [node name="LifeHud" parent="HUD/WaveHud/DesignSpace" index="0"]
 script = ExtResource("23_life_hud_v02")
+
+[node name="WaveBallInventory" parent="." index="0"]
+script = ExtResource("24_inventory_v02")
+starting_stock = Array[ExtResource("26_stock")]([SubResource("BallStock_base")])
 
 [node name="RepairPartSystem" type="Node2D" parent="."]
 

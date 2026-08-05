@@ -12,6 +12,10 @@ extends WaveShopBallCoordinator
 ##       웨이브 동안 부품 작동 → 종료·실패·재시도 시 보드에서 제거.
 
 
+## 발사 전 공 선택이 확정될 때마다 발화합니다. (기획서 10-3 ball_selected)
+signal ball_selected(wave_id: int, launch_index: int, ball_id: StringName)
+
+
 const DEFAULT_PART_SCENE_MAP := preload(
 	"res://settings/reward_shop/RepairPartSceneMap_Stage01.tres"
 )
@@ -26,11 +30,79 @@ var repair_board: RepairBoardController
 var placement_controller: RepairPlacementController
 var placement_hud: RepairPlacementHud
 
+## 이번 웨이브에서 몇 번째 발사인지 셉니다. ball_selected 인자용입니다.
+var _launch_index := 0
+
 
 func _ready() -> void:
 	super()
 	_build_repair_placement()
 	_build_debug_key_guide()
+	wave_ball_flow.ball_selection_confirmed.connect(
+		_on_ball_selection_confirmed
+	)
+
+
+## 부모의 스테이지 공 인벤토리를 v0.2 모델로 교체합니다. (기획서 7장)
+## 해금 공이 생명 슬롯을 차지하지 않고, 보유 한도 없이 무제한 재선택됩니다.
+func _build_stage_ball_inventory() -> void:
+	stage_ball_inventory = StageBallInventoryV02.new()
+	stage_ball_inventory.name = "StageBallInventory"
+	stage_ball_inventory.scene_map = ball_scene_map
+	add_child(stage_ball_inventory)
+	stage_ball_inventory.capture_base_stock(
+		wave_ball_inventory.starting_stock
+	)
+	stage_ball_inventory.unlocked_balls_changed.connect(_on_unlocked_changed)
+	shop_controller.ball_unlocked.connect(_on_ball_unlocked)
+
+
+## 해금 실패 시 결제를 되돌립니다. (기획서 6-3 검사⑤ — 차감·지급 원자성)
+func _on_ball_unlocked(ball_id: StringName) -> void:
+	if stage_ball_inventory.unlock(ball_id):
+		return
+	var refund := _catalog_ball_price_of(ball_id)
+	if refund > 0:
+		coin_wallet.add(refund)
+	var remaining_ids := shop_controller.unlocked_ball_ids
+	remaining_ids.erase(ball_id)
+	shop_controller.reset_unlocked_balls(remaining_ids)
+	_append_event("구매 롤백 · %s 해금 실패 · +%d코인 반환" % [ball_id, refund])
+
+
+func _on_unlocked_changed(unlocked_ids: Array[StringName]) -> void:
+	super(unlocked_ids)
+	_sync_unlocked_ball_types()
+
+
+## 해금 종류 목록을 v0.2 인벤토리에 반영합니다. 다음 웨이브부터 선택됩니다.
+func _sync_unlocked_ball_types() -> void:
+	var inventory_v02 := wave_ball_inventory as WaveBallInventoryV02
+	var stage_v02 := stage_ball_inventory as StageBallInventoryV02
+	if inventory_v02 == null or stage_v02 == null:
+		return
+	inventory_v02.set_unlocked_definitions(stage_v02.unlocked_definitions())
+
+
+func _on_ball_selection_confirmed(
+	definition: BallDefinition,
+	_remaining: int
+) -> void:
+	if definition == null:
+		return
+	ball_selected.emit(
+		wave_manager.current_wave_index, _launch_index, definition.ball_id
+	)
+	_launch_index += 1
+
+
+func _catalog_ball_price_of(ball_id: StringName) -> int:
+	if shop_catalog == null:
+		return 0
+	for offer in shop_catalog.ball_offers:
+		if offer != null and offer.ball_id == ball_id:
+			return offer.price
+	return 0
 
 
 func _build_repair_placement() -> void:
@@ -125,6 +197,7 @@ func _on_repair_wave_entered(
 	_wave_index: int,
 	_target_score: int
 ) -> void:
+	_launch_index = 0
 	placement_controller.clear_board()
 	_try_begin_placement()
 
