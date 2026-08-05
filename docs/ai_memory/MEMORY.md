@@ -29,8 +29,10 @@ Pinball_Logue (NAN AI 해커톤, 팀 Hire us Pls) 프로젝트 메모리.
 
 ## 보상·상점 (v0.2)
 
+- ★ [보상 v0.2 인계 메모](HANDOFF_reward_v02.md) — **보상 작업을 이어받으면 이것부터.**
+  작업 규칙·브랜치 상태·커밋 이력·다음 순번·지뢰 6개
 - [보상 v0.2 시스템](project_reward_v02.md) — 코인·상점·공 모델·부품 배치·롤백 구현 현황.
-  확인 씬 `wave_repair.tscn`, 조작키, 지뢰 4개(유령 자식·점수 리셋 등)
+  확인 씬 `wave_repair.tscn`, 조작키, 테스트 목록
 
 ## 공
 
