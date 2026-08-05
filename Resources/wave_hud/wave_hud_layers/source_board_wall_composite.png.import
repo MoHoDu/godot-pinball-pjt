@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://2gnrqcj3c5sh"
-path="res://.godot/imported/source_board_wall_composite.png-f8a7f159c2475d446ae295e01939dd3b.ctex"
+path="res://.godot/imported/source_board_wall_composite.png-6b9b11aaf430b9a0821fa049da78073e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Resources/wave_hud/wave_hud_layers/source_board_wall_composite.png"
-dest_files=["res://.godot/imported/source_board_wall_composite.png-f8a7f159c2475d446ae295e01939dd3b.ctex"]
+source_file="res://resources/wave_hud/wave_hud_layers/source_board_wall_composite.png"
+dest_files=["res://.godot/imported/source_board_wall_composite.png-6b9b11aaf430b9a0821fa049da78073e.ctex"]
 
 [params]
 

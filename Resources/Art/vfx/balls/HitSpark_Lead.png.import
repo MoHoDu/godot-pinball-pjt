@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://d2fgs5pad1cw"
-path="res://.godot/imported/HitSpark_Lead.png-ac68c35c0bb113c0e56398bf9ced1155.ctex"
+path="res://.godot/imported/HitSpark_Lead.png-d637bd6d429bc0db44ab7eb53bbb8109.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Resources/Art/vfx/balls/HitSpark_Lead.png"
-dest_files=["res://.godot/imported/HitSpark_Lead.png-ac68c35c0bb113c0e56398bf9ced1155.ctex"]
+source_file="res://resources/Art/vfx/balls/HitSpark_Lead.png"
+dest_files=["res://.godot/imported/HitSpark_Lead.png-d637bd6d429bc0db44ab7eb53bbb8109.ctex"]
 
 [params]
 

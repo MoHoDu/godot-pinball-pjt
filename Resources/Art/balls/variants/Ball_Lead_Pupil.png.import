@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://crh47q2da8ni0"
-path="res://.godot/imported/Ball_Lead_Pupil.png-33c61c9223252aa249002986ebcfc69c.ctex"
+path="res://.godot/imported/Ball_Lead_Pupil.png-065529ed64b5a0801bc6535c069811f2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Resources/Art/balls/variants/Ball_Lead_Pupil.png"
-dest_files=["res://.godot/imported/Ball_Lead_Pupil.png-33c61c9223252aa249002986ebcfc69c.ctex"]
+source_file="res://resources/Art/balls/variants/Ball_Lead_Pupil.png"
+dest_files=["res://.godot/imported/Ball_Lead_Pupil.png-065529ed64b5a0801bc6535c069811f2.ctex"]
 
 [params]
 

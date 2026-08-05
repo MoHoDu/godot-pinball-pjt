@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://basfx80l4v60"
-path="res://.godot/imported/Particle_HollowBell_ring.png-bf87a0b38ac72612d7f0d4bfcb6e7659.ctex"
+path="res://.godot/imported/Particle_HollowBell_ring.png-fc55f24512864dddeced16bc8f3342eb.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Resources/Art/vfx/balls/Particle_HollowBell_ring.png"
-dest_files=["res://.godot/imported/Particle_HollowBell_ring.png-bf87a0b38ac72612d7f0d4bfcb6e7659.ctex"]
+source_file="res://resources/Art/vfx/balls/Particle_HollowBell_ring.png"
+dest_files=["res://.godot/imported/Particle_HollowBell_ring.png-fc55f24512864dddeced16bc8f3342eb.ctex"]
 
 [params]
 

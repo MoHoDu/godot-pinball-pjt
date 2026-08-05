@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://3i54k5h61bkp"
-path="res://.godot/imported/impact_tick_mint.png-924594caea2caeb30ba70ff1fe5a2280.ctex"
+path="res://.godot/imported/impact_tick_mint.png-9509d984b841e11ad45866a21afcf74f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Resources/wave_hud/wave_hud_runtime_dark/combo/impact_tick_mint.png"
-dest_files=["res://.godot/imported/impact_tick_mint.png-924594caea2caeb30ba70ff1fe5a2280.ctex"]
+source_file="res://resources/wave_hud/wave_hud_runtime_dark/combo/impact_tick_mint.png"
+dest_files=["res://.godot/imported/impact_tick_mint.png-9509d984b841e11ad45866a21afcf74f.ctex"]
 
 [params]
 

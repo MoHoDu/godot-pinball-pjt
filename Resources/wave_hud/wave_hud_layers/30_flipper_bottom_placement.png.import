@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://50oxxprat88h"
-path="res://.godot/imported/30_flipper_bottom_placement.png-a9e3ddf0704cc36de9c36ded8123e741.ctex"
+path="res://.godot/imported/30_flipper_bottom_placement.png-4c7a7379c73059fb20c083f620e4c6b2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Resources/wave_hud/wave_hud_layers/30_flipper_bottom_placement.png"
-dest_files=["res://.godot/imported/30_flipper_bottom_placement.png-a9e3ddf0704cc36de9c36ded8123e741.ctex"]
+source_file="res://resources/wave_hud/wave_hud_layers/30_flipper_bottom_placement.png"
+dest_files=["res://.godot/imported/30_flipper_bottom_placement.png-4c7a7379c73059fb20c083f620e4c6b2.ctex"]
 
 [params]
 

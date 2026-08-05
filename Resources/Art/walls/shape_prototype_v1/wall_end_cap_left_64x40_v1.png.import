@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://x2cugandr58l"
-path="res://.godot/imported/wall_end_cap_left_64x40_v1.png-0833062d9524647833ac0b5a9290b3de.ctex"
+path="res://.godot/imported/wall_end_cap_left_64x40_v1.png-3cffc7b4cbd689050d9fa24af9f0e89e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Resources/Art/walls/shape_prototype_v1/wall_end_cap_left_64x40_v1.png"
-dest_files=["res://.godot/imported/wall_end_cap_left_64x40_v1.png-0833062d9524647833ac0b5a9290b3de.ctex"]
+source_file="res://resources/Art/walls/shape_prototype_v1/wall_end_cap_left_64x40_v1.png"
+dest_files=["res://.godot/imported/wall_end_cap_left_64x40_v1.png-3cffc7b4cbd689050d9fa24af9f0e89e.ctex"]
 
 [params]
 

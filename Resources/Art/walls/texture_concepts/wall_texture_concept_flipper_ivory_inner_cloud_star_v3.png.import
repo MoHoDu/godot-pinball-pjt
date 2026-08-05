@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://beyqxvskisqhv"
-path="res://.godot/imported/wall_texture_concept_flipper_ivory_inner_cloud_star_v3.png-8d9512a4da4936422b5be250cea6a614.ctex"
+path="res://.godot/imported/wall_texture_concept_flipper_ivory_inner_cloud_star_v3.png-f6092b7f7cd09c32fac05681e5c13817.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Resources/Art/walls/texture_concepts/wall_texture_concept_flipper_ivory_inner_cloud_star_v3.png"
-dest_files=["res://.godot/imported/wall_texture_concept_flipper_ivory_inner_cloud_star_v3.png-8d9512a4da4936422b5be250cea6a614.ctex"]
+source_file="res://resources/Art/walls/texture_concepts/wall_texture_concept_flipper_ivory_inner_cloud_star_v3.png"
+dest_files=["res://.godot/imported/wall_texture_concept_flipper_ivory_inner_cloud_star_v3.png-f6092b7f7cd09c32fac05681e5c13817.ctex"]
 
 [params]
 

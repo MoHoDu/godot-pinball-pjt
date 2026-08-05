@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c7o1t7njmy2af"
-path="res://.godot/imported/Particle_Gel_bubble.png-bf40805782ceb6c8321b86e6adcd3f31.ctex"
+path="res://.godot/imported/Particle_Gel_bubble.png-d09264afcf8fad51463ddd1a6908cf32.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Resources/Art/vfx/balls/Particle_Gel_bubble.png"
-dest_files=["res://.godot/imported/Particle_Gel_bubble.png-bf40805782ceb6c8321b86e6adcd3f31.ctex"]
+source_file="res://resources/Art/vfx/balls/Particle_Gel_bubble.png"
+dest_files=["res://.godot/imported/Particle_Gel_bubble.png-d09264afcf8fad51463ddd1a6908cf32.ctex"]
 
 [params]
 

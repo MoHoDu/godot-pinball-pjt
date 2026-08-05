@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://srmk4m0fup8l"
-path="res://.godot/imported/wall_texture_concept_ivory_inner_cloud_star_v2.png-65c56a655afb253bfc3552592a421bb6.ctex"
+path="res://.godot/imported/wall_texture_concept_ivory_inner_cloud_star_v2.png-e10fa91d269dae41722860937e5c53d5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Resources/Art/walls/texture_concepts/wall_texture_concept_ivory_inner_cloud_star_v2.png"
-dest_files=["res://.godot/imported/wall_texture_concept_ivory_inner_cloud_star_v2.png-65c56a655afb253bfc3552592a421bb6.ctex"]
+source_file="res://resources/Art/walls/texture_concepts/wall_texture_concept_ivory_inner_cloud_star_v2.png"
+dest_files=["res://.godot/imported/wall_texture_concept_ivory_inner_cloud_star_v2.png-e10fa91d269dae41722860937e5c53d5.ctex"]
 
 [params]
 

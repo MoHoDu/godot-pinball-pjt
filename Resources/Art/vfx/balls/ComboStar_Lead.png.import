@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c7n3eijgi7504"
-path="res://.godot/imported/ComboStar_Lead.png-272fa17cdf109f9b0a411a94c9a60d7a.ctex"
+path="res://.godot/imported/ComboStar_Lead.png-09008dd6cbed96a3f0cfd332dbca55d8.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Resources/Art/vfx/balls/ComboStar_Lead.png"
-dest_files=["res://.godot/imported/ComboStar_Lead.png-272fa17cdf109f9b0a411a94c9a60d7a.ctex"]
+source_file="res://resources/Art/vfx/balls/ComboStar_Lead.png"
+dest_files=["res://.godot/imported/ComboStar_Lead.png-09008dd6cbed96a3f0cfd332dbca55d8.ctex"]
 
 [params]
 

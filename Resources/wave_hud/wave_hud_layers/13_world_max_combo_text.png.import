@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dn8hnuhu3v7wc"
-path="res://.godot/imported/13_world_max_combo_text.png-7b9b251f78e5aa1b9facf4cf045fb411.ctex"
+path="res://.godot/imported/13_world_max_combo_text.png-1f17ffa8a83d1134f1934f80874b567d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Resources/wave_hud/wave_hud_layers/13_world_max_combo_text.png"
-dest_files=["res://.godot/imported/13_world_max_combo_text.png-7b9b251f78e5aa1b9facf4cf045fb411.ctex"]
+source_file="res://resources/wave_hud/wave_hud_layers/13_world_max_combo_text.png"
+dest_files=["res://.godot/imported/13_world_max_combo_text.png-1f17ffa8a83d1134f1934f80874b567d.ctex"]
 
 [params]
 

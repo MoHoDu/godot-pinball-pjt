@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://x25woi2trsvl"
-path="res://.godot/imported/industrial_steel_flipper.png-a37d92b91a0f507bf5da0fa72367540d.ctex"
+path="res://.godot/imported/industrial_steel_flipper.png-c877ee8c883fc3a5b795ee5d398d8fc4.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Resources/Art/flippers/industrial_steel_flipper.png"
-dest_files=["res://.godot/imported/industrial_steel_flipper.png-a37d92b91a0f507bf5da0fa72367540d.ctex"]
+source_file="res://resources/Art/flippers/industrial_steel_flipper.png"
+dest_files=["res://.godot/imported/industrial_steel_flipper.png-c877ee8c883fc3a5b795ee5d398d8fc4.ctex"]
 
 [params]
 

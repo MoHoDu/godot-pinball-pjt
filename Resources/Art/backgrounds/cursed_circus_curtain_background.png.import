@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://lbd5xd0x6y8q"
-path="res://.godot/imported/cursed_circus_curtain_background.png-866742ae2df79f9387d8e637579ab05f.ctex"
+path="res://.godot/imported/cursed_circus_curtain_background.png-88765fea3860a93fcb31ce7e08d9fef1.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Resources/Art/backgrounds/cursed_circus_curtain_background.png"
-dest_files=["res://.godot/imported/cursed_circus_curtain_background.png-866742ae2df79f9387d8e637579ab05f.ctex"]
+source_file="res://resources/Art/backgrounds/cursed_circus_curtain_background.png"
+dest_files=["res://.godot/imported/cursed_circus_curtain_background.png-88765fea3860a93fcb31ce7e08d9fef1.ctex"]
 
 [params]
 

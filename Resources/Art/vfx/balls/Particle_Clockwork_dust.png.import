@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://ciwxd3xiwaf7q"
-path="res://.godot/imported/Particle_Clockwork_dust.png-f31cfca4a3fe82f0c601a704392e4238.ctex"
+path="res://.godot/imported/Particle_Clockwork_dust.png-5262d6b0accdd83e91a11054d602f37f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Resources/Art/vfx/balls/Particle_Clockwork_dust.png"
-dest_files=["res://.godot/imported/Particle_Clockwork_dust.png-f31cfca4a3fe82f0c601a704392e4238.ctex"]
+source_file="res://resources/Art/vfx/balls/Particle_Clockwork_dust.png"
+dest_files=["res://.godot/imported/Particle_Clockwork_dust.png-5262d6b0accdd83e91a11054d602f37f.ctex"]
 
 [params]
 

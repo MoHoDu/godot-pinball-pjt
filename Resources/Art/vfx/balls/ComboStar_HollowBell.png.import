@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c6f4mfxu1h8by"
-path="res://.godot/imported/ComboStar_HollowBell.png-74fe2404095ee87b30066791cddc50ed.ctex"
+path="res://.godot/imported/ComboStar_HollowBell.png-51ff412f9be15f3f359275f26660632a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Resources/Art/vfx/balls/ComboStar_HollowBell.png"
-dest_files=["res://.godot/imported/ComboStar_HollowBell.png-74fe2404095ee87b30066791cddc50ed.ctex"]
+source_file="res://resources/Art/vfx/balls/ComboStar_HollowBell.png"
+dest_files=["res://.godot/imported/ComboStar_HollowBell.png-51ff412f9be15f3f359275f26660632a.ctex"]
 
 [params]
 

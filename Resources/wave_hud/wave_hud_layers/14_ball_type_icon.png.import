@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dvlv6lmpbdoko"
-path="res://.godot/imported/14_ball_type_icon.png-d247cbc843d634a1bec0b284b45fac3e.ctex"
+path="res://.godot/imported/14_ball_type_icon.png-0bb3a2c6cb87917af5784a11b19afe7a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Resources/wave_hud/wave_hud_layers/14_ball_type_icon.png"
-dest_files=["res://.godot/imported/14_ball_type_icon.png-d247cbc843d634a1bec0b284b45fac3e.ctex"]
+source_file="res://resources/wave_hud/wave_hud_layers/14_ball_type_icon.png"
+dest_files=["res://.godot/imported/14_ball_type_icon.png-0bb3a2c6cb87917af5784a11b19afe7a.ctex"]
 
 [params]
 
