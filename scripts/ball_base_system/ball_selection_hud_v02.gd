@@ -10,8 +10,16 @@ extends BallSelectionHud
 
 const PREVIEW_SIZE := Vector2(128.0, 128.0)
 
+## 장점·대가·성능 계열 문구를 상점 카탈로그에서 그대로 가져옵니다(7-2).
+const SHOP_CATALOG := preload(
+	"res://settings/reward_shop/RewardShopCatalog_Stage01.tres"
+)
+
+const PERFORMANCE_GROUP_NAMES: Array[String] = ["안정형", "중간형", "도전형"]
+
 
 var _preview: TextureRect
+var _info_label: Label
 
 
 func _ready() -> void:
@@ -29,6 +37,21 @@ func _build_preview() -> void:
 	_preview.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	_preview.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_preview)
+
+	# 보유 종류 나열과 장점·대가 문구를 패널 아래에 붙입니다(7-2).
+	_info_label = Label.new()
+	_info_label.name = "_BallInfoLabel"
+	_info_label.position = Vector2(0.0, size.y + 8.0)
+	_info_label.add_theme_font_size_override(&"font_size", 16)
+	_info_label.add_theme_color_override(
+		&"font_color", Color(0.80, 0.86, 0.84)
+	)
+	_info_label.add_theme_color_override(
+		&"font_outline_color", Color(0.05, 0.06, 0.08)
+	)
+	_info_label.add_theme_constant_override(&"outline_size", 5)
+	_info_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_info_label)
 	_refresh_preview()
 
 
@@ -49,3 +72,42 @@ func _refresh_preview() -> void:
 		definition.ball_id if definition != null else &""
 	_preview.texture = BallArtLibrary.composite_of(ball_id)
 	_preview.visible = _preview.texture != null
+	_refresh_info(ball_id)
+
+
+## 보유 종류 나열 + 선택한 공의 계열·장점·대가 문구입니다(7-2).
+func _refresh_info(selected_id: StringName) -> void:
+	if _info_label == null or _inventory == null:
+		return
+	_info_label.visible = visible
+	if not visible:
+		return
+	var type_names: PackedStringArray = PackedStringArray()
+	for definition in _inventory.get_available_definitions():
+		if definition.ball_id == selected_id:
+			type_names.append("[%s]" % definition.display_name)
+		else:
+			type_names.append(definition.display_name)
+	var lines: PackedStringArray = PackedStringArray()
+	lines.append("보유: " + "  ".join(type_names))
+	var offer := _find_catalog_offer(selected_id)
+	if offer != null:
+		lines.append("%s · + %s" % [
+			PERFORMANCE_GROUP_NAMES[clampi(
+				offer.performance_group, 0, PERFORMANCE_GROUP_NAMES.size() - 1
+			)],
+			offer.merit_text,
+		])
+		lines.append("- " + offer.cost_text)
+	else:
+		lines.append("기본 유리눈 · 균형형 — 추가 효과 없음")
+	_info_label.text = "\n".join(lines)
+
+
+func _find_catalog_offer(ball_id: StringName) -> RewardBallOffer:
+	if SHOP_CATALOG == null:
+		return null
+	for offer in SHOP_CATALOG.ball_offers:
+		if offer != null and offer.ball_id == ball_id:
+			return offer
+	return null
