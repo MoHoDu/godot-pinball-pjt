@@ -1,17 +1,17 @@
-[gd_scene format=3 uid="uid://bcwvt3i4iw5ej"]
+[gd_scene format=3 uid="uid://cusfhu6qpdfec"]
 
-[ext_resource type="Script" uid="uid://cja8is27ouise" path="res://tests/flipper_system/test_flipper_board.gd" id="1_board"]
-[ext_resource type="PackedScene" uid="uid://bhh5qyc3llygr" path="res://Resources/balls/base/base_ball.tscn" id="2_ball"]
-[ext_resource type="Script" uid="uid://ce2wax7g2gio8" path="res://scripts/ball_base_system/pinball_stats.gd" id="3_stats"]
-[ext_resource type="Script" uid="uid://58k0flhnlg3" path="res://scripts/flipper_system/flipper_selector.gd" id="4_selector"]
-[ext_resource type="Script" uid="uid://lj3ocu4ruejo" path="res://scripts/flipper_system/flipper_controller.gd" id="5_controller"]
-[ext_resource type="PackedScene" uid="uid://ris3ga3vl6ci" path="res://Resources/flippers/sub_flipper/normal_flipper_left.tscn" id="6_left"]
-[ext_resource type="PackedScene" uid="uid://u4e8s8havfkw" path="res://Resources/flippers/sub_flipper/normal_flipper_right.tscn" id="7_right"]
-[ext_resource type="Script" uid="uid://gmulfh3yhc8h" path="res://tests/flipper_system/test_speed_bumper.gd" id="8_bumper"]
-[ext_resource type="Texture2D" uid="uid://dsjw1kfs6d0xv" path="res://Resources/Art/board/octagonal_dark_wood_board.png" id="9_board_texture"]
-[ext_resource type="PackedScene" path="res://Resources/Art/walls/cursed_toy_frame_v1/wall_visual_820x40_cursed_toy_v1.tscn" id="10_wall_visual"]
-[ext_resource type="Texture2D" uid="uid://cccmtg74eywpf" path="res://Resources/Art/backgrounds/cursed_circus_outside_background.png" id="11_outside_background"]
-[ext_resource type="Script" uid="uid://c1n1lurdkbtkj" path="res://scripts/ball_base_system/pinball_launcher.gd" id="12_launcher"]
+[ext_resource type="Script" uid="uid://cja8is27ouise" path="res://tests/flipper_system/test_flipper_board.gd" id="1_7l7py"]
+[ext_resource type="Texture2D" uid="uid://cccmtg74eywpf" path="res://Resources/Art/backgrounds/cursed_circus_outside_background.png" id="2_crcb8"]
+[ext_resource type="Texture2D" uid="uid://dsjw1kfs6d0xv" path="res://Resources/Art/board/octagonal_dark_wood_board.png" id="3_b4bke"]
+[ext_resource type="PackedScene" path="res://Resources/Art/walls/cursed_toy_frame_v1/wall_visual_820x40_cursed_toy_v1.tscn" id="4_5303r"]
+[ext_resource type="Script" uid="uid://gmulfh3yhc8h" path="res://tests/flipper_system/test_speed_bumper.gd" id="5_iitti"]
+[ext_resource type="Script" uid="uid://58k0flhnlg3" path="res://scripts/flipper_system/flipper_selector.gd" id="6_25gd5"]
+[ext_resource type="Script" uid="uid://lj3ocu4ruejo" path="res://scripts/flipper_system/flipper_controller.gd" id="7_knaar"]
+[ext_resource type="PackedScene" uid="uid://ris3ga3vl6ci" path="res://Resources/flippers/sub_flipper/normal_flipper_left.tscn" id="8_bt1k8"]
+[ext_resource type="PackedScene" uid="uid://u4e8s8havfkw" path="res://Resources/flippers/sub_flipper/normal_flipper_right.tscn" id="9_kns25"]
+[ext_resource type="PackedScene" uid="uid://bhh5qyc3llygr" path="res://Resources/balls/base/base_ball.tscn" id="10_hwq4q"]
+[ext_resource type="Script" uid="uid://ce2wax7g2gio8" path="res://scripts/ball_base_system/pinball_stats.gd" id="11_ifdjx"]
+[ext_resource type="Script" uid="uid://c1n1lurdkbtkj" path="res://scripts/ball_base_system/pinball_launcher.gd" id="12_8nhh1"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape_diagonal"]
 size = Vector2(819.329, 24)
@@ -24,33 +24,33 @@ radius = 64.0
 resource_local_to_scene = true
 radius = 68.0
 
-[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_yeeea"]
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_7l7py"]
 resource_local_to_scene = true
-bounce = 0.9
+bounce = 0.5
 
-[sub_resource type="Resource" id="Resource_cvo6k"]
+[sub_resource type="Resource" id="Resource_crcb8"]
 resource_local_to_scene = true
-script = ExtResource("3_stats")
+script = ExtResource("11_ifdjx")
 mass = 1.0
-elasticity = 0.9
-gravity_scale = 0.35
+elasticity = 0.5
+gravity_scale = 0.8
 initial_speed = 940.0
 minimum_speed = 320.0
 maximum_speed = 1540.0
 
 [node name="TestFlipperBoard" type="Node2D" unique_id=1905006504]
-script = ExtResource("1_board")
+script = ExtResource("1_7l7py")
 
 [node name="OutsideBackground" type="Sprite2D" parent="." unique_id=1723056906]
 modulate = Color(0.82, 0.82, 0.82, 1)
 z_index = -20
-scale = Vector2(1.3397129, 1.339001)
-texture = ExtResource("11_outside_background")
+scale = Vector2(1.61, 1.609)
+texture = ExtResource("2_crcb8")
 
 [node name="BoardBackground" type="Sprite2D" parent="." unique_id=2016125082]
 modulate = Color(0.7, 0.7, 0.7, 1)
 z_index = -10
-texture = ExtResource("9_board_texture")
+texture = ExtResource("3_b4bke")
 
 [node name="GapGuides" type="Node2D" parent="." unique_id=655463945]
 z_index = -5
@@ -81,27 +81,28 @@ rotation = 0.348772
 position = Vector2(0, 12)
 shape = SubResource("RectangleShape_diagonal")
 
-[node name="Visual" parent="Walls/TopRightDiagonal" unique_id=1986772914 instance=ExtResource("10_wall_visual")]
+[node name="Visual" parent="Walls/TopRightDiagonal" unique_id=1986772914 instance=ExtResource("4_5303r")]
 
 [node name="BottomRightDiagonal" type="StaticBody2D" parent="Walls" unique_id=10598488 groups=["combo_walls"]]
-position = Vector2(735, 490)
+position = Vector2(648, 490)
 rotation = 2.7928207
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/BottomRightDiagonal" unique_id=2056627273]
 position = Vector2(0, 12)
 shape = SubResource("RectangleShape_diagonal")
 
-[node name="Visual" parent="Walls/BottomRightDiagonal" unique_id=1280937662 instance=ExtResource("10_wall_visual")]
+[node name="Visual" parent="Walls/BottomRightDiagonal" unique_id=1280937662 instance=ExtResource("4_5303r")]
 
 [node name="BottomLeftDiagonal" type="StaticBody2D" parent="Walls" unique_id=2088105206 groups=["combo_walls"]]
-position = Vector2(-735, 490)
+position = Vector2(-648, 490)
 rotation = -2.7928207
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/BottomLeftDiagonal" unique_id=1052435425]
 position = Vector2(0, 12)
 shape = SubResource("RectangleShape_diagonal")
 
-[node name="Visual" parent="Walls/BottomLeftDiagonal" unique_id=24145458 instance=ExtResource("10_wall_visual")]
+[node name="Visual" parent="Walls/BottomLeftDiagonal" unique_id=24145458 instance=ExtResource("4_5303r")]
+position = Vector2(-6.5786133, 2.392212)
 
 [node name="TopLeftDiagonal" type="StaticBody2D" parent="Walls" unique_id=1475565543 groups=["combo_walls"]]
 position = Vector2(-735, -490)
@@ -111,13 +112,13 @@ rotation = -0.348772
 position = Vector2(0, 12)
 shape = SubResource("RectangleShape_diagonal")
 
-[node name="Visual" parent="Walls/TopLeftDiagonal" unique_id=908687253 instance=ExtResource("10_wall_visual")]
+[node name="Visual" parent="Walls/TopLeftDiagonal" unique_id=908687253 instance=ExtResource("4_5303r")]
 
 [node name="Bumpers" type="Node2D" parent="." unique_id=525693520]
 
 [node name="BumperCenter" type="StaticBody2D" parent="Bumpers" unique_id=1050007271]
 position = Vector2(0, -145)
-script = ExtResource("8_bumper")
+script = ExtResource("5_iitti")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Bumpers/BumperCenter" unique_id=637540678]
 shape = SubResource("CircleShape_bumper")
@@ -129,7 +130,7 @@ shape = SubResource("CircleShape_bumper_area")
 
 [node name="BumperLeft" type="StaticBody2D" parent="Bumpers" unique_id=1034082624]
 position = Vector2(-285, 75)
-script = ExtResource("8_bumper")
+script = ExtResource("5_iitti")
 fill_color = Color(0.66, 0.25, 0.58, 1)
 rim_color = Color(1, 0.66, 0.92, 1)
 
@@ -143,7 +144,7 @@ shape = SubResource("CircleShape_bumper_area")
 
 [node name="BumperRight" type="StaticBody2D" parent="Bumpers" unique_id=965244053]
 position = Vector2(285, 75)
-script = ExtResource("8_bumper")
+script = ExtResource("5_iitti")
 fill_color = Color(0.82, 0.48, 0.14, 1)
 rim_color = Color(1, 0.88, 0.54, 1)
 
@@ -156,76 +157,70 @@ shape = SubResource("CircleShape_bumper")
 shape = SubResource("CircleShape_bumper_area")
 
 [node name="FlipperSelector" type="Node2D" parent="." unique_id=1315987330]
-script = ExtResource("4_selector")
+script = ExtResource("6_25gd5")
 
 [node name="BottomController" type="Node2D" parent="FlipperSelector" unique_id=1804315096]
 position = Vector2(0, 550)
-script = ExtResource("5_controller")
+script = ExtResource("7_knaar")
 
-[node name="LeftFlipper" parent="FlipperSelector/BottomController" unique_id=1456684495 instance=ExtResource("6_left")]
-position = Vector2(-350, 72.00001)
+[node name="LeftFlipper" parent="FlipperSelector/BottomController" unique_id=1456684495 instance=ExtResource("8_bt1k8")]
+position = Vector2(-280.99994, 98)
 flipper_length = 328.0
 
-[node name="RightFlipper" parent="FlipperSelector/BottomController" unique_id=1943189333 instance=ExtResource("7_right")]
-position = Vector2(350, 76.00001)
+[node name="RightFlipper" parent="FlipperSelector/BottomController" unique_id=1943189333 instance=ExtResource("9_kns25")]
+position = Vector2(281, 98.00001)
 flipper_length = 328.0
 
 [node name="TopController" type="Node2D" parent="FlipperSelector" unique_id=183453463]
 position = Vector2(0, -550)
 rotation = 3.1415927
-script = ExtResource("5_controller")
+script = ExtResource("7_knaar")
 
-[node name="LeftFlipper" parent="FlipperSelector/TopController" unique_id=1999694581 instance=ExtResource("6_left")]
-position = Vector2(-350, 0)
+[node name="LeftFlipper" parent="FlipperSelector/TopController" unique_id=1999694581 instance=ExtResource("8_bt1k8")]
+position = Vector2(-368, -93.11)
 flipper_length = 328.0
 
-[node name="RightFlipper" parent="FlipperSelector/TopController" unique_id=1424501983 instance=ExtResource("7_right")]
+[node name="RightFlipper" parent="FlipperSelector/TopController" unique_id=1424501983 instance=ExtResource("9_kns25")]
 position = Vector2(350, 0)
 flipper_length = 328.0
 
 [node name="LeftController" type="Node2D" parent="FlipperSelector" unique_id=1499529864]
 position = Vector2(-1040, 0)
 rotation = 1.5707964
-script = ExtResource("5_controller")
+script = ExtResource("7_knaar")
 
-[node name="LeftFlipper" parent="FlipperSelector/LeftController" unique_id=73646635 instance=ExtResource("6_left")]
+[node name="LeftFlipper" parent="FlipperSelector/LeftController" unique_id=73646635 instance=ExtResource("8_bt1k8")]
 position = Vector2(-350, 0)
 flipper_length = 328.0
 
-[node name="RightFlipper" parent="FlipperSelector/LeftController" unique_id=1748286883 instance=ExtResource("7_right")]
+[node name="RightFlipper" parent="FlipperSelector/LeftController" unique_id=1748286883 instance=ExtResource("9_kns25")]
 position = Vector2(350, 0)
 flipper_length = 328.0
 
 [node name="RightController" type="Node2D" parent="FlipperSelector" unique_id=1029836660]
 position = Vector2(1040, 0)
 rotation = -1.5707964
-script = ExtResource("5_controller")
+script = ExtResource("7_knaar")
 
-[node name="LeftFlipper" parent="FlipperSelector/RightController" unique_id=1462510913 instance=ExtResource("6_left")]
+[node name="LeftFlipper" parent="FlipperSelector/RightController" unique_id=1462510913 instance=ExtResource("8_bt1k8")]
 position = Vector2(-350, 0)
 flipper_length = 328.0
 
-[node name="RightFlipper" parent="FlipperSelector/RightController" unique_id=1093853158 instance=ExtResource("7_right")]
+[node name="RightFlipper" parent="FlipperSelector/RightController" unique_id=1093853158 instance=ExtResource("9_kns25")]
 position = Vector2(350, 0)
 flipper_length = 328.0
 
-[node name="PinballBall" parent="." unique_id=1525149773 instance=ExtResource("2_ball")]
-position = Vector2(0, 400)
-physics_material_override = SubResource("PhysicsMaterial_yeeea")
-gravity_scale = 0.35
+[node name="PinballBall" parent="." unique_id=1525149773 instance=ExtResource("10_hwq4q")]
+physics_material_override = SubResource("PhysicsMaterial_7l7py")
+gravity_scale = 0.8
 freeze = true
-stats = SubResource("Resource_cvo6k")
+stats = SubResource("Resource_crcb8")
 ball_diameter = 94.0
 
-[node name="PinballLauncher" type="Node2D" parent="."]
+[node name="PinballLauncher" type="Node2D" parent="." unique_id=335207335]
 position = Vector2(0, 400)
 rotation = -2.14717
-script = ExtResource("12_launcher")
-default_launch_speed = 940.0
-minimum_launch_speed = 320.0
-maximum_launch_speed = 1540.0
-minimum_launch_angle_degrees = -30.0
-maximum_launch_angle_degrees = 30.0
+script = ExtResource("12_8nhh1")
 
 [node name="LauncherMarker" type="Polygon2D" parent="PinballLauncher" unique_id=489416960]
 z_index = -1
@@ -234,7 +229,7 @@ polygon = PackedVector2Array(-42, -42, 42, -42, 42, 42, -42, 42)
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=366379460]
 position = Vector2(0, 16)
-zoom = Vector2(0.494, 0.494)
+zoom = Vector2(0.374, 0.374)
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=2130486477]
 

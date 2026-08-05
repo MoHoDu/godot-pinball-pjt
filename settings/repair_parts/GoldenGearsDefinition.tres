@@ -1,37 +1,25 @@
-[gd_resource type="Resource" script_class="RepairPartDefinition" load_steps=6 format=3]
+[gd_resource type="Resource" script_class="RepairPartDefinition" format=3 uid="uid://djn35j7co7oev"]
 
-[ext_resource type="Script" path="res://scripts/repair_parts/data/repair_part_definition.gd" id="1"]
-[ext_resource type="Script" path="res://scripts/repair_parts/data/repair_part_rank_data.gd" id="2"]
+[ext_resource type="Script" uid="uid://gxxb7iydtty0" path="res://scripts/repair_parts/data/repair_part_definition.gd" id="1"]
+[ext_resource type="Script" uid="uid://b66il38vk2kco" path="res://scripts/repair_parts/data/repair_part_rank_data.gd" id="2"]
 
 [sub_resource type="Resource" id="Rank1"]
 script = ExtResource("2")
 window_seconds = 2.4
-echo_delay = 0.0
-cooldown_seconds = 0.0
-score_weight = 0.0
 contact_boost = 90.0
 overdrive_boost = 180.0
-max_stack = 3
 
 [sub_resource type="Resource" id="Rank2"]
 script = ExtResource("2")
 window_seconds = 2.4
-echo_delay = 0.0
-cooldown_seconds = 0.0
-score_weight = 0.0
 contact_boost = 120.0
 overdrive_boost = 240.0
-max_stack = 3
 
 [sub_resource type="Resource" id="Rank3"]
 script = ExtResource("2")
 window_seconds = 2.4
-echo_delay = 0.0
-cooldown_seconds = 0.0
-score_weight = 0.0
 contact_boost = 150.0
 overdrive_boost = 300.0
-max_stack = 3
 
 [resource]
 script = ExtResource("1")
@@ -40,4 +28,4 @@ family = 1
 display_name = "황금 톱니바퀴"
 bumper_kind_id = &"golden_gears"
 action_line = "짧은 시간 안에 세 번 감으면 과회전이 터집니다"
-rank_data = [SubResource("Rank1"), SubResource("Rank2"), SubResource("Rank3")]
+rank_data = Array[ExtResource("2")]([SubResource("Rank1"), SubResource("Rank2"), SubResource("Rank3")])
