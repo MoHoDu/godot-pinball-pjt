@@ -6,12 +6,6 @@
 [ext_resource type="Texture2D" uid="uid://cccmtg74eywpf" path="res://Resources/Art/backgrounds/cursed_circus_outside_background.png" id="4_b30we"]
 [ext_resource type="Texture2D" uid="uid://dsjw1kfs6d0xv" path="res://Resources/Art/board/octagonal_dark_wood_board.png" id="5_lkifm"]
 [ext_resource type="PackedScene" path="res://Resources/Art/walls/cursed_toy_frame_v1/wall_visual_820x40_cursed_toy_v1.tscn" id="6_av5ge"]
-[ext_resource type="PackedScene" path="res://scenes/bumper_system/button_bumper.tscn" id="7_np8kq"]
-[ext_resource type="PackedScene" path="res://scenes/bumper_system/cotton_bumper.tscn" id="8_oekst"]
-[ext_resource type="PackedScene" path="res://scenes/bumper_system/spring_doll_bumper.tscn" id="9_3ffis"]
-[ext_resource type="PackedScene" path="res://scenes/bumper_system/toy_drum_bumper.tscn" id="10_7msdj"]
-[ext_resource type="PackedScene" path="res://scenes/bumper_system/clockwork_toy_cannon.tscn" id="11_0rb1d"]
-[ext_resource type="Script" uid="uid://c2rm7omkmejhb" path="res://scripts/bumper-system/shot_response_strategy.gd" id="12_bin77"]
 [ext_resource type="Script" uid="uid://58k0flhnlg3" path="res://scripts/flipper_system/flipper_selector.gd" id="12_nt34j"]
 [ext_resource type="Script" uid="uid://lj3ocu4ruejo" path="res://scripts/flipper_system/flipper_controller.gd" id="13_7fouc"]
 [ext_resource type="PackedScene" uid="uid://ris3ga3vl6ci" path="res://Resources/flippers/sub_flipper/normal_flipper_left.tscn" id="14_jh417"]
@@ -37,8 +31,8 @@ script = ExtResource("2_bin77")
 stage_id = &"cursed_toy_demo"
 wave_target_scores = PackedInt32Array(250000, 400000, 650000, 1000000)
 
-[sub_resource type="Resource" id="Resource_ftx8i"]
-script = ExtResource("12_bin77")
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ftx8i"]
+size = Vector2(19.950983, 24.864557)
 
 [sub_resource type="Resource" id="BallDefinition_light"]
 script = ExtResource("22_dqvwb")
@@ -101,33 +95,16 @@ position = Vector2(0, 5)
 scale = Vector2(0.92, 0.92)
 texture = ExtResource("5_lkifm")
 
-[node name="Area_Square" type="Node2D" parent="BoardBackground" unique_id=92781294]
-position = Vector2(0, -5.4347825)
-scale = Vector2(1.0869565, 1.0869565)
+[node name="Area_Square" type="Node2D" parent="." unique_id=92781294]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="BoardBackground/Area_Square" unique_id=61779696]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area_Square" unique_id=61779696]
+position = Vector2(-1.891489, 1.3313389e-05)
+rotation = -3.1415925
+scale = Vector2(77.17831, 36.03523)
+shape = SubResource("RectangleShape2D_ftx8i")
+debug_color = Color(0.94972855, 0.16442639, 0.39801326, 0.41960785)
 
 [node name="Bumpers" type="Node2D" parent="." unique_id=249523259]
-
-[node name="BumperCenter" parent="Bumpers" unique_id=1260896194 instance=ExtResource("7_np8kq")]
-position = Vector2(0, -270)
-
-[node name="BumperUpperLeft" parent="Bumpers" unique_id=733485133 instance=ExtResource("8_oekst")]
-position = Vector2(-420, -190)
-
-[node name="BumperUpperRight" parent="Bumpers" unique_id=138028593 instance=ExtResource("7_np8kq")]
-position = Vector2(420, -190)
-bumper_id = &"button_bumper_right"
-
-[node name="BumperLowerLeft" parent="Bumpers" unique_id=209842536 instance=ExtResource("9_3ffis")]
-position = Vector2(-460, 210)
-
-[node name="BumperLowerRight" parent="Bumpers" unique_id=2078462835 instance=ExtResource("10_7msdj")]
-position = Vector2(460, 210)
-
-[node name="BumperCannon" parent="Bumpers" unique_id=203946906 instance=ExtResource("11_0rb1d")]
-position = Vector2(0, 190)
-response_strategy = SubResource("Resource_ftx8i")
 
 [node name="PinballLauncher" type="Node2D" parent="." unique_id=537150401]
 position = Vector2(0, 400)
