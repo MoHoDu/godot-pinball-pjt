@@ -47,6 +47,7 @@ var _part_inventory: RepairPartInventory
 var _panel: PanelContainer
 var _summary_label: Label
 var _wallet_label: Label
+var _owned_label: Label
 var _ball_row: HBoxContainer
 var _part_row: HBoxContainer
 var _proceed_button: Button
@@ -61,6 +62,9 @@ var _earned_text := ""
 ## 이번 보상 화면에서 구매한 카드 id입니다. 카드 상태 표시에 씁니다(5-4).
 var _purchased_ball_id: StringName = &""
 var _purchased_part_id: StringName = &""
+
+## 후보 확정 시 "살 수 있는 공+부품 조합"이 있었는지입니다(6-4 안내용).
+var _affordable_pair := true
 
 
 func _ready() -> void:
@@ -95,8 +99,19 @@ func bind(
 	_shop.shop_opened.connect(_on_shop_opened)
 	_shop.shop_closed.connect(_on_shop_closed)
 	_shop.reward_card_purchased.connect(_on_card_purchased)
+	_shop.reward_offers_generated.connect(_on_offers_generated)
 	_wallet.wallet_changed.connect(_on_wallet_changed)
 	return true
+
+
+func _on_offers_generated(
+	_wave_id: int,
+	_ball_ids: Array[StringName],
+	_part_ids: Array[StringName],
+	_wallet_balance: int,
+	affordable_pair: bool
+) -> void:
+	_affordable_pair = affordable_pair
 
 
 ## 상단 고정 영역에 쓸 웨이브 결과를 상점을 열기 전에 넣어 줍니다.
@@ -161,6 +176,12 @@ func _build_layout() -> void:
 	_wallet_label.add_theme_font_size_override(&"font_size", 14)
 	_wallet_label.add_theme_color_override(&"font_color", COLOR_GOLD)
 	column.add_child(_wallet_label)
+
+	# 공 보유 목록 요약과 부품 종류별 재고입니다(5-1 보유 정보).
+	_owned_label = Label.new()
+	_owned_label.add_theme_font_size_override(&"font_size", 11)
+	_owned_label.add_theme_color_override(&"font_color", COLOR_DIM)
+	column.add_child(_owned_label)
 
 	column.add_child(_make_row_label(BALL_ROW_LABEL))
 	_ball_row = HBoxContainer.new()
@@ -237,6 +258,34 @@ func _on_wallet_changed(_balance: int, _delta: int) -> void:
 func _refresh_header() -> void:
 	_summary_label.text = "%s  ·  %s" % [_wave_result_text, _earned_text]
 	_wallet_label.text = "보유 코인 %d" % (_wallet.balance if _wallet != null else 0)
+	_refresh_owned_label()
+
+
+## 공 보유 목록 요약 + 부품 종류별 재고 수량입니다(5-1).
+func _refresh_owned_label() -> void:
+	if _owned_label == null or _shop == null:
+		return
+	var ball_names: PackedStringArray = PackedStringArray(["기본 유리눈"])
+	var part_stocks: PackedStringArray = PackedStringArray()
+	if _shop.catalog != null:
+		for ball_offer in _shop.catalog.ball_offers:
+			if ball_offer != null \
+					and _shop.unlocked_ball_ids.has(ball_offer.ball_id):
+				ball_names.append(ball_offer.display_name)
+		if _part_inventory != null:
+			for part_offer in _shop.catalog.part_offers:
+				if part_offer == null:
+					continue
+				var count := _part_inventory.count_of(part_offer.part_id)
+				if count > 0:
+					part_stocks.append(
+						"%s %d" % [part_offer.display_name, count]
+					)
+	var part_text := "없음" if part_stocks.is_empty() \
+		else " · ".join(part_stocks)
+	_owned_label.text = "보유 공: %s    부품 재고: %s" % [
+		", ".join(ball_names), part_text,
+	]
 
 
 func _rebuild_cards() -> void:
@@ -398,7 +447,13 @@ func _refresh_detail_label() -> void:
 	if _detail_label == null:
 		return
 	if _selected_index < 0 or _selected_index >= _cards.size():
-		_detail_label.text = "카드를 선택하면 상세가 표시됩니다 · B: 다음 단계"
+		if _affordable_pair:
+			_detail_label.text = "카드를 선택하면 상세가 표시됩니다 · B: 다음 단계"
+		else:
+			# 6-4 가드가 조합을 만들지 못한 화면입니다(코인 18 미만 등).
+			_detail_label.text = (
+				"공+부품을 모두 살 코인이 부족합니다 · 저축 후 다음 보상도 가능 (B)"
+			)
 		_detail_label.add_theme_color_override(&"font_color", COLOR_DIM)
 		return
 	var ball_count := _shop.ball_offers.size()
