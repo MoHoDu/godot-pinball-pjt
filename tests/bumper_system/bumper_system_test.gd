@@ -71,6 +71,27 @@ func _test_stage01_settings_and_strategies() -> void:
 		"장난감 북은 Bounce 타입이어야 한다.")
 	_expect(cannon.settings.bumper_type == BumperSettings.BumperType.SHOT,
 		"태엽 장난감 대포는 Shot 타입이어야 한다.")
+	var inspector_categories := _get_editor_categories(cannon.settings)
+	_expect(inspector_categories.has(&"오브젝트 설정"),
+		"Inspector에는 오브젝트 설정 영역이 있어야 한다.")
+	_expect(inspector_categories.has(&"공용 범퍼 설정"),
+		"Inspector에는 공용 범퍼 설정 영역이 있어야 한다.")
+	_expect(inspector_categories.has(&"타입별 범퍼 설정"),
+		"Inspector에는 타입별 범퍼 설정 영역이 있어야 한다.")
+	_expect(not _is_editor_property_visible(button.settings, &"track_target_offset"),
+		"Normal 범퍼 Inspector에는 Track 목표 위치가 표시되면 안 된다.")
+	_expect(not _is_editor_property_visible(button.settings, &"launch_speed"),
+		"Normal 범퍼 Inspector에는 Shot 발사 속력이 표시되면 안 된다.")
+	_expect(_is_editor_property_visible(cannon.settings, &"launch_speed"),
+		"Shot 범퍼 Inspector에는 발사 속력이 표시되어야 한다.")
+	_expect(not _is_editor_property_visible(cannon.settings, &"speed_multiplier"),
+		"Shot 범퍼 Inspector에는 사용하지 않는 일반 반응 배율이 표시되면 안 된다.")
+	var track_settings := button.settings.duplicate(true) as BumperSettings
+	track_settings.bumper_type = BumperSettings.BumperType.TRACK
+	_expect(_is_editor_property_visible(track_settings, &"track_target_offset"),
+		"Track 범퍼 Inspector에는 목표 위치가 표시되어야 한다.")
+	_expect(not _is_editor_property_visible(track_settings, &"selection_duration"),
+		"Track 범퍼 Inspector에는 Shot 선택 시간이 표시되면 안 된다.")
 
 	var context := BallImpactContext.new(
 		_ball,
@@ -269,13 +290,39 @@ func _test_shot_control_and_deferred_destruction() -> void:
 		if anchor.is_safe_default:
 			safe_count += 1
 	_expect(anchors.size() == 3,
-		"캐논은 2~3개 범위 안인 발사 앵커 3개를 가져야 한다.")
+		"캐논 기본 설정은 발사 방향 3개를 가져야 한다.")
+	_expect(not cannon.has_node(^"LaunchAnchors"),
+		"Shot 발사 방향은 씬 자식 노드가 아닌 Settings 배열에서 관리해야 한다.")
 	_expect(safe_count == 1,
 		"캐논 안전 기본 방향은 정확히 하나여야 한다.")
 	_expect_float(cannon.get_selection_duration(), 0.8,
 		"캐논 방향 선택 시간은 0.8초여야 한다.")
 	_expect_float(cannon.get_launch_speed(), 1300.0,
 		"캐논 고정 발사 속력은 1300이어야 한다.")
+	_expect(anchors[0].release_position == Vector2(0.0, -82.0),
+		"캐논 안전 발사 위치는 Inspector에서 편집 가능한 좌표여야 한다.")
+	_expect(cannon.get_selected_launch_direction().is_equal_approx(Vector2.UP),
+		"캐논 발사 위치 좌표가 실제 발사 방향에 적용되어야 한다.")
+	var editable_settings := cannon.settings.duplicate(true) as BumperSettings
+	var editable_directions := editable_settings.shot_launch_directions.duplicate()
+	editable_directions.remove_at(2)
+	var diagonal_direction := ShotLaunchAnchor.new()
+	diagonal_direction.display_name = "오른쪽 위"
+	diagonal_direction.input_action = &"flipper_select_right"
+	diagonal_direction.release_position = Vector2(82.0, -82.0)
+	editable_directions.append(diagonal_direction)
+	editable_settings.shot_launch_directions = editable_directions
+	_expect(editable_settings.shot_launch_directions.size() == 3,
+		"Inspector 배열에서 Shot 방향을 삭제하고 새 방향을 추가할 수 있어야 한다.")
+	_expect(editable_settings.shot_launch_directions[2].display_name == "오른쪽 위",
+		"Inspector 배열에서 Shot 방향 속성을 수정할 수 있어야 한다.")
+
+	var editor_settings := cannon.settings.duplicate(true) as BumperSettings
+	cannon.settings = editor_settings
+	editor_settings.collision_diameter = 140.0
+	var cannon_shape := cannon.get_node(^"CollisionShape2D") as CollisionShape2D
+	_expect_float((cannon_shape.shape as CircleShape2D).radius, 70.0,
+		"Inspector 크기 변경은 물리 충돌 범위에 즉시 반영되어야 한다.")
 
 	_expect(cannon.register_valid_hit(_ball, 301),
 		"캐논 첫 접촉은 유효 타격이어야 한다.")
@@ -503,6 +550,22 @@ func _send_key(keycode: Key) -> void:
 func _expect_float(actual: float, expected: float, message: String) -> void:
 	_expect(absf(actual - expected) <= EPSILON,
 		"%s (expected=%s, actual=%s)" % [message, expected, actual])
+
+
+func _is_editor_property_visible(resource: Resource, property_name: StringName) -> bool:
+	for property: Dictionary in resource.get_property_list():
+		if StringName(property.name) != property_name:
+			continue
+		return (int(property.usage) & PROPERTY_USAGE_EDITOR) != 0
+	return false
+
+
+func _get_editor_categories(resource: Resource) -> Array[StringName]:
+	var result: Array[StringName] = []
+	for property: Dictionary in resource.get_property_list():
+		if (int(property.usage) & PROPERTY_USAGE_CATEGORY) != 0:
+			result.append(StringName(property.name))
+	return result
 
 
 func _expect(condition: bool, message: String) -> void:

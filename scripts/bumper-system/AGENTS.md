@@ -36,6 +36,7 @@
 | `bounce_response_strategy.gd` | 배율과 최소 방출 속력을 적용 |
 | `shot_response_strategy.gd` | 선택 방향과 고정 발사 속력 계산 |
 | `shot_bumper.gd` | 공 포획, 방향 선택, 발사, 안전 이탈 처리 |
+| `shot_launch_anchor.gd` | Inspector 배열에서 추가·삭제하는 Shot 발사 방향 데이터 |
 | `bumper_test_controller.gd` | Inspector 범퍼 목록, 낙하 테스트, 입력, 상태 HUD |
 
 `ShotBumper`는 공 포획과 입력 제어라는 고유 런타임 상태가 있으므로 `Bumper`의 하위 타입입니다. 수리 부품 자격 때문에 하위 타입인 것은 아닙니다.
@@ -46,19 +47,23 @@
 
 ```text
 BumperSettings.tres
-├─ Identity
-│  ├─ bumper_kind_id
-│  ├─ display_name
-│  └─ bumper_type
-├─ Reward And Placement
-│  └─ is_repair_part
-├─ Design Status
-│  ├─ mechanics_status
-│  ├─ concept_role
-│  └─ theme_keywords
-├─ Scoring / Durability / Physics / Geometry
-└─ Presentation
+├─ 오브젝트 설정
+│  ├─ 외형·충돌 크기
+│  ├─ 안전 복구 여백·배치 제한
+│  └─ 표현 리소스
+├─ 공용 범퍼 설정
+│  ├─ ID·이름·수리 부품 자격
+│  ├─ 기획 상태
+│  └─ 점수·내구도·복구
+└─ 타입별 범퍼 설정
+   ├─ Normal / Bounce 반응 수치
+   ├─ Track 목표 위치
+   └─ Shot 선택 시간·발사 속력·발사 방향 배열
 ```
+
+Shot 발사 방향은 씬 자식 노드가 아니라 `BumperSettings.shot_launch_directions`의
+`ShotLaunchAnchor` 리소스 배열로 관리합니다. Inspector 배열에서 항목을 추가·삭제하고,
+각 항목의 표시 이름, 입력 액션, 안전 기본 여부, 발사 위치를 수정하세요.
 
 특정 씬 인스턴스만 조정할 때는 `BumperInstanceOverrides`를 사용합니다. 음수 값은 공용 `BumperSettings` 값을 사용한다는 뜻입니다.
 
