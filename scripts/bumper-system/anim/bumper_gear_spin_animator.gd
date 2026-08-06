@@ -7,6 +7,9 @@ extends BumperArtAnimator
 ## - 2단계: 회전 속도가 1단계보다 약간 빨라진다
 ## - 3단계 과회전: 기어가 빠르게 한 바퀴 회전한다
 ##
+## 단 2026-08-06 형락님 지시로 **단계를 나누지 않고 매번 같게** 돈다.
+## 어떻게 맞아도 빠르게 한 바퀴 돌다가 감속하며 멈춘다.
+##
 ## **허브와 리벳은 돌지 않는다.** 허브는 짧게 수축·팽창하고 리벳은 순서대로
 ## 점등되므로 회전에서 빼야 한다. 아트를 휠/허브 두 레이어로 갈라 휠만 돌린다.
 ## 허브는 동심이라 반지름으로 깔끔히 갈렸다.
@@ -18,8 +21,13 @@ extends BumperArtAnimator
 
 const WHEEL_SPRITE := ^"_ArtSpriteWheel"
 
-## 단계별 회전량(라디안). 3단계는 한 바퀴다.
-const STEP_ARCS: Array[float] = [0.0, 0.55, 0.85, TAU]
+## 한 번 감길 때 도는 각도. **단계와 무관하게 항상 같다.**
+## 기획서 11쪽은 1·2단계를 짧게, 3단계만 한 바퀴로 나눴지만
+## 2026-08-06 형락님 지시로 "어떻게 맞아도 빠르게 돌다가 감속하며 멈춘다" 로 통일했다.
+const SPIN_ARC: float = TAU
+
+## 단계 수. wind_stack 상한과 맞춘다.
+const MAX_STAGE: int = 3
 
 ## 감속 계수(1/초). **남은 각도에 비례해 속도를 준다.**
 ## 그래서 감긴 직후에는 휙 돌고 목표에 가까워질수록 서서히 느려진다.
@@ -78,7 +86,7 @@ func _on_hit_advance_stage(
 ## 다음 감김 단계로 올립니다. 3단계(과회전) 다음은 기본 상태로 되돌아갑니다.
 ## 11쪽: 과회전 직후 모든 단계 표시가 꺼지고 기본 상태로 복귀한다.
 func advance_stage() -> void:
-	if _stage >= STEP_ARCS.size() - 1:
+	if _stage >= MAX_STAGE:
 		set_stage(0)
 		set_stage(1)
 		return
@@ -87,12 +95,12 @@ func advance_stage() -> void:
 
 ## 감김 단계를 반영해 그만큼 더 돌립니다.
 func set_stage(stage: int) -> void:
-	var clamped := clampi(stage, 0, STEP_ARCS.size() - 1)
+	var clamped := clampi(stage, 0, MAX_STAGE)
 	if clamped == _stage:
 		return
 	# 0 으로 되돌아가는 것은 과회전 직후의 초기화라 추가 회전을 넣지 않는다.
 	if clamped > _stage:
-		_target_angle += STEP_ARCS[clamped]
+		_target_angle += SPIN_ARC
 	_stage = clamped
 
 

@@ -115,16 +115,19 @@ func _test_gear_spin() -> void:
 	_expect(wheel.scale.is_equal_approx(hub.scale),
 		"두 레이어는 같은 캔버스 정렬이라 scale 이 같아야 한다")
 
-	var stage1 := await _spin_to(gear, wheel, 1, 0.6)
-	_expect(stage1 > 0.0, "1단계에서 휠이 돌아야 한다 (실제=%s)" % stage1)
+	# 단계를 나누지 않고 매번 한 바퀴씩 돈다 (2026-08-06 지시).
+	var stage1 := await _spin_to(gear, wheel, 1, 1.2)
+	_expect(absf(stage1 - TAU) <= 0.05,
+		"1단계도 한 바퀴여야 한다 (실제=%s)" % stage1)
 	_expect(absf(hub.rotation) <= EPSILON,
 		"허브는 돌면 안 된다 (11쪽 허브는 수축·팽창, 리벳은 점등) (실제=%s)"
 			% hub.rotation)
 
-	var stage2 := await _spin_to(gear, wheel, 2, 0.6)
-	_expect(stage2 - stage1 > 0.0, "2단계에서 더 돌아야 한다")
+	var stage2 := await _spin_to(gear, wheel, 2, 1.2)
+	_expect(absf((stage2 - stage1) - TAU) <= 0.05,
+		"2단계도 같은 각도만큼 돌아야 한다 (실제=%s)" % (stage2 - stage1))
 
-	# 과회전은 처음에 휙 돌고 끝에서 서서히 멈춰야 한다.
+	# 어떤 타격이든 처음에 휙 돌고 끝에서 서서히 멈춰야 한다.
 	gear.set_stage(3)
 	var first := wheel.rotation
 	await _wait(0.10)
@@ -135,19 +138,17 @@ func _test_gear_spin() -> void:
 	var stage3 := wheel.rotation
 	_expect(early > mid,
 		"회전이 갈수록 느려져야 한다 (앞 0.1s=%s, 뒤 0.1s=%s)" % [early, mid])
-	_expect(stage3 - stage2 >= TAU - 0.05,
-		"3단계 과회전은 한 바퀴여야 한다 (실제=%s)" % (stage3 - stage2))
+	_expect(absf((stage3 - stage2) - TAU) <= 0.05,
+		"3단계도 한 바퀴여야 한다 (실제=%s)" % (stage3 - stage2))
 	_expect(not gear.is_spinning(), "감속이 끝나면 멈춰 있어야 한다")
 
 	# 런타임이 없는 검수 씬에서는 타격만으로 단계가 올라야 한다.
 	var before := wheel.rotation
 	bumper.valid_hit_registered.emit(bumper.bumper_id, null, 1, 0)
-	var waited := 0.0
-	while waited < 0.5:
-		await process_frame
-		waited += root.get_process_delta_time()
-	_expect(wheel.rotation > before,
-		"런타임이 없으면 타격만으로 단계가 올라야 한다 (검수 씬용)")
+	await _wait(1.2)
+	_expect(absf((wheel.rotation - before) - TAU) <= 0.05,
+		"런타임이 없으면 타격만으로 한 바퀴 돌아야 한다 (검수 씬용) (실제=%s)"
+			% (wheel.rotation - before))
 	var after_hit := wheel.rotation
 
 	# 과회전 직후 0 으로 초기화돼도 되감기지 않아야 한다.
