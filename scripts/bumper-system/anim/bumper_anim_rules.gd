@@ -109,6 +109,30 @@ var shake_hz: float = DEFAULT_SHAKE_HZ:
 		emit_changed()
 
 
+@export_category("타격 프레임")
+
+## 눌림 구간 동안 갈아 끼울 타격 프레임입니다. 비워 두면 스쿼시만 씁니다.
+##
+## 용수철 인형 전용에 가깝습니다. 기획서 33쪽이 "얼굴과 용수철을 동시에 상시
+## 노출하지 않고 **기본 상태와 타격 상태의 형태 변화로** Bounce 를 전달한다" 고
+## 요구하는데, 스쿼시만으로는 숨어 있던 용수철이 드러나지 않습니다.
+##
+## 두 프레임은 **같은 캔버스에 정렬**돼 있어야 합니다. 알파 bbox 가 어긋나면
+## 교체 순간 그림이 튑니다.
+@export var hit_texture: Texture2D = null:
+	set(value):
+		hit_texture = value
+		emit_changed()
+
+## 타격 프레임을 유지하는 구간입니다. 눌림+복귀 전체에 대한 비율입니다.
+## 너무 길면 복귀 동작이 안 보이고, 너무 짧으면 프레임이 스쳐 지나갑니다.
+@export_range(0.05, 1.0, 0.05)
+var hit_frame_window: float = 0.45:
+	set(value):
+		hit_frame_window = clampf(value, 0.05, 1.0)
+		emit_changed()
+
+
 @export_category("상태")
 
 ## 복구 예고의 떨림 폭입니다. 3-2 절이 "아주 약한 떨림" 을 요구합니다.

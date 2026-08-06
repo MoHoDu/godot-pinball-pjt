@@ -39,6 +39,7 @@ func _run() -> void:
 	await _test_press_and_recover()
 	await _test_drum_head_only()
 	await _test_cannon_hold()
+	await _test_hit_frame_swap()
 	await _test_destroyed_alpha()
 	_test_rule_intent()
 
@@ -163,6 +164,54 @@ func _test_cannon_hold() -> void:
 	shot.control_ended.emit(shot, null)
 	await process_frame
 	_expect(not anim.is_holding(), "발사하면 유지가 풀려야 한다")
+
+	bumper.queue_free()
+	await process_frame
+
+
+func _test_hit_frame_swap() -> void:
+	# 33쪽: 얼굴과 용수철을 동시에 노출하지 않고 형태 변화로 Bounce 를 전달한다.
+	# 스쿼시만으로는 숨어 있던 용수철이 드러나지 않아 타격 프레임을 갈아 끼운다.
+	_expect(SPRING_ANIM.hit_texture != null,
+		"용수철 인형에 타격 프레임이 물려 있어야 한다")
+	if SPRING_ANIM.hit_texture == null:
+		return
+
+	var bumper: Bumper = await _spawn(SPRING_SCENE)
+	var anim := bumper.get_node_or_null(^"_ArtAnimator") as BumperArtAnimator
+	if anim == null:
+		bumper.queue_free()
+		return
+	var sprite := anim.get_target_sprite()
+	var base_texture := sprite.texture
+
+	_expect(base_texture != SPRING_ANIM.hit_texture,
+		"기본 상태에서는 기본 프레임이어야 한다")
+
+	anim.press(Vector2.DOWN)
+	await process_frame
+	await process_frame
+	_expect(anim.is_showing_hit_frame(),
+		"타격 직후에는 타격 프레임으로 바뀌어야 한다")
+
+	# 두 프레임이 같은 캔버스에 정렬돼 있어야 교체 순간 그림이 튀지 않는다.
+	var base_long := float(maxi(base_texture.get_width(), base_texture.get_height()))
+	var hit_long := float(maxi(
+		SPRING_ANIM.hit_texture.get_width(), SPRING_ANIM.hit_texture.get_height()
+	))
+	_expect(absf(base_long - hit_long) <= 1.0,
+		"두 프레임의 캔버스 크기가 같아야 한다 (기본=%s, 타격=%s)"
+			% [base_long, hit_long])
+
+	var total := SPRING_ANIM.press_seconds + SPRING_ANIM.release_seconds
+	var waited := 0.0
+	while waited < total + 0.1:
+		await process_frame
+		waited += root.get_process_delta_time()
+	_expect(not anim.is_showing_hit_frame(),
+		"복귀가 끝나면 기본 프레임으로 돌아와야 한다")
+	_expect(sprite.texture == base_texture,
+		"복귀 후 텍스처가 원래대로여야 한다")
 
 	bumper.queue_free()
 	await process_frame
