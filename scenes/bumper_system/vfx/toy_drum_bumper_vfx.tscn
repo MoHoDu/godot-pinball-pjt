@@ -1,0 +1,37 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/toy_drum_bumper.tscn" id="1_base"]
+[ext_resource type="Script" path="res://scripts/bumper-system/vfx/bumper_bounce_feedback.gd" id="2_feedback"]
+[ext_resource type="Resource" path="res://settings/bumpers/vfx/ToyDrumHitVfx.tres" id="3_rules"]
+[ext_resource type="Texture2D" path="res://Resources/Art/bumpers/toy_drum_head.png" id="4_head"]
+[ext_resource type="Texture2D" path="res://Resources/Art/bumpers/toy_drum_frame.png" id="5_frame"]
+
+[ext_resource type="Script" path="res://scripts/bumper-system/anim/bumper_art_animator.gd" id="8_anim"]
+[ext_resource type="Resource" path="res://settings/bumpers/anim/ToyDrumAnim.tres" id="9_anim_rules"]
+
+[node name="ToyDrumBumper" instance=ExtResource("1_base")]
+
+[node name="Visual" parent="." index="4"]
+visible = false
+
+; 북막과 북틀을 따로 둔다. 기획서 34쪽이 "외곽 북틀은 크게 움직이지 않고
+; 북막만 탄성 있게 변형된다" 고 요구한다. 한 장으로는 북틀까지 찌그러진다.
+; 두 레이어는 같은 1024 캔버스에 정렬돼 있으므로 scale 이 같아야 한다.
+
+[node name="_ArtSpriteHead" type="Sprite2D" parent="."]
+z_index = 2
+texture = ExtResource("4_head")
+scale = Vector2(0.125, 0.125)
+
+[node name="_ArtSpriteFrame" type="Sprite2D" parent="."]
+z_index = 3
+texture = ExtResource("5_frame")
+scale = Vector2(0.125, 0.125)
+
+[node name="_HitFeedback" type="Node2D" parent="."]
+script = ExtResource("2_feedback")
+rules = ExtResource("3_rules")
+
+[node name="_ArtAnimator" type="Node" parent="."]
+script = ExtResource("8_anim")
+rules = ExtResource("9_anim_rules")

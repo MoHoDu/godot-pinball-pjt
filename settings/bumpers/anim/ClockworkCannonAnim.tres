@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="BumperAnimRules" format=3]
+
+[ext_resource type="Script" path="res://scripts/bumper-system/anim/bumper_anim_rules.gd" id="1_rules"]
+
+[resource]
+script = ExtResource("1_rules")
+press_depth = 0.07
+press_offset_ratio = 0.05
+press_seconds = 0.05
+release_seconds = 0.14
+overshoot = 0.04
+shake_amplitude_ratio = 0.0
+shake_hz = 14.0
+telegraph_amplitude_ratio = 0.015
+telegraph_hz = 5.0
+destroyed_alpha = 0.28

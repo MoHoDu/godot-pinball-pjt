@@ -6,3 +6,7 @@
 /docs/**/*.import
 /tmp/**/*.import
 /tests/evidence/**/*.import
+
+# docs/ 의 파이썬 아트 생성·후처리 도구가 남기는 캐시.
+__pycache__/
+*.pyc
