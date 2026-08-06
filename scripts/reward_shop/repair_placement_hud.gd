@@ -21,14 +21,14 @@ const PART_ORDER: Array[StringName] = [
 
 
 var _controller: RepairPlacementController
-var _inventory: RepairPartInventory
+var _inventory: RewardPartInventory
 var _scene_map: RepairPartSceneMap
 var _panel_label: Label
 
 
 func bind(
 	controller: RepairPlacementController,
-	inventory: RepairPartInventory,
+	inventory: RewardPartInventory,
 	scene_map: RepairPartSceneMap
 ) -> bool:
 	if controller == null or inventory == null or scene_map == null:

@@ -26,7 +26,7 @@ func _run() -> void:
 	await process_frame
 
 	var wave_manager: WaveManager = scene.wave_manager
-	var inventory: RepairPartInventory = scene.part_inventory
+	var inventory: RewardPartInventory = scene.part_inventory
 	var placement: RepairPlacementController = scene.placement_controller
 
 	_expect(scene.repair_board != null, "수리 보드 컨트롤러가 붙어야 한다.")

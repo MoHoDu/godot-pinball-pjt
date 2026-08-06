@@ -1,4 +1,4 @@
-class_name RepairPartInventory
+class_name RewardPartInventory
 extends Node
 
 
@@ -6,6 +6,9 @@ extends Node
 ##
 ## 랭크가 없으므로 부품 종류별 정수 수량만 저장합니다.
 ## 배치·소비는 배치 단계에서 다루고, 여기는 보관과 가감만 합니다.
+##
+## main 의 board_system/RepairPartInventory(예약·용량 기반)와는 별개 구현입니다.
+## class_name 충돌만 피하려고 이름을 분리해 두었고, 두 시스템 통합은 별도 과제입니다.
 
 
 signal part_count_changed(part_id: StringName, count: int)

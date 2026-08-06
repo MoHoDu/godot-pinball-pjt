@@ -42,7 +42,7 @@ enum CardState {
 
 var _shop: RewardShopController
 var _wallet: CoinWallet
-var _part_inventory: RepairPartInventory
+var _part_inventory: RewardPartInventory
 
 var _panel: PanelContainer
 var _summary_label: Label
@@ -89,7 +89,7 @@ func _center_panel() -> void:
 func bind(
 	shop: RewardShopController,
 	wallet: CoinWallet,
-	part_inventory: RepairPartInventory
+	part_inventory: RewardPartInventory
 ) -> bool:
 	if shop == null or wallet == null:
 		return false

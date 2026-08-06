@@ -196,7 +196,7 @@ func _test_purchase_flow() -> void:
 	root.add_child(holder)
 	var wallet := CoinWallet.new()
 	holder.add_child(wallet)
-	var inventory := RepairPartInventory.new()
+	var inventory := RewardPartInventory.new()
 	holder.add_child(inventory)
 	var shop := RewardShopController.new()
 	shop.catalog = CATALOG

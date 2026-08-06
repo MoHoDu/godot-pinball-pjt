@@ -40,7 +40,7 @@ const CATEGORY_PART: StringName = &"part"
 
 
 var _wallet: CoinWallet
-var _part_inventory: RepairPartInventory
+var _part_inventory: RewardPartInventory
 var _rng := RandomNumberGenerator.new()
 
 var _is_open := false
@@ -85,7 +85,7 @@ func _ready() -> void:
 		_rng.randomize()
 
 
-func bind(wallet: CoinWallet, part_inventory: RepairPartInventory) -> bool:
+func bind(wallet: CoinWallet, part_inventory: RewardPartInventory) -> bool:
 	if wallet == null or part_inventory == null:
 		return false
 	_wallet = wallet

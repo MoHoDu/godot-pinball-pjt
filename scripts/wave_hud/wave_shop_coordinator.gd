@@ -31,7 +31,7 @@ const DEFAULT_SHOP_CATALOG := preload(
 @export var debug_fill_coin_amount := 999
 
 
-var part_inventory: RepairPartInventory
+var part_inventory: RewardPartInventory
 var shop_controller: RewardShopController
 var shop_hud: RewardShopHud
 
@@ -64,8 +64,8 @@ func _build_reward_system() -> void:
 
 
 func _build_shop_system() -> void:
-	part_inventory = RepairPartInventory.new()
-	part_inventory.name = "RepairPartInventory"
+	part_inventory = RewardPartInventory.new()
+	part_inventory.name = "RewardPartInventory"
 	add_child(part_inventory)
 
 	shop_controller = RewardShopController.new()
