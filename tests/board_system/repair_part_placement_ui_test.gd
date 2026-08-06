@@ -41,6 +41,9 @@ func _run() -> void:
 	_test_board_authoring_contract(layout)
 	_test_inventory_states(hud, controller)
 	_test_place_remove_and_replace(session, inventory, hud, controller)
+	await physics_frame
+	await process_frame
+	_test_placed_bumper_transform(session)
 	_test_commit_flow(
 		wave,
 		session,
@@ -240,6 +243,24 @@ func _test_commit_flow(
 	)
 	_expect(not wave.ball_selection_hud.visible,
 		"The board bridge must not re-show ball selection HUD in result phases.")
+
+
+func _test_placed_bumper_transform(session: BoardPlacementSession) -> void:
+	for placeable: BoardPlaceable in session.layout.get_placeables():
+		var bumper := placeable.get_bumper()
+		_expect(bumper != null, "Every placed repair part must contain a Bumper.")
+		if bumper == null:
+			continue
+		_expect(not bumper.sync_to_physics,
+			"A runtime-placed Bumper must inherit its placement wrapper transform.")
+		_expect(bumper.global_position.is_equal_approx(placeable.global_position),
+			"The repair-part Bumper must remain at its socket after physics sync.")
+		var physics_transform: Transform2D = PhysicsServer2D.body_get_state(
+			bumper.get_rid(),
+			PhysicsServer2D.BODY_STATE_TRANSFORM
+		)
+		_expect(physics_transform.origin.is_equal_approx(placeable.global_position),
+			"PhysicsServer2D must register the repair part at its socket, not origin.")
 
 
 func _expect(condition: bool, message: String) -> void:

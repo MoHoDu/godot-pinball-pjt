@@ -28,6 +28,12 @@ var _restoring_transform := false
 
 
 func _ready() -> void:
+	var bumper := get_bumper()
+	if bumper != null:
+		# The placement wrapper owns the transform. AnimatableBody2D's physics
+		# synchronization can otherwise keep the child at the origin where it
+		# first entered the tree while the wrapper moves to its socket.
+		bumper.sync_to_physics = false
 	set_notify_transform(true)
 	set_notify_local_transform(true)
 	queue_redraw()

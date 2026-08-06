@@ -120,8 +120,8 @@ func place_scene_at_socket(
 	if root == null:
 		placeable.free()
 		return null
+	placeable.position = root.to_local(socket.global_position)
 	root.add_child(placeable)
-	placeable.global_position = socket.global_position
 	var result := layout.validate_layout()
 	if not result.is_valid:
 		root.remove_child(placeable)
@@ -158,8 +158,8 @@ func replace_scene_at_socket(
 		replacement.get_kind_id(),
 		socket.socket_id,
 	]
+	replacement.position = root.to_local(socket.global_position)
 	root.add_child(replacement)
-	replacement.global_position = socket.global_position
 	var result := layout.validate_layout()
 	if not result.is_valid:
 		root.remove_child(replacement)
@@ -186,16 +186,19 @@ func move_placeable_to_socket(
 			or not socket.enabled \
 			or (_is_socket_occupied(socket_id) and placeable.socket_id != socket_id):
 		return false
-	var previous_position := placeable.global_position
+	var previous_position := placeable.position
 	var previous_zone := placeable.zone_id
 	var previous_socket := placeable.socket_id
-	placeable.global_position = socket.global_position
+	var root := placeable.get_parent() as Node2D
+	if root == null:
+		return false
+	placeable.position = root.to_local(socket.global_position)
 	placeable.zone_id = socket.zone_id
 	placeable.socket_id = socket.socket_id
 	var result := layout.validate_layout()
 	if result.is_valid:
 		return true
-	placeable.global_position = previous_position
+	placeable.position = previous_position
 	placeable.zone_id = previous_zone
 	placeable.socket_id = previous_socket
 	placement_rejected.emit(result)
