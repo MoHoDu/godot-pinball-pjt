@@ -17,15 +17,6 @@ const RUNTIME_GROUP: StringName = &"repair_part_runtimes"
 
 @export var definition: RepairPartDefinition
 
-## 세션 동안 유지되는 현재 랭크입니다. 공 단위 상태는 여기 두지 않습니다.
-@export_range(1, 9, 1) var current_rank: int = 1:
-	set(value):
-		current_rank = (
-			definition.clamp_rank(value)
-			if definition != null
-			else maxi(value, 1)
-		)
-
 ## 소켓 장착 여부입니다. 미장착 부품은 발동하지 않습니다.
 @export var is_equipped: bool = true
 
@@ -71,8 +62,8 @@ func get_family() -> int:
 	)
 
 
-func get_rank_data() -> RepairPartRankData:
-	return definition.get_rank_data(current_rank) if definition != null else null
+func get_definition() -> RepairPartDefinition:
+	return definition
 
 
 func is_active_part() -> bool:

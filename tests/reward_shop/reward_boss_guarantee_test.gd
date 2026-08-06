@@ -35,8 +35,8 @@ func _test_catalog_partner_kinds() -> void:
 		"별빛 브로치는 다른 부품 2종이 필요해야 한다."
 	)
 	_expect(
-		by_id.get(&"crescent_needle", -1) == 1,
-		"초승달 바늘은 다른 부품 1종이 필요해야 한다."
+		not by_id.has(&"crescent_needle"),
+		"v0.3에서 삭제된 초승달 바늘은 부품 카드에 남아 있으면 안 된다."
 	)
 	_expect(
 		by_id.get(&"golden_gears", -1) == 0
@@ -49,12 +49,10 @@ func _test_catalog_partner_kinds() -> void:
 func _test_usable_judgement() -> void:
 	var catalog := CATALOG as RewardShopCatalog
 	var brooch: RepairPartOffer
-	var needle: RepairPartOffer
 	var gears: RepairPartOffer
 	for offer in catalog.part_offers:
 		match offer.part_id:
 			&"starlight_brooch": brooch = offer
-			&"crescent_needle": needle = offer
 			&"golden_gears": gears = offer
 	var none: Array[StringName] = []
 	var one: Array[StringName] = [&"golden_gears"]
@@ -62,14 +60,6 @@ func _test_usable_judgement() -> void:
 	_expect(
 		RewardOfferGenerator._offer_boss_usable(gears, none),
 		"단독형은 보유 부품이 없어도 사용 가능해야 한다."
-	)
-	_expect(
-		not RewardOfferGenerator._offer_boss_usable(needle, none),
-		"바늘은 보유 부품이 없으면 사용 불가여야 한다."
-	)
-	_expect(
-		RewardOfferGenerator._offer_boss_usable(needle, one),
-		"바늘은 다른 부품 1종이 있으면 사용 가능해야 한다."
 	)
 	_expect(
 		not RewardOfferGenerator._offer_boss_usable(brooch, one),

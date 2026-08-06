@@ -9,13 +9,15 @@ extends Node
 const STOPPED_SPEED_EPSILON := 1.0
 
 
-## 톱니바퀴 접촉 가속을 적용합니다. 과회전이면 overdrive_boost를 추가합니다.
+## 톱니바퀴 접촉 가속을 적용합니다.
+## 접촉 가속은 기존 범퍼와 같은 '배율' 방식(current_speed * contact_multiplier)이고,
+## 과회전 추가 가속만 절대 px/s 가산으로 남겨 두었습니다.
 ## 공이 거의 정지한 경우 방향은 부품 중심 → 공 중심 벡터를 사용합니다.
 ## 반환값은 적용된 목표 속력이며, 적용 실패 시 -1.0입니다.
 func apply_gear_boost(
 	ball: RigidBody2D,
 	part_global_position: Vector2,
-	contact_boost: float,
+	contact_multiplier: float,
 	overdrive_boost: float,
 	is_overdrive: bool
 ) -> float:
@@ -32,7 +34,7 @@ func apply_gear_boost(
 	if direction.is_zero_approx():
 		return -1.0
 
-	var requested_speed := current_speed + maxf(contact_boost, 0.0)
+	var requested_speed := current_speed * maxf(contact_multiplier, 1.0)
 	if is_overdrive:
 		requested_speed += maxf(overdrive_boost, 0.0)
 
