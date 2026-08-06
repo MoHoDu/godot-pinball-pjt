@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://dhlkwfm22dnf7"]
+[gd_scene format=3]
 
 [ext_resource type="Script" uid="uid://b35gfy37afi7d" path="res://scripts/wave_hud/wave_runtime_coordinator.gd" id="1_borfr"]
 [ext_resource type="Script" uid="uid://d1ru6gfxnmw1r" path="res://scripts/combo_system/combo_stage_settings.gd" id="2_bin77"]
