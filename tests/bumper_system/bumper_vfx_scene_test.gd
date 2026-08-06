@@ -106,6 +106,27 @@ func _check_case(
 		_expect(rules_path.contains(_expected_rules_file(rules_class)),
 			"%s 규칙이 %s 여야 한다 (실제=%s)" % [vfx_path, rules_class, rules_path])
 
+	# 아트 스프라이트. 범퍼에 텍스처 슬롯이 없어 상속 씬에서 Sprite2D 로 얹는다.
+	var art := bumper.get_node_or_null(^"_ArtSprite") as Sprite2D
+	_expect(art != null, "%s 에 _ArtSprite 가 있어야 한다" % vfx_path)
+	if art != null:
+		_expect(art.texture != null, "아트 스프라이트에 텍스처가 물려 있어야 한다")
+		if art.texture != null:
+			# 표시 지름 = 텍스처 긴 변 * scale. 설정값과 어긋나면 충돌 크기와 안 맞는다.
+			var long_side := float(maxi(
+				art.texture.get_width(), art.texture.get_height()
+			))
+			var drawn := long_side * art.scale.x
+			var expected: float = bumper.settings.visual_diameter
+			_expect(absf(drawn - expected) <= 1.0,
+				"%s 표시 지름이 설정과 맞아야 한다 (기대=%s, 실제=%s)"
+					% [vfx_path, expected, drawn])
+
+	# 프로시저럴 도형은 꺼야 아트와 겹치지 않는다.
+	var visual := bumper.get_node_or_null(^"Visual") as Node2D
+	_expect(visual != null and not visual.visible,
+		"%s 의 프로시저럴 Visual 은 꺼져 있어야 한다" % vfx_path)
+
 	# `_ready()` 의 자동 바인딩이 실제로 걸렸는지 본다.
 	_expect(bumper.valid_hit_registered.get_connections().size() > 0,
 		"%s 의 타격 시그널이 VFX 에 연결돼야 한다" % vfx_path)
