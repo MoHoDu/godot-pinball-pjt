@@ -39,6 +39,9 @@ const TIER_SPEEDS: Array[float] = [200.0, 700.0, 1600.0]
 @export var director_path: NodePath
 @export var wall_rules: WallSfxRules
 @export var flipper_rules: FlipperSfxRules
+@export var ball_flow_rules: BallFlowSfxRules
+@export var combo_rules: ComboSfxRules
+@export var bumper_rules: BumperSfxRules
 
 var _ball: RigidBody2D
 var _director: SfxDirector
@@ -133,6 +136,49 @@ func _unhandled_input(event: InputEvent) -> void:
 			_reset_ball()
 		KEY_G:
 			_toggle_gravity()
+
+		# ★ W A S D 와 Space 는 플리퍼 조작용이라 쓰지 않습니다.
+		#   R · G · 0~8 · Enter · [ ] · , . 도 이미 쓰고 있습니다.
+
+		# ── Tier 3 흐름 (Q E) ──
+		KEY_Q:
+			_play_raw(_flow(&"launch_cue"), 1400.0, "공 발사 (세게)")
+		KEY_E:
+			_play_raw(_flow(&"drain_cue"), 0.0, "공 낙하")
+
+		# ── Tier 3 콤보·웨이브 (T Y U I O) ──
+		KEY_T:
+			# ★ 한 번 누르면 8단 상승을 통째로 들려줍니다.
+			#   한 발씩 들으면 사다리인지 알 수 없습니다.
+			_combo_ladder()
+		KEY_Y:
+			_play_raw(_combo(&"tier_cue"), 0.0, "콤보 단계 상승")
+		KEY_U:
+			_play_raw(_combo(&"timeout_cue"), 0.0, "콤보 실패")
+		KEY_I:
+			_play_raw(_combo(&"wave_won_cue"), 0.0, "웨이브 승리")
+		KEY_O:
+			_play_raw(_combo(&"wave_lost_cue"), 0.0, "웨이브 패배")
+
+		# ── Tier 4 범퍼 5종 (Z X C V B) ──
+		KEY_Z:
+			_play_bumper(&"stage01_button", "단추 범퍼")
+		KEY_X:
+			_play_bumper(&"stage01_cotton", "솜 범퍼")
+		KEY_C:
+			_play_bumper(&"stage01_spring_doll", "용수철 인형")
+		KEY_V:
+			_play_bumper(&"stage01_toy_drum", "장난감 북")
+		KEY_B:
+			_play_bumper(&"stage01_clockwork_cannon", "태엽 대포 몸통")
+
+		# ── Tier 4 기능 악센트 (N M P) ──
+		KEY_N:
+			_play_raw(_bumper(&"destroy_cue"), 0.0, "범퍼 파괴")
+		KEY_M:
+			_play_raw(_bumper(&"respawn_telegraph_cue"), 0.0, "범퍼 리스폰 예고")
+		KEY_P:
+			_play_raw(_bumper(&"cannon_fire_cue"), 0.0, "태엽 대포 발사")
 		_:
 			return
 
@@ -166,6 +212,47 @@ func _play_wall(tier: int) -> void:
 
 func _play_flipper(cue: SfxCue, label: String) -> void:
 	_play_raw(cue, 900.0, label)
+
+
+# ── Tier 3·4 ────────────────────────────────────────────────
+
+## 규칙이 안 물려 있어도 죽지 않게 감싸 꺼냅니다.
+func _flow(field: StringName) -> SfxCue:
+	return ball_flow_rules.get(field) if ball_flow_rules != null else null
+
+
+func _combo(field: StringName) -> SfxCue:
+	return combo_rules.get(field) if combo_rules != null else null
+
+
+func _bumper(field: StringName) -> SfxCue:
+	return bumper_rules.get(field) if bumper_rules != null else null
+
+
+## ★ 콤보 상승음은 **한 발씩 들으면 판단이 안 됩니다.**
+##   피치가 콤보 수에 따라 올라가는 것이 이 소리의 전부라서,
+##   8단을 이어서 들려줘야 사다리인지 알 수 있습니다.
+func _combo_ladder() -> void:
+	var cue := _combo(&"rise_cue")
+	if cue == null or _director == null:
+		_status = "콤보 상승 — 큐가 없다"
+		return
+
+	for i in 8:
+		var context := SfxPlayContext.new(2000 + i, 0.0)
+		context.pitch_override = combo_rules.get_rise_pitch(i + 1)
+		_director.request(cue, context)
+		await get_tree().create_timer(0.16).timeout
+
+	_status = "콤보 사다리 8단 (피치 1.00 → %.2f)" % combo_rules.get_rise_pitch(8)
+
+
+func _play_bumper(kind_id: StringName, label: String) -> void:
+	if bumper_rules == null:
+		_status = "%s — 범퍼 규칙이 없다" % label
+		return
+
+	_play_raw(bumper_rules.get_material_cue(kind_id), 700.0, label)
 
 
 ## 벽 8연타. 연타 감쇠가 과한지 부족한지 확인합니다.
