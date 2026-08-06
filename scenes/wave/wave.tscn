@@ -1,53 +1,101 @@
 [gd_scene format=3 uid="uid://6fbf244c58gg"]
 
 [ext_resource type="Script" uid="uid://b35gfy37afi7d" path="res://scripts/wave_hud/wave_runtime_coordinator.gd" id="1_coordinator"]
+
 [ext_resource type="Script" uid="uid://cmwexv5v1ailv" path="res://scripts/wave_hud/wave_hud_state_source.gd" id="2_state"]
+
 [ext_resource type="Script" uid="uid://d1ru6gfxnmw1r" path="res://scripts/combo_system/combo_stage_settings.gd" id="3_combo_stage"]
+
 [ext_resource type="Resource" path="res://settings/bumpers/stage_01/Stage01BumperLayout.tres" id="4_bumper_stage"]
+
 [ext_resource type="PackedScene" path="res://scenes/wave_hud/wave_hud.tscn" id="5_wave_hud"]
+
 [ext_resource type="Texture2D" uid="uid://dsjw1kfs6d0xv" path="res://Resources/Art/board/octagonal_dark_wood_board.png" id="6_board_texture"]
+
 [ext_resource type="Texture2D" uid="uid://cccmtg74eywpf" path="res://Resources/Art/backgrounds/cursed_circus_outside_background.png" id="7_outside_background"]
+
 [ext_resource type="PackedScene" path="res://Resources/Art/walls/cursed_toy_frame_v1/wall_visual_820x40_cursed_toy_v1.tscn" id="8_wall_visual"]
+
 [ext_resource type="Script" uid="uid://58k0flhnlg3" path="res://scripts/flipper_system/flipper_selector.gd" id="9_flipper_selector"]
+
 [ext_resource type="Script" uid="uid://lj3ocu4ruejo" path="res://scripts/flipper_system/flipper_controller.gd" id="10_flipper_controller"]
+
 [ext_resource type="PackedScene" uid="uid://ris3ga3vl6ci" path="res://Resources/flippers/sub_flipper/normal_flipper_left.tscn" id="11_left_flipper"]
+
 [ext_resource type="Script" uid="uid://c2rm7omkmejhb" path="res://scripts/bumper-system/shot_response_strategy.gd" id="12_jealc"]
+
 [ext_resource type="PackedScene" uid="uid://u4e8s8havfkw" path="res://Resources/flippers/sub_flipper/normal_flipper_right.tscn" id="12_right_flipper"]
+
 [ext_resource type="Script" uid="uid://c1n1lurdkbtkj" path="res://scripts/ball_base_system/pinball_launcher.gd" id="13_launcher"]
+
 [ext_resource type="Script" uid="uid://dirv1p0s1sce1" path="res://scripts/combo_system/combo_system.gd" id="14_combo_system"]
+
 [ext_resource type="Script" uid="uid://b8m3vh7insfky" path="res://scripts/combo_system/combo_collision_bridge.gd" id="15_collision_bridge"]
+
 [ext_resource type="Script" path="res://scripts/select_ball/select_ball_inventory.gd" id="16_inventory"]
+
 [ext_resource type="Script" path="res://scripts/select_ball/select_ball_flow_controller.gd" id="17_flow"]
+
 [ext_resource type="Script" uid="uid://cudkgw71kx8vj" path="res://scripts/combo_system/combo_wave_controller.gd" id="18_combo_wave"]
+
 [ext_resource type="Script" uid="uid://cm3baeo6imaxa" path="res://scripts/ball_base_system/wave_manager.gd" id="19_manager"]
+
 [ext_resource type="Script" path="res://scripts/select_ball/select_ball_definition.gd" id="20_definition"]
+
 [ext_resource type="Script" uid="uid://dbhskt37l73b5" path="res://scripts/ball_base_system/ball_stock.gd" id="21_stock"]
+
 [ext_resource type="PackedScene" uid="uid://5v4byhqjcnno" path="res://Resources/balls/mass_var/light_ball.tscn" id="22_light_ball"]
+
 [ext_resource type="PackedScene" uid="uid://csrwlhfpki4fs" path="res://Resources/balls/mass_var/normal_ball.tscn" id="23_normal_ball"]
+
 [ext_resource type="PackedScene" uid="uid://bjccffqopu0ej" path="res://Resources/balls/mass_var/heavy_ball.tscn" id="24_heavy_ball"]
+
 [ext_resource type="PackedScene" path="res://scenes/select-ball/select_ball_selection_hud.tscn" id="25_selection_hud"]
+
 [ext_resource type="PackedScene" path="res://scenes/bumper_system/vfx/button_bumper_vfx.tscn" id="26_button_bumper"]
+
 [ext_resource type="PackedScene" path="res://scenes/bumper_system/vfx/cotton_bumper_vfx.tscn" id="27_cotton_bumper"]
+
 [ext_resource type="PackedScene" path="res://scenes/bumper_system/vfx/spring_doll_bumper_vfx.tscn" id="28_spring_bumper"]
+
 [ext_resource type="PackedScene" path="res://scenes/bumper_system/vfx/toy_drum_bumper_vfx.tscn" id="29_drum_bumper"]
+
 [ext_resource type="PackedScene" path="res://scenes/bumper_system/vfx/clockwork_toy_cannon_vfx.tscn" id="30_cannon_bumper"]
+
 [ext_resource type="PackedScene" path="res://Resources/boards/wave_repair_board_layout.tscn" id="31_repair_layout"]
+
 [ext_resource type="PackedScene" path="res://Resources/boards/repair_part_placement_hud.tscn" id="32_repair_hud"]
+
 [ext_resource type="Script" path="res://scripts/board_system/board_wave_placement_bridge.gd" id="33_repair_bridge"]
+
 [ext_resource type="Script" path="res://scripts/board_system/repair_part_placement_controller.gd" id="34_repair_controller"]
+
 [ext_resource type="Script" path="res://scripts/board_system/repair_part_inventory.gd" id="35_repair_inventory"]
+
 [ext_resource type="Script" path="res://scripts/board_system/repair_part_inventory_entry.gd" id="36_repair_entry"]
+
 [ext_resource type="Resource" path="res://settings/bumpers/repair_parts/StarlightBrooch.tres" id="37_brooch_settings"]
+
 [ext_resource type="Resource" path="res://settings/bumpers/repair_parts/GoldenGears.tres" id="38_gears_settings"]
+
 [ext_resource type="Resource" path="res://settings/bumpers/repair_parts/CrescentNeedle.tres" id="39_needle_settings"]
+
 [ext_resource type="Resource" path="res://settings/bumpers/repair_parts/ForgottenStarBell.tres" id="40_bell_settings"]
+
 [ext_resource type="Script" path="res://scripts/sfx_system/sfx_director.gd" id="41_sfx_director"]
+
 [ext_resource type="Script" path="res://scripts/sfx_system/wave_sfx_binder_strict.gd" id="42_sfx_binder"]
+
 [ext_resource type="Resource" path="res://settings/sfx/WallSfxRules.tres" id="43_wall_sfx"]
+
 [ext_resource type="Resource" path="res://settings/sfx/BallFlowSfxRules.tres" id="45_flow_sfx"]
+
 [ext_resource type="PackedScene" path="res://Resources/boards/starlight_brooch_placeable.tscn" id="41_brooch_placeable"]
+
 [ext_resource type="PackedScene" path="res://Resources/boards/golden_gears_placeable.tscn" id="42_gears_placeable"]
+
 [ext_resource type="PackedScene" path="res://Resources/boards/crescent_needle_placeable.tscn" id="43_needle_placeable"]
+
 [ext_resource type="PackedScene" path="res://Resources/boards/forgotten_star_bell_placeable.tscn" id="44_bell_placeable"]
 
 [sub_resource type="Resource" id="StageSettings_wave"]
@@ -137,6 +185,20 @@ size = Vector2(2600, 160)
 resource_local_to_scene = true
 size = Vector2(160, 1600)
 
+[sub_resource type="RectangleShape2D" id="w01_RectangleShape2D_bin77"]
+size = Vector2(819.329, 24)
+
+[sub_resource type="RectangleShape2D" id="w01_RectangleShape2D_ftx8i"]
+size = Vector2(19.950983, 24.864557)
+
+[sub_resource type="RectangleShape2D" id="w01_RectangleShape_drain_horizontal"]
+resource_local_to_scene = true
+size = Vector2(2600, 160)
+
+[sub_resource type="RectangleShape2D" id="w01_RectangleShape_drain_vertical"]
+resource_local_to_scene = true
+size = Vector2(160, 1600)
+
 [node name="Wave" type="Node2D" unique_id=242104030 node_paths=PackedStringArray("launcher", "combo_system", "combo_collision_bridge", "wave_ball_inventory", "wave_ball_flow", "combo_wave_controller", "wave_manager", "flipper_selector", "ball_selection_hud", "ball_drain_area", "hud_state", "wave_hud", "board_camera", "bumpers_root")]
 script = ExtResource("1_coordinator")
 wave_stage_settings = SubResource("StageSettings_wave")
@@ -158,77 +220,283 @@ wave_hud = NodePath("HUD/WaveHud")
 board_camera = NodePath("Camera2D")
 bumpers_root = NodePath("Bumpers")
 
-[node name="OutsideBackground" type="Sprite2D" parent="." unique_id=1247986944]
+[node name="OutsideBackground" type="Sprite2D" parent="." unique_id=996418904]
 modulate = Color(0.82, 0.82, 0.82, 1)
 z_index = -20
-scale = Vector2(1.3397129, 1.339001)
+scale = Vector2(1.655, 1.654)
 texture = ExtResource("7_outside_background")
 
-[node name="BoardBackground" type="Sprite2D" parent="." unique_id=1874281435]
+[node name="BoardBackground" type="Sprite2D" parent="." unique_id=1787254741]
 modulate = Color(0.7, 0.7, 0.7, 1)
 z_index = -10
+position = Vector2(0, 5)
+scale = Vector2(0.92, 0.92)
 texture = ExtResource("6_board_texture")
 
-[node name="GapGuides" type="Node2D" parent="." unique_id=97426761]
-z_index = -5
+[node name="Area_Square" type="Node2D" parent="." unique_id=92781294]
 
-[node name="TopGap" type="Polygon2D" parent="GapGuides" unique_id=1494737708]
-color = Color(0.65, 0.13, 0.18, 0.28)
-polygon = PackedVector2Array(-22, -630, 22, -630, 22, -606, -22, -606)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area_Square" unique_id=61779696]
+position = Vector2(-1.891489, 1.3313389e-05)
+rotation = -3.1415925
+scale = Vector2(77.17831, 36.03523)
+shape = SubResource("w01_RectangleShape2D_ftx8i")
+debug_color = Color(0.94972855, 0.16442639, 0.39801326, 0.41960785)
 
-[node name="BottomGap" type="Polygon2D" parent="GapGuides" unique_id=797079368]
-color = Color(0.65, 0.13, 0.18, 0.28)
-polygon = PackedVector2Array(-22, 606, 22, 606, 22, 630, -22, 630)
+[node name="PinballLauncher" type="Node2D" parent="." unique_id=537150401]
+position = Vector2(0, 400)
+rotation = -1.5707964
+script = ExtResource("13_launcher")
+minimum_launch_angle_degrees = -45.0
+maximum_launch_angle_degrees = 45.0
 
-[node name="LeftGap" type="Polygon2D" parent="GapGuides" unique_id=711571481]
-color = Color(0.65, 0.13, 0.18, 0.28)
-polygon = PackedVector2Array(-1120, -22, -1096, -22, -1096, 22, -1120, 22)
+[node name="LauncherMarker" type="Polygon2D" parent="PinballLauncher" unique_id=1013247396]
+z_index = -1
+color = Color(0.25, 0.85, 0.43, 0.25)
+polygon = PackedVector2Array(-42, -42, 42, -42, 42, 42, -42, 42)
 
-[node name="RightGap" type="Polygon2D" parent="GapGuides" unique_id=1195903791]
-color = Color(0.65, 0.13, 0.18, 0.28)
-polygon = PackedVector2Array(1096, -22, 1120, -22, 1120, 22, 1096, 22)
+[node name="BallDrainArea" type="Area2D" parent="." unique_id=1325901213]
+visible = false
+collision_layer = 0
 
-[node name="Walls" type="Node2D" parent="." unique_id=880171152]
+[node name="TopDrain" type="CollisionShape2D" parent="BallDrainArea" unique_id=1225379419]
+position = Vector2(0, -800)
+shape = SubResource("w01_RectangleShape_drain_horizontal")
 
-[node name="TopRightDiagonal" type="StaticBody2D" parent="Walls" unique_id=1996630462 groups=["combo_walls"]]
-position = Vector2(735, -490)
-rotation = 0.348772
+[node name="BottomDrain" type="CollisionShape2D" parent="BallDrainArea" unique_id=1475624790]
+position = Vector2(0, 800)
+shape = SubResource("w01_RectangleShape_drain_horizontal")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/TopRightDiagonal" unique_id=1347879549]
+[node name="LeftDrain" type="CollisionShape2D" parent="BallDrainArea" unique_id=163146477]
+position = Vector2(-1280, 0)
+shape = SubResource("w01_RectangleShape_drain_vertical")
+
+[node name="RightDrain" type="CollisionShape2D" parent="BallDrainArea" unique_id=1163546781]
+position = Vector2(1280, 0)
+shape = SubResource("w01_RectangleShape_drain_vertical")
+
+[node name="Walls" type="Node2D" parent="." unique_id=1054457750]
+
+[node name="Top" type="Node2D" parent="Walls" unique_id=1397097050]
+
+[node name="TopRightDiagonal" type="StaticBody2D" parent="Walls/Top" unique_id=816351727 groups=["combo_walls"]]
+position = Vector2(661, -431)
+rotation = 0.34877196
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/TopRightDiagonal" unique_id=1115751119]
 position = Vector2(0, 12)
-shape = SubResource("RectangleShape_diagonal")
+shape = SubResource("w01_RectangleShape2D_bin77")
 
-[node name="Visual" parent="Walls/TopRightDiagonal" unique_id=1559760786 instance=ExtResource("8_wall_visual")]
+[node name="Visual" parent="Walls/Top/TopRightDiagonal" unique_id=603172277 instance=ExtResource("8_wall_visual")]
 
-[node name="BottomRightDiagonal" type="StaticBody2D" parent="Walls" unique_id=1135428217 groups=["combo_walls"]]
-position = Vector2(735, 490)
-rotation = 2.7928207
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/BottomRightDiagonal" unique_id=1488993819]
-position = Vector2(0, 12)
-shape = SubResource("RectangleShape_diagonal")
-
-[node name="Visual" parent="Walls/BottomRightDiagonal" unique_id=262610617 instance=ExtResource("8_wall_visual")]
-
-[node name="BottomLeftDiagonal" type="StaticBody2D" parent="Walls" unique_id=1246970724 groups=["combo_walls"]]
-position = Vector2(-735, 490)
-rotation = -2.7928207
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/BottomLeftDiagonal" unique_id=1189773304]
-position = Vector2(0, 12)
-shape = SubResource("RectangleShape_diagonal")
-
-[node name="Visual" parent="Walls/BottomLeftDiagonal" unique_id=955290904 instance=ExtResource("8_wall_visual")]
-
-[node name="TopLeftDiagonal" type="StaticBody2D" parent="Walls" unique_id=742352370 groups=["combo_walls"]]
-position = Vector2(-735, -490)
+[node name="TopLeftDiagonal" type="StaticBody2D" parent="Walls/Top" unique_id=1697113537 groups=["combo_walls"]]
+position = Vector2(-661.0001, -431)
 rotation = -0.348772
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/TopLeftDiagonal" unique_id=1447077877]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/TopLeftDiagonal" unique_id=1508027846]
 position = Vector2(0, 12)
-shape = SubResource("RectangleShape_diagonal")
+shape = SubResource("w01_RectangleShape2D_bin77")
 
-[node name="Visual" parent="Walls/TopLeftDiagonal" unique_id=1362720616 instance=ExtResource("8_wall_visual")]
+[node name="Visual" parent="Walls/Top/TopLeftDiagonal" unique_id=1361613651 instance=ExtResource("8_wall_visual")]
+position = Vector2(6.6, 2.4)
+
+[node name="TopRigthVertical" type="StaticBody2D" parent="Walls/Top" unique_id=2109036029 groups=["combo_walls"]]
+position = Vector2(358, -694)
+rotation = 2.0943952
+scale = Vector2(0.28, 1.042)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/TopRigthVertical" unique_id=28034098]
+position = Vector2(0, 12)
+shape = SubResource("w01_RectangleShape2D_bin77")
+
+[node name="Visual" parent="Walls/Top/TopRigthVertical" unique_id=411608391 instance=ExtResource("8_wall_visual")]
+
+[node name="TopLeftVertical" type="StaticBody2D" parent="Walls/Top" unique_id=1669184563 groups=["combo_walls"]]
+position = Vector2(-358, -702)
+rotation = -2.0943952
+scale = Vector2(0.255, 1.042)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/TopLeftVertical" unique_id=1649389301]
+position = Vector2(0, 12)
+shape = SubResource("w01_RectangleShape2D_bin77")
+
+[node name="Visual" parent="Walls/Top/TopLeftVertical" unique_id=1795478035 instance=ExtResource("8_wall_visual")]
+position = Vector2(0.00025431183, -7.278369e-13)
+
+[node name="TopLeftSide" type="StaticBody2D" parent="Walls/Top" unique_id=864212274 groups=["combo_walls"]]
+position = Vector2(-1214.0001, -342.00006)
+rotation = 0.20943952
+scale = Vector2(0.5, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/TopLeftSide" unique_id=1463605444]
+position = Vector2(0, 12)
+shape = SubResource("w01_RectangleShape2D_bin77")
+
+[node name="Visual" parent="Walls/Top/TopLeftSide" unique_id=1131883148 instance=ExtResource("8_wall_visual")]
+position = Vector2(0.00025431183, -7.278369e-13)
+
+[node name="TopRightSide" type="StaticBody2D" parent="Walls/Top" unique_id=863916641 groups=["combo_walls"]]
+position = Vector2(-1214, 356.99997)
+rotation = 2.8797934
+scale = Vector2(0.5, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/TopRightSide" unique_id=1457188442]
+position = Vector2(0, 12)
+shape = SubResource("w01_RectangleShape2D_bin77")
+
+[node name="Visual" parent="Walls/Top/TopRightSide" unique_id=2020278547 instance=ExtResource("8_wall_visual")]
+position = Vector2(0.00025431183, -7.278369e-13)
+
+[node name="Bottom" type="Node2D" parent="Walls" unique_id=1848326491]
+
+[node name="BottomRightDiagonal" type="StaticBody2D" parent="Walls/Bottom" unique_id=512452783 groups=["combo_walls"]]
+position = Vector2(654, 441)
+rotation = 2.7928207
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom/BottomRightDiagonal" unique_id=1197987137]
+position = Vector2(0, 12)
+shape = SubResource("w01_RectangleShape2D_bin77")
+
+[node name="Visual" parent="Walls/Bottom/BottomRightDiagonal" unique_id=1570794061 instance=ExtResource("8_wall_visual")]
+
+[node name="BottomLeftDiagonal" type="StaticBody2D" parent="Walls/Bottom" unique_id=1641593198 groups=["combo_walls"]]
+position = Vector2(-654.0001, 441)
+rotation = -2.7928207
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom/BottomLeftDiagonal" unique_id=1143503514]
+position = Vector2(0, 12)
+shape = SubResource("w01_RectangleShape2D_bin77")
+
+[node name="Visual" parent="Walls/Bottom/BottomLeftDiagonal" unique_id=2062036226 instance=ExtResource("8_wall_visual")]
+position = Vector2(-6.6, 2.4)
+
+[node name="BottomRightVertical" type="StaticBody2D" parent="Walls/Bottom" unique_id=87521949 groups=["combo_walls"]]
+position = Vector2(342, 693)
+rotation = 1.0471976
+scale = Vector2(0.25, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom/BottomRightVertical" unique_id=181781103]
+position = Vector2(0, 12)
+shape = SubResource("w01_RectangleShape2D_bin77")
+
+[node name="Visual" parent="Walls/Bottom/BottomRightVertical" unique_id=488983619 instance=ExtResource("8_wall_visual")]
+
+[node name="BottomLeftVertical" type="StaticBody2D" parent="Walls/Bottom" unique_id=1905014300 groups=["combo_walls"]]
+position = Vector2(-342, 693)
+rotation = -1.0471976
+scale = Vector2(0.25, 1.042)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom/BottomLeftVertical" unique_id=1765764491]
+position = Vector2(0, 12)
+shape = SubResource("w01_RectangleShape2D_bin77")
+
+[node name="Visual" parent="Walls/Bottom/BottomLeftVertical" unique_id=1850387066 instance=ExtResource("8_wall_visual")]
+position = Vector2(-24.999502, 0)
+
+[node name="BottomLeftSide" type="StaticBody2D" parent="Walls/Bottom" unique_id=886827620 groups=["combo_walls"]]
+position = Vector2(1214, -334.00006)
+rotation = -0.20943952
+scale = Vector2(0.5, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom/BottomLeftSide" unique_id=383227778]
+position = Vector2(0, 12)
+shape = SubResource("w01_RectangleShape2D_bin77")
+
+[node name="Visual" parent="Walls/Bottom/BottomLeftSide" unique_id=1773372326 instance=ExtResource("8_wall_visual")]
+position = Vector2(3.326577, -7.8251457)
+
+[node name="BottomRightSide" type="StaticBody2D" parent="Walls/Bottom" unique_id=1620610219 groups=["combo_walls"]]
+position = Vector2(1198, 357.00003)
+rotation = 3.408628
+scale = Vector2(0.5, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom/BottomRightSide" unique_id=905984687]
+position = Vector2(0, 12)
+shape = SubResource("w01_RectangleShape2D_bin77")
+
+[node name="Visual" parent="Walls/Bottom/BottomRightSide" unique_id=1609936294 instance=ExtResource("8_wall_visual")]
+position = Vector2(0.00025431183, -7.278369e-13)
+
+[node name="FlipperSelector" type="Node2D" parent="." unique_id=1339977092]
+script = ExtResource("9_flipper_selector")
+
+[node name="BottomController" type="Node2D" parent="FlipperSelector" unique_id=620399436]
+position = Vector2(0, 501)
+script = ExtResource("10_flipper_controller")
+
+[node name="LeftFlipper" parent="FlipperSelector/BottomController" unique_id=1915782774 instance=ExtResource("11_left_flipper")]
+position = Vector2(-286.99988, 98)
+flipper_length = 360.0
+rotation = 0.6981317
+initial_angle_degrees = 40.0
+maximum_angle_degrees = -80.0
+
+[node name="RightFlipper" parent="FlipperSelector/BottomController" unique_id=2137998633 instance=ExtResource("12_right_flipper")]
+position = Vector2(287, 98)
+flipper_length = 360.0
+rotation = -0.6981317
+initial_angle_degrees = -40.0
+maximum_angle_degrees = 80.0
+
+[node name="TopController" type="Node2D" parent="FlipperSelector" unique_id=52918414]
+position = Vector2(0, -582)
+rotation = 3.1415927
+script = ExtResource("10_flipper_controller")
+
+[node name="LeftFlipper" parent="FlipperSelector/TopController" unique_id=1022724147 instance=ExtResource("11_left_flipper")]
+position = Vector2(-287, 0)
+flipper_length = 360.0
+rotation = 0.6981317
+initial_angle_degrees = 40.0
+maximum_angle_degrees = -80.0
+
+[node name="RightFlipper" parent="FlipperSelector/TopController" unique_id=560543059 instance=ExtResource("12_right_flipper")]
+position = Vector2(285.99988, 0)
+flipper_length = 360.0
+rotation = -0.6981317
+initial_angle_degrees = -40.0
+maximum_angle_degrees = 80.0
+
+[node name="LeftController" type="Node2D" parent="FlipperSelector" unique_id=778351050]
+position = Vector2(-1046, 0)
+rotation = 1.5707964
+script = ExtResource("10_flipper_controller")
+
+[node name="LeftFlipper" parent="FlipperSelector/LeftController" unique_id=1480574411 instance=ExtResource("11_left_flipper")]
+position = Vector2(-287, -24)
+flipper_length = 360.0
+rotation = 0.6981317
+initial_angle_degrees = 40.0
+maximum_angle_degrees = -80.0
+
+[node name="RightFlipper" parent="FlipperSelector/LeftController" unique_id=2091025610 instance=ExtResource("12_right_flipper")]
+position = Vector2(287, -24)
+flipper_length = 360.0
+rotation = -0.6981317
+initial_angle_degrees = -40.0
+maximum_angle_degrees = 80.0
+
+[node name="RightController" type="Node2D" parent="FlipperSelector" unique_id=1365978519]
+position = Vector2(998, 0)
+rotation = -1.5707964
+script = ExtResource("10_flipper_controller")
+
+[node name="LeftFlipper" parent="FlipperSelector/RightController" unique_id=1051254799 instance=ExtResource("11_left_flipper")]
+position = Vector2(-286, 24)
+flipper_length = 360.0
+rotation = 0.6981317
+initial_angle_degrees = 40.0
+maximum_angle_degrees = -80.0
+
+[node name="RightFlipper" parent="FlipperSelector/RightController" unique_id=991188738 instance=ExtResource("12_right_flipper")]
+position = Vector2(287, 24)
+flipper_length = 360.0
+rotation = -0.6981317
+initial_angle_degrees = -40.0
+maximum_angle_degrees = 80.0
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1316343289]
+position = Vector2(0, 1)
+zoom = Vector2(0.43, 0.43)
 
 [node name="Bumpers" type="Node2D" parent="." unique_id=1144402446]
 
@@ -253,76 +521,6 @@ position = Vector2(0, 190)
 response_strategy = SubResource("Resource_jkexw")
 
 [node name="RepairBoardLayout" parent="." instance=ExtResource("31_repair_layout")]
-
-[node name="FlipperSelector" type="Node2D" parent="." unique_id=1920620016]
-script = ExtResource("9_flipper_selector")
-
-[node name="BottomController" type="Node2D" parent="FlipperSelector" unique_id=20737717]
-position = Vector2(0, 550)
-script = ExtResource("10_flipper_controller")
-
-[node name="LeftFlipper" parent="FlipperSelector/BottomController" unique_id=500113259 instance=ExtResource("11_left_flipper")]
-position = Vector2(-350, 72.00001)
-flipper_length = 328.0
-
-[node name="RightFlipper" parent="FlipperSelector/BottomController" unique_id=96070730 instance=ExtResource("12_right_flipper")]
-position = Vector2(350, 76.00001)
-flipper_length = 328.0
-
-[node name="TopController" type="Node2D" parent="FlipperSelector" unique_id=858197973]
-position = Vector2(0, -550)
-rotation = 3.1415927
-script = ExtResource("10_flipper_controller")
-
-[node name="LeftFlipper" parent="FlipperSelector/TopController" unique_id=1557462066 instance=ExtResource("11_left_flipper")]
-position = Vector2(-350, 0)
-flipper_length = 328.0
-
-[node name="RightFlipper" parent="FlipperSelector/TopController" unique_id=575251231 instance=ExtResource("12_right_flipper")]
-position = Vector2(350, 0)
-flipper_length = 328.0
-
-[node name="LeftController" type="Node2D" parent="FlipperSelector" unique_id=1857656650]
-position = Vector2(-1040, 0)
-rotation = 1.5707964
-script = ExtResource("10_flipper_controller")
-
-[node name="LeftFlipper" parent="FlipperSelector/LeftController" unique_id=1271897557 instance=ExtResource("11_left_flipper")]
-position = Vector2(-350, 0)
-flipper_length = 328.0
-
-[node name="RightFlipper" parent="FlipperSelector/LeftController" unique_id=1331821497 instance=ExtResource("12_right_flipper")]
-position = Vector2(350, 0)
-flipper_length = 328.0
-
-[node name="RightController" type="Node2D" parent="FlipperSelector" unique_id=223445953]
-position = Vector2(1040, 0)
-rotation = -1.5707964
-script = ExtResource("10_flipper_controller")
-
-[node name="LeftFlipper" parent="FlipperSelector/RightController" unique_id=1296668251 instance=ExtResource("11_left_flipper")]
-position = Vector2(-350, 0)
-flipper_length = 328.0
-
-[node name="RightFlipper" parent="FlipperSelector/RightController" unique_id=177584355 instance=ExtResource("12_right_flipper")]
-position = Vector2(350, 0)
-flipper_length = 328.0
-
-[node name="PinballLauncher" type="Node2D" parent="." unique_id=682893525]
-position = Vector2(0, 400)
-rotation = -1.5707964
-script = ExtResource("13_launcher")
-minimum_launch_angle_degrees = -45.0
-maximum_launch_angle_degrees = 45.0
-
-[node name="LauncherMarker" type="Polygon2D" parent="PinballLauncher" unique_id=1612067050]
-z_index = -1
-color = Color(0.25, 0.85, 0.43, 0.25)
-polygon = PackedVector2Array(-42, -42, 42, -42, 42, 42, -42, 42)
-
-[node name="Camera2D" type="Camera2D" parent="." unique_id=375746745]
-position = Vector2(0, 16)
-zoom = Vector2(0.494, 0.494)
 
 [node name="ComboSystem" type="Node" parent="." unique_id=760287772]
 script = ExtResource("14_combo_system")
@@ -352,26 +550,6 @@ configured_collision_bridge = NodePath("../ComboCollisionBridge")
 
 [node name="WaveHudStateSource" type="Node" parent="." unique_id=76749773]
 script = ExtResource("2_state")
-
-[node name="BallDrainArea" type="Area2D" parent="." unique_id=1222370182]
-visible = false
-collision_layer = 0
-
-[node name="TopDrain" type="CollisionShape2D" parent="BallDrainArea" unique_id=1504410852]
-position = Vector2(0, -800)
-shape = SubResource("RectangleShape_drain_horizontal")
-
-[node name="BottomDrain" type="CollisionShape2D" parent="BallDrainArea" unique_id=9074598]
-position = Vector2(0, 800)
-shape = SubResource("RectangleShape_drain_horizontal")
-
-[node name="LeftDrain" type="CollisionShape2D" parent="BallDrainArea" unique_id=1133239729]
-position = Vector2(-1280, 0)
-shape = SubResource("RectangleShape_drain_vertical")
-
-[node name="RightDrain" type="CollisionShape2D" parent="BallDrainArea" unique_id=1432189215]
-position = Vector2(1280, 0)
-shape = SubResource("RectangleShape_drain_vertical")
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=739204287]
 

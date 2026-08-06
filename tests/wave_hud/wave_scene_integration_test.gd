@@ -233,7 +233,15 @@ func _test_low_speed_wave_balls_release_from_flipper(
 	wave.add_child(ball)
 	ball.freeze = true
 	# 첨부 이미지처럼 우측 하단 플리퍼 끝의 둥근 면에 저속으로 붙은 위치입니다.
-	ball.global_position = flipper.global_position + Vector2(-220.0, 60.0)
+	#
+	# 원래는 전역 오프셋 (-220, 60) 을 그대로 더했습니다. 그때 플리퍼는 회전 0 이라
+	# 전역과 로컬이 같았기 때문입니다. wave01 보드를 들여오면서 플리퍼가 ±40도로
+	# 눕고 길이도 328 -> 360 이 되어, 같은 전역 오프셋은 플리퍼 바깥 허공을 짚습니다.
+	#
+	# 그래서 **플리퍼 로컬 좌표**로 잡습니다. 날은 로컬 -X 로 뻗어 끝이 x=-245,
+	# 윗면이 y=-18 근처입니다. (-200, -50) 은 끝의 둥근 면 바로 위로,
+	# 실측에서 10 물리프레임 뒤 속도 8 안팎으로 안착합니다.
+	ball.global_position = flipper.to_global(Vector2(-200.0, -50.0))
 	ball.linear_velocity = Vector2.ZERO
 	await physics_frame
 	ball.freeze = false
