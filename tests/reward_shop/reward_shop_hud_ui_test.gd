@@ -53,6 +53,9 @@ func _run() -> void:
 		"보상 패널에 장난감 부스 볼트 장식이 있어야 한다.")
 	_expect(hud.find_child("WaveClearBadge", true, false) is PanelContainer,
 		"웨이브 결과가 빨간 간판 배지로 표시되어야 한다.")
+	var handoff := hud.find_child("HandoffOverlay", true, false) as Control
+	_expect(handoff != null and not handoff.visible,
+		"NEXT WAVE 전환 화면은 상점 진행 전까지 숨겨져야 한다.")
 	_expect(hud.get_card_count() == 6, "공 3장과 부품 3장이 보여야 한다.")
 	_expect(
 		hud.find_children("OfferArt", "Control", true, false).size() == 6,
@@ -76,18 +79,21 @@ func _run() -> void:
 	_expect(cards.size() == 6, "상호작용 가능한 카드 버튼이 6개여야 한다.")
 	if not cards.is_empty():
 		(cards[0] as Button).pressed.emit()
-		_expect(_state_texts(hud).has("선택됨"),
-			"카드 선택 시 선택됨 배지가 보여야 한다.")
+		_expect(_state_texts(hud).has("선택!"),
+			"카드 선택 시 설계와 같은 선택 도장이 보여야 한다.")
 		if proceed != null:
 			_expect(proceed.text.contains("구매 ·"),
 				"선택 후 하단 버튼이 해당 카드 구매 확인으로 바뀌어야 한다.")
 			proceed.pressed.emit()
 		await process_frame
 		var states_after_ball := _state_texts(hud)
-		_expect(states_after_ball.has("보유 · 구매 완료"),
-			"공 구매 카드에 구매 완료가 표시되어야 한다.")
-		_expect(states_after_ball.count("행 잠금") >= 2,
+		_expect(states_after_ball.has("GET!"),
+			"공 구매 카드에 GET 도장이 표시되어야 한다.")
+		_expect(states_after_ball.count("잠김") >= 2,
 			"공 구매 후 같은 행의 다른 두 장이 잠겨야 한다.")
+		var ball_rule := hud.find_child("BallRuleLabel", true, false) as Label
+		_expect(ball_rule != null and ball_rule.text == "구매 완료 · 같은 줄 잠김",
+			"공 구매 후 행 안내가 설계 문구로 바뀌어야 한다.")
 		if proceed != null:
 			_expect(proceed.text == "다음 단계",
 				"한 카테고리 구매 후 다음 단계 문구가 보여야 한다.")
@@ -100,12 +106,19 @@ func _run() -> void:
 	if part_index >= 0:
 		_expect(shop.buy_part(part_index), "구매 가능한 부품 구매가 성공해야 한다.")
 		await process_frame
-		_expect(_state_texts(hud).any(func(text: String) -> bool:
-			return text.contains("재고 +") and text.contains("구매 완료")
-		), "부품 카드에 재고 증가와 구매 완료가 표시되어야 한다.")
+		_expect(_state_texts(hud).count("GET!") >= 2,
+			"부품 구매 카드에도 GET 도장이 표시되어야 한다.")
 		if proceed != null:
 			_expect(proceed.text == "다음 웨이브 준비",
 				"두 카테고리 구매 후 다음 웨이브 준비가 보여야 한다.")
+			var proceeded := [false]
+			hud.proceed_requested.connect(func() -> void: proceeded[0] = true)
+			proceed.pressed.emit()
+			await process_frame
+			_expect(handoff != null and handoff.visible,
+				"진행 버튼을 누르면 NEXT WAVE 전환 화면이 보여야 한다.")
+			await create_timer(0.65).timeout
+			_expect(proceeded[0], "전환 화면 뒤 다음 웨이브 진행 신호가 발생해야 한다.")
 
 	holder.queue_free()
 	await process_frame

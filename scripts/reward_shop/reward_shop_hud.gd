@@ -40,6 +40,7 @@ const CARD_RADIUS := 16
 const PANEL_RADIUS := 26
 const BALL_ICON_SIZE := 76
 const PART_ICON_SIZE := 76
+const HANDOFF_DURATION_SECONDS := 0.55
 
 const PERFORMANCE_NAMES: Array[String] = [
 	"안정형",
@@ -62,19 +63,29 @@ var _wallet: CoinWallet
 var _part_inventory: RepairPartInventory
 
 var _panel: PanelContainer
+var _safe_margin: MarginContainer
 var _summary_label: Label
 var _earned_label: Label
 var _wallet_label: Label
 var _owned_label: Label
+var _ball_rule_label: Label
+var _part_rule_label: Label
 var _ball_row: HBoxContainer
 var _part_row: HBoxContainer
 var _proceed_button: Button
+var _handoff_overlay: Control
+var _handoff_wave_label: Label
+var _handoff_ball_label: Label
+var _handoff_part_label: Label
+var _handoff_coin_label: Label
 var _cards: Array[Button] = []
 var _card_views: Array[Dictionary] = []
 
 var _selected_index := -1
 var _wave_result_text := ""
 var _earned_text := ""
+var _next_wave_number := 2
+var _handoff_in_progress := false
 
 var _purchased_ball_id: StringName = &""
 var _purchased_part_id: StringName = &""
@@ -84,6 +95,8 @@ func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_build_layout()
+	resized.connect(_refresh_safe_margin)
+	_refresh_safe_margin()
 	visible = false
 	set_process_unhandled_input(false)
 
@@ -111,6 +124,7 @@ func set_wave_summary(
 	clear_delay_coin: int
 ) -> void:
 	_wave_result_text = "WAVE %02d CLEAR" % (wave_index + 1)
+	_next_wave_number = wave_index + 2
 	_earned_text = "획득 +%d  ·  보드 %d  ·  종료 유예 +%d" % [
 		board_coin + clear_delay_coin,
 		board_coin,
@@ -162,13 +176,11 @@ func _build_layout() -> void:
 	backdrop_decoration.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(backdrop_decoration)
 
-	var safe_margin := MarginContainer.new()
-	safe_margin.name = "ShopSafeMargin"
-	safe_margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	safe_margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	for side in ["left", "top", "right", "bottom"]:
-		safe_margin.add_theme_constant_override("margin_%s" % side, 16)
-	add_child(safe_margin)
+	_safe_margin = MarginContainer.new()
+	_safe_margin.name = "ShopSafeMargin"
+	_safe_margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_safe_margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	add_child(_safe_margin)
 
 	_panel = PanelContainer.new()
 	_panel.name = "ShopPanel"
@@ -187,7 +199,7 @@ func _build_layout() -> void:
 			Vector2(8.0, 10.0)
 		)
 	)
-	safe_margin.add_child(_panel)
+	_safe_margin.add_child(_panel)
 
 	var booth_decoration := RewardBoothDecoration.new()
 	booth_decoration.name = "BoothBolts"
@@ -247,6 +259,165 @@ func _build_layout() -> void:
 	_proceed_button.pressed.connect(_on_proceed_pressed)
 	footer.add_child(_proceed_button)
 	_refresh_proceed_button()
+	_build_handoff_overlay()
+
+
+func _refresh_safe_margin() -> void:
+	if _safe_margin == null:
+		return
+	var horizontal := maxi(16, roundi(size.x * 110.0 / 1920.0))
+	var vertical := maxi(16, roundi(size.y * 44.0 / 1080.0))
+	_safe_margin.add_theme_constant_override(&"margin_left", horizontal)
+	_safe_margin.add_theme_constant_override(&"margin_right", horizontal)
+	_safe_margin.add_theme_constant_override(&"margin_top", vertical)
+	_safe_margin.add_theme_constant_override(&"margin_bottom", vertical)
+
+
+func _build_handoff_overlay() -> void:
+	_handoff_overlay = Control.new()
+	_handoff_overlay.name = "HandoffOverlay"
+	_handoff_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	_handoff_overlay.visible = false
+	add_child(_handoff_overlay)
+	_handoff_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+
+	var dim := ColorRect.new()
+	dim.name = "HandoffDim"
+	dim.color = Color(COLOR_NAVY_DEEP, 0.92)
+	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_handoff_overlay.add_child(dim)
+
+	var burst := RewardHandoffBurst.new()
+	burst.name = "HandoffBurst"
+	burst.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_handoff_overlay.add_child(burst)
+	_set_relative_rect(burst, 0.28, 0.10, 0.72, 0.90)
+
+	var sign := PanelContainer.new()
+	sign.name = "NextWaveSign"
+	sign.add_theme_stylebox_override(
+		&"panel", _make_style(
+			COLOR_CREAM,
+			COLOR_INK,
+			6,
+			20,
+			24,
+			9,
+			Vector2(7.0, 9.0)
+		)
+	)
+	_handoff_overlay.add_child(sign)
+	_set_relative_rect(sign, 0.25, 0.22, 0.75, 0.78)
+
+	var column := VBoxContainer.new()
+	column.name = "HandoffContent"
+	column.alignment = BoxContainer.ALIGNMENT_CENTER
+	column.add_theme_constant_override(&"separation", 10)
+	sign.add_child(column)
+
+	var closed := PanelContainer.new()
+	closed.name = "ShopClosedRibbon"
+	closed.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	closed.add_theme_stylebox_override(
+		&"panel", _make_style(COLOR_RED, COLOR_INK, 3, 9, 6)
+	)
+	closed.add_child(_make_label("REWARD SHOP · CLOSED", 10, COLOR_CREAM_LIGHT, true))
+	column.add_child(closed)
+
+	var title := _make_label("NEXT WAVE!", 48, COLOR_NAVY_WOOD, true)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_override(&"font", DISPLAY_FONT)
+	column.add_child(title)
+
+	_handoff_wave_label = _make_label("웨이브 02 준비 완료", 22, COLOR_RED, true)
+	_handoff_wave_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_handoff_wave_label.add_theme_font_override(&"font", DISPLAY_FONT)
+	column.add_child(_handoff_wave_label)
+
+	var summary := HBoxContainer.new()
+	summary.name = "HandoffSummary"
+	summary.custom_minimum_size.y = 70.0
+	summary.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	summary.add_theme_constant_override(&"separation", 9)
+	column.add_child(summary)
+
+	_handoff_ball_label = _make_handoff_chip(summary, "공", "선택 없음", COLOR_TEAL)
+	_handoff_part_label = _make_handoff_chip(summary, "부품", "선택 없음", COLOR_GOLD)
+	_handoff_coin_label = _make_handoff_chip(summary, "잔액", "0 COIN", COLOR_RED)
+
+	var track := HBoxContainer.new()
+	track.name = "WaveHandoffTrack"
+	track.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	track.alignment = BoxContainer.ALIGNMENT_CENTER
+	track.add_theme_constant_override(&"separation", 8)
+	column.add_child(track)
+	var clear_chip := PanelContainer.new()
+	clear_chip.add_theme_stylebox_override(
+		&"panel", _make_style(COLOR_RED, COLOR_INK, 3, 8, 5)
+	)
+	clear_chip.add_child(_make_label("WAVE CLEAR", 9, COLOR_CREAM_LIGHT, true))
+	track.add_child(clear_chip)
+	var arrow := Label.new()
+	arrow.text = "→"
+	arrow.add_theme_font_size_override(&"font_size", 18)
+	arrow.add_theme_color_override(&"font_color", COLOR_INK)
+	track.add_child(arrow)
+	var ready_chip := PanelContainer.new()
+	ready_chip.add_theme_stylebox_override(
+		&"panel", _make_style(COLOR_TEAL_BRIGHT, COLOR_INK, 3, 8, 5)
+	)
+	ready_chip.add_child(_make_label("NEXT WAVE · READY", 9, COLOR_INK, true))
+	track.add_child(ready_chip)
+
+	var ready_stamp := PanelContainer.new()
+	ready_stamp.name = "ReadyStamp"
+	ready_stamp.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	ready_stamp.add_theme_stylebox_override(
+		&"panel", _make_style(COLOR_NAVY_WOOD, COLOR_INK, 4, 9, 6)
+	)
+	var ready_text := _make_label("READY!", 15, COLOR_CREAM_LIGHT, true)
+	ready_text.add_theme_font_override(&"font", DISPLAY_FONT)
+	ready_stamp.add_child(ready_text)
+	column.add_child(ready_stamp)
+
+
+func _make_handoff_chip(
+	parent: HBoxContainer,
+	label_text: String,
+	value_text: String,
+	background: Color
+) -> Label:
+	var panel := PanelContainer.new()
+	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	panel.add_theme_stylebox_override(
+		&"panel", _make_style(background, COLOR_INK, 4, 10, 8)
+	)
+	parent.add_child(panel)
+	var copy := VBoxContainer.new()
+	copy.alignment = BoxContainer.ALIGNMENT_CENTER
+	panel.add_child(copy)
+	var label := _make_label(label_text, 8, COLOR_INK, true)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	copy.add_child(label)
+	var value := _make_label(value_text, 13, COLOR_INK, true)
+	value.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	value.add_theme_font_override(&"font", DISPLAY_FONT)
+	copy.add_child(value)
+	return value
+
+
+static func _set_relative_rect(
+	control: Control,
+	left: float,
+	top: float,
+	right: float,
+	bottom: float
+) -> void:
+	control.set_anchor_and_offset(SIDE_RIGHT, right, 0.0)
+	control.set_anchor_and_offset(SIDE_BOTTOM, bottom, 0.0)
+	control.set_anchor_and_offset(SIDE_LEFT, left, 0.0)
+	control.set_anchor_and_offset(SIDE_TOP, top, 0.0)
 
 
 func _build_header() -> HBoxContainer:
@@ -367,7 +538,14 @@ func _make_row_header(
 	note_panel.add_theme_stylebox_override(
 		&"panel", _make_style(COLOR_CREAM, COLOR_INK, 2, 8, 5)
 	)
-	note_panel.add_child(_make_label(note, 8, COLOR_INK, true))
+	var note_label := _make_label(note, 8, COLOR_INK, true)
+	if kicker_text == "BALL":
+		note_label.name = "BallRuleLabel"
+		_ball_rule_label = note_label
+	else:
+		note_label.name = "PartRuleLabel"
+		_part_rule_label = note_label
+	note_panel.add_child(note_label)
 	row.add_child(note_panel)
 	return row
 
@@ -384,6 +562,9 @@ func _on_shop_opened(_wave_id: int) -> void:
 	_selected_index = -1
 	_purchased_ball_id = &""
 	_purchased_part_id = &""
+	_handoff_in_progress = false
+	if _handoff_overlay != null:
+		_handoff_overlay.visible = false
 	_rebuild_cards()
 	_refresh_header()
 	visible = true
@@ -391,6 +572,9 @@ func _on_shop_opened(_wave_id: int) -> void:
 
 
 func _on_shop_closed(_wave_id: int) -> void:
+	_handoff_in_progress = false
+	if _handoff_overlay != null:
+		_handoff_overlay.visible = false
 	visible = false
 	set_process_unhandled_input(false)
 	_clear_cards()
@@ -690,7 +874,64 @@ func _on_proceed_pressed() -> void:
 			and _card_state_of(_selected_index) == CardState.SELECTED:
 		_confirm_selected()
 		return
+	if _handoff_in_progress:
+		return
+	_play_handoff_then_proceed()
+
+
+func _play_handoff_then_proceed() -> void:
+	_handoff_in_progress = true
+	set_process_unhandled_input(false)
+	_refresh_handoff_summary()
+	_handoff_overlay.modulate = Color(1.0, 1.0, 1.0, 0.0)
+	_handoff_overlay.visible = true
+	var fade_in := create_tween()
+	fade_in.tween_property(_handoff_overlay, ^"modulate:a", 1.0, 0.12)
+	await get_tree().create_timer(HANDOFF_DURATION_SECONDS).timeout
+	if not is_inside_tree() or not _handoff_in_progress:
+		return
 	proceed_requested.emit()
+	_handoff_in_progress = false
+
+
+func _refresh_handoff_summary() -> void:
+	_handoff_wave_label.text = "웨이브 %02d 준비 완료" % _next_wave_number
+	_handoff_ball_label.text = (
+		"기본 유리눈"
+		if _purchased_ball_id == &""
+		else _offer_display_name(RewardShopController.CATEGORY_BALL, _purchased_ball_id)
+	)
+	if _purchased_part_id == &"":
+		_handoff_part_label.text = "선택 없음"
+	else:
+		_handoff_part_label.text = "%s x%d" % [
+			_offer_display_name(RewardShopController.CATEGORY_PART, _purchased_part_id),
+			_part_bundle_count(_purchased_part_id),
+		]
+	_handoff_coin_label.text = "%d COIN" % (_wallet.balance if _wallet != null else 0)
+
+
+func _offer_display_name(category: StringName, item_id: StringName) -> String:
+	if _shop == null or _shop.catalog == null:
+		return String(item_id)
+	if category == RewardShopController.CATEGORY_BALL:
+		for offer in _shop.catalog.ball_offers:
+			if offer != null and offer.ball_id == item_id:
+				return offer.display_name
+	else:
+		for offer in _shop.catalog.part_offers:
+			if offer != null and offer.part_id == item_id:
+				return offer.display_name
+	return String(item_id)
+
+
+func _part_bundle_count(part_id: StringName) -> int:
+	if _shop == null or _shop.catalog == null:
+		return 0
+	for offer in _shop.catalog.part_offers:
+		if offer != null and offer.part_id == part_id:
+			return offer.bundle_count
+	return 0
 
 
 func _move_selection(step: int) -> void:
@@ -714,7 +955,26 @@ func _refresh_card_states() -> void:
 	for card_index in _cards.size():
 		var state := _card_state_of(card_index)
 		_apply_card_state(card_index, state)
+	_refresh_row_rules()
 	_refresh_proceed_button()
+
+
+func _refresh_row_rules() -> void:
+	if _shop == null:
+		return
+	if _ball_rule_label != null:
+		_ball_rule_label.text = (
+			"구매 완료 · 같은 줄 잠김"
+			if _shop.ball_purchase_used
+			else "이 화면에서 최대 1개"
+		)
+	if _part_rule_label != null:
+		if _shop.part_purchase_used:
+			_part_rule_label.text = "구매 완료 · 같은 줄 잠김"
+		elif _selected_index >= _shop.ball_offers.size():
+			_part_rule_label.text = "선택한 부품을 다시 확인"
+		else:
+			_part_rule_label.text = "이 화면에서 최대 1개"
 
 
 func _apply_card_state(card_index: int, state: CardState) -> void:
@@ -736,32 +996,26 @@ func _apply_card_state(card_index: int, state: CardState) -> void:
 			border = COLOR_TEAL_BRIGHT
 			border_width = 6
 			badge_background = COLOR_TEAL
-			status_text = "선택됨"
+			status_text = "선택!"
 		CardState.PURCHASED:
 			background = COLOR_GOLD
 			border = COLOR_INK
 			border_width = 5
 			badge_background = COLOR_RED
 			status_color = COLOR_CREAM_LIGHT
-			if view[&"category"] == RewardShopController.CATEGORY_BALL:
-				status_text = "보유 · 구매 완료"
-			else:
-				status_text = "재고 +%d · 구매 완료" % int(view[&"bundle"])
+			status_text = "GET!"
 		CardState.ROW_LOCKED:
 			background = COLOR_LOCKED
 			badge_background = COLOR_NAVY_DEEP
 			status_color = COLOR_CREAM_LIGHT
-			status_text = "행 잠금"
+			status_text = "잠김"
 			opacity = 0.52
 		CardState.INSUFFICIENT:
 			border = COLOR_RED
 			border_width = 5
 			badge_background = COLOR_RED
 			status_color = COLOR_CREAM_LIGHT
-			status_text = "코인 부족 · %d / %d" % [
-				int(view[&"price"]),
-				_wallet.balance if _wallet != null else 0,
-			]
+			status_text = "코인 부족"
 			opacity = 0.72
 
 	card.disabled = state in [
@@ -942,6 +1196,30 @@ class RewardBoothDecoration:
 		]:
 			draw_circle(center, 6.0, COLOR_GOLD)
 			draw_arc(center, 6.0, 0.0, TAU, 18, COLOR_INK, 2.0, true)
+
+
+class RewardHandoffBurst:
+	extends Control
+
+	func _ready() -> void:
+		resized.connect(queue_redraw)
+		queue_redraw()
+
+	func _draw() -> void:
+		if size.x <= 0.0 or size.y <= 0.0:
+			return
+		var center := size * 0.5
+		var outer_radius := minf(size.x, size.y) * 0.48
+		var points := PackedVector2Array()
+		for index in 36:
+			var radius := outer_radius if index % 2 == 0 else outer_radius * 0.77
+			points.append(
+				center + Vector2.from_angle(-PI * 0.5 + TAU * index / 36.0) * radius
+			)
+		draw_colored_polygon(points, COLOR_GOLD)
+		var closed_points := points.duplicate()
+		closed_points.append(points[0])
+		draw_polyline(closed_points, COLOR_INK, 5.0, true)
 
 
 class RewardCoinIcon:
