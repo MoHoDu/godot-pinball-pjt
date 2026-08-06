@@ -28,20 +28,78 @@ const DEFAULT_PREDICTION_SECONDS := 0.3
 
 
 @export_category("Bumper Configuration")
+## 보드와 점수 시스템에서 이 범퍼 인스턴스를 구분하는 고유 ID입니다.
 @export var bumper_id: StringName = &"bumper"
-@export var settings: BumperSettings:
+## 저장과 보상 시스템이 참조하는 전체 범퍼 설정 묶음입니다. Inspector에서는 아래 세 설정으로 나누어 표시됩니다.
+@export_storage var settings: BumperSettings:
 	set(value):
+		if settings != null and settings.changed.is_connected(_on_settings_changed):
+			settings.changed.disconnect(_on_settings_changed)
 		settings = value
+		if settings != null and not settings.changed.is_connected(_on_settings_changed):
+			settings.changed.connect(_on_settings_changed)
 		_refresh_configuration()
+## 범퍼의 외형 크기, 충돌 크기, 복구 여백과 표현을 편집합니다.
+@export var object_settings: BumperObjectSettings:
+	get:
+		return settings.object_settings if settings != null else null
+	set(value):
+		_ensure_settings_bundle()
+		settings.object_settings = value
+## 모든 범퍼 타입이 공유하는 ID, 보상, 점수, 내구도와 복구 값을 편집합니다.
+@export var common_bumper_settings: BumperCommonSettings:
+	get:
+		return settings.common_settings if settings != null else null
+	set(value):
+		_ensure_settings_bundle()
+		settings.common_settings = value
+## Normal, Bounce, Track, Shot 중 선택한 타입의 전용 동작 값을 편집합니다.
+@export var type_settings: BumperTypeSettings:
+	get:
+		return settings.type_settings if settings != null else null
+	set(value):
+		_ensure_settings_bundle()
+		settings.type_settings = value
+## 이 배치 인스턴스에서만 공용 설정을 덮어쓸 값입니다. 음수는 공용값 사용을 뜻합니다.
 @export var instance_overrides: BumperInstanceOverrides:
 	set(value):
+		if instance_overrides != null \
+				and instance_overrides.changed.is_connected(_on_overrides_changed):
+			instance_overrides.changed.disconnect(_on_overrides_changed)
 		instance_overrides = value
+		if instance_overrides != null \
+				and not instance_overrides.changed.is_connected(_on_overrides_changed):
+			instance_overrides.changed.connect(_on_overrides_changed)
 		_refresh_configuration()
+## 공과 충돌했을 때 최종 속도와 방향을 계산하는 전략입니다. 비워 두면 타입별 기본 전략을 사용합니다.
 @export var response_strategy: BumperResponseStrategy
 
 @export_category("Safe Respawn")
+## 공의 이동 경로를 이 시간만큼 미리 계산하여 안전한 복구 여부를 판단합니다.
 @export_range(0.05, 2.0, 0.05, "suffix:s")
 var prediction_seconds := DEFAULT_PREDICTION_SECONDS
+
+@export_category("Editor Preview")
+## 에디터 화면에 외형, 물리 충돌, 타격 감지, 안전 복구 범위를 색상별 원으로 표시합니다.
+@export var show_editor_guides := true:
+	set(value):
+		show_editor_guides = value
+		queue_redraw()
+## 실제 공과 부딪히는 물리 충돌 범위를 주황색 실선으로 표시합니다.
+@export var show_collision_guide := true:
+	set(value):
+		show_collision_guide = value
+		queue_redraw()
+## 유효 접촉의 분리 여부를 판단하는 타격 감지 범위를 노란색으로 표시합니다.
+@export var show_hit_area_guide := true:
+	set(value):
+		show_hit_area_guide = value
+		queue_redraw()
+## 범퍼가 다시 생성되어도 안전한지 검사하는 범위를 보라색 점선으로 표시합니다.
+@export var show_safe_respawn_guide := false:
+	set(value):
+		show_safe_respawn_guide = value
+		queue_redraw()
 
 
 @onready var collision_shape: CollisionShape2D = get_node_or_null(
@@ -76,6 +134,7 @@ func _enter_tree() -> void:
 
 
 func _ready() -> void:
+	_connect_configuration_resources()
 	_refresh_configuration()
 	if Engine.is_editor_hint():
 		return
@@ -87,6 +146,61 @@ func _ready() -> void:
 	_set_collision_enabled(true)
 	_set_hit_detection_enabled(true)
 	durability_changed.emit(current_durability, get_max_durability())
+
+
+func _validate_property(property: Dictionary) -> void:
+	if property.name == &"settings":
+		property.usage = PROPERTY_USAGE_STORAGE
+	elif property.name in [&"object_settings", &"common_bumper_settings", &"type_settings"]:
+		property.usage = PROPERTY_USAGE_EDITOR
+
+
+func _draw() -> void:
+	if not Engine.is_editor_hint() or not show_editor_guides or settings == null:
+		return
+	var visual_radius := settings.visual_diameter * 0.5
+	draw_arc(Vector2.ZERO, visual_radius, 0.0, TAU, 64, Color(0.3, 0.95, 0.95, 0.8), 2.0, true)
+	if show_collision_guide:
+		draw_arc(Vector2.ZERO, get_collision_radius(), 0.0, TAU, 64, Color(1.0, 0.42, 0.08, 1.0), 4.0, true)
+	if show_hit_area_guide:
+		draw_arc(Vector2.ZERO, get_collision_radius() + 4.0, 0.0, TAU, 64, Color(1.0, 0.8, 0.2, 0.8), 2.0, true)
+	if show_safe_respawn_guide:
+		_draw_dashed_circle(
+			get_safe_respawn_radius(),
+			Color(0.72, 0.35, 1.0, 0.95),
+			3.0
+		)
+	if settings.bumper_type == BumperSettings.BumperType.TRACK \
+			and not settings.track_target_offset.is_zero_approx():
+		_draw_direction_guide(
+			Vector2.ZERO,
+			settings.track_target_offset,
+			Color(0.85, 0.45, 1.0, 0.9)
+		)
+		draw_circle(settings.track_target_offset, 8.0, Color(0.85, 0.45, 1.0, 0.35))
+		draw_arc(settings.track_target_offset, get_collision_radius(), 0.0, TAU, 48, Color(0.85, 0.45, 1.0, 0.55), 2.0, true)
+
+
+func _draw_direction_guide(from: Vector2, to: Vector2, color: Color) -> void:
+	draw_dashed_line(from, to, color, 2.0, 8.0, true)
+	var direction := (to - from).normalized()
+	if direction.is_zero_approx():
+		return
+	var tangent := direction.orthogonal()
+	var arrow := PackedVector2Array([
+		to,
+		to - direction * 14.0 + tangent * 7.0,
+		to - direction * 14.0 - tangent * 7.0,
+	])
+	draw_colored_polygon(arrow, color)
+
+
+func _draw_dashed_circle(radius: float, color: Color, width: float) -> void:
+	const SEGMENT_COUNT := 48
+	for index in range(0, SEGMENT_COUNT, 2):
+		var from_angle := TAU * float(index) / float(SEGMENT_COUNT)
+		var to_angle := TAU * float(index + 1) / float(SEGMENT_COUNT)
+		draw_arc(Vector2.ZERO, radius, from_angle, to_angle, 3, color, width, true)
 
 
 func _physics_process(_delta: float) -> void:
@@ -361,6 +475,13 @@ func get_safe_respawn_radius() -> float:
 	return get_collision_radius() + settings.respawn_safe_margin
 
 
+## Track 범퍼가 이동할 목표점을 월드 좌표로 반환합니다.
+func get_track_target_global_position() -> Vector2:
+	if settings == null:
+		return global_position
+	return global_transform * settings.track_target_offset
+
+
 func _after_valid_hit(_ball: RigidBody2D, _contact_id: int) -> void:
 	pass
 
@@ -455,7 +576,29 @@ func _refresh_configuration() -> void:
 		combo_hit_source.score_weight = get_score_weight()
 	if visual != null and visual.has_method(&"refresh_from_bumper"):
 		visual.call(&"refresh_from_bumper")
+	queue_redraw()
 	update_configuration_warnings()
+
+
+func _connect_configuration_resources() -> void:
+	if settings != null and not settings.changed.is_connected(_on_settings_changed):
+		settings.changed.connect(_on_settings_changed)
+	if instance_overrides != null \
+			and not instance_overrides.changed.is_connected(_on_overrides_changed):
+			instance_overrides.changed.connect(_on_overrides_changed)
+
+
+func _ensure_settings_bundle() -> void:
+	if settings == null:
+		settings = BumperSettings.new()
+
+
+func _on_settings_changed() -> void:
+	_refresh_configuration()
+
+
+func _on_overrides_changed() -> void:
+	_refresh_configuration()
 
 
 func _sync_circle_shape(shape_node: CollisionShape2D, radius: float) -> void:

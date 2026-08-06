@@ -69,6 +69,15 @@ func _test_standalone_scene_source() -> void:
 	_expect(not flow_source.contains("@export_node_path") \
 		and not flow_source.contains("get_node_or_null("),
 		"Ball flow dependencies must not rely on string node paths.")
+	_expect(scene_source.contains(
+		"res://scripts/select_ball/select_ball_inventory.gd"
+	), "Wave scene must use the unique-owned-ball inventory.")
+	_expect(scene_source.contains(
+		"res://scripts/select_ball/select_ball_flow_controller.gd"
+	), "Wave scene must mark balls used only after an actual launch.")
+	_expect(scene_source.contains(
+		"res://scenes/select-ball/select_ball_selection_hud.tscn"
+	), "Wave scene must use the confirmed ball-selection HUD.")
 
 
 func _test_scene_structure(wave: WaveRuntimeCoordinator) -> void:
@@ -112,19 +121,28 @@ func _test_scene_structure(wave: WaveRuntimeCoordinator) -> void:
 
 
 func _test_korean_selection_hud(wave: WaveRuntimeCoordinator) -> void:
-	var hud := wave.ball_selection_hud
+	var hud := wave.ball_selection_hud as SelectBallSelectionHud
+	_expect(hud != null,
+		"Wave scene must use the detailed select-ball HUD implementation.")
+	if hud == null:
+		return
 	_expect(hud.visible,
 		"Ball selection HUD must be visible while choosing the first ball.")
 	_expect(hud.title_label.text == "다음 공 선택",
 		"Ball selection title must retain the authored Korean copy.")
 	_expect(hud.ball_name_label.text in ["가벼운 공", "보통 공", "무거운 공"],
 		"Selected ball name must use a Korean inventory label.")
-	_expect(hud.stock_label.text.contains("이 공") \
-		and hud.stock_label.text.contains("전체") \
-		and hud.stock_label.text.contains("남음"),
-		"Ball stock label must retain the complete Korean copy.")
-	_expect(hud.guide_label.text == "A/D 또는 방향키: 선택    Space: 조준 시작",
-		"Ball selection guide must retain the supported Korean instruction text.")
+	_expect(not hud.stock_label.visible,
+		"Unique owned balls must not expose legacy quantity information.")
+	_expect(hud.mass_label.text.begins_with("무게 "),
+		"Ball selection HUD must expose the selected ball mass.")
+	_expect(hud.elasticity_label.text.begins_with("탄성 "),
+		"Ball selection HUD must expose the selected ball elasticity.")
+	_expect(not hud.feature_label.text.strip_edges().is_empty(),
+		"Ball selection HUD must expose one concise feature summary.")
+	_expect(hud.guide_label.text.contains("Space: 선택 확정") \
+		and hud.guide_label.text.contains("기존 입력"),
+		"Ball selection guide must separate confirmation from aiming and launch.")
 
 
 func _test_bumper_loadout(wave: WaveRuntimeCoordinator) -> void:
@@ -136,12 +154,17 @@ func _test_bumper_loadout(wave: WaveRuntimeCoordinator) -> void:
 	var normal_count := 0
 	var bounce_count := 0
 	var shot_count := 0
+	var wave_cannon: ShotBumper
 	var kind_counts: Dictionary = {}
 	for bumper: Bumper in bumpers:
 		_expect(bumper.get_script() != null,
 			"Every authored bumper must use the production Bumper runtime.")
 		_expect(bumper.combo_hit_source != null,
 			"Every authored bumper must expose a ComboHitSource.")
+		_expect(bumper.settings.object_settings != null \
+			and bumper.settings.common_settings != null \
+			and bumper.settings.type_settings != null,
+			"Every Wave bumper must use the integrated three-part settings bundle.")
 		var kind_id := bumper.settings.bumper_kind_id
 		kind_counts[kind_id] = int(kind_counts.get(kind_id, 0)) + 1
 		match bumper.settings.bumper_type:
@@ -151,6 +174,8 @@ func _test_bumper_loadout(wave: WaveRuntimeCoordinator) -> void:
 				bounce_count += 1
 			BumperSettings.BumperType.SHOT:
 				shot_count += 1
+				if bumper is ShotBumper:
+					wave_cannon = bumper as ShotBumper
 	_expect(normal_count == 3 and bounce_count == 2 and shot_count == 1,
 		"Wave 3 must expose three Normal, two Bounce, and one Shot bumper.")
 	_expect(kind_counts == {
@@ -160,6 +185,15 @@ func _test_bumper_loadout(wave: WaveRuntimeCoordinator) -> void:
 		&"stage01_toy_drum": 1,
 		&"stage01_clockwork_cannon": 1,
 	}, "Wave 3 must contain the exact authored Stage 01 bumper kinds.")
+	_expect(wave_cannon != null,
+		"Wave 3 Shot loadout must use the integrated clockwork cannon runtime.")
+	if wave_cannon != null:
+		_expect(wave_cannon.get_launch_anchors().size() == 7,
+			"Wave clockwork cannon must expose all seven authored directions.")
+		_expect(is_equal_approx(wave_cannon.get_selection_duration(), 0.8),
+			"Wave clockwork cannon must keep the confirmed 0.8 second selection.")
+		_expect(is_equal_approx(wave_cannon.get_launch_speed(), 1300.0),
+			"Wave clockwork cannon must keep its authored launch speed.")
 
 
 func _test_low_speed_wave_balls_release_from_flipper(
@@ -353,11 +387,15 @@ func _test_life_connection(wave: WaveRuntimeCoordinator) -> void:
 	var heavy_scene := wave.wave_ball_inventory.selected_definition.ball_scene
 	_expect(wave.wave_ball_flow.confirm_selection(),
 		"Selected heavy ball must prepare through the real flow.")
+	_expect(wave.wave_ball_inventory.total_remaining == 3,
+		"Confirmation alone must not mark the selected ball used.")
 	_expect(wave.launcher.ball_scene == heavy_scene,
 		"Launcher scene must match the ball type highlighted by the HUD.")
 	var first_ball := wave.wave_ball_flow.active_ball
 	_expect(wave.launcher.launch_prepared_ball(),
 		"Selected heavy ball must launch through the real launcher.")
+	_expect(wave.wave_ball_inventory.total_remaining == 2,
+		"An actual launch must lock exactly one ball for the wave.")
 	_expect(wave.combo_wave_controller.ball_is_active,
 		"Launch must enter ComboWaveController through WaveManager.")
 	_expect(manager_launches[0] == 1,

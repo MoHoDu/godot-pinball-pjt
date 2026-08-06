@@ -1,0 +1,2187 @@
+{
+  "version": "2.15",
+  "children": [
+    {
+      "type": "frame",
+      "id": "pi7f6",
+      "x": 0,
+      "y": 0,
+      "name": "01 · Ball Selection UI Kit",
+      "clip": true,
+      "width": 1920,
+      "height": 780,
+      "fill": "$surface-bg",
+      "layout": "vertical",
+      "gap": 28,
+      "padding": 48,
+      "children": [
+        {
+          "type": "frame",
+          "id": "ohE6P",
+          "name": "Ball Selection Kit Header",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "FovON",
+              "name": "Ball Selection Kit Title Group",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "yI6PD",
+                  "name": "Ball Selection Kit Eyebrow",
+                  "fill": "$accent",
+                  "content": "WAVE · BALL SELECT",
+                  "fontFamily": "$font-data",
+                  "fontSize": 14,
+                  "fontWeight": "700",
+                  "letterSpacing": 2
+                },
+                {
+                  "type": "text",
+                  "id": "jhNvW",
+                  "name": "Ball Selection Kit Title",
+                  "fill": "$text-primary",
+                  "content": "공 선택 UI 상태와 적용 규칙",
+                  "fontFamily": "$font-display",
+                  "fontSize": 34,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "GxIAo",
+              "name": "Ball Selection Design Status",
+              "fill": "$surface-raised",
+              "cornerRadius": "$radius-sm",
+              "stroke": "$accent",
+              "strokeWidth": 1,
+              "gap": 8,
+              "padding": [
+                8,
+                14
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "ellipse",
+                  "id": "XU2Y5",
+                  "name": "Ball Selection Status Dot",
+                  "fill": "$accent",
+                  "width": 8,
+                  "height": 8
+                },
+                {
+                  "type": "text",
+                  "id": "c1YmE",
+                  "name": "Ball Selection Status Label",
+                  "fill": "$text-primary",
+                  "content": "확정 규칙 반영",
+                  "fontFamily": "$font-data",
+                  "fontSize": 13,
+                  "fontWeight": "700"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "s7se2x",
+          "name": "Ball Slot States Label",
+          "fill": "$text-secondary",
+          "content": "BALL SLOT STATES · 공 이미지는 기본 유리눈 더미",
+          "fontFamily": "$font-data",
+          "fontSize": 14,
+          "fontWeight": "700",
+          "letterSpacing": 1
+        },
+        {
+          "type": "frame",
+          "id": "bNuWp",
+          "name": "Ball Slot State Row",
+          "width": "fill_container",
+          "height": 220,
+          "gap": 24,
+          "children": [
+            {
+              "type": "frame",
+              "id": "DyVdx",
+              "name": "Component/Ball Slot/Available",
+              "reusable": true,
+              "width": 180,
+              "height": 220,
+              "fill": "$surface-slot",
+              "cornerRadius": "$radius-md",
+              "stroke": "$line",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 6,
+              "padding": [
+                10,
+                10,
+                12,
+                10
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "F7aKIV",
+                  "name": "Component/Ball Slot/Available Art Stack",
+                  "width": 144,
+                  "height": 140,
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "id": "lWxAl",
+                      "x": 9,
+                      "y": 7,
+                      "name": "Component/Ball Slot/Available Pedestal",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "../../Art/ui/select_ball/slots/selection_slot_pedestal.png",
+                        "mode": "fit"
+                      },
+                      "width": 126,
+                      "height": 126
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "fYUyG",
+                      "x": 28,
+                      "y": 26,
+                      "name": "Component/Ball Slot/Available Glass Eye Dummy",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "../../Art/balls/glass_eye_ball.png",
+                        "mode": "fit"
+                      },
+                      "width": 88,
+                      "height": 88
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "P9icI",
+                  "name": "Component/Ball Slot/Available Ball Name",
+                  "fill": "$text-primary",
+                  "content": "기본 유리눈",
+                  "fontFamily": "$font-body",
+                  "fontSize": 17,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "frame",
+                  "id": "n1Dbj8",
+                  "name": "Component/Ball Slot/Available Status Chip",
+                  "fill": "$surface-raised",
+                  "cornerRadius": "$radius-sm",
+                  "stroke": "$line",
+                  "strokeWidth": 1,
+                  "padding": [
+                    4,
+                    10
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "a6ksgs",
+                      "name": "Component/Ball Slot/Available Status Text",
+                      "fill": "$text-secondary",
+                      "content": "사용 가능",
+                      "fontFamily": "$font-data",
+                      "fontSize": 11,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "vADNp",
+              "name": "Component/Ball Slot/Selected",
+              "reusable": true,
+              "width": 180,
+              "height": 220,
+              "fill": "$surface-slot",
+              "cornerRadius": "$radius-md",
+              "stroke": "$accent",
+              "strokeWidth": 3,
+              "layout": "vertical",
+              "gap": 6,
+              "padding": [
+                10,
+                10,
+                12,
+                10
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "B2Srh",
+                  "name": "Component/Ball Slot/Selected Art Stack",
+                  "width": 144,
+                  "height": 140,
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "id": "AihUR",
+                      "x": 9,
+                      "y": 7,
+                      "name": "Component/Ball Slot/Selected Pedestal",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "../../Art/ui/select_ball/slots/selection_slot_pedestal.png",
+                        "mode": "fit"
+                      },
+                      "width": 126,
+                      "height": 126
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "pRrED",
+                      "x": 28,
+                      "y": 26,
+                      "name": "Component/Ball Slot/Selected Glass Eye Dummy",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "../../Art/balls/glass_eye_ball.png",
+                        "mode": "fit"
+                      },
+                      "width": 88,
+                      "height": 88
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "yPU4f",
+                      "x": 0,
+                      "y": 0,
+                      "name": "Component/Ball Slot/Selected Focus Ring",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "../../Art/ui/select_ball/states/selection_focus_sigil.png",
+                        "mode": "fit"
+                      },
+                      "width": 140,
+                      "height": 140
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "EDKIc",
+                  "name": "Component/Ball Slot/Selected Ball Name",
+                  "fill": "$text-primary",
+                  "content": "기본 유리눈",
+                  "fontFamily": "$font-body",
+                  "fontSize": 17,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "frame",
+                  "id": "coup6",
+                  "name": "Component/Ball Slot/Selected Status Chip",
+                  "fill": "$accent-soft",
+                  "cornerRadius": "$radius-sm",
+                  "stroke": "$accent",
+                  "strokeWidth": 1,
+                  "padding": [
+                    4,
+                    10
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "MHzAc",
+                      "name": "Component/Ball Slot/Selected Status Text",
+                      "fill": "$accent",
+                      "content": "현재 선택",
+                      "fontFamily": "$font-data",
+                      "fontSize": 11,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "wLyO1",
+              "name": "Component/Ball Slot/Used",
+              "reusable": true,
+              "opacity": 0.55,
+              "width": 180,
+              "height": 220,
+              "fill": "#0B273080",
+              "cornerRadius": "$radius-md",
+              "stroke": "$line",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 6,
+              "padding": [
+                10,
+                10,
+                12,
+                10
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "x4jho",
+                  "name": "Component/Ball Slot/Used Art Stack",
+                  "width": 144,
+                  "height": 140,
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "id": "v02sp",
+                      "x": 9,
+                      "y": 7,
+                      "name": "Component/Ball Slot/Used Pedestal",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "../../Art/ui/select_ball/slots/selection_slot_pedestal.png",
+                        "mode": "fit"
+                      },
+                      "width": 126,
+                      "height": 126
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "WXtU7",
+                      "x": 28,
+                      "y": 26,
+                      "name": "Component/Ball Slot/Used Glass Eye Dummy",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "../../Art/balls/glass_eye_ball.png",
+                        "mode": "fit"
+                      },
+                      "width": 88,
+                      "height": 88
+                    },
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": 2,
+                      "id": "n5YMRZ",
+                      "x": 20,
+                      "y": 68,
+                      "name": "Component/Ball Slot/Used Used Slash",
+                      "rotation": -12.000000000000002,
+                      "fill": "$text-muted",
+                      "width": 104,
+                      "height": 5
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "M7ilkE",
+                  "name": "Component/Ball Slot/Used Ball Name",
+                  "fill": "$text-muted",
+                  "content": "기본 유리눈",
+                  "fontFamily": "$font-body",
+                  "fontSize": 17,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "frame",
+                  "id": "AhPCx",
+                  "name": "Component/Ball Slot/Used Status Chip",
+                  "fill": "$surface-raised",
+                  "cornerRadius": "$radius-sm",
+                  "stroke": "$line",
+                  "strokeWidth": 1,
+                  "padding": [
+                    4,
+                    10
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "M0NBw8",
+                      "name": "Component/Ball Slot/Used Status Text",
+                      "fill": "$text-secondary",
+                      "content": "이번 웨이브 사용됨",
+                      "fontFamily": "$font-data",
+                      "fontSize": 11,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "R6uRXv",
+              "name": "Ball Slot Interaction Rules",
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": "$surface-panel",
+              "cornerRadius": "$radius-md",
+              "stroke": "$line",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 12,
+              "padding": 20,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "XFoQ5",
+                  "name": "Ball Slot Rules Title",
+                  "fill": "$text-primary",
+                  "content": "선택 적용 규칙",
+                  "fontFamily": "$font-display",
+                  "fontSize": 24,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "EzLj8",
+                  "name": "Ball Slot Rule",
+                  "fill": "$text-secondary",
+                  "content": "• 팝업 진입 시 첫 사용 가능 공 자동 선택",
+                  "fontFamily": "$font-body",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "nmm5z",
+                  "name": "Ball Slot Rule",
+                  "fill": "$text-secondary",
+                  "content": "• 확정 전에는 정보만 갱신하고 게임 상태 미적용",
+                  "fontFamily": "$font-body",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "LVk3z",
+                  "name": "Ball Slot Rule",
+                  "fill": "$text-secondary",
+                  "content": "• 실제 발사 성공 시에만 웨이브 사용 완료",
+                  "fontFamily": "$font-body",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "MkAwp",
+                  "name": "Ball Slot Rule",
+                  "fill": "$text-secondary",
+                  "content": "• 사용 완료 공은 유지·비활성, 다음 웨이브에 복구",
+                  "fontFamily": "$font-body",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "z6Bofv",
+          "name": "Information Pattern Label",
+          "fill": "$text-secondary",
+          "content": "INFORMATION PATTERN · 수량 정보 없음",
+          "fontFamily": "$font-data",
+          "fontSize": 14,
+          "fontWeight": "700",
+          "letterSpacing": 1
+        },
+        {
+          "type": "frame",
+          "id": "YzoIP",
+          "name": "Ball Information Pattern",
+          "width": "fill_container",
+          "height": 156,
+          "fill": "$surface-panel",
+          "cornerRadius": "$radius-md",
+          "stroke": "$line",
+          "strokeWidth": 1,
+          "gap": 18,
+          "padding": 20,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "KRI1g",
+              "name": "Ball Name Information",
+              "width": 360,
+              "layout": "vertical",
+              "gap": 5,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "uKpx5",
+                  "name": "Ball Name Caption",
+                  "fill": "$accent",
+                  "content": "선택한 공",
+                  "fontFamily": "$font-data",
+                  "fontSize": 12,
+                  "fontWeight": "normal",
+                  "letterSpacing": 1
+                },
+                {
+                  "type": "text",
+                  "id": "q2ujt",
+                  "name": "Ball Name Value",
+                  "fill": "$text-primary",
+                  "content": "기본 유리눈",
+                  "fontFamily": "$font-display",
+                  "fontSize": 32,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "qjmg4",
+              "name": "Ball Physics Statistics",
+              "width": 300,
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "U28E4X",
+                  "name": "무게 Stat",
+                  "width": 138,
+                  "fill": "$surface-slot",
+                  "cornerRadius": "$radius-sm",
+                  "stroke": "$line",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "gap": 4,
+                  "padding": [
+                    10,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "y8GGvY",
+                      "name": "무게 Label",
+                      "fill": "$text-muted",
+                      "content": "무게",
+                      "fontFamily": "$font-data",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "JhLym",
+                      "name": "무게 Value",
+                      "fill": "$text-primary",
+                      "content": "1.0 kg",
+                      "fontFamily": "$font-data",
+                      "fontSize": 20,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "NEOgR",
+                  "name": "탄성 Stat",
+                  "width": 138,
+                  "fill": "$surface-slot",
+                  "cornerRadius": "$radius-sm",
+                  "stroke": "$line",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "gap": 4,
+                  "padding": [
+                    10,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "lmXJx",
+                      "name": "탄성 Label",
+                      "fill": "$text-muted",
+                      "content": "탄성",
+                      "fontFamily": "$font-data",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "GhkoG",
+                      "name": "탄성 Value",
+                      "fill": "$text-primary",
+                      "content": "80%",
+                      "fontFamily": "$font-data",
+                      "fontSize": 20,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Gejx0",
+              "name": "Ball Feature Summary",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 6,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "VnhxH",
+                  "name": "Ball Feature Label",
+                  "fill": "$accent",
+                  "content": "핵심 특징",
+                  "fontFamily": "$font-data",
+                  "fontSize": 12,
+                  "fontWeight": "normal",
+                  "letterSpacing": 1
+                },
+                {
+                  "type": "text",
+                  "id": "fNDyl",
+                  "name": "Ball Feature Value",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "균형 잡힌 무게와 탄성으로 안정적인 궤적을 만듭니다.",
+                  "lineHeight": 1.35,
+                  "fontFamily": "$font-body",
+                  "fontSize": 18,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "DXh6B",
+              "name": "Component/Button/Ball Selection Confirm",
+              "reusable": true,
+              "width": 190,
+              "height": 52,
+              "fill": "$warning",
+              "cornerRadius": [
+                7,
+                2,
+                6,
+                3
+              ],
+              "stroke": "$surface-bg",
+              "strokeWidth": 3,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#071C2470",
+                "offset": {
+                  "x": 4,
+                  "y": 5
+                },
+                "blur": 2
+              },
+              "gap": 10,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "esuYt",
+                  "name": "Ball Confirm Icon",
+                  "width": 20,
+                  "height": 20,
+                  "icon": "check-circle",
+                  "library": "lucide",
+                  "fill": "$surface-bg"
+                },
+                {
+                  "type": "text",
+                  "id": "rtSvu",
+                  "name": "Ball Confirm Label",
+                  "fill": "$surface-bg",
+                  "content": "선택 확정",
+                  "fontFamily": "$font-body",
+                  "fontSize": 17,
+                  "fontWeight": "800"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "KLjcv",
+      "x": 0,
+      "y": 900,
+      "name": "02 · Flow 01 · Wave Entry / First Ball Preselected",
+      "clip": true,
+      "width": 1920,
+      "height": 1080,
+      "fill": "$surface-bg",
+      "layout": "none",
+      "children": [
+        {
+          "type": "rectangle",
+          "id": "HmRoT",
+          "x": 0,
+          "y": 0,
+          "name": "Wave HUD In-game Background",
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "../wave_hud_layers/00_full_ingame_preview.png",
+            "mode": "fill"
+          },
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "type": "rectangle",
+          "id": "wmA2A",
+          "x": 0,
+          "y": 0,
+          "name": "Selection Background Dim",
+          "fill": "#04161CB0",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "type": "frame",
+          "id": "MaAdb",
+          "x": 380,
+          "y": 240,
+          "name": "Ball Selection Modal",
+          "clip": true,
+          "width": 1160,
+          "height": 600,
+          "fill": "$surface-panel",
+          "cornerRadius": [
+            6,
+            2,
+            8,
+            3
+          ],
+          "stroke": "$line-strong",
+          "strokeWidth": 3,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#071C24CC",
+            "offset": {
+              "x": 8,
+              "y": 10
+            },
+            "blur": 8
+          },
+          "layout": "none",
+          "children": [
+            {
+              "type": "rectangle",
+              "id": "eTXcd",
+              "x": 0,
+              "y": 0,
+              "name": "Modal Surface Scratches",
+              "opacity": 0.28,
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "../../Art/ui/select_ball/overlays/selection_surface_overlay.png",
+                "mode": "fill"
+              },
+              "width": 1160,
+              "height": 600
+            },
+            {
+              "type": "text",
+              "id": "RUACo",
+              "x": 40,
+              "y": 24,
+              "name": "Modal Eyebrow",
+              "fill": "$accent",
+              "content": "SELECT BALL · 첫 번째 사용 가능 공 자동 선택",
+              "fontFamily": "$font-data",
+              "fontSize": 13,
+              "fontWeight": "700",
+              "letterSpacing": 1.6
+            },
+            {
+              "type": "text",
+              "id": "a4Kl5",
+              "x": 40,
+              "y": 48,
+              "name": "Modal Title",
+              "fill": "$text-primary",
+              "content": "발사할 공을 선택하세요",
+              "fontFamily": "$font-display",
+              "fontSize": 32,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "flJ2m",
+              "x": 724,
+              "y": 52,
+              "name": "Modal Rule Hint",
+              "fill": "$text-secondary",
+              "content": "확정 전에는 공이 적용되지 않습니다",
+              "fontFamily": "$font-body",
+              "fontSize": 14,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "rectangle",
+              "id": "UpU4z",
+              "x": 40,
+              "y": 96,
+              "name": "Modal Header Divider",
+              "fill": "$line",
+              "width": 1080,
+              "height": 2
+            },
+            {
+              "type": "frame",
+              "id": "z3gXd",
+              "x": 106,
+              "y": 112,
+              "name": "Ball Inventory Slots",
+              "width": 948,
+              "height": 220,
+              "gap": 12,
+              "children": [
+                {
+                  "id": "G7PO1F",
+                  "type": "ref",
+                  "ref": "vADNp",
+                  "name": "Slot 01 · Basic Glass Eye · Selected",
+                  "descendants": {
+                    "EDKIc": {
+                      "content": "기본 유리눈"
+                    }
+                  }
+                },
+                {
+                  "id": "jdQFj",
+                  "type": "ref",
+                  "ref": "DyVdx",
+                  "name": "Slot 02 · Clockwork · Available",
+                  "descendants": {
+                    "P9icI": {
+                      "content": "태엽 눈"
+                    }
+                  }
+                },
+                {
+                  "id": "zGabN",
+                  "type": "ref",
+                  "ref": "DyVdx",
+                  "name": "Slot 03 · Rubber · Available",
+                  "descendants": {
+                    "P9icI": {
+                      "content": "고무 눈"
+                    }
+                  }
+                },
+                {
+                  "id": "M8CdV",
+                  "type": "ref",
+                  "ref": "DyVdx",
+                  "name": "Slot 04 · Lead · Available",
+                  "descendants": {
+                    "P9icI": {
+                      "content": "납 눈"
+                    }
+                  }
+                },
+                {
+                  "id": "FBtyN",
+                  "type": "ref",
+                  "ref": "DyVdx",
+                  "name": "Slot 05 · Gel · Available",
+                  "descendants": {
+                    "P9icI": {
+                      "content": "젤 눈"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "hVePJ",
+              "x": 40,
+              "y": 356,
+              "name": "Selected Ball Information",
+              "width": 750,
+              "height": 170,
+              "fill": "$surface-slot",
+              "cornerRadius": "$radius-md",
+              "stroke": "$line",
+              "strokeWidth": 1,
+              "layout": "none",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "FwYnU",
+                  "x": 22,
+                  "y": 18,
+                  "name": "Selected Ball Caption",
+                  "fill": "$accent",
+                  "content": "현재 선택",
+                  "fontFamily": "$font-data",
+                  "fontSize": 12,
+                  "fontWeight": "700",
+                  "letterSpacing": 1.4
+                },
+                {
+                  "type": "text",
+                  "id": "qcrk9",
+                  "x": 22,
+                  "y": 40,
+                  "name": "Selected Ball Name",
+                  "fill": "$text-primary",
+                  "content": "기본 유리눈",
+                  "fontFamily": "$font-display",
+                  "fontSize": 31,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "frame",
+                  "id": "gZkJD",
+                  "x": 290,
+                  "y": 21,
+                  "name": "Selected Ball Mass",
+                  "width": 130,
+                  "height": 64,
+                  "fill": "$surface-raised",
+                  "cornerRadius": "$radius-sm",
+                  "stroke": "$line",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "gap": 3,
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "TDMfx",
+                      "name": "Selected Ball Mass Label",
+                      "fill": "$text-muted",
+                      "content": "무게",
+                      "fontFamily": "$font-data",
+                      "fontSize": 11,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "aGYBv",
+                      "name": "Selected Ball Mass Value",
+                      "fill": "$text-primary",
+                      "content": "1.0 kg",
+                      "fontFamily": "$font-data",
+                      "fontSize": 19,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Q52TH",
+                  "x": 434,
+                  "y": 21,
+                  "name": "Selected Ball Elasticity",
+                  "width": 130,
+                  "height": 64,
+                  "fill": "$surface-raised",
+                  "cornerRadius": "$radius-sm",
+                  "stroke": "$line",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "gap": 3,
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "P6yPy",
+                      "name": "Selected Ball Elasticity Label",
+                      "fill": "$text-muted",
+                      "content": "탄성",
+                      "fontFamily": "$font-data",
+                      "fontSize": 11,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "f2vf1",
+                      "name": "Selected Ball Elasticity Value",
+                      "fill": "$text-primary",
+                      "content": "80%",
+                      "fontFamily": "$font-data",
+                      "fontSize": 19,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "dLVqB",
+                  "x": 22,
+                  "y": 106,
+                  "name": "Selected Ball Feature Label",
+                  "fill": "$accent",
+                  "content": "핵심 특징",
+                  "fontFamily": "$font-data",
+                  "fontSize": 11,
+                  "fontWeight": "700",
+                  "letterSpacing": 1.2
+                },
+                {
+                  "type": "text",
+                  "id": "ZdPKa",
+                  "x": 22,
+                  "y": 126,
+                  "name": "Selected Ball Feature Summary",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": 700,
+                  "content": "균형 잡힌 무게와 탄성으로 안정적인 궤적을 만듭니다.",
+                  "lineHeight": 1.3,
+                  "fontFamily": "$font-body",
+                  "fontSize": 18,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "uufuI",
+              "x": 814,
+              "y": 356,
+              "name": "Selection Confirmation Area",
+              "width": 306,
+              "height": 170,
+              "fill": "#0B273099",
+              "cornerRadius": "$radius-md",
+              "stroke": "$line",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 16,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "bZWbQ",
+                  "name": "Confirmation Warning",
+                  "fill": "$text-primary",
+                  "content": "정보를 확인한 뒤 확정하세요",
+                  "fontFamily": "$font-body",
+                  "fontSize": 16,
+                  "fontWeight": "700"
+                },
+                {
+                  "id": "GPKC1",
+                  "type": "ref",
+                  "ref": "DXh6B",
+                  "name": "Confirm Selected Ball Button",
+                  "width": 230,
+                  "height": 52,
+                  "rotation": 0
+                },
+                {
+                  "type": "text",
+                  "id": "b3eURW",
+                  "name": "Confirmation Input Hint",
+                  "fill": "$text-muted",
+                  "content": "SPACE / ENTER",
+                  "fontFamily": "$font-data",
+                  "fontSize": 12,
+                  "fontWeight": "normal",
+                  "letterSpacing": 1.2
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "x3x63",
+              "x": 40,
+              "y": 558,
+              "name": "Selection Navigation Hint",
+              "fill": "$text-secondary",
+              "content": "A / D 또는 ← / →  공 이동     ·     실제 조준과 발사는 확정 후 기존 입력으로 진행",
+              "fontFamily": "$font-data",
+              "fontSize": 12,
+              "fontWeight": "normal",
+              "letterSpacing": 0.5
+            },
+            {
+              "type": "ellipse",
+              "id": "JJi5i",
+              "x": 14,
+              "y": 14,
+              "name": "Modal Left Screw",
+              "fill": "$brass",
+              "width": 14,
+              "height": 14,
+              "stroke": "$surface-bg",
+              "strokeWidth": 2
+            },
+            {
+              "type": "ellipse",
+              "id": "k85YT",
+              "x": 1132,
+              "y": 14,
+              "name": "Modal Right Screw",
+              "fill": "$brass",
+              "width": 14,
+              "height": 14,
+              "stroke": "$surface-bg",
+              "strokeWidth": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "biRSN",
+      "x": 0,
+      "y": 2100,
+      "name": "03 · Flow 02 · Re-entry / Fired Ball Locked",
+      "clip": true,
+      "width": 1920,
+      "height": 1080,
+      "fill": "$surface-bg",
+      "layout": "none",
+      "children": [
+        {
+          "type": "rectangle",
+          "id": "K43H2S",
+          "x": 0,
+          "y": 0,
+          "name": "Wave HUD In-game Background",
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "../wave_hud_layers/00_full_ingame_preview.png",
+            "mode": "fill"
+          },
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "type": "rectangle",
+          "id": "N18S7B",
+          "x": 0,
+          "y": 0,
+          "name": "Selection Background Dim",
+          "fill": "#04161CB0",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "type": "frame",
+          "id": "Zmkjr",
+          "x": 380,
+          "y": 240,
+          "name": "Ball Selection Modal",
+          "clip": true,
+          "width": 1160,
+          "height": 600,
+          "fill": "$surface-panel",
+          "cornerRadius": [
+            6,
+            2,
+            8,
+            3
+          ],
+          "stroke": "$line-strong",
+          "strokeWidth": 3,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#071C24CC",
+            "offset": {
+              "x": 8,
+              "y": 10
+            },
+            "blur": 8
+          },
+          "layout": "none",
+          "children": [
+            {
+              "type": "rectangle",
+              "id": "OvSAR",
+              "x": 0,
+              "y": 0,
+              "name": "Modal Surface Scratches",
+              "opacity": 0.28,
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "../../Art/ui/select_ball/overlays/selection_surface_overlay.png",
+                "mode": "fill"
+              },
+              "width": 1160,
+              "height": 600
+            },
+            {
+              "type": "text",
+              "id": "iRXVa",
+              "x": 40,
+              "y": 24,
+              "name": "Modal Eyebrow",
+              "fill": "$accent",
+              "content": "SELECT BALL · 실제 발사한 공은 이번 웨이브에서 잠김",
+              "fontFamily": "$font-data",
+              "fontSize": 13,
+              "fontWeight": "700",
+              "letterSpacing": 1.6
+            },
+            {
+              "type": "text",
+              "id": "X50pP",
+              "x": 40,
+              "y": 48,
+              "name": "Modal Title",
+              "fill": "$text-primary",
+              "content": "다음 공을 선택하세요",
+              "fontFamily": "$font-display",
+              "fontSize": 32,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "reB3C",
+              "x": 724,
+              "y": 52,
+              "name": "Modal Rule Hint",
+              "fill": "$text-secondary",
+              "content": "사용 완료 공은 다음 웨이브에 다시 사용 가능",
+              "fontFamily": "$font-body",
+              "fontSize": 14,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "rectangle",
+              "id": "deQ4l",
+              "x": 40,
+              "y": 96,
+              "name": "Modal Header Divider",
+              "fill": "$line",
+              "width": 1080,
+              "height": 2
+            },
+            {
+              "type": "frame",
+              "id": "OU01e",
+              "x": 106,
+              "y": 112,
+              "name": "Ball Inventory Slots",
+              "width": 948,
+              "height": 220,
+              "gap": 12,
+              "children": [
+                {
+                  "id": "v5p5eu",
+                  "type": "ref",
+                  "ref": "wLyO1",
+                  "name": "Slot 01 · Basic Glass Eye · Used This Wave",
+                  "descendants": {
+                    "M7ilkE": {
+                      "content": "기본 유리눈"
+                    }
+                  }
+                },
+                {
+                  "id": "nvhww",
+                  "type": "ref",
+                  "ref": "vADNp",
+                  "name": "Slot 02 · Clockwork · Selected",
+                  "descendants": {
+                    "EDKIc": {
+                      "content": "태엽 눈"
+                    }
+                  }
+                },
+                {
+                  "id": "Ory0l",
+                  "type": "ref",
+                  "ref": "DyVdx",
+                  "name": "Slot 03 · Rubber · Available",
+                  "descendants": {
+                    "P9icI": {
+                      "content": "고무 눈"
+                    }
+                  }
+                },
+                {
+                  "id": "Q19D0i",
+                  "type": "ref",
+                  "ref": "DyVdx",
+                  "name": "Slot 04 · Lead · Available",
+                  "descendants": {
+                    "P9icI": {
+                      "content": "납 눈"
+                    }
+                  }
+                },
+                {
+                  "id": "kLKc0",
+                  "type": "ref",
+                  "ref": "DyVdx",
+                  "name": "Slot 05 · Gel · Available",
+                  "descendants": {
+                    "P9icI": {
+                      "content": "젤 눈"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "tc913",
+              "x": 40,
+              "y": 356,
+              "name": "Selected Ball Information",
+              "width": 750,
+              "height": 170,
+              "fill": "$surface-slot",
+              "cornerRadius": "$radius-md",
+              "stroke": "$line",
+              "strokeWidth": 1,
+              "layout": "none",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "qV3PW",
+                  "x": 22,
+                  "y": 18,
+                  "name": "Selected Ball Caption",
+                  "fill": "$accent",
+                  "content": "현재 선택",
+                  "fontFamily": "$font-data",
+                  "fontSize": 12,
+                  "fontWeight": "700",
+                  "letterSpacing": 1.4
+                },
+                {
+                  "type": "text",
+                  "id": "SceFS",
+                  "x": 22,
+                  "y": 40,
+                  "name": "Selected Ball Name",
+                  "fill": "$text-primary",
+                  "content": "태엽 눈",
+                  "fontFamily": "$font-display",
+                  "fontSize": 31,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "frame",
+                  "id": "kuXNC",
+                  "x": 290,
+                  "y": 21,
+                  "name": "Selected Ball Mass",
+                  "width": 130,
+                  "height": 64,
+                  "fill": "$surface-raised",
+                  "cornerRadius": "$radius-sm",
+                  "stroke": "$line",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "gap": 3,
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Aslem",
+                      "name": "Selected Ball Mass Label",
+                      "fill": "$text-muted",
+                      "content": "무게",
+                      "fontFamily": "$font-data",
+                      "fontSize": 11,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "kq68k",
+                      "name": "Selected Ball Mass Value",
+                      "fill": "$text-primary",
+                      "content": "1.0 kg",
+                      "fontFamily": "$font-data",
+                      "fontSize": 19,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Uabvl",
+                  "x": 434,
+                  "y": 21,
+                  "name": "Selected Ball Elasticity",
+                  "width": 130,
+                  "height": 64,
+                  "fill": "$surface-raised",
+                  "cornerRadius": "$radius-sm",
+                  "stroke": "$line",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "gap": 3,
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "U4KLqN",
+                      "name": "Selected Ball Elasticity Label",
+                      "fill": "$text-muted",
+                      "content": "탄성",
+                      "fontFamily": "$font-data",
+                      "fontSize": 11,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "t4Hdki",
+                      "name": "Selected Ball Elasticity Value",
+                      "fill": "$text-primary",
+                      "content": "80%",
+                      "fontFamily": "$font-data",
+                      "fontSize": 19,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "yybOj",
+                  "x": 22,
+                  "y": 106,
+                  "name": "Selected Ball Feature Label",
+                  "fill": "$accent",
+                  "content": "핵심 특징",
+                  "fontFamily": "$font-data",
+                  "fontSize": 11,
+                  "fontWeight": "700",
+                  "letterSpacing": 1.2
+                },
+                {
+                  "type": "text",
+                  "id": "dsGWf",
+                  "x": 22,
+                  "y": 126,
+                  "name": "Selected Ball Feature Summary",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": 700,
+                  "content": "태엽 장치의 균일한 반응으로 다음 충돌 궤적을 예측하기 쉽습니다.",
+                  "lineHeight": 1.3,
+                  "fontFamily": "$font-body",
+                  "fontSize": 18,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "W24WOT",
+              "x": 814,
+              "y": 356,
+              "name": "Selection Confirmation Area",
+              "width": 306,
+              "height": 170,
+              "fill": "#0B273099",
+              "cornerRadius": "$radius-md",
+              "stroke": "$line",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 16,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "BYGaZ",
+                  "name": "Confirmation Warning",
+                  "fill": "$text-primary",
+                  "content": "정보를 확인한 뒤 확정하세요",
+                  "fontFamily": "$font-body",
+                  "fontSize": 16,
+                  "fontWeight": "700"
+                },
+                {
+                  "id": "ympY3",
+                  "type": "ref",
+                  "ref": "DXh6B",
+                  "name": "Confirm Selected Ball Button",
+                  "width": 230,
+                  "height": 52,
+                  "rotation": 0
+                },
+                {
+                  "type": "text",
+                  "id": "UpPhW",
+                  "name": "Confirmation Input Hint",
+                  "fill": "$text-muted",
+                  "content": "SPACE / ENTER",
+                  "fontFamily": "$font-data",
+                  "fontSize": 12,
+                  "fontWeight": "normal",
+                  "letterSpacing": 1.2
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "AJXoG",
+              "x": 40,
+              "y": 558,
+              "name": "Selection Navigation Hint",
+              "fill": "$text-secondary",
+              "content": "A / D 또는 ← / →  공 이동     ·     실제 조준과 발사는 확정 후 기존 입력으로 진행",
+              "fontFamily": "$font-data",
+              "fontSize": 12,
+              "fontWeight": "normal",
+              "letterSpacing": 0.5
+            },
+            {
+              "type": "ellipse",
+              "id": "e30FzQ",
+              "x": 14,
+              "y": 14,
+              "name": "Modal Left Screw",
+              "fill": "$brass",
+              "width": 14,
+              "height": 14,
+              "stroke": "$surface-bg",
+              "strokeWidth": 2
+            },
+            {
+              "type": "ellipse",
+              "id": "Q4uh8q",
+              "x": 1132,
+              "y": 14,
+              "name": "Modal Right Screw",
+              "fill": "$brass",
+              "width": 14,
+              "height": 14,
+              "stroke": "$surface-bg",
+              "strokeWidth": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "gN5L2",
+      "x": 0,
+      "y": 3300,
+      "name": "04 · Flow 03 · Confirmed / Apply Before Close",
+      "clip": true,
+      "width": 1920,
+      "height": 1080,
+      "fill": "$surface-bg",
+      "layout": "none",
+      "children": [
+        {
+          "type": "rectangle",
+          "id": "D31Ns0",
+          "x": 0,
+          "y": 0,
+          "name": "Wave HUD In-game Background",
+          "fill": {
+            "type": "image",
+            "enabled": true,
+            "url": "../wave_hud_layers/00_full_ingame_preview.png",
+            "mode": "fill"
+          },
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "type": "rectangle",
+          "id": "ZrGm3",
+          "x": 0,
+          "y": 0,
+          "name": "Selection Background Dim",
+          "fill": "#04161CB0",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "type": "frame",
+          "id": "Qn8NK",
+          "x": 380,
+          "y": 240,
+          "name": "Ball Selection Modal",
+          "clip": true,
+          "width": 1160,
+          "height": 600,
+          "fill": "$surface-panel",
+          "cornerRadius": [
+            6,
+            2,
+            8,
+            3
+          ],
+          "stroke": "$line-strong",
+          "strokeWidth": 3,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#071C24CC",
+            "offset": {
+              "x": 8,
+              "y": 10
+            },
+            "blur": 8
+          },
+          "layout": "none",
+          "children": [
+            {
+              "type": "rectangle",
+              "id": "P9dAw",
+              "x": 0,
+              "y": 0,
+              "name": "Modal Surface Scratches",
+              "opacity": 0.28,
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "../../Art/ui/select_ball/overlays/selection_surface_overlay.png",
+                "mode": "fill"
+              },
+              "width": 1160,
+              "height": 600
+            },
+            {
+              "type": "text",
+              "id": "CEpJO",
+              "x": 40,
+              "y": 24,
+              "name": "Modal Eyebrow",
+              "fill": "$accent",
+              "content": "SELECTION CONFIRMED · 게임 상태 적용 성공",
+              "fontFamily": "$font-data",
+              "fontSize": 13,
+              "fontWeight": "700",
+              "letterSpacing": 1.6
+            },
+            {
+              "type": "text",
+              "id": "QmUno",
+              "x": 40,
+              "y": 48,
+              "name": "Modal Title",
+              "fill": "$text-primary",
+              "content": "태엽 눈 선택 확정",
+              "fontFamily": "$font-display",
+              "fontSize": 32,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "ehHOU",
+              "x": 724,
+              "y": 52,
+              "name": "Modal Rule Hint",
+              "fill": "$text-secondary",
+              "content": "버스트 재생 후 팝업이 닫히고 조준 단계로 전환",
+              "fontFamily": "$font-body",
+              "fontSize": 14,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "rectangle",
+              "id": "JAd98",
+              "x": 40,
+              "y": 96,
+              "name": "Modal Header Divider",
+              "fill": "$line",
+              "width": 1080,
+              "height": 2
+            },
+            {
+              "type": "frame",
+              "id": "MZ6FL",
+              "x": 106,
+              "y": 112,
+              "name": "Ball Inventory Slots",
+              "width": 948,
+              "height": 220,
+              "gap": 12,
+              "children": [
+                {
+                  "id": "S4Vu9",
+                  "type": "ref",
+                  "ref": "wLyO1",
+                  "name": "Slot 01 · Basic Glass Eye · Used This Wave",
+                  "descendants": {
+                    "M7ilkE": {
+                      "content": "기본 유리눈"
+                    }
+                  }
+                },
+                {
+                  "id": "p7u3YZ",
+                  "type": "ref",
+                  "ref": "vADNp",
+                  "name": "Slot 02 · Clockwork · Selected",
+                  "descendants": {
+                    "EDKIc": {
+                      "content": "태엽 눈"
+                    }
+                  }
+                },
+                {
+                  "id": "pzqsG",
+                  "type": "ref",
+                  "ref": "DyVdx",
+                  "name": "Slot 03 · Rubber · Available",
+                  "descendants": {
+                    "P9icI": {
+                      "content": "고무 눈"
+                    }
+                  }
+                },
+                {
+                  "id": "uMEEn",
+                  "type": "ref",
+                  "ref": "DyVdx",
+                  "name": "Slot 04 · Lead · Available",
+                  "descendants": {
+                    "P9icI": {
+                      "content": "납 눈"
+                    }
+                  }
+                },
+                {
+                  "id": "HJeDH",
+                  "type": "ref",
+                  "ref": "DyVdx",
+                  "name": "Slot 05 · Gel · Available",
+                  "descendants": {
+                    "P9icI": {
+                      "content": "젤 눈"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Ji0xb",
+              "x": 40,
+              "y": 356,
+              "name": "Selected Ball Information",
+              "width": 750,
+              "height": 170,
+              "fill": "$surface-slot",
+              "cornerRadius": "$radius-md",
+              "stroke": "$line",
+              "strokeWidth": 1,
+              "layout": "none",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "XG9Gi",
+                  "x": 22,
+                  "y": 18,
+                  "name": "Selected Ball Caption",
+                  "fill": "$accent",
+                  "content": "현재 선택",
+                  "fontFamily": "$font-data",
+                  "fontSize": 12,
+                  "fontWeight": "700",
+                  "letterSpacing": 1.4
+                },
+                {
+                  "type": "text",
+                  "id": "Zk5CK",
+                  "x": 22,
+                  "y": 40,
+                  "name": "Selected Ball Name",
+                  "fill": "$text-primary",
+                  "content": "태엽 눈",
+                  "fontFamily": "$font-display",
+                  "fontSize": 31,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "frame",
+                  "id": "C9x6P",
+                  "x": 290,
+                  "y": 21,
+                  "name": "Selected Ball Mass",
+                  "width": 130,
+                  "height": 64,
+                  "fill": "$surface-raised",
+                  "cornerRadius": "$radius-sm",
+                  "stroke": "$line",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "gap": 3,
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "GuVm8",
+                      "name": "Selected Ball Mass Label",
+                      "fill": "$text-muted",
+                      "content": "무게",
+                      "fontFamily": "$font-data",
+                      "fontSize": 11,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "m7frTN",
+                      "name": "Selected Ball Mass Value",
+                      "fill": "$text-primary",
+                      "content": "1.0 kg",
+                      "fontFamily": "$font-data",
+                      "fontSize": 19,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "O1F8q",
+                  "x": 434,
+                  "y": 21,
+                  "name": "Selected Ball Elasticity",
+                  "width": 130,
+                  "height": 64,
+                  "fill": "$surface-raised",
+                  "cornerRadius": "$radius-sm",
+                  "stroke": "$line",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "gap": 3,
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "HjSBW",
+                      "name": "Selected Ball Elasticity Label",
+                      "fill": "$text-muted",
+                      "content": "탄성",
+                      "fontFamily": "$font-data",
+                      "fontSize": 11,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "lsIVx",
+                      "name": "Selected Ball Elasticity Value",
+                      "fill": "$text-primary",
+                      "content": "80%",
+                      "fontFamily": "$font-data",
+                      "fontSize": 19,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "WAPyM",
+                  "x": 22,
+                  "y": 106,
+                  "name": "Selected Ball Feature Label",
+                  "fill": "$accent",
+                  "content": "핵심 특징",
+                  "fontFamily": "$font-data",
+                  "fontSize": 11,
+                  "fontWeight": "700",
+                  "letterSpacing": 1.2
+                },
+                {
+                  "type": "text",
+                  "id": "vsd7u",
+                  "x": 22,
+                  "y": 126,
+                  "name": "Selected Ball Feature Summary",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": 700,
+                  "content": "태엽 장치의 균일한 반응으로 다음 충돌 궤적을 예측하기 쉽습니다.",
+                  "lineHeight": 1.3,
+                  "fontFamily": "$font-body",
+                  "fontSize": 18,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "qs4qH",
+              "x": 814,
+              "y": 356,
+              "name": "Selection Confirmation Area",
+              "width": 306,
+              "height": 170,
+              "fill": "#0B273099",
+              "cornerRadius": "$radius-md",
+              "stroke": "$line",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 16,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "InaFt",
+                  "name": "Confirmation Warning",
+                  "fill": "$accent",
+                  "content": "선택 적용 완료",
+                  "fontFamily": "$font-body",
+                  "fontSize": 16,
+                  "fontWeight": "700"
+                },
+                {
+                  "id": "MJFGZ",
+                  "type": "ref",
+                  "ref": "DXh6B",
+                  "name": "Applied Ball Button",
+                  "width": 230,
+                  "height": 52,
+                  "rotation": 0,
+                  "fill": "$accent",
+                  "opacity": 0.82,
+                  "descendants": {
+                    "esuYt": {
+                      "icon": "check-circle"
+                    },
+                    "rtSvu": {
+                      "content": "적용 완료"
+                    }
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "c7PZht",
+                  "name": "Confirmation Input Hint",
+                  "fill": "$accent",
+                  "content": "팝업 종료 → AIMING",
+                  "fontFamily": "$font-data",
+                  "fontSize": 12,
+                  "fontWeight": "normal",
+                  "letterSpacing": 1.2
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "qLTZF",
+              "x": 40,
+              "y": 558,
+              "name": "Selection Navigation Hint",
+              "fill": "$text-secondary",
+              "content": "A / D 또는 ← / →  공 이동     ·     실제 조준과 발사는 확정 후 기존 입력으로 진행",
+              "fontFamily": "$font-data",
+              "fontSize": 12,
+              "fontWeight": "normal",
+              "letterSpacing": 0.5
+            },
+            {
+              "type": "ellipse",
+              "id": "uHr54",
+              "x": 14,
+              "y": 14,
+              "name": "Modal Left Screw",
+              "fill": "$brass",
+              "width": 14,
+              "height": 14,
+              "stroke": "$surface-bg",
+              "strokeWidth": 2
+            },
+            {
+              "type": "ellipse",
+              "id": "RjwmJ",
+              "x": 1132,
+              "y": 14,
+              "name": "Modal Right Screw",
+              "fill": "$brass",
+              "width": 14,
+              "height": 14,
+              "stroke": "$surface-bg",
+              "strokeWidth": 2
+            },
+            {
+              "type": "rectangle",
+              "id": "WHRkx",
+              "x": 298,
+              "y": 112,
+              "name": "Selection Confirmation Burst",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "../../Art/ui/select_ball/effects/selection_confirm_burst.png",
+                "mode": "stretch"
+              },
+              "width": 180,
+              "height": 180
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variables": {
+    "surface-bg": {
+      "type": "color",
+      "value": "#071C24FF"
+    },
+    "surface-panel": {
+      "type": "color",
+      "value": "#15333BF2"
+    },
+    "surface-raised": {
+      "type": "color",
+      "value": "#1C414AFF"
+    },
+    "surface-slot": {
+      "type": "color",
+      "value": "#0B2730FF"
+    },
+    "text-primary": {
+      "type": "color",
+      "value": "#F1E6CBFF"
+    },
+    "text-secondary": {
+      "type": "color",
+      "value": "#C6BDA8FF"
+    },
+    "text-muted": {
+      "type": "color",
+      "value": "#829B99FF"
+    },
+    "line": {
+      "type": "color",
+      "value": "#56736FFF"
+    },
+    "line-strong": {
+      "type": "color",
+      "value": "#F1E6CBFF"
+    },
+    "accent": {
+      "type": "color",
+      "value": "#67D8D0FF"
+    },
+    "accent-soft": {
+      "type": "color",
+      "value": "#245D63FF"
+    },
+    "compatible": {
+      "type": "color",
+      "value": "#67D8D0FF"
+    },
+    "warning": {
+      "type": "color",
+      "value": "#FFF200FF"
+    },
+    "danger": {
+      "type": "color",
+      "value": "#B83252FF"
+    },
+    "font-display": {
+      "type": "string",
+      "value": "Black And White Picture"
+    },
+    "font-body": {
+      "type": "string",
+      "value": "Black And White Picture"
+    },
+    "font-label": {
+      "type": "string",
+      "value": "Black And White Picture"
+    },
+    "font-data": {
+      "type": "string",
+      "value": "Black And White Picture"
+    },
+    "space-xs": {
+      "type": "number",
+      "value": 6
+    },
+    "space-sm": {
+      "type": "number",
+      "value": 10
+    },
+    "space-md": {
+      "type": "number",
+      "value": 16
+    },
+    "space-lg": {
+      "type": "number",
+      "value": 24
+    },
+    "radius-sm": {
+      "type": "number",
+      "value": 2
+    },
+    "radius-md": {
+      "type": "number",
+      "value": 4
+    },
+    "curse": {
+      "type": "color",
+      "value": "#A349A4FF"
+    },
+    "brass": {
+      "type": "color",
+      "value": "#A98245FF"
+    },
+    "board-blue": {
+      "type": "color",
+      "value": "#26364AFF"
+    }
+  },
+  "fileToken": "be5dea2d-ea1d-4263-8223-29568c43f53d"
+}

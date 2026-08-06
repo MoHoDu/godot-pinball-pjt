@@ -8,9 +8,8 @@ signal selection_changed(bumper: ShotBumper, anchor: ShotLaunchAnchor)
 signal control_ended(bumper: ShotBumper, ball: RigidBody2D)
 
 
-@onready var launch_anchors_root: Node2D = get_node_or_null(
-	^"LaunchAnchors"
-) as Node2D
+const PREVIOUS_DIRECTION_ACTION: StringName = &"flipper_select_left"
+const NEXT_DIRECTION_ACTION: StringName = &"flipper_select_right"
 
 
 var _controlled_ball: RigidBody2D
@@ -18,6 +17,23 @@ var _selected_anchor: ShotLaunchAnchor
 var _selection_time_remaining := 0.0
 var _destroy_after_release := false
 var _is_releasing := false
+
+
+func _draw() -> void:
+	super()
+	if not Engine.is_editor_hint() or not show_editor_guides:
+		return
+	for anchor: ShotLaunchAnchor in get_launch_anchors():
+		var target := anchor.release_position
+		if target.is_zero_approx():
+			target = anchor.get_local_launch_direction() \
+				* (get_collision_radius() + 26.0)
+		var color := (
+			Color(0.3, 1.0, 0.55, 0.95)
+			if anchor.is_safe_default
+			else Color(0.5, 0.95, 0.8, 0.85)
+		)
+		_draw_direction_guide(Vector2.ZERO, target, color)
 
 
 func _ready() -> void:
@@ -51,13 +67,14 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not is_instance_valid(_controlled_ball) or _is_releasing:
 		return
 
-	for anchor: ShotLaunchAnchor in get_launch_anchors():
-		if not anchor.input_action.is_empty() \
-				and InputMap.has_action(anchor.input_action) \
-				and event.is_action_pressed(anchor.input_action):
-			select_launch_anchor(anchor)
+	if event.is_action_pressed(PREVIOUS_DIRECTION_ACTION):
+		if select_relative_launch_anchor(-1):
 			get_viewport().set_input_as_handled()
-			return
+		return
+	if event.is_action_pressed(NEXT_DIRECTION_ACTION):
+		if select_relative_launch_anchor(1):
+			get_viewport().set_input_as_handled()
+		return
 
 	if event is InputEventKey:
 		var key_event := event as InputEventKey
@@ -77,22 +94,27 @@ func get_ball_impact(context: BallImpactContext) -> BumperResponse:
 
 func get_launch_anchors() -> Array[ShotLaunchAnchor]:
 	var result: Array[ShotLaunchAnchor] = []
-	if launch_anchors_root == null:
+	if settings == null:
 		return result
-	for child: Node in launch_anchors_root.get_children():
-		if child is ShotLaunchAnchor:
-			result.append(child as ShotLaunchAnchor)
+	for anchor: ShotLaunchAnchor in settings.shot_launch_directions:
+		if anchor != null:
+			result.append(anchor)
 	return result
 
 
 func get_selected_launch_direction() -> Vector2:
-	if not is_instance_valid(_selected_anchor):
-		_selected_anchor = _find_safe_default_anchor()
-	if not is_instance_valid(_selected_anchor):
+	var selected_anchor := get_selected_launch_anchor()
+	if not is_instance_valid(selected_anchor):
 		return Vector2.UP.rotated(global_rotation)
 	return (global_transform.basis_xform(
-		Vector2.RIGHT.rotated(_selected_anchor.rotation)
+		selected_anchor.get_local_launch_direction()
 	)).normalized()
+
+
+func get_selected_launch_anchor() -> ShotLaunchAnchor:
+	if not is_instance_valid(_selected_anchor):
+		_selected_anchor = _find_safe_default_anchor()
+	return _selected_anchor
 
 
 func get_selection_time_remaining() -> float:
@@ -109,6 +131,17 @@ func select_launch_anchor(anchor: ShotLaunchAnchor) -> bool:
 	return true
 
 
+func select_relative_launch_anchor(offset: int) -> bool:
+	var anchors := get_launch_anchors()
+	if anchors.is_empty():
+		return false
+	var current_index := anchors.find(get_selected_launch_anchor())
+	if current_index < 0:
+		return select_launch_anchor(anchors[0])
+	var target_index := wrapi(current_index + offset, 0, anchors.size())
+	return select_launch_anchor(anchors[target_index])
+
+
 func release_controlled_ball() -> bool:
 	if not is_instance_valid(_controlled_ball) or _is_releasing:
 		return false
@@ -119,8 +152,14 @@ func release_controlled_ball() -> bool:
 
 	var direction := get_selected_launch_direction()
 	var ball_radius := _get_ball_collision_radius(_controlled_ball)
-	_controlled_ball.global_position = global_position \
-		+ direction * (get_collision_radius() + ball_radius + 4.0)
+	var minimum_release_distance := get_collision_radius() + ball_radius + 4.0
+	var local_release_position := _selected_anchor.get_local_release_position(
+		minimum_release_distance
+	)
+	if local_release_position.length() < minimum_release_distance:
+		local_release_position = local_release_position.normalized() \
+			* minimum_release_distance
+	_controlled_ball.global_position = global_transform * local_release_position
 	_controlled_ball.freeze = false
 	_controlled_ball.sleeping = false
 	_controlled_ball.linear_velocity = Vector2.ZERO
@@ -166,7 +205,7 @@ func _begin_selection(ball: RigidBody2D) -> void:
 	_is_releasing = false
 	_selected_anchor = _find_safe_default_anchor()
 	if not is_instance_valid(_selected_anchor):
-		push_warning("ShotBumper에는 안전 기본 발사 앵커가 정확히 하나 필요합니다.")
+		push_warning("ShotBumper 설정에는 안전 기본 발사 방향이 정확히 하나 필요합니다.")
 		return
 	ball.add_collision_exception_with(self)
 	ball.freeze = true
@@ -219,14 +258,12 @@ func _find_safe_default_anchor() -> ShotLaunchAnchor:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := super()
 	var anchors := get_launch_anchors()
-	if anchors.size() < 2 or anchors.size() > 3:
-		warnings.append("ShotBumper에는 2~3개의 ShotLaunchAnchor가 필요합니다.")
+	if anchors.is_empty():
+		warnings.append("ShotBumper 설정에는 발사 방향이 하나 이상 필요합니다.")
 	var safe_count := 0
 	for anchor: ShotLaunchAnchor in anchors:
 		if anchor.is_safe_default:
 			safe_count += 1
-		if anchor.input_action.is_empty():
-			warnings.append("모든 발사 앵커에 input_action이 필요합니다.")
 	if safe_count != 1:
-		warnings.append("is_safe_default 발사 앵커가 정확히 하나여야 합니다.")
+		warnings.append("안전 기본 발사 방향이 정확히 하나여야 합니다.")
 	return warnings

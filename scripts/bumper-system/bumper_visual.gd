@@ -21,11 +21,10 @@ func refresh_from_bumper() -> void:
 
 func _draw() -> void:
 	var bumper := get_parent() as Bumper
-	if bumper == null or bumper.settings == null:
+	if bumper == null or bumper.object_settings == null:
 		return
-	var presentation := bumper.settings.presentation
-	if presentation == null:
-		return
+	var object_settings := bumper.object_settings
+	var presentation := object_settings.presentation
 
 	var alpha := 1.0
 	if bumper.state != Bumper.BumperState.ACTIVE:
@@ -33,31 +32,41 @@ func _draw() -> void:
 	if bumper.state == Bumper.BumperState.RESPAWN_TELEGRAPH:
 		alpha = 0.55 + sin(Time.get_ticks_msec() * 0.018) * 0.25
 
-	var radius := bumper.settings.visual_diameter * 0.5
-	var fill := Color(presentation.fill_color, presentation.fill_color.a * alpha)
-	var rim := Color(presentation.rim_color, presentation.rim_color.a * alpha)
-	var accent := Color(presentation.accent_color, presentation.accent_color.a * alpha)
-	var curse := Color(presentation.curse_color, presentation.curse_color.a * alpha)
-
-	match presentation.visual_style:
-		BumperPresentationSettings.VisualStyle.BUTTON:
-			_draw_button(radius, fill, rim, curse)
-		BumperPresentationSettings.VisualStyle.COTTON:
-			_draw_cotton(radius, fill, rim, curse)
-		BumperPresentationSettings.VisualStyle.SPRING_DOLL:
-			_draw_spring_doll(radius, fill, rim, accent, curse)
-		BumperPresentationSettings.VisualStyle.DRUM:
-			_draw_drum(radius, fill, rim, accent, curse)
-		BumperPresentationSettings.VisualStyle.CANNON:
-			_draw_cannon(bumper, radius, fill, rim, accent, curse)
-		BumperPresentationSettings.VisualStyle.STARLIGHT_BROOCH:
-			_draw_starlight_brooch(radius, fill, rim, accent)
-		BumperPresentationSettings.VisualStyle.GOLDEN_GEARS:
-			_draw_golden_gears(radius, fill, rim, accent)
-		BumperPresentationSettings.VisualStyle.CRESCENT_NEEDLE:
-			_draw_crescent_needle(radius, rim, accent)
-		BumperPresentationSettings.VisualStyle.FORGOTTEN_STAR_BELL:
-			_draw_forgotten_star_bell(radius, fill, rim, accent)
+	var radius := object_settings.visual_diameter * 0.5
+	var curse := Color(1.0, 1.0, 1.0, alpha)
+	if object_settings.graphic_texture != null:
+		var graphic_color := object_settings.graphic_modulate
+		graphic_color.a *= alpha
+		draw_texture_rect(
+			object_settings.graphic_texture,
+			object_settings.get_graphic_draw_rect(),
+			false,
+			graphic_color
+		)
+	elif presentation != null:
+		var fill := Color(presentation.fill_color, presentation.fill_color.a * alpha)
+		var rim := Color(presentation.rim_color, presentation.rim_color.a * alpha)
+		var accent := Color(presentation.accent_color, presentation.accent_color.a * alpha)
+		curse = Color(presentation.curse_color, presentation.curse_color.a * alpha)
+		match presentation.visual_style:
+			BumperPresentationSettings.VisualStyle.BUTTON:
+				_draw_button(radius, fill, rim, curse)
+			BumperPresentationSettings.VisualStyle.COTTON:
+				_draw_cotton(radius, fill, rim, curse)
+			BumperPresentationSettings.VisualStyle.SPRING_DOLL:
+				_draw_spring_doll(radius, fill, rim, accent, curse)
+			BumperPresentationSettings.VisualStyle.DRUM:
+				_draw_drum(radius, fill, rim, accent, curse)
+			BumperPresentationSettings.VisualStyle.CANNON:
+				_draw_cannon(bumper, radius, fill, rim, accent, curse)
+			BumperPresentationSettings.VisualStyle.STARLIGHT_BROOCH:
+				_draw_starlight_brooch(radius, fill, rim, accent)
+			BumperPresentationSettings.VisualStyle.GOLDEN_GEARS:
+				_draw_golden_gears(radius, fill, rim, accent)
+			BumperPresentationSettings.VisualStyle.CRESCENT_NEEDLE:
+				_draw_crescent_needle(radius, rim, accent)
+			BumperPresentationSettings.VisualStyle.FORGOTTEN_STAR_BELL:
+				_draw_forgotten_star_bell(radius, fill, rim, accent)
 
 	_draw_durability(bumper, radius, curse)
 
