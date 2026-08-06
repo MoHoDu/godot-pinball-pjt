@@ -31,6 +31,10 @@
 [ext_resource type="Script" uid="uid://cmwexv5v1ailv" path="res://scripts/wave_hud/wave_hud_state_source.gd" id="29_glfl8"]
 [ext_resource type="PackedScene" path="res://scenes/ball_base_system/ball_selection_hud.tscn" id="30_un66i"]
 [ext_resource type="PackedScene" path="res://scenes/wave_hud/wave_hud.tscn" id="31_npsca"]
+[ext_resource type="Script" path="res://scripts/boss_system/debug/teddy_arm_sweep_prototype.gd" id="32_boss_prototype"]
+[ext_resource type="Script" path="res://scripts/boss_system/boss_attack_controller.gd" id="33_boss_controller"]
+[ext_resource type="PackedScene" path="res://scenes/boss_system/teddy_arm_sweep_attack.tscn" id="34_arm_sweep"]
+[ext_resource type="Resource" path="res://settings/bosses/TeddyArmSweepPattern.tres" id="35_arm_pattern"]
 
 [sub_resource type="Resource" id="StageSettings_wave"]
 script = ExtResource("2_1u4ew")
@@ -320,3 +324,37 @@ shape = SubResource("RectangleShape_drain_vertical")
 [node name="BallSelectionHud" parent="HUD" unique_id=1456410610 instance=ExtResource("30_un66i")]
 
 [node name="WaveHud" parent="HUD" unique_id=414747941 instance=ExtResource("31_npsca")]
+
+[node name="BossPrototype" type="Node2D" parent="." node_paths=PackedStringArray("attack_controller", "attack", "attack_button", "status_label")]
+script = ExtResource("32_boss_prototype")
+attack_controller = NodePath("BossAttackController")
+attack = NodePath("TeddyArmSweepAttack")
+attack_button = NodePath("DebugUI/Panel/VBox/AttackButton")
+status_label = NodePath("DebugUI/Panel/VBox/StatusLabel")
+
+[node name="BossAttackController" type="Node" parent="BossPrototype" node_paths=PackedStringArray("attack")]
+script = ExtResource("33_boss_controller")
+pattern = ExtResource("35_arm_pattern")
+attack = NodePath("../TeddyArmSweepAttack")
+
+[node name="TeddyArmSweepAttack" parent="BossPrototype" instance=ExtResource("34_arm_sweep")]
+position = Vector2(0, -260)
+
+[node name="DebugUI" type="CanvasLayer" parent="BossPrototype"]
+
+[node name="Panel" type="PanelContainer" parent="BossPrototype/DebugUI"]
+offset_left = 24.0
+offset_top = 220.0
+offset_right = 310.0
+offset_bottom = 330.0
+
+[node name="VBox" type="VBoxContainer" parent="BossPrototype/DebugUI/Panel"]
+layout_mode = 2
+
+[node name="AttackButton" type="Button" parent="BossPrototype/DebugUI/Panel/VBox"]
+layout_mode = 2
+text = "공격 테스트"
+
+[node name="StatusLabel" type="Label" parent="BossPrototype/DebugUI/Panel/VBox"]
+layout_mode = 2
+text = "현재 공격 상태: IDLE\n마지막 접촉 대상: -"
