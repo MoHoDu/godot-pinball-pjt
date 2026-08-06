@@ -124,9 +124,20 @@ func _test_gear_spin() -> void:
 	var stage2 := await _spin_to(gear, wheel, 2, 0.6)
 	_expect(stage2 - stage1 > 0.0, "2단계에서 더 돌아야 한다")
 
-	var stage3 := await _spin_to(gear, wheel, 3, 1.2)
+	# 과회전은 처음에 휙 돌고 끝에서 서서히 멈춰야 한다.
+	gear.set_stage(3)
+	var first := wheel.rotation
+	await _wait(0.10)
+	var early := wheel.rotation - first
+	await _wait(0.10)
+	var mid := wheel.rotation - first - early
+	await _wait(1.2)
+	var stage3 := wheel.rotation
+	_expect(early > mid,
+		"회전이 갈수록 느려져야 한다 (앞 0.1s=%s, 뒤 0.1s=%s)" % [early, mid])
 	_expect(stage3 - stage2 >= TAU - 0.05,
 		"3단계 과회전은 한 바퀴여야 한다 (실제=%s)" % (stage3 - stage2))
+	_expect(not gear.is_spinning(), "감속이 끝나면 멈춰 있어야 한다")
 
 	# 런타임이 없는 검수 씬에서는 타격만으로 단계가 올라야 한다.
 	var before := wheel.rotation
@@ -147,6 +158,13 @@ func _test_gear_spin() -> void:
 
 	bumper.queue_free()
 	await process_frame
+
+
+func _wait(seconds: float) -> void:
+	var waited := 0.0
+	while waited < seconds:
+		await process_frame
+		waited += root.get_process_delta_time()
 
 
 func _spin_to(

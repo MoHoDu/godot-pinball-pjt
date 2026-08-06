@@ -20,8 +20,17 @@ const WHEEL_SPRITE := ^"_ArtSpriteWheel"
 
 ## 단계별 회전량(라디안). 3단계는 한 바퀴다.
 const STEP_ARCS: Array[float] = [0.0, 0.55, 0.85, TAU]
-## 단계별 회전 속도(라디안/초).
-const STEP_SPEEDS: Array[float] = [0.0, 3.2, 5.0, 14.0]
+
+## 감속 계수(1/초). **남은 각도에 비례해 속도를 준다.**
+## 그래서 감긴 직후에는 휙 돌고 목표에 가까워질수록 서서히 느려진다.
+## 등속으로 돌리면 딱 멈춰서 기계처럼 보인다.
+const SPIN_DECAY: float = 7.0
+## 감속만 쓰면 목표에 무한히 가까워지기만 하므로 바닥 속도를 둔다.
+const SPIN_MIN_SPEED: float = 1.2
+## 과회전(한 바퀴)에서 시작 속도가 지나치게 튀는 것을 막는다.
+const SPIN_MAX_SPEED: float = 26.0
+## 이보다 가까우면 붙여서 끝낸다.
+const SPIN_SNAP: float = 0.004
 
 
 var _wheel: Sprite2D = null
@@ -84,7 +93,6 @@ func set_stage(stage: int) -> void:
 	# 0 으로 되돌아가는 것은 과회전 직후의 초기화라 추가 회전을 넣지 않는다.
 	if clamped > _stage:
 		_target_angle += STEP_ARCS[clamped]
-		_speed = STEP_SPEEDS[clamped]
 	_stage = clamped
 
 
@@ -113,11 +121,11 @@ func _process(delta: float) -> void:
 	if is_equal_approx(_angle, _target_angle):
 		return
 
-	# 목표까지 감속하며 붙는다. 등속으로 딱 멈추면 기계처럼 보인다.
+	# 남은 각도에 비례한 속도. 처음엔 빠르고 끝에서 서서히 느려진다.
 	var remaining := _target_angle - _angle
-	var step: float = maxf(_speed, 1.0) * delta
-	step = minf(step, absf(remaining))
+	_speed = clampf(absf(remaining) * SPIN_DECAY, SPIN_MIN_SPEED, SPIN_MAX_SPEED)
+	var step: float = minf(_speed * delta, absf(remaining))
 	_angle += signf(remaining) * step
-	if absf(_target_angle - _angle) < 0.001:
+	if absf(_target_angle - _angle) < SPIN_SNAP:
 		_angle = _target_angle
 	_wheel.rotation = _angle
