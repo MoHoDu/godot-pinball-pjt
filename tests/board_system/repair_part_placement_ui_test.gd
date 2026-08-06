@@ -21,16 +21,16 @@ func _run() -> void:
 	await process_frame
 
 	var wave := demo.get_node("Wave") as WaveRuntimeCoordinator
-	var layout := demo.get_node("BoardLayout") as BoardLayout
+	var layout := wave.get_node("RepairBoardLayout") as BoardLayout
 	var session := layout.get_node("PlacementSession") as BoardPlacementSession
-	var inventory := demo.get_node("RepairPartInventory") as RepairPartInventory
-	var hud := demo.get_node(
-		"PlacementHUD/RepairPartPlacementHud"
+	var inventory := wave.get_node("RepairPartInventory") as RepairPartInventory
+	var hud := wave.get_node(
+		"RepairPlacementHUD/RepairPartPlacementHud"
 	) as RepairPartPlacementHud
-	var bridge := demo.get_node(
+	var bridge := wave.get_node(
 		"BoardWavePlacementBridge"
 	) as BoardWavePlacementBridge
-	var controller := demo.get_node(
+	var controller := wave.get_node(
 		"RepairPartPlacementController"
 	) as RepairPartPlacementController
 	var camera := wave.get_node("Camera2D") as Camera2D

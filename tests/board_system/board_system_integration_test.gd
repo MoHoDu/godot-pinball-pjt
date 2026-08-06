@@ -218,9 +218,9 @@ func _test_wave_bridge() -> void:
 	await process_frame
 	await process_frame
 	var wave := integration.get_node("Wave") as WaveRuntimeCoordinator
-	var layout := integration.get_node("BoardLayout") as BoardLayout
+	var layout := wave.get_node("RepairBoardLayout") as BoardLayout
 	var session := layout.get_node("PlacementSession") as BoardPlacementSession
-	var bridge := integration.get_node(
+	var bridge := wave.get_node(
 		"BoardWavePlacementBridge"
 	) as BoardWavePlacementBridge
 
@@ -234,8 +234,8 @@ func _test_wave_bridge() -> void:
 	_expect(layout.get_zones()[0].visible and layout.get_sockets()[0].visible,
 		"Placement zones and sockets must be visible only while editing.")
 	_expect(not wave.wave_hud.visible \
-		and integration.get_node(
-			"PlacementHUD/RepairPartPlacementHud"
+		and wave.get_node(
+			"RepairPlacementHUD/RepairPartPlacementHud"
 		).visible,
 		"Repair placement must hide gameplay HUD and show placement UI.")
 	_expect(bridge.commit_placement(),
@@ -250,8 +250,8 @@ func _test_wave_bridge() -> void:
 		"Committed layouts must hide editor guides before gameplay.")
 	_expect(wave.wave_hud.visible \
 		and wave.ball_selection_hud.visible \
-		and not integration.get_node(
-			"PlacementHUD/RepairPartPlacementHud"
+		and not wave.get_node(
+			"RepairPlacementHUD/RepairPartPlacementHud"
 		).visible,
 		"Gameplay HUD must return without changing the board layout.")
 	_expect(wave.wave_ball_flow.confirm_selection(),
