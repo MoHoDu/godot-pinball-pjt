@@ -22,50 +22,47 @@ visual_diameter = 128.0
 respawn_safe_margin = 52.0
 presentation = ExtResource("2")
 
-[sub_resource type="Resource" id="ShotDirection_up"]
+[sub_resource type="Resource" id="Resource_iw5tq"]
 script = ExtResource("3_anchor")
-display_name = "0"
+display_name = "발사 방향 1"
 is_safe_default = true
-release_position = Vector2(0.2572174, -103.42265)
+release_position = Vector2(-4.196293e-06, -96)
 
-[sub_resource type="Resource" id="ShotDirection_left"]
+[sub_resource type="Resource" id="Resource_um6a5"]
 script = ExtResource("3_anchor")
-display_name = "1"
-release_position = Vector2(63.322906, -63.066395)
+display_name = "발사 방향 2"
+release_position = Vector2(64.494934, -64.30228)
 
-[sub_resource type="Resource" id="ShotDirection_right"]
+[sub_resource type="Resource" id="Resource_5dsfg"]
 script = ExtResource("3_anchor")
-display_name = "2"
-release_position = Vector2(94.13252, -0.1453476)
+display_name = "발사 방향 3"
+release_position = Vector2(95.043884, 0.001335144)
 
-[sub_resource type="Resource" id="Resource_vej4n"]
+[sub_resource type="Resource" id="Resource_4dojf"]
 script = ExtResource("3_anchor")
-display_name = "3"
-release_position = Vector2(63.612198, 63.35427)
-metadata/_custom_type_script = "uid://buj3gtl3fogcq"
+display_name = "발사 방향 4"
+release_position = Vector2(64.306366, 63.173515)
 
-[sub_resource type="Resource" id="Resource_httcq"]
+[sub_resource type="Resource" id="Resource_5xc5j"]
 script = ExtResource("3_anchor")
-display_name = "4"
-release_position = Vector2(-63.59311, 63.980133)
-metadata/_custom_type_script = "uid://buj3gtl3fogcq"
+display_name = "발사 방향 5"
+release_position = Vector2(-63.16942, 63.739235)
 
-[sub_resource type="Resource" id="Resource_33xtr"]
+[sub_resource type="Resource" id="Resource_0xb0r"]
 script = ExtResource("3_anchor")
-display_name = "5"
-release_position = Vector2(-95.90732, -0.066352844)
-metadata/_custom_type_script = "uid://buj3gtl3fogcq"
+display_name = "발사 방향 6"
+release_position = Vector2(-93.90692, -0.37580872)
 
-[sub_resource type="Resource" id="Resource_f014a"]
+[sub_resource type="Resource" id="Resource_ouvrv"]
 script = ExtResource("3_anchor")
-display_name = "6"
-release_position = Vector2(-64.00751, -64.245735)
-metadata/_custom_type_script = "uid://buj3gtl3fogcq"
+display_name = "발사 방향 7"
+release_position = Vector2(-63.16942, -63.736553)
 
 [sub_resource type="Resource" id="Resource_osghq"]
 script = ExtResource("6_5dsfg")
 bumper_type = 3
-shot_launch_directions = Array[ExtResource("3_anchor")]([SubResource("ShotDirection_up"), SubResource("ShotDirection_left"), SubResource("ShotDirection_right"), SubResource("Resource_vej4n"), SubResource("Resource_httcq"), SubResource("Resource_33xtr"), SubResource("Resource_f014a")])
+selection_duration = 3.0
+shot_launch_directions = Array[ExtResource("3_anchor")]([SubResource("Resource_iw5tq"), SubResource("Resource_um6a5"), SubResource("Resource_5dsfg"), SubResource("Resource_4dojf"), SubResource("Resource_5xc5j"), SubResource("Resource_0xb0r"), SubResource("Resource_ouvrv")])
 
 [resource]
 script = ExtResource("1")
@@ -78,7 +75,8 @@ bumper_type = 3
 theme_keywords = PackedStringArray()
 max_durability = 2
 respawn_delay = 6.0
-shot_launch_directions = Array[ExtResource("3_anchor")]([SubResource("ShotDirection_up"), SubResource("ShotDirection_left"), SubResource("ShotDirection_right"), SubResource("Resource_vej4n"), SubResource("Resource_httcq"), SubResource("Resource_33xtr"), SubResource("Resource_f014a")])
+selection_duration = 3.0
+shot_launch_directions = Array[ExtResource("3_anchor")]([SubResource("Resource_iw5tq"), SubResource("Resource_um6a5"), SubResource("Resource_5dsfg"), SubResource("Resource_4dojf"), SubResource("Resource_5xc5j"), SubResource("Resource_0xb0r"), SubResource("Resource_ouvrv")])
 collision_diameter = 112.0
 visual_diameter = 128.0
 respawn_safe_margin = 52.0
