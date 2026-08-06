@@ -27,17 +27,35 @@ func get_combo_system() -> ComboSystem:
 	return _combo_system
 
 
+## 현재 콤보 횟수입니다. 방울 여운이 지연 동안 추가된 콤보를 세는 데 사용합니다.
+func get_combo_count() -> int:
+	var combo_system := get_combo_system()
+	return combo_system.combo_count if combo_system != null else 0
+
+
 ## 2차 효과 타격을 콤보에 한 번 적립합니다. PRIMARY 컨텍스트는 거부합니다.
 func register_secondary_hit(
 	context: RepairEffectContext,
 	score_weight: float
 ) -> bool:
+	return register_secondary_combo_hits(context, 1, score_weight) > 0
+
+
+## 2차 효과로 콤보를 한 번에 hit_count번 적립합니다(방울 여운).
+## 실제로 적립한 횟수를 반환합니다.
+func register_secondary_combo_hits(
+	context: RepairEffectContext,
+	hit_count: int,
+	score_weight_each: float
+) -> int:
 	if context == null \
 			or context.trigger_kind == RepairEffectContext.TriggerKind.PRIMARY:
-		return false
+		return 0
 	assert(not context.can_trigger_parts)
 	var combo_system := get_combo_system()
-	if combo_system == null:
-		return false
-	combo_system.register_hit(maxf(score_weight, 0.0))
-	return true
+	if combo_system == null or hit_count <= 0:
+		return 0
+	var weight := maxf(score_weight_each, 0.0)
+	for _index: int in range(hit_count):
+		combo_system.register_hit(weight)
+	return hit_count

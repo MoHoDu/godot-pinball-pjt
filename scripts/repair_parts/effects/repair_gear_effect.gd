@@ -3,8 +3,9 @@ extends RepairPartEffect
 
 
 ## 황금 톱니바퀴 - 되감는 심장.
-## 접촉마다 현재 방향을 유지한 안전한 속도 보정을 받고,
+## 접촉마다 현재 방향을 유지한 채 기존 범퍼와 같은 '배율' 방식으로 속력을 보정하고,
 ## 제한 시간 안에 3회 유효 접촉이 쌓이면 과회전 추가 가속이 터집니다.
+## 과회전 가속만 절대 px/s 가산으로 남겨 두었습니다(테스트 후 배율 전환 예정).
 ## 회전 단계는 부품 단위 상태이며 공 위치는 절대 변경하지 않습니다.
 ##
 ## 가속은 접촉 즉시가 아니라 범퍼의 최종 충돌 반응(response_resolved)이
@@ -12,7 +13,7 @@ extends RepairPartEffect
 ## 타격 전 속도로 되돌려 가속이 무효화됩니다.
 
 
-## ball_instance_id → { ball, contact_boost, overdrive_boost, is_overdrive }
+## ball_instance_id → { ball, contact_multiplier, overdrive_boost, is_overdrive }
 var _pending_boosts: Dictionary = {}
 var _wind_stack: int = 0
 var _stack_expires_at: float = -1.0
@@ -24,7 +25,7 @@ func on_own_primary(
 	now: float
 ) -> void:
 	assert(context.trigger_kind == RepairEffectContext.TriggerKind.PRIMARY)
-	var data := get_rank_data()
+	var data := get_definition()
 	if data == null:
 		return
 
@@ -32,12 +33,12 @@ func on_own_primary(
 		_wind_stack = 0
 
 	_wind_stack += 1
-	var is_overdrive := _wind_stack >= data.max_stack
+	var is_overdrive := _wind_stack >= data.gear_max_stack
 
 	_pending_boosts[ball.get_instance_id()] = {
 		&"ball": ball,
-		&"contact_boost": data.contact_boost,
-		&"overdrive_boost": data.overdrive_boost,
+		&"contact_multiplier": data.gear_contact_multiplier,
+		&"overdrive_boost": data.gear_overdrive_boost,
 		&"is_overdrive": is_overdrive,
 	}
 
@@ -46,7 +47,7 @@ func on_own_primary(
 		_wind_stack = 0
 		_stack_expires_at = -1.0
 	else:
-		_stack_expires_at = now + data.window_seconds
+		_stack_expires_at = now + data.gear_window_seconds
 
 	_push_stack_state(now)
 
@@ -94,7 +95,7 @@ func _apply_pending_boost(ball_id: int) -> void:
 	var applied_speed := ball_adapter.apply_gear_boost(
 		ball,
 		runtime.bumper.global_position,
-		float(pending[&"contact_boost"]),
+		float(pending[&"contact_multiplier"]),
 		float(pending[&"overdrive_boost"]),
 		is_overdrive
 	)
@@ -108,8 +109,13 @@ func _apply_pending_boost(ball_id: int) -> void:
 
 
 func _push_stack_state(now: float) -> void:
+	var max_stack := 3
+	var data := get_definition()
+	if data != null:
+		max_stack = data.gear_max_stack
 	_push_state({
 		&"family": RepairPartDefinition.Family.GEAR,
 		&"wind_stack": _wind_stack,
+		&"max_stack": max_stack,
 		&"window_remaining": maxf(_stack_expires_at - now, 0.0),
 	})
