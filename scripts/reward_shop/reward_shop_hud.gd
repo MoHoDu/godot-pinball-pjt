@@ -15,7 +15,10 @@ const CURTAIN_BACKGROUND := preload(
 	"res://Resources/Art/backgrounds/cursed_circus_curtain_background.png"
 )
 const DISPLAY_FONT := preload(
-	"res://Resources/ui/fonts/black_and_white_picture/BlackAndWhitePicture-Regular.ttf"
+	"res://Resources/ui/fonts/black_han_sans/BlackHanSans-Regular.ttf"
+)
+const BODY_FONT_SOURCE := preload(
+	"res://Resources/ui/fonts/noto_sans_kr/NotoSansKR-wght.ttf"
 )
 
 const BALL_ROW_TITLE := "공 보상"
@@ -37,9 +40,9 @@ const COLOR_MUTED := Color("8b8173")
 const COLOR_LOCKED := Color("304a59")
 
 const CARD_RADIUS := 16
-const PANEL_RADIUS := 26
-const BALL_ICON_SIZE := 76
-const PART_ICON_SIZE := 76
+const PANEL_RADIUS := 28
+const BALL_ICON_SIZE := 96
+const PART_ICON_SIZE := 96
 const HANDOFF_DURATION_SECONDS := 0.55
 
 const PERFORMANCE_NAMES: Array[String] = [
@@ -61,13 +64,17 @@ enum CardState {
 var _shop: RewardShopController
 var _wallet: CoinWallet
 var _part_inventory: RepairPartInventory
+var _body_font_bold: FontVariation
+var _body_font_semibold: FontVariation
+var _design_scale := 1.0
 
 var _panel: PanelContainer
 var _safe_margin: MarginContainer
 var _summary_label: Label
-var _earned_label: Label
+var _wave_badge_label: Label
 var _wallet_label: Label
-var _owned_label: Label
+var _owned_ball_label: Label
+var _owned_parts_label: Label
 var _ball_rule_label: Label
 var _part_rule_label: Label
 var _ball_row: HBoxContainer
@@ -83,7 +90,6 @@ var _card_views: Array[Dictionary] = []
 
 var _selected_index := -1
 var _wave_result_text := ""
-var _earned_text := ""
 var _next_wave_number := 2
 var _handoff_in_progress := false
 
@@ -94,6 +100,9 @@ var _purchased_part_id: StringName = &""
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_design_scale = maxf(0.5, minf(size.x / 1920.0, size.y / 1080.0))
+	_body_font_bold = _make_body_font(900)
+	_body_font_semibold = _make_body_font(800)
 	_build_layout()
 	resized.connect(_refresh_safe_margin)
 	_refresh_safe_margin()
@@ -120,16 +129,11 @@ func bind(
 
 func set_wave_summary(
 	wave_index: int,
-	board_coin: int,
-	clear_delay_coin: int
+	_board_coin: int,
+	_clear_delay_coin: int
 ) -> void:
-	_wave_result_text = "WAVE %02d CLEAR" % (wave_index + 1)
+	_wave_result_text = "WAVE %02d" % (wave_index + 1)
 	_next_wave_number = wave_index + 2
-	_earned_text = "획득 +%d  ·  보드 %d  ·  종료 유예 +%d" % [
-		board_coin + clear_delay_coin,
-		board_coin,
-		clear_delay_coin,
-	]
 
 
 func get_card_count() -> int:
@@ -165,13 +169,14 @@ func _build_layout() -> void:
 
 	var shade := ColorRect.new()
 	shade.name = "ShopBackdropShade"
-	shade.color = Color(COLOR_NAVY_DEEP, 0.82)
+	shade.color = Color(COLOR_NAVY_DEEP, 0.80)
 	shade.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(shade)
 
 	var backdrop_decoration := RewardBackdropDecoration.new()
 	backdrop_decoration.name = "CartoonBackdropDecoration"
+	backdrop_decoration.design_scale = _design_scale
 	backdrop_decoration.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	backdrop_decoration.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(backdrop_decoration)
@@ -187,35 +192,43 @@ func _build_layout() -> void:
 	_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_panel.mouse_filter = Control.MOUSE_FILTER_PASS
-	_panel.add_theme_stylebox_override(
-		&"panel",
-		_make_style(
-			COLOR_NAVY_WOOD,
-			COLOR_INK,
-			6,
-			PANEL_RADIUS,
-			14,
-			10,
-			Vector2(8.0, 10.0)
-		)
+	var panel_style := _make_style(
+		COLOR_NAVY_WOOD,
+		COLOR_INK,
+		_di(8),
+		_di(PANEL_RADIUS),
+		0,
+		_di(10),
+		Vector2(_d(14.0), _d(16.0))
 	)
+	panel_style.content_margin_left = _d(34.0)
+	panel_style.content_margin_right = _d(34.0)
+	panel_style.content_margin_top = _d(24.0)
+	panel_style.content_margin_bottom = _d(24.0)
+	_panel.add_theme_stylebox_override(&"panel", panel_style)
 	_safe_margin.add_child(_panel)
 
 	var booth_decoration := RewardBoothDecoration.new()
 	booth_decoration.name = "BoothBolts"
+	booth_decoration.design_scale = _design_scale
 	booth_decoration.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_panel.add_child(booth_decoration)
+	_safe_margin.add_child(booth_decoration)
 
 	var column := VBoxContainer.new()
 	column.name = "ShopContent"
 	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	column.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	column.add_theme_constant_override(&"separation", 6)
+	column.add_theme_constant_override(&"separation", _di(12))
 	_panel.add_child(column)
 
 	column.add_child(_build_header())
-	column.add_child(_make_row_header(
-		"BALL",
+
+	var ball_shelf := VBoxContainer.new()
+	ball_shelf.name = "BallShelf"
+	ball_shelf.custom_minimum_size.y = _d(340.0)
+	ball_shelf.add_theme_constant_override(&"separation", _di(10))
+	column.add_child(ball_shelf)
+	ball_shelf.add_child(_make_row_header(
 		BALL_ROW_TITLE,
 		"이 화면에서 최대 1개",
 		COLOR_TEAL
@@ -223,13 +236,17 @@ func _build_layout() -> void:
 
 	_ball_row = HBoxContainer.new()
 	_ball_row.name = "BallOfferRow"
-	_ball_row.custom_minimum_size.y = 170.0
+	_ball_row.custom_minimum_size.y = _d(282.0)
 	_ball_row.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_ball_row.add_theme_constant_override(&"separation", 12)
-	column.add_child(_ball_row)
+	_ball_row.add_theme_constant_override(&"separation", _di(16))
+	ball_shelf.add_child(_ball_row)
 
-	column.add_child(_make_row_header(
-		"PART",
+	var part_shelf := VBoxContainer.new()
+	part_shelf.name = "PartShelf"
+	part_shelf.custom_minimum_size.y = _d(330.0)
+	part_shelf.add_theme_constant_override(&"separation", _di(10))
+	column.add_child(part_shelf)
+	part_shelf.add_child(_make_row_header(
 		PART_ROW_TITLE,
 		"이 화면에서 최대 1개",
 		COLOR_GOLD
@@ -237,27 +254,40 @@ func _build_layout() -> void:
 
 	_part_row = HBoxContainer.new()
 	_part_row.name = "PartOfferRow"
-	_part_row.custom_minimum_size.y = 170.0
+	_part_row.custom_minimum_size.y = _d(272.0)
 	_part_row.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_part_row.add_theme_constant_override(&"separation", 12)
-	column.add_child(_part_row)
+	_part_row.add_theme_constant_override(&"separation", _di(16))
+	part_shelf.add_child(_part_row)
 
 	var footer := HBoxContainer.new()
 	footer.name = "ShopFooter"
-	footer.custom_minimum_size.y = 48.0
+	footer.custom_minimum_size.y = _d(94.0)
 	footer.alignment = BoxContainer.ALIGNMENT_END
 	column.add_child(footer)
 
 	_proceed_button = Button.new()
 	_proceed_button.name = "ProceedButton"
-	_proceed_button.custom_minimum_size = Vector2(210.0, 46.0)
+	_proceed_button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_proceed_button.custom_minimum_size = Vector2(_d(200.0), _d(58.0))
 	_proceed_button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	_proceed_button.add_theme_font_override(&"font", DISPLAY_FONT)
-	_proceed_button.add_theme_font_size_override(&"font_size", 16)
-	_proceed_button.add_theme_constant_override(&"outline_size", 1)
-	_proceed_button.add_theme_color_override(&"font_outline_color", COLOR_INK)
+	_proceed_button.add_theme_font_size_override(&"font_size", _di(20))
 	_proceed_button.pressed.connect(_on_proceed_pressed)
 	footer.add_child(_proceed_button)
+	var proceed_arrow := Label.new()
+	proceed_arrow.name = "ProceedArrow"
+	proceed_arrow.text = "→"
+	proceed_arrow.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	proceed_arrow.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	proceed_arrow.add_theme_font_override(&"font", _body_font_bold)
+	proceed_arrow.add_theme_font_size_override(&"font_size", _di(28))
+	proceed_arrow.add_theme_color_override(&"font_color", COLOR_RED)
+	proceed_arrow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_proceed_button.add_child(proceed_arrow)
+	proceed_arrow.set_anchor_and_offset(SIDE_RIGHT, 1.0, -_d(15.0))
+	proceed_arrow.set_anchor_and_offset(SIDE_LEFT, 1.0, -_d(45.0))
+	proceed_arrow.set_anchor_and_offset(SIDE_BOTTOM, 0.5, _d(16.0))
+	proceed_arrow.set_anchor_and_offset(SIDE_TOP, 0.5, -_d(16.0))
 	_refresh_proceed_button()
 	_build_handoff_overlay()
 
@@ -423,24 +453,28 @@ static func _set_relative_rect(
 func _build_header() -> HBoxContainer:
 	var header := HBoxContainer.new()
 	header.name = "ShopHeader"
-	header.custom_minimum_size.y = 88.0
-	header.add_theme_constant_override(&"separation", 12)
+	header.custom_minimum_size.y = _d(128.0)
+	header.add_theme_constant_override(&"separation", _di(12))
 	header.alignment = BoxContainer.ALIGNMENT_CENTER
 
 	var title_group := HBoxContainer.new()
 	title_group.name = "WaveAndShopTitle"
 	title_group.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	title_group.size_flags_stretch_ratio = 1.6
-	title_group.add_theme_constant_override(&"separation", 12)
-	title_group.alignment = BoxContainer.ALIGNMENT_CENTER
+	title_group.add_theme_constant_override(&"separation", _di(20))
+	title_group.alignment = BoxContainer.ALIGNMENT_BEGIN
 	header.add_child(title_group)
 
 	var wave_badge := PanelContainer.new()
 	wave_badge.name = "WaveClearBadge"
-	wave_badge.custom_minimum_size = Vector2(150.0, 72.0)
-	wave_badge.add_theme_stylebox_override(
-		&"panel", _make_style(COLOR_RED, COLOR_INK, 4, 12, 9, 4, Vector2(3.0, 4.0))
+	wave_badge.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	wave_badge.custom_minimum_size = Vector2(_d(160.0), _d(97.0))
+	var wave_badge_style := _make_style(
+		COLOR_RED, COLOR_INK, _di(5), _di(13), _di(13), _di(4),
+		Vector2(_d(5.0), _d(6.0))
 	)
+	wave_badge_style.content_margin_left = _d(18.0)
+	wave_badge_style.content_margin_right = _d(18.0)
+	wave_badge.add_theme_stylebox_override(&"panel", wave_badge_style)
 	title_group.add_child(wave_badge)
 
 	var result_column := VBoxContainer.new()
@@ -448,98 +482,121 @@ func _build_header() -> HBoxContainer:
 	result_column.add_theme_constant_override(&"separation", 0)
 	wave_badge.add_child(result_column)
 
-	result_column.add_child(_make_label("WAVE RESULT", 9, COLOR_GOLD, true))
-	_summary_label = _make_label("WAVE CLEAR", 22, COLOR_CREAM_LIGHT, true)
+	_wave_badge_label = _make_label("WAVE 01", _di(17), COLOR_GOLD, true)
+	_wave_badge_label.name = "WaveBadgeLabel"
+	result_column.add_child(_wave_badge_label)
+	_summary_label = _make_label("CLEAR!", _di(33), COLOR_CREAM_LIGHT, true)
 	_summary_label.name = "WaveResultLabel"
 	_summary_label.add_theme_font_override(&"font", DISPLAY_FONT)
 	result_column.add_child(_summary_label)
 
-	_earned_label = _make_label("", 9, COLOR_CREAM_LIGHT, true)
-	_earned_label.name = "EarnedCoinLabel"
-	result_column.add_child(_earned_label)
-
 	var shop_title := VBoxContainer.new()
 	shop_title.name = "ShopTitle"
-	shop_title.add_theme_constant_override(&"separation", 0)
+	shop_title.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	shop_title.add_theme_constant_override(&"separation", _di(1))
 	title_group.add_child(shop_title)
-	shop_title.add_child(_make_label("오늘의 전리품", 9, COLOR_GOLD, true))
-	var title_label := _make_label("보상 상점", 34, COLOR_CREAM_LIGHT, true)
+	shop_title.add_child(_make_label("오늘의 전리품", _di(15), COLOR_GOLD, true))
+	var title_label := _make_label("보상 상점", _di(54), COLOR_CREAM_LIGHT, true)
+	title_label.name = "ShopTitleLabel"
 	title_label.add_theme_font_override(&"font", DISPLAY_FONT)
 	shop_title.add_child(title_label)
 
 	var wallet_panel := PanelContainer.new()
 	wallet_panel.name = "WalletPanel"
-	wallet_panel.custom_minimum_size = Vector2(145.0, 62.0)
-	wallet_panel.add_theme_stylebox_override(
-		&"panel",
-		_make_style(COLOR_GOLD, COLOR_INK, 4, 13, 10, 4, Vector2(3.0, 4.0))
+	wallet_panel.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	wallet_panel.custom_minimum_size = Vector2(_d(177.0), _d(69.0))
+	var wallet_style := _make_style(
+		COLOR_GOLD, COLOR_INK, _di(5), _di(14), _di(10), _di(4),
+		Vector2(_d(4.0), _d(5.0))
 	)
+	wallet_style.content_margin_left = _d(17.0)
+	wallet_style.content_margin_right = _d(17.0)
+	wallet_panel.add_theme_stylebox_override(&"panel", wallet_style)
 	header.add_child(wallet_panel)
 
 	var wallet_row := HBoxContainer.new()
-	wallet_row.add_theme_constant_override(&"separation", 8)
+	wallet_row.add_theme_constant_override(&"separation", _di(10))
 	wallet_row.alignment = BoxContainer.ALIGNMENT_CENTER
 	wallet_panel.add_child(wallet_row)
 
 	var coin_icon := RewardCoinIcon.new()
 	coin_icon.name = "WalletCoinIcon"
-	coin_icon.custom_minimum_size = Vector2(36.0, 36.0)
+	coin_icon.custom_minimum_size = Vector2(_d(46.0), _d(46.0))
 	wallet_row.add_child(coin_icon)
 
-	_wallet_label = _make_label("0", 24, COLOR_INK, true)
+	_wallet_label = _make_label("0", _di(35), COLOR_INK, true)
 	_wallet_label.name = "WalletValueLabel"
 	_wallet_label.add_theme_font_override(&"font", DISPLAY_FONT)
 	wallet_row.add_child(_wallet_label)
-	wallet_row.add_child(_make_label("COIN", 9, COLOR_INK, true))
+	wallet_row.add_child(_make_label("COIN", _di(13), COLOR_INK, true))
 
 	var owned_panel := PanelContainer.new()
 	owned_panel.name = "OwnedSummaryPanel"
-	owned_panel.custom_minimum_size = Vector2(265.0, 62.0)
-	owned_panel.size_flags_stretch_ratio = 1.0
-	owned_panel.add_theme_stylebox_override(
-		&"panel",
-		_make_style(COLOR_CREAM, COLOR_INK, 3, 11, 10)
+	owned_panel.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	owned_panel.custom_minimum_size = Vector2(_d(155.0), _d(61.0))
+	var owned_style := _make_style(
+		COLOR_CREAM, COLOR_INK, _di(4), _di(12), _di(10)
 	)
+	owned_style.content_margin_left = _d(15.0)
+	owned_style.content_margin_right = _d(15.0)
+	owned_panel.add_theme_stylebox_override(&"panel", owned_style)
 	header.add_child(owned_panel)
 
-	_owned_label = _make_label("보유 공 · 기본 유리눈\n부품 재고 · 없음", 9, COLOR_INK, true)
-	_owned_label.name = "OwnedSummaryLabel"
-	_owned_label.custom_minimum_size.y = 36.0
-	_owned_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	_owned_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_owned_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	owned_panel.add_child(_owned_label)
+	var owned_copy := VBoxContainer.new()
+	owned_copy.name = "OwnedSummaryCopy"
+	owned_copy.add_theme_constant_override(&"separation", _di(2))
+	owned_panel.add_child(owned_copy)
+	_owned_ball_label = _make_label(
+		"보유 공 · 기본 유리눈", _di(14), COLOR_INK, true
+	)
+	_owned_ball_label.name = "OwnedBallLabel"
+	_owned_ball_label.clip_text = true
+	_owned_ball_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	owned_copy.add_child(_owned_ball_label)
+	_owned_parts_label = _make_label(
+		"부품 재고 · 없음", _di(13), COLOR_RED_DARK, false
+	)
+	_owned_parts_label.name = "OwnedPartsLabel"
+	_owned_parts_label.clip_text = true
+	_owned_parts_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	owned_copy.add_child(_owned_parts_label)
 	return header
 
 
 func _make_row_header(
-	kicker_text: String,
 	title: String,
 	note: String,
 	accent: Color
 ) -> HBoxContainer:
 	var row := HBoxContainer.new()
-	row.custom_minimum_size.y = 32.0
+	row.custom_minimum_size.y = _d(48.0)
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
-	row.add_theme_constant_override(&"separation", 8)
 
 	var ribbon := PanelContainer.new()
-	ribbon.add_theme_stylebox_override(
-		&"panel", _make_style(accent, COLOR_INK, 3, 8, 6)
+	ribbon.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	var ribbon_style := _make_style(
+		accent, COLOR_INK, _di(4), _di(10), _di(8)
 	)
-	var ribbon_text := _make_label(kicker_text, 9, COLOR_INK, true)
+	ribbon_style.content_margin_left = _d(18.0)
+	ribbon_style.content_margin_right = _d(18.0)
+	ribbon.add_theme_stylebox_override(&"panel", ribbon_style)
+	var ribbon_text := _make_label(title, _di(21), COLOR_INK, true)
+	ribbon_text.add_theme_font_override(&"font", DISPLAY_FONT)
 	ribbon.add_child(ribbon_text)
 	row.add_child(ribbon)
-	var title_label := _make_label(title, 17, COLOR_CREAM_LIGHT, true)
-	title_label.add_theme_font_override(&"font", DISPLAY_FONT)
-	title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	row.add_child(title_label)
+	var spacer := Control.new()
+	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(spacer)
 	var note_panel := PanelContainer.new()
-	note_panel.add_theme_stylebox_override(
-		&"panel", _make_style(COLOR_CREAM, COLOR_INK, 2, 8, 5)
+	note_panel.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	var note_style := _make_style(
+		COLOR_CREAM, COLOR_INK, _di(3), _di(9), _di(6)
 	)
-	var note_label := _make_label(note, 8, COLOR_INK, true)
-	if kicker_text == "BALL":
+	note_style.content_margin_left = _d(12.0)
+	note_style.content_margin_right = _d(12.0)
+	note_panel.add_theme_stylebox_override(&"panel", note_style)
+	var note_label := _make_label(note, _di(13), COLOR_INK, true)
+	if title == BALL_ROW_TITLE:
 		note_label.name = "BallRuleLabel"
 		_ball_rule_label = note_label
 	else:
@@ -602,14 +659,14 @@ func _on_wallet_changed(_balance: int, _delta: int) -> void:
 
 
 func _refresh_header() -> void:
-	_summary_label.text = _wave_result_text if _wave_result_text != "" else "WAVE CLEAR"
-	_earned_label.text = _earned_text
+	_wave_badge_label.text = _wave_result_text if _wave_result_text != "" else "WAVE 01"
+	_summary_label.text = "CLEAR!"
 	_wallet_label.text = str(_wallet.balance if _wallet != null else 0)
 	_refresh_owned_label()
 
 
 func _refresh_owned_label() -> void:
-	if _owned_label == null or _shop == null:
+	if _owned_ball_label == null or _owned_parts_label == null or _shop == null:
 		return
 	var ball_names := PackedStringArray(["기본 유리눈"])
 	var part_stocks := PackedStringArray()
@@ -625,10 +682,8 @@ func _refresh_owned_label() -> void:
 				if count > 0:
 					part_stocks.append("%s %d" % [part_offer.display_name, count])
 	var part_text := "없음" if part_stocks.is_empty() else " · ".join(part_stocks)
-	_owned_label.text = "보유 공 · %s\n부품 재고 · %s" % [
-		" · ".join(ball_names),
-		part_text,
-	]
+	_owned_ball_label.text = "보유 공 · %s" % " · ".join(ball_names)
+	_owned_parts_label.text = "부품 재고 · %s" % part_text
 
 
 func _rebuild_cards() -> void:
@@ -651,10 +706,13 @@ func _make_ball_card(offer: RewardBallOffer, card_index: int) -> Button:
 
 	var art := TextureRect.new()
 	art.name = "OfferArt"
-	art.custom_minimum_size = Vector2(BALL_ICON_SIZE, BALL_ICON_SIZE)
-	art.texture = BallArtLibrary.icon_of(offer.ball_id, BALL_ICON_SIZE)
+	var ball_icon_size := _di(BALL_ICON_SIZE)
+	art.custom_minimum_size = Vector2(ball_icon_size, ball_icon_size)
+	art.texture = BallArtLibrary.icon_of(offer.ball_id, ball_icon_size)
 	art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	art.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	art.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	art.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	art_well.add_child(art)
 
@@ -665,7 +723,7 @@ func _make_ball_card(offer: RewardBallOffer, card_index: int) -> Button:
 		COLOR_TEAL,
 		offer.price
 	))
-	var title := _make_label(offer.display_name, 16, COLOR_INK, true)
+	var title := _make_label(offer.display_name, _di(24), COLOR_INK, true)
 	title.name = "OfferTitle"
 	title.add_theme_font_override(&"font", DISPLAY_FONT)
 	copy.add_child(title)
@@ -692,7 +750,9 @@ func _make_part_card(offer: RepairPartOffer, card_index: int) -> Button:
 
 	var art := RewardPartIcon.new()
 	art.name = "OfferArt"
-	art.custom_minimum_size = Vector2(PART_ICON_SIZE, PART_ICON_SIZE)
+	art.custom_minimum_size = Vector2(_d(PART_ICON_SIZE), _d(PART_ICON_SIZE))
+	art.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	art.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	art.set_part_id(offer.part_id)
 	art_well.add_child(art)
 
@@ -702,7 +762,7 @@ func _make_part_card(offer: RepairPartOffer, card_index: int) -> Button:
 		COLOR_GOLD,
 		offer.price
 	))
-	var title := _make_label(offer.display_name, 16, COLOR_INK, true)
+	var title := _make_label(offer.display_name, _di(24), COLOR_INK, true)
 	title.name = "OfferTitle"
 	title.add_theme_font_override(&"font", DISPLAY_FONT)
 	copy.add_child(title)
@@ -743,13 +803,13 @@ func _make_card_content(card: Button) -> HBoxContainer:
 	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	for side in ["left", "top", "right", "bottom"]:
-		margin.add_theme_constant_override("margin_%s" % side, 10)
+		margin.add_theme_constant_override("margin_%s" % side, _di(14))
 	card.add_child(margin)
 
 	var content := HBoxContainer.new()
 	content.name = "CardContent"
 	content.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	content.add_theme_constant_override(&"separation", 9)
+	content.add_theme_constant_override(&"separation", _di(14))
 	margin.add_child(content)
 	return content
 
@@ -757,10 +817,12 @@ func _make_card_content(card: Button) -> HBoxContainer:
 func _make_art_well(content: HBoxContainer) -> PanelContainer:
 	var well := PanelContainer.new()
 	well.name = "OfferArtWell"
-	well.custom_minimum_size.x = 88.0
+	well.custom_minimum_size.x = _d(128.0)
 	well.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	well.add_theme_stylebox_override(
-		&"panel", _make_style(COLOR_CREAM_LIGHT, COLOR_INK, 3, 11, 5)
+		&"panel", _make_style(
+			COLOR_CREAM_LIGHT, COLOR_INK, _di(4), _di(13)
+		)
 	)
 	content.add_child(well)
 	return well
@@ -770,7 +832,7 @@ func _make_card_copy(content: HBoxContainer) -> VBoxContainer:
 	var copy := VBoxContainer.new()
 	copy.name = "OfferCopy"
 	copy.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	copy.add_theme_constant_override(&"separation", 3)
+	copy.add_theme_constant_override(&"separation", _di(8))
 	copy.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	content.add_child(copy)
 	return copy
@@ -784,10 +846,13 @@ func _make_card_top_line(tag_text: String, tag_color: Color, price: int) -> HBox
 
 	var tag := PanelContainer.new()
 	tag.name = "OfferKindTag"
-	tag.add_theme_stylebox_override(
-		&"panel", _make_style(tag_color, COLOR_INK, 2, 6, 4)
+	var tag_style := _make_style(
+		tag_color, COLOR_INK, _di(3), _di(7), _di(5)
 	)
-	tag.add_child(_make_label(tag_text, 8, COLOR_INK, true))
+	tag_style.content_margin_left = _d(8.0)
+	tag_style.content_margin_right = _d(8.0)
+	tag.add_theme_stylebox_override(&"panel", tag_style)
+	tag.add_child(_make_label(tag_text, _di(11), COLOR_INK, true))
 	line.add_child(tag)
 
 	var spacer := Control.new()
@@ -802,39 +867,47 @@ func _make_price_panel(price: int) -> PanelContainer:
 	var panel := PanelContainer.new()
 	panel.name = "OfferPrice"
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_theme_stylebox_override(
-		&"panel", _make_style(COLOR_GOLD, COLOR_INK, 2, 7, 4)
+	var price_style := _make_style(
+		COLOR_GOLD, COLOR_INK, _di(3), _di(9), _di(5)
 	)
+	price_style.content_margin_left = _d(9.0)
+	price_style.content_margin_right = _d(9.0)
+	panel.add_theme_stylebox_override(&"panel", price_style)
 
 	var row := HBoxContainer.new()
-	row.add_theme_constant_override(&"separation", 4)
+	row.add_theme_constant_override(&"separation", _di(5))
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(row)
 
 	var coin := RewardCoinIcon.new()
-	coin.custom_minimum_size = Vector2(14.0, 14.0)
+	coin.custom_minimum_size = Vector2(_d(24.0), _d(24.0))
 	row.add_child(coin)
-	row.add_child(_make_label(str(price), 10, COLOR_INK, true))
+	row.add_child(_make_label(str(price), _di(15), COLOR_INK, true))
 	return panel
 
 
 func _make_state_badge(content: VBoxContainer) -> Array[Control]:
+	var state_row := HBoxContainer.new()
+	state_row.name = "StateRow"
+	state_row.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	state_row.alignment = BoxContainer.ALIGNMENT_END
+	state_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	content.add_child(state_row)
 	var badge := PanelContainer.new()
 	badge.name = "StateBadge"
-	badge.size_flags_horizontal = Control.SIZE_SHRINK_END
+	badge.size_flags_vertical = Control.SIZE_SHRINK_END
 	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	content.add_child(badge)
+	state_row.add_child(badge)
 
-	var label := _make_label("구매 가능", 8, COLOR_INK, true)
+	var label := _make_label("구매 가능", _di(13), COLOR_INK, true)
 	label.name = "StateLabel"
 	badge.add_child(label)
 	return [badge, label]
 
 
 func _make_body_label(text: String, color: Color) -> Label:
-	var label := _make_label(text, 8, color, true)
-	label.custom_minimum_size.y = 12.0
+	var label := _make_label(text, _di(13), color, false)
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.max_lines_visible = 1
 	label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
@@ -851,13 +924,29 @@ func _make_label(
 ) -> Label:
 	var label := Label.new()
 	label.text = text
+	label.add_theme_font_override(
+		&"font", _body_font_bold if bold else _body_font_semibold
+	)
 	label.add_theme_font_size_override(&"font_size", font_size)
 	label.add_theme_color_override(&"font_color", color)
-	if bold:
-		label.add_theme_constant_override(&"outline_size", 1)
-		label.add_theme_color_override(&"font_outline_color", Color(COLOR_INK, 0.88))
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return label
+
+
+func _make_body_font(weight: int) -> FontVariation:
+	var font := FontVariation.new()
+	font.base_font = BODY_FONT_SOURCE
+	var text_server := TextServerManager.get_primary_interface()
+	font.variation_opentype = {text_server.name_to_tag("wght"): weight}
+	return font
+
+
+func _d(value: float) -> float:
+	return value * _design_scale
+
+
+func _di(value: float) -> int:
+	return maxi(1, roundi(_d(value)))
 
 
 func _on_card_pressed(card_index: int) -> void:
@@ -984,7 +1073,7 @@ func _apply_card_state(card_index: int, state: CardState) -> void:
 	var state_label := view[&"state_label"] as Label
 	var background := COLOR_CREAM
 	var border := COLOR_INK
-	var border_width := 4
+	var border_width := _di(5)
 	var status_color := COLOR_INK
 	var badge_background := COLOR_TEAL
 	var status_text := "구매 가능"
@@ -994,13 +1083,13 @@ func _apply_card_state(card_index: int, state: CardState) -> void:
 		CardState.SELECTED:
 			background = COLOR_CREAM_LIGHT
 			border = COLOR_TEAL_BRIGHT
-			border_width = 6
+			border_width = _di(7)
 			badge_background = COLOR_TEAL
 			status_text = "선택!"
 		CardState.PURCHASED:
 			background = COLOR_GOLD
 			border = COLOR_INK
-			border_width = 5
+			border_width = _di(5)
 			badge_background = COLOR_RED
 			status_color = COLOR_CREAM_LIGHT
 			status_text = "GET!"
@@ -1012,7 +1101,7 @@ func _apply_card_state(card_index: int, state: CardState) -> void:
 			opacity = 0.52
 		CardState.INSUFFICIENT:
 			border = COLOR_RED
-			border_width = 5
+			border_width = _di(5)
 			badge_background = COLOR_RED
 			status_color = COLOR_CREAM_LIGHT
 			status_text = "코인 부족"
@@ -1024,14 +1113,15 @@ func _apply_card_state(card_index: int, state: CardState) -> void:
 		CardState.INSUFFICIENT,
 	]
 	card.modulate = Color(1.0, 1.0, 1.0, opacity)
+	badge.visible = state != CardState.AVAILABLE
 	var card_style := _make_style(
 		background,
 		border,
 		border_width,
-		CARD_RADIUS,
+		_di(CARD_RADIUS),
 		0,
-		4,
-		Vector2(3.0, 4.0)
+		_di(4),
+		Vector2(_d(6.0), _d(7.0))
 	)
 	for style_name in [&"normal", &"hover", &"pressed", &"disabled", &"focus"]:
 		card.add_theme_stylebox_override(style_name, card_style)
@@ -1039,7 +1129,9 @@ func _apply_card_state(card_index: int, state: CardState) -> void:
 	state_label.add_theme_color_override(&"font_color", status_color)
 	badge.add_theme_stylebox_override(
 		&"panel",
-		_make_style(badge_background, COLOR_INK, 3, 7, 5)
+		_make_style(
+			badge_background, COLOR_INK, _di(3), _di(9), _di(6)
+		)
 	)
 
 
@@ -1097,20 +1189,29 @@ func _refresh_proceed_button() -> void:
 	_proceed_button.add_theme_color_override(&"font_hover_color", text_color)
 	_proceed_button.add_theme_color_override(&"font_pressed_color", text_color)
 	_proceed_button.add_theme_stylebox_override(
-		&"normal", _make_style(
-			normal_color, COLOR_INK, 4, 12, 9, 4, Vector2(3.0, 4.0)
-		)
+		&"normal", _make_proceed_style(normal_color, false)
 	)
 	_proceed_button.add_theme_stylebox_override(
-		&"hover", _make_style(
-			normal_color.lightened(0.08), COLOR_INK, 4, 12, 9, 4, Vector2(3.0, 4.0)
-		)
+		&"hover", _make_proceed_style(normal_color.lightened(0.08), false)
 	)
 	_proceed_button.add_theme_stylebox_override(
-		&"pressed", _make_style(
-			normal_color.darkened(0.08), COLOR_INK, 4, 12, 9, 1, Vector2(1.0, 1.0)
-		)
+		&"pressed", _make_proceed_style(normal_color.darkened(0.08), true)
 	)
+
+
+func _make_proceed_style(background: Color, pressed: bool) -> StyleBoxFlat:
+	var style := _make_style(
+		background,
+		COLOR_INK,
+		_di(6),
+		_di(15),
+		_di(10),
+		_di(1 if pressed else 5),
+		Vector2(_d(1.0), _d(1.0)) if pressed else Vector2(_d(7.0), _d(8.0))
+	)
+	style.content_margin_left = _d(24.0)
+	style.content_margin_right = _d(48.0)
+	return style
 
 
 func _clear_cards() -> void:
@@ -1154,6 +1255,7 @@ static func _make_style(
 
 class RewardBackdropDecoration:
 	extends Control
+	var design_scale := 1.0
 
 	func _ready() -> void:
 		resized.connect(queue_redraw)
@@ -1162,24 +1264,45 @@ class RewardBackdropDecoration:
 	func _draw() -> void:
 		if size.x <= 0.0 or size.y <= 0.0:
 			return
-		_draw_star(Vector2(size.x * 0.035, size.y * 0.16), 34.0, 10, COLOR_GOLD)
-		_draw_star(Vector2(size.x * 0.965, size.y * 0.78), 30.0, 8, COLOR_RED)
+		_draw_star(
+			Vector2(96.0, 145.0) * design_scale,
+			50.0 * design_scale,
+			10,
+			COLOR_GOLD,
+			9.0
+		)
+		_draw_star(
+			Vector2(1808.0, 863.0) * design_scale,
+			43.0 * design_scale,
+			8,
+			COLOR_RED,
+			-7.0
+		)
 
-	func _draw_star(center: Vector2, radius: float, count: int, color: Color) -> void:
+	func _draw_star(
+		center: Vector2,
+		radius: float,
+		count: int,
+		color: Color,
+		rotation_degrees: float
+	) -> void:
 		var points := PackedVector2Array()
 		for index in count * 2:
 			var point_radius := radius if index % 2 == 0 else radius * 0.50
 			points.append(
-				center + Vector2.from_angle(-PI * 0.5 + PI * index / count) * point_radius
+				center + Vector2.from_angle(
+					-PI * 0.5 + deg_to_rad(rotation_degrees) + PI * index / count
+				) * point_radius
 			)
 		draw_colored_polygon(points, color)
 		var closed_points := points.duplicate()
 		closed_points.append(points[0])
-		draw_polyline(closed_points, COLOR_INK, 4.0, true)
+		draw_polyline(closed_points, COLOR_INK, 5.0 * design_scale, true)
 
 
 class RewardBoothDecoration:
 	extends Control
+	var design_scale := 1.0
 
 	func _ready() -> void:
 		resized.connect(queue_redraw)
@@ -1188,14 +1311,18 @@ class RewardBoothDecoration:
 	func _draw() -> void:
 		if size.x <= 0.0 or size.y <= 0.0:
 			return
+		var bolt_center := 35.0 * design_scale
+		var bolt_radius := 15.0 * design_scale
 		for center in [
-			Vector2(10.0, 10.0),
-			Vector2(size.x - 10.0, 10.0),
-			Vector2(10.0, size.y - 10.0),
-			Vector2(size.x - 10.0, size.y - 10.0),
+			Vector2(bolt_center, bolt_center),
+			Vector2(size.x - bolt_center, bolt_center),
+			Vector2(bolt_center, size.y - bolt_center),
+			Vector2(size.x - bolt_center, size.y - bolt_center),
 		]:
-			draw_circle(center, 6.0, COLOR_GOLD)
-			draw_arc(center, 6.0, 0.0, TAU, 18, COLOR_INK, 2.0, true)
+			draw_circle(center, bolt_radius, COLOR_GOLD)
+			draw_arc(
+				center, bolt_radius, 0.0, TAU, 24, COLOR_INK, 4.0 * design_scale, true
+			)
 
 
 class RewardHandoffBurst:

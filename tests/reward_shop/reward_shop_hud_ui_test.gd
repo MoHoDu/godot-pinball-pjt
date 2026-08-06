@@ -53,6 +53,32 @@ func _run() -> void:
 		"보상 패널에 장난감 부스 볼트 장식이 있어야 한다.")
 	_expect(hud.find_child("WaveClearBadge", true, false) is PanelContainer,
 		"웨이브 결과가 빨간 간판 배지로 표시되어야 한다.")
+	_expect(hud.find_child("EarnedCoinLabel", true, false) == null,
+		"설계에 없는 웨이브 획득량 보조 문구는 표시하지 않아야 한다.")
+	_expect(not _has_exact_label(hud, "BALL") and not _has_exact_label(hud, "PART"),
+		"설계에 없는 영문 카테고리 보조 배지는 없어야 한다.")
+	var design_scale := minf(hud.size.x / 1920.0, hud.size.y / 1080.0)
+	var ball_shelf := hud.find_child("BallShelf", true, false) as Control
+	var ball_row := hud.find_child("BallOfferRow", true, false) as Control
+	_expect(ball_shelf != null and is_equal_approx(
+		ball_shelf.custom_minimum_size.y, 340.0 * design_scale
+	), "공 보상 선반 높이가 설계 비율과 같아야 한다.")
+	_expect(ball_row != null and is_equal_approx(
+		ball_row.custom_minimum_size.y, 282.0 * design_scale
+	), "공 카드 행 높이가 설계 비율과 같아야 한다.")
+	var shop_title := hud.find_child("ShopTitleLabel", true, false) as Label
+	_expect(shop_title != null and shop_title.get_theme_font(&"font").resource_path.ends_with(
+		"Resources/ui/fonts/black_han_sans/BlackHanSans-Regular.ttf"
+	), "상점 제목은 설계와 같은 Black Han Sans를 사용해야 한다.")
+	var initial_ball_rule := hud.find_child("BallRuleLabel", true, false) as Label
+	var body_font := (
+		initial_ball_rule.get_theme_font(&"font") as FontVariation
+		if initial_ball_rule != null
+		else null
+	)
+	_expect(body_font != null and body_font.base_font.resource_path.ends_with(
+		"Resources/ui/fonts/noto_sans_kr/NotoSansKR-wght.ttf"
+	), "본문은 설계와 같은 Noto Sans KR을 사용해야 한다.")
 	var handoff := hud.find_child("HandoffOverlay", true, false) as Control
 	_expect(handoff != null and not handoff.visible,
 		"NEXT WAVE 전환 화면은 상점 진행 전까지 숨겨져야 한다.")
@@ -65,6 +91,13 @@ func _run() -> void:
 		hud.find_children("OfferArtWell", "PanelContainer", true, false).size() == 6,
 		"모든 카드 아트가 잉크 외곽선 슬롯에 들어가야 한다."
 	)
+	var first_art_well := hud.find_child("OfferArtWell", true, false) as Control
+	_expect(first_art_well != null and is_equal_approx(
+		first_art_well.custom_minimum_size.x, 128.0 * design_scale
+	), "카드 아트 슬롯 너비가 설계 비율과 같아야 한다.")
+	for badge_node in hud.find_children("StateBadge", "PanelContainer", true, false):
+		_expect(not (badge_node as Control).visible,
+			"구매 가능한 기본 카드에는 설계에 없는 상태 배지를 표시하지 않아야 한다.")
 	_expect(hud.find_child("*Detail*", true, false) == null,
 		"하단 설명 노드는 없어야 한다.")
 	_expect(not _has_control_guide(hud), "조작키 가이드 문구는 없어야 한다.")
@@ -137,6 +170,13 @@ func _has_control_guide(hud: RewardShopHud) -> bool:
 		var text := (node as Label).text
 		if text.contains("카드 이동") or text.contains("A /") \
 				or text.contains("B:") or text.contains("←/→"):
+			return true
+	return false
+
+
+func _has_exact_label(hud: RewardShopHud, expected: String) -> bool:
+	for node in hud.find_children("*", "Label", true, false):
+		if (node as Label).text == expected:
 			return true
 	return false
 
