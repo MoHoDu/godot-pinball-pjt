@@ -28,8 +28,9 @@ from pathlib import Path
 import numpy as np
 from scipy.io import wavfile
 
+from sfx_layout import RAW, ROLES, role_of, source_dir  # noqa: E402
+
 ROOT = Path(__file__).resolve().parent
-RAW = ROOT / "raw"
 
 SR_TARGET = 48000
 ONSET_REL_DB = -30.0    # 피크 대비 이 위로 처음 올라오는 지점을 첫 타격으로 본다
@@ -117,17 +118,16 @@ def main():
     ap.add_argument("--length", type=float, default=80.0, help="잘라낼 길이(ms)")
     args = ap.parse_args()
 
-    src = RAW / args.group
-    out = src / "cut"
-    out.mkdir(parents=True, exist_ok=True)
+    base = RAW / args.group
 
-    files = sorted(p for p in src.glob("*.wav"))
+    # 원본은 역할 폴더의 _source/ 에 있다. 정리 전 평평한 배치도 받아준다.
+    files = sorted(base.glob("*/_source/*.wav")) or sorted(base.glob("*.wav"))
     if not files:
-        print(f"파일이 없다: {src}")
+        print(f"파일이 없다: {base}")
         return 1
 
     print(f"{'원본':30s}{'첫 타격':>9s}{'길이':>8s}{'SNR':>9s}  결과")
-    print("-" * 72)
+    print("-" * 76)
 
     made = 0
     for p in files:
@@ -139,6 +139,11 @@ def main():
             print(f"{p.name:30s}{'-':>9s}{'-':>8s}{'-':>9s}  건너뜀 ({err})")
             continue
 
+        # 추출본은 _source/ 바로 위, 즉 재생할 역할 폴더에 놓는다.
+        role = role_of(p.stem)
+        out = source_dir(args.group, role).parent
+        out.mkdir(parents=True, exist_ok=True)
+
         rate_o, seg = got
         dst = out / p.name
         wavfile.write(str(dst), rate_o, seg)
@@ -146,7 +151,11 @@ def main():
         print(f"{p.name:30s}{onset / rate * 1000:8.1f}ms{len(seg) / rate_o * 1000:7.1f}ms"
               f"{snr_db(seg):8.1f}dB  {dst.relative_to(RAW)}")
 
-    print(f"\n{made}/{len(files)} 추출 → {out}")
+    print(f"\n{made}/{len(files)} 추출 → {base}")
+    for role in sorted({role_of(p.stem) for p in files}):
+        print(f"  {source_dir(args.group, role).parent.name:14s}"
+              f"{ROLES.get(role, '')}")
+    print(f"\n다음: python organize_takes.py {args.group}  (반려본을 지운다)")
     return 0
 
 

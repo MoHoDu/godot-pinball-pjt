@@ -31,7 +31,38 @@
 | `audition/` | 검수용 오디션. 게임이 하는 처리(피치 랜덤·연타 감쇠·속도별 음량)를 걸어 리듬 위에 얹은 것 | 위 셋 |
 | `layers/<대상>/` | 레이어 분해본. ② 텍스처 단계에서 재질 레이어만 갈아끼울 때 쓴다 | 위 셋 |
 | `prompts/` | ElevenLabs 프롬프트와 검수 시트 | (수기) |
-| `raw/` | ElevenLabs 원본을 받을 자리 | (형락님이 생성) |
+| `raw/<그룹>/` | AI 생성물. **역할별 폴더**로 나뉜다 (아래) | `generate_elevenlabs.py` |
+
+## AI 생성물 폴더 — 무엇을 재생해야 하는가
+
+한 폴더에 수십 개를 평평하게 쌓으면 **뭘 들어야 할지 알 수 없다.**
+그래서 `raw/<그룹>/` 아래를 **역할마다 폴더 하나**로 나눈다.
+
+```
+raw/flipper/
+  1_select/     flipper_select_01.wav   ← ★ 이걸 재생하면 된다
+                _source/                ← 생성 원본. 길이를 바꿔 다시 자를 때만
+  2_activate/
+  3_hit/
+  ...
+  README.md     ← 역할별로 뭐가 남았고 뭐가 왜 반려됐는지
+```
+
+- 폴더 앞 숫자는 **오디션 순서**다. 위에서부터 재생하면 게임에서 소리가 나는 차례가 된다
+- **반려본은 지운다.** 남아 있으면 헷갈린다. 사유는 그룹 `README.md` 에 남는다
+- 구조의 기준은 `sfx_layout.py` 한 곳이다. 생성·추출·필터·정리가 전부 여기를 본다
+
+```bash
+python generate_elevenlabs.py flipper --variants 6   # 생성 → _source/
+python extract_material.py flipper --length 200      # 첫 타격만 추출 → 역할 폴더
+python filter_candidates.py flipper                  # 판정만 (안 지운다)
+python organize_takes.py flipper --dry-run           # 지울 목록 확인
+python organize_takes.py flipper                     # 반려본 삭제 + README
+```
+
+★ **무음 판정은 `_source/` 원본으로 해야 한다.** 추출본은 전부 -10dBFS 로
+정규화되므로 원본이 -38dB 짜리여도 겉보기엔 멀쩡하다. 실제로 이 함정에
+`flipper_parry_05` 가 걸렸다.
 
 ## 재현
 

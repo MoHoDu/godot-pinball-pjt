@@ -32,8 +32,9 @@ import urllib.request
 import wave
 from pathlib import Path
 
+from sfx_layout import RAW, ROLES, source_dir  # noqa: E402
+
 ROOT = Path(__file__).resolve().parent
-RAW = ROOT / "raw"
 REPO = ROOT.parent.parent
 
 API_URL = "https://api.elevenlabs.io/v1/sound-generation"
@@ -63,23 +64,8 @@ BANNED = [
     "factory", "gear grinding", "echo", "hall", "cinematic", "impact boom",
 ]
 
-# 각 음원이 게임에서 무엇을 표현하는지. 생성·검수 때 같이 출력한다.
-# 소리만 들으면 무엇을 위한 건지 알 수 없어서 판단이 안 된다.
-ROLES = {
-    "wall_wood_tok": "벽 충돌 — 저속. 공이 벽에 약하게 닿을 때 (목재 톡)",
-    "wall_hollow_duk": "벽 충돌 — 중속. 속 빈 프레임의 둑 하는 몸통",
-    "wall_glass_ting": "벽 충돌 — 고속에만 얹는 작은 유리 팅",
-    "flipper_tak": "플리퍼 일반 타격 — 플리퍼가 공을 침 (MUST)",
-    "flipper_pang": "플리퍼 강한 타격 — 세게 쳤을 때. 금속 쾅이 아닌 탄력 있는 쫙",
-    "flipper_spring": "플리퍼 작동 — Space 를 눌러 플리퍼가 올라가는 순간",
-    "flipper_button": "플리퍼 선택 — 방향키로 조작할 플리퍼 그룹을 바꿀 때",
-    "flipper_tremble": "플리퍼 복귀 — 플리퍼가 제자리로 내려올 때의 태엽 떨림",
-    "parry_glass_ting": "정확한 패링 2번째 레이어 — 성공을 알리는 밝은 유리 팅",
-    "parry_bell": "정확한 패링 악센트 — 짧은 종 1음",
-    "ball_clockwork_escapement": "정속 태엽눈 재질음 — 태엽 걸림쇠 클릭",
-    "ball_clockwork_glass_pin": "정속 태엽눈 재질음 — 유리 위 금속 톡",
-    "ball_clockwork_detent": "정속 태엽눈 재질음 — 태엽 감기 멈춤",
-}
+# ROLES(각 음원이 게임에서 무엇을 표현하는지)는 sfx_layout.py 로 옮겼다.
+# 생성·추출·필터·정리가 전부 같은 표를 봐야 해서다.
 
 GROUPS = {
     "wall": {
@@ -110,51 +96,54 @@ GROUPS = {
     #     - 모델이 오디오 용어를 이해하므로 anechoic · close-miked · dry 를 쓴다
     #     - 부정문("no repetition")보다 **긍정문("then silence")** 을 앞에 둔다
     #     - 450자 제한. 한두 문장으로 끝낸다
+    # ★ 4차 (2026-08-06 형락님 지적)
+    #   "플리퍼가 움직일 때 **기계음** 소리가 나지 않고 그냥 있는 리소스 재활용 같다"
+    #
+    #   맞는 지적이다. 절차적 합성본은 모달 감쇠 + 노이즈 + 새추레이션이라는
+    #   같은 사슬을 공유해서 서로의 변주처럼 들린다. 특히 **작동음**은 장치가
+    #   실제로 움직이는 불규칙한 질감인데 모달 합성으로는 만들 수 없다.
+    #
+    #   그래서 플리퍼는 AI 로 간다. 방향은 "장난감 태엽 장치가 작동하는 소리".
+    #   금지어(machinery / industrial / gear grinding / metal clang / heavy /
+    #   steel / hammer / factory)를 피하면서 기계 동작을 서술해야 한다.
+    #   → wind-up toy · spring-loaded lever · plastic ratchet · brass escapement
     "flipper": {
-        # ★ 3차 (2026-08-06). 2차에서 button 만 단발로 성공하고 나머지는 연타였다.
-        #
-        #   성공한 button 과 실패한 셋의 차이가 명확했다.
-        #     성공: "A single crisp click of a small plastic toy button"
-        #           → 물체 **하나**, 소리는 **명사**(click), 동작 없음, "Exactly one"
-        #     실패: "impact of a paddle **against** a marble" (물체 둘 + 충돌 서술)
-        #           "a spring **compressing and releasing**" (동작 서술)
-        #
-        #   물체가 둘이면 모델이 "부딪히는 장면"을 만들고, 장면에는 반복이 따라온다.
-        #   → 물체 하나, 소리 명사, "Exactly one X at the very start" 로 통일한다.
-        # ★ 4차 (2026-08-06 형락님 방향 제시)
-        #   "플리퍼가 공을 치는 소리는 **유리로 된 탁구공을 치는 듯한 느낌**"
-        #
-        #   → 가볍고 · 속이 비었고 · 밝은 유리. 무겁거나 둔탁하면 안 된다.
-        #     3차 후보(tak_02)는 중심이 236Hz 였다. 정반대 방향이었다.
-        #
-        #   'ping-pong' 이라는 단어는 쓰지 않는다. 탁구는 **랠리**를 연상시켜
-        #   모델이 통통 튀는 연속음을 만들 위험이 크다. 물성만 서술한다.
-        "flipper_tak": (
+        "flipper_select": (
+            "One-shot foley sample. A single crisp click of a small plastic "
+            "toy toggle switch flipping over. Toy scale, close-miked, "
+            "anechoic, completely dry. Exactly one click at the very start, "
+            "then silence."
+        ),
+        "flipper_activate": (
+            "One-shot foley sample. A small spring-loaded toy lever snapping "
+            "up in one quick motion: a brief spring release with a light "
+            "plastic ratchet tick and a faint air swish. Wind-up toy scale, "
+            "close-miked, anechoic, completely dry. One motion at the very "
+            "start, then silence."
+        ),
+        "flipper_return": (
+            "One-shot foley sample. A small spring-loaded toy lever dropping "
+            "back to rest, a soft plastic knock with a faint brass tick. "
+            "Wind-up toy scale, very quiet, close-miked, anechoic, completely "
+            "dry. One motion at the very start, then silence."
+        ),
+        "flipper_hit": (
             "One-shot foley sample. A single bright glassy knock of a hollow "
-            "thin-walled glass ball, very light and small. Toy scale, "
+            "thin-walled glass ball struck by a small paddle. Toy scale, "
             "close-miked, anechoic, completely dry. Exactly one knock at the "
             "very start, then silence."
         ),
-        "flipper_pang": (
+        "flipper_strong": (
             "One-shot foley sample. A single sharp glassy crack of a hollow "
             "thin-walled glass ball struck hard. Bright and springy, never "
             "dull or deep. Toy scale, close-miked, anechoic, completely dry. "
             "Exactly one crack at the very start, then silence."
         ),
-        "flipper_spring": (
-            "One-shot foley sample. A single short creak of a small coiled toy "
-            "spring. Toy scale, close-miked, anechoic, completely dry. Exactly "
-            "one creak at the very start, then silence."
-        ),
-        "flipper_button": (
-            "One-shot foley sample. A single crisp click of a small plastic "
-            "toy button. Toy scale, close-miked, anechoic, completely dry. "
-            "Exactly one click at the very start, then silence."
-        ),
-        "flipper_tremble": (
-            "One-shot foley sample. A tiny brass clockwork part settling to "
-            "rest, three faint ticks fading out within a quarter second. Very "
-            "quiet, close-miked, anechoic, completely dry. Then silence."
+        "flipper_parry": (
+            "One-shot foley sample. A single clean pitched pock of a light "
+            "table tennis ball on a wooden paddle, one clear musical note "
+            "with a short bounce. Bright, toy-like, close-miked, anechoic, "
+            "completely dry. Exactly one pock at the very start, then silence."
         ),
     },
     "parry": {
@@ -325,13 +314,19 @@ def main():
         return 1
 
     print(f"\n키 출처: {source}")
-    out_dir = RAW / args.group
-    out_dir.mkdir(parents=True, exist_ok=True)
 
+    # ★ 역할마다 폴더를 따로 쓴다 (2026-08-06). 한 폴더에 평평하게 쌓으면
+    #   나중에 무엇을 재생해야 할지 알 수 없다. 생성 원본은 _source/ 에 두고,
+    #   재생할 추출본은 그 위 폴더에 놓는다.
+    group_dir = RAW / args.group
     fmt = OUTPUT_FORMATS[0]
     made = 0
     skipped = 0
     for name, text in prompts.items():
+        out_dir = source_dir(args.group, name)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        print(f"\n[{out_dir.parent.name}] {ROLES.get(name, '(용도 미기재)')}")
+
         for i in range(1, args.variants + 1):
             # 이미 받은 변형은 건너뛴다. 다시 부르면 크레딧을 또 쓴다.
             existing = [e for e in ("wav", "mp3")
@@ -346,7 +341,6 @@ def main():
                 try:
                     generate(key, text, path, fmt)
                     print(f"  생성 {path.relative_to(REPO)}  ({fmt})")
-                    print(f"        용도: {ROLES.get(name, '(미기재)')}")
                     made += 1
                     break
                 except urllib.error.HTTPError as e:
@@ -370,9 +364,11 @@ def main():
             time.sleep(0.4)
 
     print(f"\n{made}개 생성" + (f" (이미 있어 건너뜀 {skipped}개)" if skipped else "")
-          + f" → {out_dir}")
-    print("다음: 채택 기준 4개로 고른다 — 앞 30ms 안에 재질이 다 들어있는가 / "
-          "잔향·룸톤이 안 붙었는가 / 재질 모드가 뚜렷한가 / 클릭이 하나인가")
+          + f" → {group_dir}")
+    print(f"다음: python extract_material.py {args.group}"
+          f"  →  python organize_takes.py {args.group}")
+    print("      추출하면 역할 폴더에 재생용 후보가 놓이고,"
+          " 정리하면 반려본이 지워진다.")
     return 0
 
 
