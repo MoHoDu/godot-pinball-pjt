@@ -3090,37 +3090,9 @@
                 8,
                 0
               ],
-              "justifyContent": "space_between",
+              "justifyContent": "end",
               "alignItems": "center",
               "children": [
-                {
-                  "type": "frame",
-                  "id": "Iiqf7",
-                  "width": "fill_container",
-                  "layout": "vertical",
-                  "gap": 5,
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "M6BSs",
-                      "name": "Detail Text",
-                      "fill": "$text-secondary",
-                      "content": "카드를 선택하면 상세 확인 상태로 전환됩니다.",
-                      "fontFamily": "$font-body",
-                      "fontSize": 15,
-                      "fontWeight": "700"
-                    },
-                    {
-                      "type": "text",
-                      "id": "cNgR1",
-                      "fill": "$text-secondary",
-                      "content": "←/→ 카드 이동   ·   A / 클릭 선택   ·   선택 카드 재입력 구매",
-                      "fontFamily": "$font-body",
-                      "fontSize": 12,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                },
                 {
                   "type": "frame",
                   "id": "bTQYk",
@@ -3145,27 +3117,6 @@
                       "fontFamily": "$font-body",
                       "fontSize": 16,
                       "fontWeight": "800"
-                    },
-                    {
-                      "type": "frame",
-                      "id": "T73KDR",
-                      "fill": "#0E0A14",
-                      "cornerRadius": 8,
-                      "padding": [
-                        5,
-                        9
-                      ],
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "g6yeT",
-                          "fill": "$accent-mint",
-                          "content": "B",
-                          "fontFamily": "Inter",
-                          "fontSize": 13,
-                          "fontWeight": "800"
-                        }
-                      ]
                     }
                   ]
                 }
@@ -3520,7 +3471,7 @@
                           "id": "IQ45B",
                           "name": "Ball Card / Clockwork State",
                           "fill": "$accent-mint",
-                          "content": "선택됨 · A 다시 눌러 구매",
+                          "content": "선택됨 · 다시 선택하면 구매",
                           "fontFamily": "$font-body",
                           "fontSize": 11,
                           "fontWeight": "800"
@@ -4317,37 +4268,9 @@
                 8,
                 0
               ],
-              "justifyContent": "space_between",
+              "justifyContent": "end",
               "alignItems": "center",
               "children": [
-                {
-                  "type": "frame",
-                  "id": "KG9ss",
-                  "width": "fill_container",
-                  "layout": "vertical",
-                  "gap": 5,
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "zi8mG",
-                      "name": "Detail Text",
-                      "fill": "$accent-mint",
-                      "content": "정속 태엽눈 · 13코인 — 한 번 더 누르면 구매 확정",
-                      "fontFamily": "$font-body",
-                      "fontSize": 15,
-                      "fontWeight": "700"
-                    },
-                    {
-                      "type": "text",
-                      "id": "rj7ia",
-                      "fill": "$text-secondary",
-                      "content": "←/→ 카드 이동   ·   A / 클릭 선택   ·   선택 카드 재입력 구매",
-                      "fontFamily": "$font-body",
-                      "fontSize": 12,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                },
                 {
                   "type": "frame",
                   "id": "gehHO",
@@ -4372,27 +4295,6 @@
                       "fontFamily": "$font-body",
                       "fontSize": 16,
                       "fontWeight": "800"
-                    },
-                    {
-                      "type": "frame",
-                      "id": "I1rKg",
-                      "fill": "#0E0A14",
-                      "cornerRadius": 8,
-                      "padding": [
-                        5,
-                        9
-                      ],
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "Y3YHZZ",
-                          "fill": "$accent-mint",
-                          "content": "B",
-                          "fontFamily": "Inter",
-                          "fontSize": 13,
-                          "fontWeight": "800"
-                        }
-                      ]
                     }
                   ]
                 }
@@ -5540,37 +5442,9 @@
                 8,
                 0
               ],
-              "justifyContent": "space_between",
+              "justifyContent": "end",
               "alignItems": "center",
               "children": [
-                {
-                  "type": "frame",
-                  "id": "pLqL4",
-                  "width": "fill_container",
-                  "layout": "vertical",
-                  "gap": 5,
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "xBDFD",
-                      "name": "Detail Text",
-                      "fill": "$accent-gold",
-                      "content": "정속 태엽눈 구매 완료 · 공 행 잠금 · 수리 부품은 계속 구매할 수 있습니다.",
-                      "fontFamily": "$font-body",
-                      "fontSize": 15,
-                      "fontWeight": "700"
-                    },
-                    {
-                      "type": "text",
-                      "id": "EfiLf",
-                      "fill": "$text-secondary",
-                      "content": "←/→ 카드 이동   ·   A / 클릭 선택   ·   선택 카드 재입력 구매",
-                      "fontFamily": "$font-body",
-                      "fontSize": 12,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                },
                 {
                   "type": "frame",
                   "id": "w2wo7",
@@ -5595,27 +5469,6 @@
                       "fontFamily": "$font-body",
                       "fontSize": 16,
                       "fontWeight": "800"
-                    },
-                    {
-                      "type": "frame",
-                      "id": "OXj6E",
-                      "fill": "#0E0A14",
-                      "cornerRadius": 8,
-                      "padding": [
-                        5,
-                        9
-                      ],
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "z8b9rn",
-                          "fill": "$accent-mint",
-                          "content": "B",
-                          "fontFamily": "Inter",
-                          "fontSize": 13,
-                          "fontWeight": "800"
-                        }
-                      ]
                     }
                   ]
                 }
@@ -6724,7 +6577,7 @@
                           "id": "DYWcv",
                           "name": "Part Card / Bell State",
                           "fill": "$accent-mint",
-                          "content": "선택됨 · A 다시 눌러 구매",
+                          "content": "선택됨 · 다시 선택하면 구매",
                           "fontFamily": "$font-body",
                           "fontSize": 11,
                           "fontWeight": "800"
@@ -6770,37 +6623,9 @@
                 8,
                 0
               ],
-              "justifyContent": "space_between",
+              "justifyContent": "end",
               "alignItems": "center",
               "children": [
-                {
-                  "type": "frame",
-                  "id": "Vs3Vq",
-                  "width": "fill_container",
-                  "layout": "vertical",
-                  "gap": 5,
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "A7Ykq",
-                      "name": "Detail Text",
-                      "fill": "$accent-mint",
-                      "content": "잊혀진 별방울 x3 · 9코인 — 한 번 더 누르면 구매 확정",
-                      "fontFamily": "$font-body",
-                      "fontSize": 15,
-                      "fontWeight": "700"
-                    },
-                    {
-                      "type": "text",
-                      "id": "xzuQT",
-                      "fill": "$text-secondary",
-                      "content": "←/→ 카드 이동   ·   A / 클릭 선택   ·   선택 카드 재입력 구매",
-                      "fontFamily": "$font-body",
-                      "fontSize": 12,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                },
                 {
                   "type": "frame",
                   "id": "Lr4sD",
@@ -6825,27 +6650,6 @@
                       "fontFamily": "$font-body",
                       "fontSize": 16,
                       "fontWeight": "800"
-                    },
-                    {
-                      "type": "frame",
-                      "id": "R0aUCS",
-                      "fill": "#0E0A14",
-                      "cornerRadius": 8,
-                      "padding": [
-                        5,
-                        9
-                      ],
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "rbpft",
-                          "fill": "$accent-mint",
-                          "content": "B",
-                          "fontFamily": "Inter",
-                          "fontSize": 13,
-                          "fontWeight": "800"
-                        }
-                      ]
                     }
                   ]
                 }
@@ -7994,37 +7798,9 @@
                 8,
                 0
               ],
-              "justifyContent": "space_between",
+              "justifyContent": "end",
               "alignItems": "center",
               "children": [
-                {
-                  "type": "frame",
-                  "id": "dSIqC",
-                  "width": "fill_container",
-                  "layout": "vertical",
-                  "gap": 5,
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "Kzkkt",
-                      "name": "Detail Text",
-                      "fill": "$accent-gold",
-                      "content": "두 카테고리 구매 완료 · 잔액 2코인은 다음 보상으로 이월됩니다.",
-                      "fontFamily": "$font-body",
-                      "fontSize": 15,
-                      "fontWeight": "700"
-                    },
-                    {
-                      "type": "text",
-                      "id": "J1g3B",
-                      "fill": "$text-secondary",
-                      "content": "←/→ 카드 이동   ·   A / 클릭 선택   ·   선택 카드 재입력 구매",
-                      "fontFamily": "$font-body",
-                      "fontSize": 12,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                },
                 {
                   "type": "frame",
                   "id": "AjlMi",
@@ -8055,27 +7831,6 @@
                       "fontFamily": "$font-body",
                       "fontSize": 16,
                       "fontWeight": "800"
-                    },
-                    {
-                      "type": "frame",
-                      "id": "wlcBS",
-                      "fill": "#0E0A14",
-                      "cornerRadius": 8,
-                      "padding": [
-                        5,
-                        9
-                      ],
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "mAldu",
-                          "fill": "$accent-mint",
-                          "content": "B",
-                          "fontFamily": "Inter",
-                          "fontSize": 13,
-                          "fontWeight": "800"
-                        }
-                      ]
                     }
                   ]
                 }
@@ -8302,7 +8057,7 @@
               "fill": "$text-secondary",
               "textGrowth": "fixed-width",
               "width": "fill_container",
-              "content": "※ B / 다음 단계는 어느 화면에서나 즉시 실행됩니다. 미구매 상태라면 보유 변경 없이 같은 준비 단계로 이동합니다.",
+              "content": "다음 단계는 어느 구매 상태에서도 실행할 수 있습니다. 미구매 상태라면 보유 변경 없이 준비 단계로 이동합니다.",
               "lineHeight": 1.4,
               "textAlign": "center",
               "fontFamily": "$font-body",
