@@ -10,7 +10,6 @@ signal control_ended(bumper: ShotBumper, ball: RigidBody2D)
 
 const PREVIOUS_DIRECTION_ACTION: StringName = &"flipper_select_left"
 const NEXT_DIRECTION_ACTION: StringName = &"flipper_select_right"
-const DEFAULT_DIRECTION_ACTION: StringName = &"flipper_select_up"
 
 
 var _controlled_ball: RigidBody2D
@@ -76,19 +75,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		if select_relative_launch_anchor(1):
 			get_viewport().set_input_as_handled()
 		return
-	if event.is_action_pressed(DEFAULT_DIRECTION_ACTION):
-		if select_safe_default_launch_anchor():
-			get_viewport().set_input_as_handled()
-		return
-
-	for anchor: ShotLaunchAnchor in get_launch_anchors():
-		if not _is_direction_navigation_action(anchor.input_action) \
-				and not anchor.input_action.is_empty() \
-				and InputMap.has_action(anchor.input_action) \
-				and event.is_action_pressed(anchor.input_action):
-			select_launch_anchor(anchor)
-			get_viewport().set_input_as_handled()
-			return
 
 	if event is InputEventKey:
 		var key_event := event as InputEventKey
@@ -154,10 +140,6 @@ func select_relative_launch_anchor(offset: int) -> bool:
 		return select_launch_anchor(anchors[0])
 	var target_index := wrapi(current_index + offset, 0, anchors.size())
 	return select_launch_anchor(anchors[target_index])
-
-
-func select_safe_default_launch_anchor() -> bool:
-	return select_launch_anchor(_find_safe_default_anchor())
 
 
 func release_controlled_ball() -> bool:
@@ -273,14 +255,6 @@ func _find_safe_default_anchor() -> ShotLaunchAnchor:
 	return null
 
 
-func _is_direction_navigation_action(action: StringName) -> bool:
-	return action in [
-		PREVIOUS_DIRECTION_ACTION,
-		NEXT_DIRECTION_ACTION,
-		DEFAULT_DIRECTION_ACTION,
-	]
-
-
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := super()
 	var anchors := get_launch_anchors()
@@ -290,12 +264,6 @@ func _get_configuration_warnings() -> PackedStringArray:
 	for anchor: ShotLaunchAnchor in anchors:
 		if anchor.is_safe_default:
 			safe_count += 1
-		if not anchor.input_action.is_empty() \
-				and not InputMap.has_action(anchor.input_action):
-			warnings.append(
-				"발사 방향 '%s'의 input_action이 Input Map에 없습니다." \
-					% anchor.display_name
-			)
 	if safe_count != 1:
 		warnings.append("안전 기본 발사 방향이 정확히 하나여야 합니다.")
 	return warnings

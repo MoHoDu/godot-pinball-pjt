@@ -31,13 +31,11 @@ release_position = Vector2(0.2572174, -103.42265)
 [sub_resource type="Resource" id="ShotDirection_left"]
 script = ExtResource("3_anchor")
 display_name = "1"
-input_action = &"flipper_select_left"
 release_position = Vector2(63.322906, -63.066395)
 
 [sub_resource type="Resource" id="ShotDirection_right"]
 script = ExtResource("3_anchor")
 display_name = "2"
-input_action = &"flipper_select_right"
 release_position = Vector2(94.13252, -0.1453476)
 
 [sub_resource type="Resource" id="Resource_vej4n"]

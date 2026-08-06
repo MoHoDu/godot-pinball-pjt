@@ -8,11 +8,6 @@ extends Resource
 	set(value):
 		display_name = value
 		emit_changed()
-## 선택 사항입니다. W/A/D 순환 제어 외에 이 방향을 즉시 선택할 Input Map 액션입니다.
-@export var input_action: StringName = &"flipper_select_up":
-	set(value):
-		input_action = value
-		emit_changed()
 ## 입력이 없거나 선택 시간이 끝났을 때 자동으로 사용할 안전한 기본 방향입니다.
 @export var is_safe_default := false:
 	set(value):
