@@ -128,11 +128,22 @@ func _test_gear_spin() -> void:
 	_expect(stage3 - stage2 >= TAU - 0.05,
 		"3단계 과회전은 한 바퀴여야 한다 (실제=%s)" % (stage3 - stage2))
 
+	# 런타임이 없는 검수 씬에서는 타격만으로 단계가 올라야 한다.
+	var before := wheel.rotation
+	bumper.valid_hit_registered.emit(bumper.bumper_id, null, 1, 0)
+	var waited := 0.0
+	while waited < 0.5:
+		await process_frame
+		waited += root.get_process_delta_time()
+	_expect(wheel.rotation > before,
+		"런타임이 없으면 타격만으로 단계가 올라야 한다 (검수 씬용)")
+	var after_hit := wheel.rotation
+
 	# 과회전 직후 0 으로 초기화돼도 되감기지 않아야 한다.
 	gear.set_stage(0)
 	var settled := await _spin_to(gear, wheel, 0, 0.4)
-	_expect(absf(settled - stage3) <= 0.05,
-		"단계 초기화가 휠을 되감으면 안 된다 (실제=%s -> %s)" % [stage3, settled])
+	_expect(absf(settled - after_hit) <= 0.05,
+		"단계 초기화가 휠을 되감으면 안 된다 (실제=%s -> %s)" % [after_hit, settled])
 
 	bumper.queue_free()
 	await process_frame

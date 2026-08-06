@@ -45,10 +45,35 @@ func bind_to_bumper(bumper: Bumper) -> void:
 		_runtime = runtime
 		if not runtime.is_connected(&"part_state_changed", _on_part_state_changed):
 			runtime.connect(&"part_state_changed", _on_part_state_changed)
+		return
+
+	# 런타임이 없으면(검수 씬 등) 타격만으로 단계를 올린다.
+	# 실제 게임에서는 RepairEffectRouter 가 단계를 주도하므로 이 경로를 타지 않는다.
+	if not bumper.valid_hit_registered.is_connected(_on_hit_advance_stage):
+		bumper.valid_hit_registered.connect(_on_hit_advance_stage)
 
 
 func _on_part_state_changed(_source: Node, state: Dictionary) -> void:
 	set_stage(int(state.get(&"wind_stack", 0)))
+
+
+func _on_hit_advance_stage(
+	_bumper_id: StringName,
+	_ball: RigidBody2D,
+	_contact_id: int,
+	_base_score: int
+) -> void:
+	advance_stage()
+
+
+## 다음 감김 단계로 올립니다. 3단계(과회전) 다음은 기본 상태로 되돌아갑니다.
+## 11쪽: 과회전 직후 모든 단계 표시가 꺼지고 기본 상태로 복귀한다.
+func advance_stage() -> void:
+	if _stage >= STEP_ARCS.size() - 1:
+		set_stage(0)
+		set_stage(1)
+		return
+	set_stage(_stage + 1)
 
 
 ## 감김 단계를 반영해 그만큼 더 돌립니다.
