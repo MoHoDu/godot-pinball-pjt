@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://ba2yw0w5jh8es"
-path="res://.godot/imported/cursed_toy_flat_corner_bracket_v2.png-3b5a8dfc891e4765989b601d77839e63.ctex"
+path="res://.godot/imported/cursed_toy_flat_corner_bracket_v2.png-63b9834eb5c95cbd378a1296bab04b77.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/Art/ui/decorations/fasteners/cursed_toy_flat_corner_bracket_v2.png"
-dest_files=["res://.godot/imported/cursed_toy_flat_corner_bracket_v2.png-3b5a8dfc891e4765989b601d77839e63.ctex"]
+source_file="res://Resources/Art/ui/decorations/fasteners/cursed_toy_flat_corner_bracket_v2.png"
+dest_files=["res://.godot/imported/cursed_toy_flat_corner_bracket_v2.png-63b9834eb5c95cbd378a1296bab04b77.ctex"]
 
 [params]
 

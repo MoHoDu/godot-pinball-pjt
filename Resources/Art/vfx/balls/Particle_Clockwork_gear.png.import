@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bgto6inekyygc"
-path="res://.godot/imported/Particle_Clockwork_gear.png-eb35b81d607feeb5ebe921ead4431dbf.ctex"
+path="res://.godot/imported/Particle_Clockwork_gear.png-28cd95eccfcaea291062269b385a863d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/Art/vfx/balls/Particle_Clockwork_gear.png"
-dest_files=["res://.godot/imported/Particle_Clockwork_gear.png-eb35b81d607feeb5ebe921ead4431dbf.ctex"]
+source_file="res://Resources/Art/vfx/balls/Particle_Clockwork_gear.png"
+dest_files=["res://.godot/imported/Particle_Clockwork_gear.png-28cd95eccfcaea291062269b385a863d.ctex"]
 
 [params]
 

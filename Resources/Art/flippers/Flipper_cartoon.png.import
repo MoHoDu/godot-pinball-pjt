@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c7uw0wdcfvsh1"
-path="res://.godot/imported/Flipper_cartoon.png-f450cfc4fdf6136fc8728130b4320917.ctex"
+path="res://.godot/imported/Flipper_cartoon.png-0ed2286fca7825ae18dc59e61ca7026b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/Art/flippers/Flipper_cartoon.png"
-dest_files=["res://.godot/imported/Flipper_cartoon.png-f450cfc4fdf6136fc8728130b4320917.ctex"]
+source_file="res://Resources/Art/flippers/Flipper_cartoon.png"
+dest_files=["res://.godot/imported/Flipper_cartoon.png-0ed2286fca7825ae18dc59e61ca7026b.ctex"]
 
 [params]
 

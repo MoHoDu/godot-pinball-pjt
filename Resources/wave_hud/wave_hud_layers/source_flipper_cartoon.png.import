@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://11rp86rh1lwx"
-path="res://.godot/imported/source_flipper_cartoon.png-5bb968926e98f2e93e5c18c6285ec618.ctex"
+path="res://.godot/imported/source_flipper_cartoon.png-45fb863bc02a9622f307f0d1a5694196.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/wave_hud/wave_hud_layers/source_flipper_cartoon.png"
-dest_files=["res://.godot/imported/source_flipper_cartoon.png-5bb968926e98f2e93e5c18c6285ec618.ctex"]
+source_file="res://Resources/wave_hud/wave_hud_layers/source_flipper_cartoon.png"
+dest_files=["res://.godot/imported/source_flipper_cartoon.png-45fb863bc02a9622f307f0d1a5694196.ctex"]
 
 [params]
 

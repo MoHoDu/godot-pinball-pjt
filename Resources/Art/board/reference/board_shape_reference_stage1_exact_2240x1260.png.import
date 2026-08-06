@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://1xhcdexgkaft"
-path="res://.godot/imported/board_shape_reference_stage1_exact_2240x1260.png-8b7e080f5574748a40864f9a9b948c22.ctex"
+path="res://.godot/imported/board_shape_reference_stage1_exact_2240x1260.png-06d434ef7b040bbacfe06cb5481f062c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/Art/board/reference/board_shape_reference_stage1_exact_2240x1260.png"
-dest_files=["res://.godot/imported/board_shape_reference_stage1_exact_2240x1260.png-8b7e080f5574748a40864f9a9b948c22.ctex"]
+source_file="res://Resources/Art/board/reference/board_shape_reference_stage1_exact_2240x1260.png"
+dest_files=["res://.godot/imported/board_shape_reference_stage1_exact_2240x1260.png-06d434ef7b040bbacfe06cb5481f062c.ctex"]
 
 [params]
 

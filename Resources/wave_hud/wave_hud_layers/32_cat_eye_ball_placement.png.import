@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://buam230ywp8mq"
-path="res://.godot/imported/32_cat_eye_ball_placement.png-c65b91df77790b3ac77238305bdad4c0.ctex"
+path="res://.godot/imported/32_cat_eye_ball_placement.png-18f36c3b7212c0ab54258f9fc6fed045.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/wave_hud/wave_hud_layers/32_cat_eye_ball_placement.png"
-dest_files=["res://.godot/imported/32_cat_eye_ball_placement.png-c65b91df77790b3ac77238305bdad4c0.ctex"]
+source_file="res://Resources/wave_hud/wave_hud_layers/32_cat_eye_ball_placement.png"
+dest_files=["res://.godot/imported/32_cat_eye_ball_placement.png-18f36c3b7212c0ab54258f9fc6fed045.ctex"]
 
 [params]
 

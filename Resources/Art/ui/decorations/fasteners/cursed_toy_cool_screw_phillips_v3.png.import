@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://0hegqd1qb7ye"
-path="res://.godot/imported/cursed_toy_cool_screw_phillips_v3.png-9fcebabe9284768ffbfa4a7356b47be0.ctex"
+path="res://.godot/imported/cursed_toy_cool_screw_phillips_v3.png-44755f44bc06d3f349ce8be9edcc81fb.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/Art/ui/decorations/fasteners/cursed_toy_cool_screw_phillips_v3.png"
-dest_files=["res://.godot/imported/cursed_toy_cool_screw_phillips_v3.png-9fcebabe9284768ffbfa4a7356b47be0.ctex"]
+source_file="res://Resources/Art/ui/decorations/fasteners/cursed_toy_cool_screw_phillips_v3.png"
+dest_files=["res://.godot/imported/cursed_toy_cool_screw_phillips_v3.png-44755f44bc06d3f349ce8be9edcc81fb.ctex"]
 
 [params]
 

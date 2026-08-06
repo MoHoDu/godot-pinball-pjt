@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cmkp05vodmh1r"
-path="res://.godot/imported/anchor_pointer.png-60d0cff41a69aa68e63f8fc8a4a9bebd.ctex"
+path="res://.godot/imported/anchor_pointer.png-6368ccdec132679a5368a0098163e567.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/wave_hud/wave_hud_runtime_dark/combo/anchor_pointer.png"
-dest_files=["res://.godot/imported/anchor_pointer.png-60d0cff41a69aa68e63f8fc8a4a9bebd.ctex"]
+source_file="res://Resources/wave_hud/wave_hud_runtime_dark/combo/anchor_pointer.png"
+dest_files=["res://.godot/imported/anchor_pointer.png-6368ccdec132679a5368a0098163e567.ctex"]
 
 [params]
 

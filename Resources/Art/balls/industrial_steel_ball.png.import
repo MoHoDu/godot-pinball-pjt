@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cf4b3xik2kbth"
-path="res://.godot/imported/industrial_steel_ball.png-540c1ef8cb065575fd7316644721055b.ctex"
+path="res://.godot/imported/industrial_steel_ball.png-62d817e6fc614812cdc5f707fd634df6.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/Art/balls/industrial_steel_ball.png"
-dest_files=["res://.godot/imported/industrial_steel_ball.png-540c1ef8cb065575fd7316644721055b.ctex"]
+source_file="res://Resources/Art/balls/industrial_steel_ball.png"
+dest_files=["res://.godot/imported/industrial_steel_ball.png-62d817e6fc614812cdc5f707fd634df6.ctex"]
 
 [params]
 

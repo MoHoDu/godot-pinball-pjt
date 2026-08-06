@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://df1rn84rrjmmc"
-path="res://.godot/imported/cursed_toy_flat_screw_b_v2.png-89de169780acdafc66bf7d66fa0281fd.ctex"
+path="res://.godot/imported/cursed_toy_flat_screw_b_v2.png-5b05fd318cb343bb17577ae51e599587.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/Art/ui/decorations/fasteners/cursed_toy_flat_screw_b_v2.png"
-dest_files=["res://.godot/imported/cursed_toy_flat_screw_b_v2.png-89de169780acdafc66bf7d66fa0281fd.ctex"]
+source_file="res://Resources/Art/ui/decorations/fasteners/cursed_toy_flat_screw_b_v2.png"
+dest_files=["res://.godot/imported/cursed_toy_flat_screw_b_v2.png-5b05fd318cb343bb17577ae51e599587.ctex"]
 
 [params]
 

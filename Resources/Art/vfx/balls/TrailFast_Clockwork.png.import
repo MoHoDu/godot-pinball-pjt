@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://b5eagnia4u5j1"
-path="res://.godot/imported/TrailFast_Clockwork.png-283a96fa527cc06f5a28fbcc6f028b38.ctex"
+path="res://.godot/imported/TrailFast_Clockwork.png-604ef95abfd43e60a40af191b1d4701c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/Art/vfx/balls/TrailFast_Clockwork.png"
-dest_files=["res://.godot/imported/TrailFast_Clockwork.png-283a96fa527cc06f5a28fbcc6f028b38.ctex"]
+source_file="res://Resources/Art/vfx/balls/TrailFast_Clockwork.png"
+dest_files=["res://.godot/imported/TrailFast_Clockwork.png-604ef95abfd43e60a40af191b1d4701c.ctex"]
 
 [params]
 

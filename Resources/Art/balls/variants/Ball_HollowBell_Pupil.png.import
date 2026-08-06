@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dx8d21rvbg5l8"
-path="res://.godot/imported/Ball_HollowBell_Pupil.png-9b21c5e4a14b563fc43678f7ea879a5e.ctex"
+path="res://.godot/imported/Ball_HollowBell_Pupil.png-473fa50a26575bf719f95217c3404083.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/Art/balls/variants/Ball_HollowBell_Pupil.png"
-dest_files=["res://.godot/imported/Ball_HollowBell_Pupil.png-9b21c5e4a14b563fc43678f7ea879a5e.ctex"]
+source_file="res://Resources/Art/balls/variants/Ball_HollowBell_Pupil.png"
+dest_files=["res://.godot/imported/Ball_HollowBell_Pupil.png-473fa50a26575bf719f95217c3404083.ctex"]
 
 [params]
 

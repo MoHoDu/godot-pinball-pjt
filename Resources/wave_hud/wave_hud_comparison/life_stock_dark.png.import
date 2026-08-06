@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dxtcdnvcbdb4v"
-path="res://.godot/imported/life_stock_dark.png-f569bf02ec7539647b4a4fe9ba3dbbdb.ctex"
+path="res://.godot/imported/life_stock_dark.png-359376d73ee627ed55e5914db7d52447.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/wave_hud/wave_hud_comparison/life_stock_dark.png"
-dest_files=["res://.godot/imported/life_stock_dark.png-f569bf02ec7539647b4a4fe9ba3dbbdb.ctex"]
+source_file="res://Resources/wave_hud/wave_hud_comparison/life_stock_dark.png"
+dest_files=["res://.godot/imported/life_stock_dark.png-359376d73ee627ed55e5914db7d52447.ctex"]
 
 [params]
 

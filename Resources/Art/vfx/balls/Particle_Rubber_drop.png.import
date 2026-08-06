@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dotxwmsl7ss3l"
-path="res://.godot/imported/Particle_Rubber_drop.png-8a8e4a2ad49e58047b6daa2954d37354.ctex"
+path="res://.godot/imported/Particle_Rubber_drop.png-f8f628af5d8d15c7c23c409bbb7a6d6e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/Art/vfx/balls/Particle_Rubber_drop.png"
-dest_files=["res://.godot/imported/Particle_Rubber_drop.png-8a8e4a2ad49e58047b6daa2954d37354.ctex"]
+source_file="res://Resources/Art/vfx/balls/Particle_Rubber_drop.png"
+dest_files=["res://.godot/imported/Particle_Rubber_drop.png-f8f628af5d8d15c7c23c409bbb7a6d6e.ctex"]
 
 [params]
 

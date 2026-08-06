@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://j2v4vml3eeu"
-path="res://.godot/imported/Particle_Lead_flake_s.png-afe6521ae7c7a7bc2cc11f34d17cdd7b.ctex"
+path="res://.godot/imported/Particle_Lead_flake_s.png-40271870ac55ecf66c2f05245d0ce01e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/Art/vfx/balls/Particle_Lead_flake_s.png"
-dest_files=["res://.godot/imported/Particle_Lead_flake_s.png-afe6521ae7c7a7bc2cc11f34d17cdd7b.ctex"]
+source_file="res://Resources/Art/vfx/balls/Particle_Lead_flake_s.png"
+dest_files=["res://.godot/imported/Particle_Lead_flake_s.png-40271870ac55ecf66c2f05245d0ce01e.ctex"]
 
 [params]
 

@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c5qervta2ufid"
-path="res://.godot/imported/TrailFast_Gel.png-6a04f5b5f0706c15442544c846eeac57.ctex"
+path="res://.godot/imported/TrailFast_Gel.png-b975fb9d6116b17c2374e9de76cd8321.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/Art/vfx/balls/TrailFast_Gel.png"
-dest_files=["res://.godot/imported/TrailFast_Gel.png-6a04f5b5f0706c15442544c846eeac57.ctex"]
+source_file="res://Resources/Art/vfx/balls/TrailFast_Gel.png"
+dest_files=["res://.godot/imported/TrailFast_Gel.png-b975fb9d6116b17c2374e9de76cd8321.ctex"]
 
 [params]
 

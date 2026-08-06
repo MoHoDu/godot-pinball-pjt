@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://ble6bvjayd5k3"
-path="res://.godot/imported/octagonal_cartoon_wood_board_v1.png-c7533004b29b6809354ddb766a6f22f3.ctex"
+path="res://.godot/imported/octagonal_cartoon_wood_board_v1.png-2e1b1f1bc150259c1567cafd6fecdb11.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/Art/board/octagonal_cartoon_wood_board_v1.png"
-dest_files=["res://.godot/imported/octagonal_cartoon_wood_board_v1.png-c7533004b29b6809354ddb766a6f22f3.ctex"]
+source_file="res://Resources/Art/board/octagonal_cartoon_wood_board_v1.png"
+dest_files=["res://.godot/imported/octagonal_cartoon_wood_board_v1.png-2e1b1f1bc150259c1567cafd6fecdb11.ctex"]
 
 [params]
 

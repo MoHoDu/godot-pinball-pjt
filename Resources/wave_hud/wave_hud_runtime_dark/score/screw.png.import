@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://2llav2qa2q2d"
-path="res://.godot/imported/screw.png-7b02fa56fa9689883c08e366a317ee56.ctex"
+path="res://.godot/imported/screw.png-2167357af8e4a55140eecf2271fc8ee9.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/wave_hud/wave_hud_runtime_dark/score/screw.png"
-dest_files=["res://.godot/imported/screw.png-7b02fa56fa9689883c08e366a317ee56.ctex"]
+source_file="res://Resources/wave_hud/wave_hud_runtime_dark/score/screw.png"
+dest_files=["res://.godot/imported/screw.png-2167357af8e4a55140eecf2271fc8ee9.ctex"]
 
 [params]
 

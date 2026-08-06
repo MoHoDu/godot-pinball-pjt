@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dh3sskw67und8"
-path="res://.godot/imported/wall_shape_prototype_v1_preview.png-e8d76c5e394b57df9f818f24827ba192.ctex"
+path="res://.godot/imported/wall_shape_prototype_v1_preview.png-f9f6bd3fe3286d4448e9aef8aaad712a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/Art/walls/shape_prototype_v1/wall_shape_prototype_v1_preview.png"
-dest_files=["res://.godot/imported/wall_shape_prototype_v1_preview.png-e8d76c5e394b57df9f818f24827ba192.ctex"]
+source_file="res://Resources/Art/walls/shape_prototype_v1/wall_shape_prototype_v1_preview.png"
+dest_files=["res://.godot/imported/wall_shape_prototype_v1_preview.png-f9f6bd3fe3286d4448e9aef8aaad712a.ctex"]
 
 [params]
 

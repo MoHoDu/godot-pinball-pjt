@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bqah6ebuma3qu"
-path="res://.godot/imported/20_style_guide.png-363a25c69e1f18fa1ef8f2dc053c8088.ctex"
+path="res://.godot/imported/20_style_guide.png-bf32829b3496edb8e824f25752bede53.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/wave_hud/wave_hud_layers/20_style_guide.png"
-dest_files=["res://.godot/imported/20_style_guide.png-363a25c69e1f18fa1ef8f2dc053c8088.ctex"]
+source_file="res://Resources/wave_hud/wave_hud_layers/20_style_guide.png"
+dest_files=["res://.godot/imported/20_style_guide.png-bf32829b3496edb8e824f25752bede53.ctex"]
 
 [params]
 

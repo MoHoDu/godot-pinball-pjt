@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://oiqvp4gwlsts"
-path="res://.godot/imported/HitSpark_Rubber.png-82c652bc807ed47d8d120fa3bb694718.ctex"
+path="res://.godot/imported/HitSpark_Rubber.png-2d1280d7ce6a279e0e3049139d9d9e70.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/Art/vfx/balls/HitSpark_Rubber.png"
-dest_files=["res://.godot/imported/HitSpark_Rubber.png-82c652bc807ed47d8d120fa3bb694718.ctex"]
+source_file="res://Resources/Art/vfx/balls/HitSpark_Rubber.png"
+dest_files=["res://.godot/imported/HitSpark_Rubber.png-2d1280d7ce6a279e0e3049139d9d9e70.ctex"]
 
 [params]
 

@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://w8v20pjgrmky"
-path="res://.godot/imported/wall_board_application_cursed_toy_v1_preview.png-bc05f6d8a2b9cb7320749e31424dd2ec.ctex"
+path="res://.godot/imported/wall_board_application_cursed_toy_v1_preview.png-a3de3b1da203f51a00fbb33d5c90e220.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/Art/walls/cursed_toy_frame_v1/wall_board_application_cursed_toy_v1_preview.png"
-dest_files=["res://.godot/imported/wall_board_application_cursed_toy_v1_preview.png-bc05f6d8a2b9cb7320749e31424dd2ec.ctex"]
+source_file="res://Resources/Art/walls/cursed_toy_frame_v1/wall_board_application_cursed_toy_v1_preview.png"
+dest_files=["res://.godot/imported/wall_board_application_cursed_toy_v1_preview.png-a3de3b1da203f51a00fbb33d5c90e220.ctex"]
 
 [params]
 

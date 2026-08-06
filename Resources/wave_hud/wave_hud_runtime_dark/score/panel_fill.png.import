@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://2wa58200hrxs"
-path="res://.godot/imported/panel_fill.png-2a32633f9f7ce1b73a42fce00ec2851e.ctex"
+path="res://.godot/imported/panel_fill.png-0a3be07b4aae8578070e7f1a6d995695.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/wave_hud/wave_hud_runtime_dark/score/panel_fill.png"
-dest_files=["res://.godot/imported/panel_fill.png-2a32633f9f7ce1b73a42fce00ec2851e.ctex"]
+source_file="res://Resources/wave_hud/wave_hud_runtime_dark/score/panel_fill.png"
+dest_files=["res://.godot/imported/panel_fill.png-0a3be07b4aae8578070e7f1a6d995695.ctex"]
 
 [params]
 

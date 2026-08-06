@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://d32bdti7r7k1h"
-path="res://.godot/imported/12_hud_settings_button.png-bd20318cd5839edc8043b2c8f13d4032.ctex"
+path="res://.godot/imported/12_hud_settings_button.png-4a58e6022126e1ef7624e91644d01d60.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/wave_hud/wave_hud_layers/12_hud_settings_button.png"
-dest_files=["res://.godot/imported/12_hud_settings_button.png-bd20318cd5839edc8043b2c8f13d4032.ctex"]
+source_file="res://Resources/wave_hud/wave_hud_layers/12_hud_settings_button.png"
+dest_files=["res://.godot/imported/12_hud_settings_button.png-4a58e6022126e1ef7624e91644d01d60.ctex"]
 
 [params]
 

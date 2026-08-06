@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bccyg6r14d64n"
-path="res://.godot/imported/Ball_Clockwork_Body.png-4e1ad2380fe64d986f6dea9114b7ce8c.ctex"
+path="res://.godot/imported/Ball_Clockwork_Body.png-4c9122ad4d438706a57b9c177adfa686.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/Art/balls/variants/Ball_Clockwork_Body.png"
-dest_files=["res://.godot/imported/Ball_Clockwork_Body.png-4e1ad2380fe64d986f6dea9114b7ce8c.ctex"]
+source_file="res://Resources/Art/balls/variants/Ball_Clockwork_Body.png"
+dest_files=["res://.godot/imported/Ball_Clockwork_Body.png-4c9122ad4d438706a57b9c177adfa686.ctex"]
 
 [params]
 

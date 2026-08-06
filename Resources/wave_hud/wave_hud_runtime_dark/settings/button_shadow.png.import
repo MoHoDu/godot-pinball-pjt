@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://i07i7bdo2bgm"
-path="res://.godot/imported/button_shadow.png-83e06f0500933634d14b2f3ef11b5037.ctex"
+path="res://.godot/imported/button_shadow.png-60cba35083215111184c1d1fa3817564.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/wave_hud/wave_hud_runtime_dark/settings/button_shadow.png"
-dest_files=["res://.godot/imported/button_shadow.png-83e06f0500933634d14b2f3ef11b5037.ctex"]
+source_file="res://Resources/wave_hud/wave_hud_runtime_dark/settings/button_shadow.png"
+dest_files=["res://.godot/imported/button_shadow.png-60cba35083215111184c1d1fa3817564.ctex"]
 
 [params]
 

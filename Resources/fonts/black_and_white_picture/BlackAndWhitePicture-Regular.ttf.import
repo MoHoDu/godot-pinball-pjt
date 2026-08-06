@@ -3,12 +3,12 @@
 importer="font_data_dynamic"
 type="FontFile"
 uid="uid://c3y1j107yq6ww"
-path="res://.godot/imported/BlackAndWhitePicture-Regular.ttf-978739cce98743a7605e69cc8d1a7175.fontdata"
+path="res://.godot/imported/BlackAndWhitePicture-Regular.ttf-c11c2f5abbedbb733eb348b07044dbf4.fontdata"
 
 [deps]
 
-source_file="res://resources/fonts/black_and_white_picture/BlackAndWhitePicture-Regular.ttf"
-dest_files=["res://.godot/imported/BlackAndWhitePicture-Regular.ttf-978739cce98743a7605e69cc8d1a7175.fontdata"]
+source_file="res://Resources/fonts/black_and_white_picture/BlackAndWhitePicture-Regular.ttf"
+dest_files=["res://.godot/imported/BlackAndWhitePicture-Regular.ttf-c11c2f5abbedbb733eb348b07044dbf4.fontdata"]
 
 [params]
 

@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://djkmljtoe1kpv"
-path="res://.godot/imported/gauge_segment.png-1bacd5d7e3da88e5d4ec5c3ce57d4e51.ctex"
+path="res://.godot/imported/gauge_segment.png-508e776d5a18e0613db02f629780d1ee.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/wave_hud/wave_hud_runtime_dark/score/gauge_segment.png"
-dest_files=["res://.godot/imported/gauge_segment.png-1bacd5d7e3da88e5d4ec5c3ce57d4e51.ctex"]
+source_file="res://Resources/wave_hud/wave_hud_runtime_dark/score/gauge_segment.png"
+dest_files=["res://.godot/imported/gauge_segment.png-508e776d5a18e0613db02f629780d1ee.ctex"]
 
 [params]
 

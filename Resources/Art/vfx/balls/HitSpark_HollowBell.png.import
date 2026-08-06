@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cfgeuc07c3hm0"
-path="res://.godot/imported/HitSpark_HollowBell.png-8882b7676e2df44fa816c03b58642d8e.ctex"
+path="res://.godot/imported/HitSpark_HollowBell.png-46ff23caea128dde8ae36c78230bc7a1.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/Art/vfx/balls/HitSpark_HollowBell.png"
-dest_files=["res://.godot/imported/HitSpark_HollowBell.png-8882b7676e2df44fa816c03b58642d8e.ctex"]
+source_file="res://Resources/Art/vfx/balls/HitSpark_HollowBell.png"
+dest_files=["res://.godot/imported/HitSpark_HollowBell.png-46ff23caea128dde8ae36c78230bc7a1.ctex"]
 
 [params]
 

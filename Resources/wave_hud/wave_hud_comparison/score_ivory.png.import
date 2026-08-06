@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://oqc0wsjk5jka"
-path="res://.godot/imported/score_ivory.png-6baba2dfe46325a384d43c7b724eaf25.ctex"
+path="res://.godot/imported/score_ivory.png-5513c393491b0e49c8f682854ee7ba2f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/wave_hud/wave_hud_comparison/score_ivory.png"
-dest_files=["res://.godot/imported/score_ivory.png-6baba2dfe46325a384d43c7b724eaf25.ctex"]
+source_file="res://Resources/wave_hud/wave_hud_comparison/score_ivory.png"
+dest_files=["res://.godot/imported/score_ivory.png-5513c393491b0e49c8f682854ee7ba2f.ctex"]
 
 [params]
 

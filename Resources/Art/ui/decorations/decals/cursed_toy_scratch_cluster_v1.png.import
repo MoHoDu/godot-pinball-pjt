@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bve1l0v174svw"
-path="res://.godot/imported/cursed_toy_scratch_cluster_v1.png-c34e33b9931e087507bcd84ef6218be0.ctex"
+path="res://.godot/imported/cursed_toy_scratch_cluster_v1.png-3535e9469f261d767406545633c6722a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/Art/ui/decorations/decals/cursed_toy_scratch_cluster_v1.png"
-dest_files=["res://.godot/imported/cursed_toy_scratch_cluster_v1.png-c34e33b9931e087507bcd84ef6218be0.ctex"]
+source_file="res://Resources/Art/ui/decorations/decals/cursed_toy_scratch_cluster_v1.png"
+dest_files=["res://.godot/imported/cursed_toy_scratch_cluster_v1.png-3535e9469f261d767406545633c6722a.ctex"]
 
 [params]
 

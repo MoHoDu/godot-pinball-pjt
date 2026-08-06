@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://b86gn4v83f8dp"
-path="res://.godot/imported/Particle_HollowBell_prism.png-e9146baba2b523a1ecf636ad42a5fdf1.ctex"
+path="res://.godot/imported/Particle_HollowBell_prism.png-4f17ea6abfc62bcf0e291ebc27c8735b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/Art/vfx/balls/Particle_HollowBell_prism.png"
-dest_files=["res://.godot/imported/Particle_HollowBell_prism.png-e9146baba2b523a1ecf636ad42a5fdf1.ctex"]
+source_file="res://Resources/Art/vfx/balls/Particle_HollowBell_prism.png"
+dest_files=["res://.godot/imported/Particle_HollowBell_prism.png-4f17ea6abfc62bcf0e291ebc27c8735b.ctex"]
 
 [params]
 

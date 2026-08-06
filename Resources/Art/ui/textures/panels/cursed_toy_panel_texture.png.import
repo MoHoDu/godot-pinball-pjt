@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dbh7rcs1bjiks"
-path="res://.godot/imported/cursed_toy_panel_texture.png-7f91297dd19b2d1c0a3e1496b05084ee.ctex"
+path="res://.godot/imported/cursed_toy_panel_texture.png-884b2559589949305e846724f12986af.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/Art/ui/textures/panels/cursed_toy_panel_texture.png"
-dest_files=["res://.godot/imported/cursed_toy_panel_texture.png-7f91297dd19b2d1c0a3e1496b05084ee.ctex"]
+source_file="res://Resources/Art/ui/textures/panels/cursed_toy_panel_texture.png"
+dest_files=["res://.godot/imported/cursed_toy_panel_texture.png-884b2559589949305e846724f12986af.ctex"]
 
 [params]
 
