@@ -8,7 +8,6 @@ extends RefCounted
 
 enum TriggerKind {
 	PRIMARY,
-	SECONDARY_STITCH,
 	SECONDARY_ECHO,
 	SECONDARY_FINISH,
 }
