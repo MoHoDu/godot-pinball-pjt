@@ -28,6 +28,7 @@ var _bumper: Bumper = null
 var _sprite: Sprite2D = null
 var _base_scale := Vector2.ONE
 var _base_position := Vector2.ZERO
+var _base_texture: Texture2D = null
 
 var _press_elapsed := -1.0
 var _press_normal := Vector2.UP
@@ -83,6 +84,7 @@ func _resolve_sprite() -> void:
 	if _sprite != null:
 		_base_scale = _sprite.scale
 		_base_position = _sprite.position
+		_base_texture = _sprite.texture
 
 
 func get_target_sprite() -> Sprite2D:
@@ -216,11 +218,37 @@ func _process(delta: float) -> void:
 	_sprite.scale = _base_scale * maxf(scale_factor, 0.05)
 	_sprite.position = _base_position + offset
 
+	_apply_frame()
+
 	var alpha := rules.destroyed_alpha if _destroyed else 1.0
 	var color := _sprite.modulate
 	if not is_equal_approx(color.a, alpha):
 		color.a = alpha
 		_sprite.modulate = color
+
+
+## 눌림 구간 초반에만 타격 프레임을 보여 줍니다 (33쪽 형태 변화로 Bounce 전달).
+func _apply_frame() -> void:
+	if rules.hit_texture == null or _base_texture == null:
+		return
+	var want_hit := false
+	if _hold_pressed:
+		want_hit = true
+	elif _press_elapsed >= 0.0:
+		var total := rules.press_seconds + rules.release_seconds
+		want_hit = _press_elapsed <= total * rules.hit_frame_window
+	var wanted: Texture2D = rules.hit_texture if want_hit else _base_texture
+	if _sprite.texture != wanted:
+		_sprite.texture = wanted
+
+
+func is_showing_hit_frame() -> bool:
+	return (
+		rules != null
+		and rules.hit_texture != null
+		and _sprite != null
+		and _sprite.texture == rules.hit_texture
+	)
 
 
 ## 눌림 -> 복귀 곡선. 음수가 눌림, 양수가 오버슛입니다.

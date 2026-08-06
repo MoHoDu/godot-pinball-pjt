@@ -61,8 +61,31 @@ func _run() -> void:
 		await _check_case(
 			String(case[0]), String(case[1]), String(case[2]), String(case[3])
 		)
+	await _check_combined_lab()
 
 	_finish()
+
+
+## 범퍼 5종 + 수리 부품 3종을 한 씬에서 보는 통합 검수 씬.
+func _check_combined_lab() -> void:
+	const LAB := "res://scenes/bumper_system/vfx/all_parts_vfx_test.tscn"
+	var packed := load(LAB) as PackedScene
+	_expect(packed != null, "%s 를 열 수 있어야 한다" % LAB)
+	if packed == null:
+		return
+
+	var lab := packed.instantiate()
+	_root.add_child(lab)
+	await process_frame
+
+	var scenes: Array = lab.get(&"bumper_scenes")
+	_expect(scenes.size() == 8,
+		"통합 검수 씬에 8종이 등록돼야 한다 (실제=%d)" % scenes.size())
+	for entry in scenes:
+		_expect(entry != null, "등록된 씬에 빈 항목이 있으면 안 된다")
+
+	lab.queue_free()
+	await process_frame
 
 
 func _check_case(

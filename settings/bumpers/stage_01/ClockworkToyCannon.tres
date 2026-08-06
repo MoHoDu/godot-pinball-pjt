@@ -61,7 +61,7 @@ release_position = Vector2(-63.16942, -63.736553)
 [sub_resource type="Resource" id="Resource_osghq"]
 script = ExtResource("6_5dsfg")
 bumper_type = 3
-selection_duration = 0.8
+selection_duration = 2.0
 shot_launch_directions = Array[ExtResource("3_anchor")]([SubResource("Resource_iw5tq"), SubResource("Resource_um6a5"), SubResource("Resource_5dsfg"), SubResource("Resource_4dojf"), SubResource("Resource_5xc5j"), SubResource("Resource_0xb0r"), SubResource("Resource_ouvrv")])
 
 [resource]
@@ -75,7 +75,7 @@ bumper_type = 3
 theme_keywords = PackedStringArray()
 max_durability = 2
 respawn_delay = 6.0
-selection_duration = 0.8
+selection_duration = 2.0
 shot_launch_directions = Array[ExtResource("3_anchor")]([SubResource("Resource_iw5tq"), SubResource("Resource_um6a5"), SubResource("Resource_5dsfg"), SubResource("Resource_4dojf"), SubResource("Resource_5xc5j"), SubResource("Resource_0xb0r"), SubResource("Resource_ouvrv")])
 collision_diameter = 112.0
 visual_diameter = 128.0
