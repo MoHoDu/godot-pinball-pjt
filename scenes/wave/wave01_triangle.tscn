@@ -273,10 +273,16 @@ script = ExtResource("10_flipper_controller")
 [node name="LeftFlipper" parent="FlipperSelector/BottomController" instance=ExtResource("11_left_flipper")]
 position = Vector2(-286.99988, 98)
 flipper_length = 360.0
+rotation = 0.6981317
+initial_angle_degrees = 40.0
+maximum_angle_degrees = -80.0
 
 [node name="RightFlipper" parent="FlipperSelector/BottomController" instance=ExtResource("12_right_flipper")]
 position = Vector2(287, 98)
 flipper_length = 360.0
+rotation = -0.6981317
+initial_angle_degrees = -40.0
+maximum_angle_degrees = 80.0
 
 [node name="UpperLeftController" type="Node2D" parent="FlipperSelector"]
 position = Vector2(-714.39249, -99.28829)
@@ -286,10 +292,16 @@ script = ExtResource("10_flipper_controller")
 [node name="LeftFlipper" parent="FlipperSelector/UpperLeftController" instance=ExtResource("11_left_flipper")]
 position = Vector2(-287, 98)
 flipper_length = 360.0
+rotation = 0.6981317
+initial_angle_degrees = 40.0
+maximum_angle_degrees = -80.0
 
 [node name="RightFlipper" parent="FlipperSelector/UpperLeftController" instance=ExtResource("12_right_flipper")]
 position = Vector2(287, 98)
 flipper_length = 360.0
+rotation = -0.6981317
+initial_angle_degrees = -40.0
+maximum_angle_degrees = 80.0
 
 [node name="UpperRightController" type="Node2D" parent="FlipperSelector"]
 position = Vector2(714.39249, -99.28829)
@@ -299,10 +311,16 @@ script = ExtResource("10_flipper_controller")
 [node name="LeftFlipper" parent="FlipperSelector/UpperRightController" instance=ExtResource("11_left_flipper")]
 position = Vector2(-287, 98)
 flipper_length = 360.0
+rotation = 0.6981317
+initial_angle_degrees = 40.0
+maximum_angle_degrees = -80.0
 
 [node name="RightFlipper" parent="FlipperSelector/UpperRightController" instance=ExtResource("12_right_flipper")]
 position = Vector2(287, 98)
 flipper_length = 360.0
+rotation = -0.6981317
+initial_angle_degrees = -40.0
+maximum_angle_degrees = 80.0
 
 [node name="PinballLauncher" type="Node2D" parent="."]
 position = Vector2(0, 400)

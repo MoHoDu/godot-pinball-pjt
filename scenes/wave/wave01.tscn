@@ -372,10 +372,16 @@ script = ExtResource("13_7fouc")
 [node name="LeftFlipper" parent="FlipperSelector/BottomController" unique_id=1915782774 instance=ExtResource("14_jh417")]
 position = Vector2(-286.99988, 98)
 flipper_length = 360.0
+rotation = 0.6981317
+initial_angle_degrees = 40.0
+maximum_angle_degrees = -80.0
 
 [node name="RightFlipper" parent="FlipperSelector/BottomController" unique_id=2137998633 instance=ExtResource("15_kj6db")]
 position = Vector2(287, 98)
 flipper_length = 360.0
+rotation = -0.6981317
+initial_angle_degrees = -40.0
+maximum_angle_degrees = 80.0
 
 [node name="TopController" type="Node2D" parent="FlipperSelector" unique_id=52918414]
 position = Vector2(0, -582)
@@ -385,10 +391,16 @@ script = ExtResource("13_7fouc")
 [node name="LeftFlipper" parent="FlipperSelector/TopController" unique_id=1022724147 instance=ExtResource("14_jh417")]
 position = Vector2(-287, 0)
 flipper_length = 360.0
+rotation = 0.6981317
+initial_angle_degrees = 40.0
+maximum_angle_degrees = -80.0
 
 [node name="RightFlipper" parent="FlipperSelector/TopController" unique_id=560543059 instance=ExtResource("15_kj6db")]
 position = Vector2(285.99988, 0)
 flipper_length = 360.0
+rotation = -0.6981317
+initial_angle_degrees = -40.0
+maximum_angle_degrees = 80.0
 
 [node name="LeftController" type="Node2D" parent="FlipperSelector" unique_id=778351050]
 position = Vector2(-1046, 0)
@@ -398,10 +410,16 @@ script = ExtResource("13_7fouc")
 [node name="LeftFlipper" parent="FlipperSelector/LeftController" unique_id=1480574411 instance=ExtResource("14_jh417")]
 position = Vector2(-287, -24)
 flipper_length = 360.0
+rotation = 0.6981317
+initial_angle_degrees = 40.0
+maximum_angle_degrees = -80.0
 
 [node name="RightFlipper" parent="FlipperSelector/LeftController" unique_id=2091025610 instance=ExtResource("15_kj6db")]
 position = Vector2(287, -24)
 flipper_length = 360.0
+rotation = -0.6981317
+initial_angle_degrees = -40.0
+maximum_angle_degrees = 80.0
 
 [node name="RightController" type="Node2D" parent="FlipperSelector" unique_id=1365978519]
 position = Vector2(998, 0)
@@ -411,10 +429,16 @@ script = ExtResource("13_7fouc")
 [node name="LeftFlipper" parent="FlipperSelector/RightController" unique_id=1051254799 instance=ExtResource("14_jh417")]
 position = Vector2(-286, 24)
 flipper_length = 360.0
+rotation = 0.6981317
+initial_angle_degrees = 40.0
+maximum_angle_degrees = -80.0
 
 [node name="RightFlipper" parent="FlipperSelector/RightController" unique_id=991188738 instance=ExtResource("15_kj6db")]
 position = Vector2(287, 24)
 flipper_length = 360.0
+rotation = -0.6981317
+initial_angle_degrees = -40.0
+maximum_angle_degrees = 80.0
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1316343289]
 position = Vector2(0, 1)
