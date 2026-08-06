@@ -8,7 +8,7 @@ extends Resource
 	set(value):
 		display_name = value
 		emit_changed()
-## 플레이어가 이 발사 방향을 선택할 때 사용하는 Input Map 액션입니다.
+## 선택 사항입니다. W/A/D 순환 제어 외에 이 방향을 즉시 선택할 Input Map 액션입니다.
 @export var input_action: StringName = &"flipper_select_up":
 	set(value):
 		input_action = value

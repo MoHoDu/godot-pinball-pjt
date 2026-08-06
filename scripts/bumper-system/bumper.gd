@@ -30,8 +30,8 @@ const DEFAULT_PREDICTION_SECONDS := 0.3
 @export_category("Bumper Configuration")
 ## 보드와 점수 시스템에서 이 범퍼 인스턴스를 구분하는 고유 ID입니다.
 @export var bumper_id: StringName = &"bumper"
-## 범퍼의 크기, 충돌 반응, 점수, 내구도를 정의하는 공용 설정입니다.
-@export var settings: BumperSettings:
+## 저장과 보상 시스템이 참조하는 전체 범퍼 설정 묶음입니다. Inspector에서는 아래 세 설정으로 나누어 표시됩니다.
+@export_storage var settings: BumperSettings:
 	set(value):
 		if settings != null and settings.changed.is_connected(_on_settings_changed):
 			settings.changed.disconnect(_on_settings_changed)
@@ -39,6 +39,27 @@ const DEFAULT_PREDICTION_SECONDS := 0.3
 		if settings != null and not settings.changed.is_connected(_on_settings_changed):
 			settings.changed.connect(_on_settings_changed)
 		_refresh_configuration()
+## 범퍼의 외형 크기, 충돌 크기, 복구 여백과 표현을 편집합니다.
+@export var object_settings: BumperObjectSettings:
+	get:
+		return settings.object_settings if settings != null else null
+	set(value):
+		_ensure_settings_bundle()
+		settings.object_settings = value
+## 모든 범퍼 타입이 공유하는 ID, 보상, 점수, 내구도와 복구 값을 편집합니다.
+@export var common_bumper_settings: BumperCommonSettings:
+	get:
+		return settings.common_settings if settings != null else null
+	set(value):
+		_ensure_settings_bundle()
+		settings.common_settings = value
+## Normal, Bounce, Track, Shot 중 선택한 타입의 전용 동작 값을 편집합니다.
+@export var type_settings: BumperTypeSettings:
+	get:
+		return settings.type_settings if settings != null else null
+	set(value):
+		_ensure_settings_bundle()
+		settings.type_settings = value
 ## 이 배치 인스턴스에서만 공용 설정을 덮어쓸 값입니다. 음수는 공용값 사용을 뜻합니다.
 @export var instance_overrides: BumperInstanceOverrides:
 	set(value):
@@ -125,6 +146,13 @@ func _ready() -> void:
 	_set_collision_enabled(true)
 	_set_hit_detection_enabled(true)
 	durability_changed.emit(current_durability, get_max_durability())
+
+
+func _validate_property(property: Dictionary) -> void:
+	if property.name == &"settings":
+		property.usage = PROPERTY_USAGE_STORAGE
+	elif property.name in [&"object_settings", &"common_bumper_settings", &"type_settings"]:
+		property.usage = PROPERTY_USAGE_EDITOR
 
 
 func _draw() -> void:
@@ -557,7 +585,12 @@ func _connect_configuration_resources() -> void:
 		settings.changed.connect(_on_settings_changed)
 	if instance_overrides != null \
 			and not instance_overrides.changed.is_connected(_on_overrides_changed):
-		instance_overrides.changed.connect(_on_overrides_changed)
+			instance_overrides.changed.connect(_on_overrides_changed)
+
+
+func _ensure_settings_bundle() -> void:
+	if settings == null:
+		settings = BumperSettings.new()
 
 
 func _on_settings_changed() -> void:

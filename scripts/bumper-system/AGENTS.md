@@ -29,7 +29,10 @@
 | 구성 요소 | 책임 |
 |---|---|
 | `bumper.gd` | 접촉 중복 제거, 점수 신호, 내구도, 상태 전이, 안전 복구, 최종 반응 적용 |
-| `bumper_settings.gd` | 범퍼 정체성, 수리 부품 자격, 밸런스, 크기, 표현 리소스 |
+| `bumper_settings.gd` | 세 설정 리소스를 묶어 보상·저장 시스템에 제공하는 호환 계약 |
+| `bumper_object_settings.gd` | 크기, 충돌, 안전 여백, 배치 제한, 실제 그래픽 Texture와 표현 리소스 |
+| `bumper_common_settings.gd` | 범퍼 정체성, 수리 부품 자격, 점수, 내구도, 복구 |
+| `bumper_type_settings.gd` | Normal, Bounce, Track, Shot 타입별 동작 설정 |
 | `bumper_instance_overrides.gd` | 보드에 배치된 특정 인스턴스의 선택적 밸런스 덮어쓰기 |
 | `bumper_response_strategy.gd` | 충돌 반응 전략의 추상 계약 |
 | `normal_response_strategy.gd` | 기본 물리 반사 방향을 유지하면서 속력 배율 적용 |
@@ -46,24 +49,39 @@
 공용 설정은 `settings/bumpers/`의 `BumperSettings` `.tres`에서 관리합니다.
 
 ```text
-BumperSettings.tres
-├─ 오브젝트 설정
+범퍼 루트 Inspector
+├─ Object Settings → BumperObjectSettings
 │  ├─ 외형·충돌 크기
 │  ├─ 안전 복구 여백·배치 제한
-│  └─ 표현 리소스
-├─ 공용 범퍼 설정
+│  └─ 실제 그래픽 Texture·맞춤 비율·표현 리소스
+├─ Common Bumper Settings → BumperCommonSettings
 │  ├─ ID·이름·수리 부품 자격
 │  ├─ 기획 상태
 │  └─ 점수·내구도·복구
-└─ 타입별 범퍼 설정
+└─ Type Settings → BumperTypeSettings
    ├─ Normal / Bounce 반응 수치
    ├─ Track 목표 위치
    └─ Shot 선택 시간·발사 속력·발사 방향 배열
 ```
 
+`BumperSettings`는 위 세 리소스를 묶어 보상·저장 시스템에 제공하지만 범퍼 노드
+Inspector에는 직접 표시하지 않습니다. 편집자는 반드시 범퍼 루트의 세 설정 슬롯을
+각각 펼쳐 수정합니다.
+
 Shot 발사 방향은 씬 자식 노드가 아니라 `BumperSettings.shot_launch_directions`의
 `ShotLaunchAnchor` 리소스 배열로 관리합니다. Inspector 배열에서 항목을 추가·삭제하고,
-각 항목의 표시 이름, 입력 액션, 안전 기본 여부, 발사 위치를 수정하세요.
+각 항목의 표시 이름, 선택적 직접 입력 액션, 안전 기본 여부, 발사 위치를 수정하세요.
+런타임에서는 `A` / `D`로 배열의 모든 방향을 순환하므로 방향 개수에 제한이 없습니다.
+
+실제 범퍼 이미지는 `BumperObjectSettings.graphic_texture`에 지정합니다. 이미지는
+`visual_diameter × graphic_size_ratio` 안에 원본 비율을 유지해 직접 그리며, 범퍼 루트의
+`scale`과 물리 충돌 Shape는 변경하지 않습니다. Texture가 비어 있을 때만 기존 더미
+도형을 표시합니다.
+
+Shot 방향을 추가할 때는 `Type Settings`의 `발사 방향 추가` 버튼을 사용합니다. 별도
+리소스 파일을 만들 필요가 없습니다. Shot 범퍼 루트가 선택된 상태에서 2D 화면의 원형
+핸들을 드래그하면 `release_position`과 발사 각도가 함께 갱신됩니다. 초록색 핸들은 안전
+기본 방향이고 하늘색 핸들은 일반 방향입니다.
 
 특정 씬 인스턴스만 조정할 때는 `BumperInstanceOverrides`를 사용합니다. 음수 값은 공용 `BumperSettings` 값을 사용한다는 뜻입니다.
 
@@ -111,7 +129,8 @@ for settings: BumperSettings in stage_reward_table:
 | `Left` / `Right` 또는 `A` / `D` | Inspector 목록의 범퍼 선택 |
 | `Space` / `Enter` | 선택한 범퍼 위에서 공 낙하 시작 |
 | `R` | 같은 범퍼를 새 범퍼·새 공 인스턴스로 즉시 재시작 |
-| 캐논 제어 중 `W` / `A` / `D` | 발사 방향 선택 |
+| 캐논 제어 중 `A` / `D` | 설정된 모든 발사 방향을 이전 / 다음 순서로 선택 |
+| 캐논 제어 중 `W` | 안전 기본 발사 방향 선택 |
 | 캐논 제어 중 `Space` | 선택 방향으로 발사 |
 
 HUD의 `REPAIR PART` 항목에서 현재 범퍼의 보상·보유·배치 자격을 확인할 수 있습니다.
