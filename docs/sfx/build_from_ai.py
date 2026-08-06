@@ -48,7 +48,7 @@ TARGETS = {
                        "21ms 중심 3268Hz — 가장 짧고 깔끔한 딸깍"),
     # ★ AI 소재 + 절차적 기계층. flipper_activate() 참고
     "flipper_activate": ("flipper", "flippers/SFX_Flipper_Activate",
-                         -9.0, 0.090, 0.170, None,
+                         -9.0, 0.150, 0.235, None,
                          "★ AI 공기감 + 태엽 걸림쇠 합성 — '쩅' 을 줄이고 '끼리릭' 을 넣음"),
     "flipper_hit": ("flipper", "flippers/SFX_Flipper_Hit",
                     -4.0, 0.095, 0.150, "flipper_hit_04.wav",
@@ -158,27 +158,47 @@ def tilt_highs(x, cutoff=4200.0, amount=0.80):
     return low + (x - low) * (1.0 - amount)
 
 
-def ratchet(n, teeth=16, seed=5, accel=1.9):
-    """태엽 걸림쇠가 훑고 지나가는 '끼리릭'.
+def escapement(n, teeth=8, seed=5, slow=1.35):
+    """태엽 걸림쇠가 톱니를 하나씩 넘기는 소리 — '드르륵'.
 
-    톱니 하나하나는 아주 짧은 딱 소리다. 그것이 빠르게 이어지면 귀에는
-    긁히는 소리 하나로 들린다. **간격이 점점 좁아지는 것**이 핵심이다 —
-    일정하면 기계가 아니라 박수 소리가 된다. 스프링이 풀리며 빨라진다.
+    ★ 1차 시도의 실패: 톱니 16개를 180ms 안에 **가속하며** 넣었다.
+      간격이 평균 11ms(약 90Hz)라 개별 톱니가 안 들리고 하나의 버즈로
+      뭉쳤다. 형락님 판정 "굉장히 별로".
+
+      톱니가 **돌아가는** 것으로 들리려면 하나하나가 분리돼 들려야 한다.
+      그래서 개수를 절반으로 줄이고 간격을 20~28ms(35~50Hz)로 벌린다.
+      그리고 가속이 아니라 **감속**이다 — 태엽은 풀릴수록 느려진다.
+
+    ★ 두 번째 실패 요인: 톱니를 대역 노이즈로만 만들었다.
+      그건 금속이 아니라 부스럭거림이다. 톱니 하나는 놋쇠가 튕기는
+      **짧은 음정**이다. 그래서 모달 링을 쓰고 노이즈는 어택에만 얹는다.
     """
     y = np.zeros(n)
 
-    gaps = np.linspace(1.0, 1.0 / accel, teeth)
-    at = np.cumsum(gaps)
-    at = at / at[-1]
+    # 간격이 점점 벌어진다. 태엽이 풀리며 느려진다
+    gaps = np.linspace(1.0, slow, teeth)
+    at = np.concatenate([[0.0], np.cumsum(gaps)[:-1]])
+    at = at / (at[-1] or 1.0)
 
     for i, p in enumerate(at):
-        start = int(p * n * 0.82)
-        if start >= n - 8:
+        start = int(p * n * 0.88)
+        if start >= n - 16:
             break
 
-        click = band_noise(n - start, 780.0, 2900.0, 0.0018, seed=seed + i)
-        # 뒤로 갈수록 세진다. 스프링이 풀리며 힘이 실린다
-        y[start:] += click * (0.45 + 0.55 * i / max(teeth - 1, 1))
+        rest = n - start
+        # 톱니마다 음정이 조금씩 내려간다. 기계는 완전히 같은 소리를 두 번 내지 않는다
+        drift = 1.0 - 0.045 * i
+        tooth = modal(rest, [
+            (2680.0 * drift, 1.00, 0.0045),
+            (4130.0 * drift, 0.46, 0.0032),
+            (6240.0 * drift, 0.18, 0.0022),
+        ], seed=seed + i * 7)
+
+        # 놋쇠가 걸리는 순간의 긁힘. 어택에만 짧게
+        scrape = band_noise(rest, 1900.0, 5200.0, 0.0011, seed=seed + 40 + i) * 0.34
+
+        # 뒤로 갈수록 약해진다. 스프링 장력이 빠진다
+        y[start:] += (tooth + scrape) * (1.0 - 0.42 * i / max(teeth - 1, 1))
 
     return y / (np.max(np.abs(y)) or 1.0)
 
@@ -202,24 +222,32 @@ def flipper_activate():
     합성만으로는 그 불규칙함이 안 나온다.
     """
     src = find_source("flipper", "flipper_activate_06.wav")
-    n = secs(0.22)
+    n = secs(0.26)
 
     air = np.zeros(n)
     if src is not None:
         raw = tilt_highs(load_mono(src), amount=0.62)
         m = min(len(raw), n)
-        air[:m] = raw[:m] * 0.34      # 공기감만 남기고 물러선다
+        air[:m] = raw[:m] * 0.26      # 공기감만 남기고 물러선다
 
     # 기계 몸통. 여기가 통째로 비어 있었다
     # ★ 몸통은 받쳐주기만 한다. 세우면 '끼리릭' 이 아니라 '툭' 이 된다.
     #   1차 시도에서 몸통을 크게 잡았더니 피크가 351Hz 로 내려앉아 둔탁했다.
     body = modal(n, [
-        (352.0, 1.00, 0.030),
-        (615.0, 0.58, 0.024),
-        (1140.0, 0.34, 0.017),
-    ], seed=3) * 0.26
+        (352.0, 1.00, 0.058),
+        (615.0, 0.62, 0.044),
+        (1140.0, 0.38, 0.030),
+    ], seed=3) * 0.55
 
-    x = air + body + ratchet(n) * 1.00
+    # 축이 도는 마찰. 톱니 사이를 메워 '기계 안에서 나는 소리' 로 만든다.
+    # 이게 없으면 톱니만 공중에 떠 있어 플라스틱처럼 들린다.
+    friction = band_noise(n, 240.0, 950.0, 0.075, seed=17) * 0.045
+
+    # ★ 균형은 계산이 아니라 측정으로 잡았다. 저역 목표는 30% 안팎이다.
+    #   몸통 0.52(tau 0.030) -> 저역 4.7%   : 톱니만 떠 있어 플라스틱
+    #   몸통 1.35 + 마찰 0.42 -> 저역 83.6% : 톱니가 묻혀 웅웅거림
+    #   몸통 0.55 + 마찰 0.045 -> 저역 33%  : 여기
+    x = air + body + friction + escapement(n) * 1.00
     return np.tanh(x * 1.2) / np.tanh(1.2)
 
 
