@@ -57,7 +57,7 @@ SPECS = {
     "Hit": (-4.0, 0.095, 0.150),       # MUST. 벽보다 크고 길다
     "StrongHit": (-2.5, 0.120, 0.185),  # 탄력 있는 쫙/팡. 금속 쾅이 아니다
     "Return": (-16.0, 0.080, 0.130),   # 작은 태엽 떨림. 있는 줄 모를 만큼 작게
-    "Parry": (-1.0, 0.170, 0.300),     # 우선순위 1위(p.42). 전체에서 가장 크고 길다
+    "Parry": (-1.0, 0.130, 0.240),     # 우선순위 1위(p.42). 전체에서 가장 크고 길다
 }
 
 # 패링 2번째 레이어에 쓰는 밝은 유리 팅.
@@ -65,6 +65,12 @@ SPECS = {
 #   1번(탁)과 3번(원형 파동)은 모든 공이 공유한다.
 #   이 파일이 만드는 것은 그 공용 3레이어의 기준본이다.
 PARRY_GLASS_MODES = GLASS_MODES_PARRY
+
+# ★ 짧은 유리 팅.
+#   GLASS_MODES_PARRY 는 tau 가 0.040~0.072 로 폭(0.030)의 두 배가 넘는다.
+#   게인을 0.18 까지 낮춰도 시간이 지나며 에너지를 다 먹어, 주음이 폭(1184Hz)이
+#   아니라 유리(5420Hz)로 잡혔다(실측). 감쇠를 줄여야 주역이 바뀐다.
+SHORT_GLASS_MODES = [(f, a, tau * 0.45) for f, a, tau in GLASS_MODES_PARRY]
 
 # ★ 2026-08-06 형락님 방향: "플리퍼가 공을 치는 소리는 **유리로 된 탁구공**을 치는 느낌"
 #
@@ -87,6 +93,23 @@ PANG_MODES = [
     (2356.0, 0.72, 0.0124),
     (3610.0, 0.44, 0.0091),
     (5480.0, 0.24, 0.0065),
+]
+
+# ★ 2026-08-06 형락님 방향: "패링은 **리듬천국 탁구** 같은 소리로"
+#
+#   기획서 p.20 이 플리퍼 사운드 레퍼런스로 "리듬 세상 — 돌아온 리듬 랠리"를
+#   직접 지목한다. 리듬 랠리가 그 탁구 게임이다. 우연이 아니라 원래 방향이었다.
+#
+#   그 소리의 정체는 **음정이 있는 깨끗한 폭** 이다. 잡음이 아니라 거의 악기다.
+#   그래서 다른 충돌음과 정반대로 만든다.
+#     - 다른 충돌음: **비조화** 배열 (음정으로 안 읽히게)
+#     - 이 소리:     **조화** 배열 (음정이 하나로 또렷하게 읽히게)
+#   배음을 정수배로 두는 것이 "장난감스럽고 깨끗한" 인상의 정체다.
+PONG_MODES = [
+    (1184.0, 1.00, 0.0300),
+    (2368.0, 0.42, 0.0140),
+    (3552.0, 0.18, 0.0092),
+    (4736.0, 0.08, 0.0062),
 ]
 
 # 단추·나무 블록. 아주 짧고 건조하다.
@@ -209,32 +232,45 @@ def flipper_hit(strong=False):
     """
     일반 타격 = 단단한 톡/탁 + 짧은 휙 (p.20, p.41)
     강한 타격 = 금속 쾅이 아니라 탄력 있는 쫙/팡 (p.20)
+
+    ★ 2026-08-06 형락님 지시: **기존 패링음을 일반 타격음 자리로 옮긴다.**
+      그 소리(두꺼운 탁 + 밝은 유리 팅)가 타격에 더 어울린다는 판단이다.
+
+      그래서 패링의 레이어 구성을 그대로 가져오되 **원형 파동은 빼고** 온다.
+      원형 파동은 기획서가 "정확한 패링의 고유 언어"로 못 박은 것이라(p.38)
+      일반 타격이 가져가면 패링과 구분이 사라진다. 언어는 패링에 남긴다.
+
+      길이·음량은 Hit 규격(-4dBFS / 0.095~0.150초)을 그대로 쓴다.
+      음색만 옮기는 것이지 서열을 옮기는 게 아니다.
     """
     n = secs(0.220)
-    modes = PANG_MODES if strong else TAK_MODES
     name = "StrongHit" if strong else "Hit"
 
     # 어택을 여기서 직접 만든다. 벽의 공통 어택을 쓰지 않는다 (p.61)
-    attack = band_noise(n, 700, 3800, 0.0034, seed=8500 + int(strong))
-    body = modal_glide(n, modes, -120.0 if strong else -90.0, 0.014,
+    # 패링에서 쓰던 "두꺼운 탁" 구성이다 — 얇은 어택 + 낮은 대역 두께.
+    attack = band_noise(n, 700, 3800, 0.0040, seed=8500 + int(strong))
+    thick = band_noise(n, 420, 2100, 0.0062, seed=8510 + int(strong)) * 0.52
+
+    body = modal_glide(n, PANG_MODES if strong else TAK_MODES,
+                       -120.0 if strong else -80.0, 0.014,
                        seed=8600 + int(strong))
     whoosh = swept_noise(n, 520.0, 2900.0, 0.038, 0.020, seed=8700 + int(strong))
     tex = grain(n, seed=20 + int(strong))
 
-    # ★ 공은 유리눈이다. 벽에 부딪히든 플리퍼에 맞든 유리 성분은 항상 있다.
-    #   벽 충돌음과 **같은 모드**를 쓴다 — 공이 하나뿐이니 공 소리도 하나여야 한다.
-    #   이게 없으면 플리퍼 타격이 "나무 라켓 소리"가 되고 공의 정체성이 사라진다.
-    ball_glass = modal_glide(n, WALL_GLASS_MODES, -40.0, 0.012,
-                             seed=8750 + int(strong))
-    ball_glass = ball_glass / np.max(np.abs(ball_glass))
+    # ★ 공은 구슬이다. 벽에 부딪히든 플리퍼에 맞든 유리 성분은 항상 있다.
+    #   패링에서 쓰던 **밝은 유리 팅**(GLASS_MODES_PARRY)을 여기로 가져온다.
+    #   벽 충돌의 짧은 유리보다 길고 밝아서 "플리퍼가 제대로 받았다"가 읽힌다.
+    bright_glass = modal_glide(n, SHORT_GLASS_MODES, -30.0, 0.020,
+                               seed=8750 + int(strong))
+    bright_glass = bright_glass / np.max(np.abs(bright_glass))
 
     return assemble(name, {
-        "attack": (attack, 0.92 if strong else 0.86),
-        "body": (body, 0.40 if strong else 0.48),
-        "ball_glass": (ball_glass, 1.00 if strong else 0.92),
+        "tak": (attack + thick, 1.00),
+        "body": (body, 0.62 if strong else 0.76),
+        "bright_glass": (bright_glass, 0.46 if strong else 0.42),
         "whoosh": (whoosh, 0.52 if strong else 0.42),
         "grain": (tex, 0.13),
-    }, tail_gain=0.17 if strong else 0.13, drive=2.4 if strong else 2.1)
+    }, tail_gain=0.17 if strong else 0.14, drive=2.4 if strong else 2.2)
 
 
 def flipper_parry():
@@ -250,27 +286,44 @@ def flipper_parry():
       → 타격과 같은 탁을 쓰되 **더 두껍고 선명하게** 하고, ②③을 얹어 갈라놓는다.
 
     ★ 원형 파동은 VFX ③ 과 같은 언어다. 지속 0.12~0.20초 파동에 맞춰 길이를 잡았다.
+
+    ★ 2026-08-06 형락님 지시: **리듬천국 탁구 같은 소리로.**
+      기획서 p.20 이 플리퍼 사운드 레퍼런스로 "리듬 세상 — 돌아온 리듬 랠리"를
+      직접 지목한다. 리듬 랠리가 그 탁구 게임이라 원래 방향과 같다.
+
+      그 소리의 정체는 **음정이 있는 깨끗한 폭** 이다. 잡음이 아니라 거의 악기다.
+      그래서 이 소리만 다른 충돌음과 정반대로 만든다.
+
+        다른 충돌음: 비조화 모드 + 노이즈 + 결 + 새추레이션 (재질을 들려준다)
+        이 소리:     조화 모드 중심 + 노이즈 최소 + 새추레이션 낮게 (음정을 들려준다)
+
+      ①탁은 **아주 짧은 점화**로만 남긴다. 두꺼운 탁은 일반 타격으로 넘어갔다.
+      ②는 폭의 음정을 받쳐주는 밝은 팅으로 얇게.
+      ③원형 파동은 패링의 고유 언어라 유지하되, 폭이 묻히지 않게 낮춘다.
     """
     n = secs(0.360)
 
-    # ① 명확한 탁 — 타격의 어택을 더 두껍게. 벽의 공통 어택은 여전히 쓰지 않는다
-    tak = band_noise(n, 700, 3800, 0.0040, seed=8900)
-    thick = band_noise(n, 420, 2100, 0.0062, seed=8910) * 0.52
-    body = modal_glide(n, TAK_MODES, -80.0, 0.014, seed=8920)
+    # ① 점화 — 깨끗한 폭의 머리. 두께를 주지 않는다. 두꺼우면 타격음이 된다
+    click = band_noise(n, 1800, 7200, 0.0016, seed=8900)
 
-    # ② 밝은 유리 팅 (공별 악센트 자리)
-    glass = modal_glide(n, PARRY_GLASS_MODES, -30.0, 0.020, seed=8930)
+    # ★ 리듬 랠리의 폭 — 조화 배열이라 음정이 하나로 또렷하게 읽힌다.
+    #   글라이드를 거의 주지 않는다. 음정이 흔들리면 "악기"가 아니라 "충돌"이 된다
+    pong = modal_glide(n, PONG_MODES, -18.0, 0.010, seed=8905, beat_cents=2.5)
+    pong = pong / np.max(np.abs(pong))
+
+    # ② 폭을 받치는 밝은 팅 (공별 악센트 자리). 얇게 얹는다
+    glass = modal_glide(n, SHORT_GLASS_MODES, -30.0, 0.020, seed=8930)
     glass = glass / np.max(np.abs(glass))
 
-    # ③ 원형 파동 웅/팡
+    # ③ 원형 파동 — 패링의 고유 언어. 폭을 가리지 않을 만큼만
     ring = ring_wave()
 
     return assemble("Parry", {
-        "tak": (tak + thick, 1.00),
-        "body": (body, 0.58),
-        "glass": (glass, 0.72),
-        "ring": (ring, 0.30),
-    }, tail_gain=0.16, drive=2.2)
+        "click": (click, 0.44),
+        "pong": (pong, 1.00),
+        "glass": (glass, 0.12),
+        "ring": (ring, 0.12),
+    }, tail_gain=0.10, drive=1.5)
 
 
 def flipper_return():
