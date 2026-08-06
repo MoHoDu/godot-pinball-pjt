@@ -107,20 +107,39 @@ func _check_case(
 			"%s 규칙이 %s 여야 한다 (실제=%s)" % [vfx_path, rules_class, rules_path])
 
 	# 아트 스프라이트. 범퍼에 텍스처 슬롯이 없어 상속 씬에서 Sprite2D 로 얹는다.
-	var art := bumper.get_node_or_null(^"_ArtSprite") as Sprite2D
-	_expect(art != null, "%s 에 _ArtSprite 가 있어야 한다" % vfx_path)
-	if art != null:
-		_expect(art.texture != null, "아트 스프라이트에 텍스처가 물려 있어야 한다")
-		if art.texture != null:
-			# 표시 지름 = 텍스처 긴 변 * scale. 설정값과 어긋나면 충돌 크기와 안 맞는다.
-			var long_side := float(maxi(
-				art.texture.get_width(), art.texture.get_height()
-			))
-			var drawn := long_side * art.scale.x
-			var expected: float = bumper.settings.visual_diameter
-			_expect(absf(drawn - expected) <= 1.0,
-				"%s 표시 지름이 설정과 맞아야 한다 (기대=%s, 실제=%s)"
-					% [vfx_path, expected, drawn])
+	# 북만 북막/북틀 2레이어다 (기획서 34쪽). 나머지는 한 장이다.
+	var sprites: Array[Sprite2D] = []
+	for sprite_name in [^"_ArtSprite", ^"_ArtSpriteHead", ^"_ArtSpriteFrame"]:
+		var found := bumper.get_node_or_null(sprite_name) as Sprite2D
+		if found != null:
+			sprites.append(found)
+	_expect(not sprites.is_empty(), "%s 에 아트 스프라이트가 있어야 한다" % vfx_path)
+
+	var expected: float = bumper.settings.visual_diameter
+	for sprite in sprites:
+		_expect(sprite.texture != null, "아트 스프라이트에 텍스처가 물려 있어야 한다")
+		if sprite.texture == null:
+			continue
+		# 표시 지름 = 텍스처 긴 변 * scale. 설정값과 어긋나면 충돌 크기와 안 맞는다.
+		var long_side := float(maxi(
+			sprite.texture.get_width(), sprite.texture.get_height()
+		))
+		_expect(absf(long_side * sprite.scale.x - expected) <= 1.0,
+			"%s / %s 표시 지름이 설정과 맞아야 한다 (기대=%s, 실제=%s)"
+				% [vfx_path, sprite.name, expected, long_side * sprite.scale.x])
+
+	# 2레이어면 북막이 북틀 아래에 그려져야 이음매가 안 드러난다.
+	var head := bumper.get_node_or_null(^"_ArtSpriteHead") as Sprite2D
+	var frame := bumper.get_node_or_null(^"_ArtSpriteFrame") as Sprite2D
+	if head != null or frame != null:
+		_expect(head != null and frame != null,
+			"%s 는 북막과 북틀이 둘 다 있어야 한다" % vfx_path)
+		if head != null and frame != null:
+			_expect(frame.z_index > head.z_index,
+				"북틀이 북막보다 위에 그려져야 한다 (북막 z=%d, 북틀 z=%d)"
+					% [head.z_index, frame.z_index])
+			_expect(head.scale.is_equal_approx(frame.scale),
+				"두 레이어는 같은 캔버스 정렬이라 scale 이 같아야 한다")
 
 	# 프로시저럴 도형은 꺼야 아트와 겹치지 않는다.
 	var visual := bumper.get_node_or_null(^"Visual") as Node2D
