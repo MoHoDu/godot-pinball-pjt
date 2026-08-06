@@ -1,0 +1,54 @@
+[gd_scene load_steps=9 format=3]
+
+; 공 사운드 테스트 씬.
+;
+; test_flipper_board.tscn 을 **상속**했습니다. 원본은 한 줄도 고치지 않았습니다.
+; 그 씬을 고른 이유:
+;   - 실제 보드 지오메트리(팔각형 벽 4개 + 플리퍼 4그룹 8개)가 그대로 있다
+;   - 벽이 group "combo_walls", 플리퍼가 "combo_flippers" 에 이미 등록돼 있다
+;   - R 리셋 / Space 발사 / 방향키 플리퍼 선택이 이미 된다
+;
+; ★ 벽·플리퍼 **위치는 건드리지 않았습니다.**
+;   main 41cb20c 에서 보드 리사이즈와 함께 플리퍼 충돌 지오메트리를 맞춰놨는데,
+;   소리 테스트 편의로 벽을 옮기면 그 정렬이 깨집니다. 소리를 들으려다
+;   물리가 달라지면 검수 대상이 바뀌어 버립니다.
+;   대신 **무엇이 왜 울렸는지 보여주는 HUD** 를 얹어 테스트가 되게 했습니다.
+;
+; 추가한 것 4개:
+;   ComboSystem           브릿지가 요구하는 의존성
+;   ComboCollisionBridge  벽·플리퍼 접촉을 정제해 emit (패시브 접촉 필터링 포함)
+;   SfxDirector           목소리 풀
+;   _WaveSfxBinder        시그널 → SFX 배선
+;   _SfxDebugHud          속도·구간·재생/드롭 표시
+
+[ext_resource type="PackedScene" uid="uid://bcwvt3i4iw5ej" path="res://scenes/test_flipper/test_flipper_board.tscn" id="1_board"]
+[ext_resource type="Script" path="res://scripts/combo_system/combo_system.gd" id="2_combo"]
+[ext_resource type="Script" path="res://scripts/combo_system/combo_collision_bridge.gd" id="3_bridge"]
+[ext_resource type="Script" path="res://scripts/sfx_system/sfx_director.gd" id="4_director"]
+[ext_resource type="Script" path="res://scripts/sfx_system/wave_sfx_binder.gd" id="5_binder"]
+[ext_resource type="Resource" path="res://settings/sfx/WallSfxRules.tres" id="6_wall"]
+[ext_resource type="Resource" path="res://settings/sfx/FlipperSfxRules.tres" id="7_flipper"]
+[ext_resource type="Script" path="res://tests/sfx_system/sfx_debug_hud.gd" id="8_hud"]
+
+[node name="TestFlipperBoard" instance=ExtResource("1_board")]
+
+[node name="ComboSystem" type="Node" parent="."]
+script = ExtResource("2_combo")
+
+[node name="ComboCollisionBridge" type="Node" parent="." node_paths=PackedStringArray("configured_combo_system", "configured_ball")]
+script = ExtResource("3_bridge")
+configured_combo_system = NodePath("../ComboSystem")
+configured_ball = NodePath("../PinballBall")
+
+[node name="SfxDirector" type="Node" parent="."]
+script = ExtResource("4_director")
+
+[node name="_WaveSfxBinder" type="Node" parent="."]
+script = ExtResource("5_binder")
+wall_rules = ExtResource("6_wall")
+flipper_rules = ExtResource("7_flipper")
+
+[node name="_SfxDebugHud" type="CanvasLayer" parent="."]
+script = ExtResource("8_hud")
+director_path = NodePath("../SfxDirector")
+wall_rules = ExtResource("6_wall")
