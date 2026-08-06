@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="RepairPartSceneMap" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/reward_shop/repair_part_scene_map.gd" id="1_map"]
+[ext_resource type="PackedScene" path="res://scenes/repair_parts/parts/starlight_brooch_part.tscn" id="2_brooch"]
+[ext_resource type="PackedScene" path="res://scenes/repair_parts/parts/golden_gears_part.tscn" id="3_gears"]
+[ext_resource type="PackedScene" path="res://scenes/repair_parts/parts/crescent_needle_part.tscn" id="4_needle"]
+[ext_resource type="PackedScene" path="res://scenes/repair_parts/parts/forgotten_star_bell_part.tscn" id="5_bell"]
+
+[resource]
+script = ExtResource("1_map")
+display_names = {
+&"crescent_needle": "초승달 바늘",
+&"forgotten_star_bell": "잊혀진 별방울",
+&"golden_gears": "황금 톱니바퀴",
+&"starlight_brooch": "별빛 브로치"
+}
+scenes = {
+&"crescent_needle": ExtResource("4_needle"),
+&"forgotten_star_bell": ExtResource("5_bell"),
+&"golden_gears": ExtResource("3_gears"),
+&"starlight_brooch": ExtResource("2_brooch")
+}

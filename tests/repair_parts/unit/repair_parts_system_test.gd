@@ -415,7 +415,8 @@ func _test_board_test_scene_contract() -> void:
 	var has_session := false
 	for node_index: int in range(state.get_node_count()):
 		var node_name := String(state.get_node_name(node_index))
-		if node_name.begins_with("Socket"):
+		# 컨테이너 노드 "Sockets"는 소켓 개수에서 제외합니다.
+		if node_name.begins_with("Socket") and node_name != "Sockets":
 			socket_count += 1
 		if node_name.ends_with("Part"):
 			part_count += 1

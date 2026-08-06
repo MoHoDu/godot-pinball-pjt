@@ -27,6 +27,13 @@ Pinball_Logue (NAN AI 해커톤, 팀 Hire us Pls) 프로젝트 메모리.
 - [테스트 씬 조작키](reference_test_scene_controls.md) — 공 종류 전환 1~7, 패링 모드 0~3. **VFX 검수는 여기서 한다**
 - [경로 대소문자 문제](reference_path_case_issue.md) — `res://resources` 소문자 참조 17곳, Linux/macOS 익스포트 시 전부 깨짐
 
+## 보상·상점 (v0.2)
+
+- ★ [보상 v0.2 인계 메모](HANDOFF_reward_v02.md) — **보상 작업을 이어받으면 이것부터.**
+  작업 규칙·브랜치 상태·커밋 이력·다음 순번·지뢰 6개
+- [보상 v0.2 시스템](project_reward_v02.md) — 코인·상점·공 모델·부품 배치·롤백 구현 현황.
+  확인 씬 `wave_repair.tscn`, 조작키, 테스트 목록
+
 ## 공
 
 - [공 텍스처 확정](project_ball_texture_fixed.md) — `glass_eye_ball.png` 하나만. 새 이미지는 **채움률 100%** 부터 확인

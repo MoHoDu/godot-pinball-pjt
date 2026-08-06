@@ -1,0 +1,130 @@
+[gd_scene load_steps=30 format=3]
+
+[ext_resource type="PackedScene" uid="uid://6fbf244c58gg" path="res://scenes/wave/wave.tscn" id="1_board"]
+[ext_resource type="Script" path="res://scripts/wave_hud/wave_repair_coordinator.gd" id="2_coordinator"]
+[ext_resource type="Resource" path="res://settings/reward_shop/WaveShopBumperLayout_Demo.tres" id="3_bumper_layout"]
+[ext_resource type="Script" path="res://scripts/repair_parts/adapters/repair_combo_adapter.gd" id="4_combo_adapter"]
+[ext_resource type="Script" path="res://scripts/repair_parts/adapters/repair_ball_adapter.gd" id="5_ball_adapter"]
+[ext_resource type="Script" path="res://scripts/repair_parts/runtime/repair_effect_router.gd" id="6_router"]
+[ext_resource type="Script" path="res://scripts/reward_shop/repair_board_controller_v02.gd" id="7_board_controller"]
+[ext_resource type="Script" path="res://scripts/repair_parts/runtime/repair_session_controller.gd" id="8_session"]
+[ext_resource type="PackedScene" path="res://scenes/repair_parts/sockets/repair_socket_2d.tscn" id="9_socket"]
+[ext_resource type="Resource" path="res://settings/reward_shop/sockets/Socket_bottom_01.tres" id="10_bottom_01"]
+[ext_resource type="Resource" path="res://settings/reward_shop/sockets/Socket_bottom_02.tres" id="11_bottom_02"]
+[ext_resource type="Resource" path="res://settings/reward_shop/sockets/Socket_bottom_03.tres" id="12_bottom_03"]
+[ext_resource type="Resource" path="res://settings/reward_shop/sockets/Socket_bottom_04.tres" id="13_bottom_04"]
+[ext_resource type="Resource" path="res://settings/reward_shop/sockets/Socket_middle_01.tres" id="14_middle_01"]
+[ext_resource type="Resource" path="res://settings/reward_shop/sockets/Socket_middle_02.tres" id="15_middle_02"]
+[ext_resource type="Resource" path="res://settings/reward_shop/sockets/Socket_middle_03.tres" id="16_middle_03"]
+[ext_resource type="Resource" path="res://settings/reward_shop/sockets/Socket_middle_04.tres" id="17_middle_04"]
+[ext_resource type="Resource" path="res://settings/reward_shop/sockets/Socket_top_01.tres" id="18_top_01"]
+[ext_resource type="Resource" path="res://settings/reward_shop/sockets/Socket_top_02.tres" id="19_top_02"]
+[ext_resource type="Resource" path="res://settings/reward_shop/sockets/Socket_top_03.tres" id="20_top_03"]
+[ext_resource type="Resource" path="res://settings/reward_shop/sockets/Socket_top_04.tres" id="21_top_04"]
+[ext_resource type="Script" path="res://scripts/ball_base_system/ball_selection_hud_v02.gd" id="22_selection_hud_v02"]
+[ext_resource type="Script" path="res://scripts/wave_hud/life_hud_v02.gd" id="23_life_hud_v02"]
+[ext_resource type="Script" path="res://scripts/ball_base_system/wave_ball_inventory_v02.gd" id="24_inventory_v02"]
+[ext_resource type="Script" path="res://scripts/ball_base_system/ball_definition.gd" id="25_definition"]
+[ext_resource type="Script" path="res://scripts/ball_base_system/ball_stock.gd" id="26_stock"]
+[ext_resource type="PackedScene" uid="uid://csrwlhfpki4fs" path="res://Resources/balls/mass_var/normal_ball.tscn" id="27_base_ball"]
+
+[sub_resource type="Resource" id="BallDefinition_base"]
+script = ExtResource("25_definition")
+ball_id = &"normal"
+display_name = "기본 유리눈"
+ball_scene = ExtResource("27_base_ball")
+
+[sub_resource type="Resource" id="BallStock_base"]
+script = ExtResource("26_stock")
+definition = SubResource("BallDefinition_base")
+count = 3
+
+[node name="WaveRepair" instance=ExtResource("1_board")]
+script = ExtResource("2_coordinator")
+bumper_stage_settings = ExtResource("3_bumper_layout")
+wave_stage_index = 0
+
+[node name="BallSelectionHud" parent="HUD" index="0"]
+script = ExtResource("22_selection_hud_v02")
+
+[node name="LifeHud" parent="HUD/WaveHud/DesignSpace" index="0"]
+script = ExtResource("23_life_hud_v02")
+
+[node name="WaveBallInventory" parent="." index="0"]
+script = ExtResource("24_inventory_v02")
+starting_stock = Array[ExtResource("26_stock")]([SubResource("BallStock_base")])
+
+[node name="RepairPartSystem" type="Node2D" parent="."]
+
+[node name="RepairComboAdapter" type="Node" parent="RepairPartSystem"]
+script = ExtResource("4_combo_adapter")
+combo_system_path = NodePath("../../ComboSystem")
+
+[node name="RepairBallAdapter" type="Node" parent="RepairPartSystem"]
+script = ExtResource("5_ball_adapter")
+
+[node name="RepairEffectRouter" type="Node" parent="RepairPartSystem"]
+script = ExtResource("6_router")
+combo_adapter_path = NodePath("../RepairComboAdapter")
+ball_adapter_path = NodePath("../RepairBallAdapter")
+
+[node name="RepairBoardController" type="Node" parent="RepairPartSystem"]
+script = ExtResource("7_board_controller")
+sockets_root_path = NodePath("../Sockets")
+combo_system_path = NodePath("../../ComboSystem")
+
+[node name="RepairSessionController" type="Node" parent="RepairPartSystem"]
+script = ExtResource("8_session")
+wave_manager_path = NodePath("../../WaveManager")
+router_path = NodePath("../RepairEffectRouter")
+board_controller_path = NodePath("../RepairBoardController")
+
+[node name="Sockets" type="Node2D" parent="RepairPartSystem"]
+
+[node name="SocketBottom01" parent="RepairPartSystem/Sockets" instance=ExtResource("9_socket")]
+position = Vector2(-780, 370)
+socket_definition = ExtResource("10_bottom_01")
+
+[node name="SocketBottom02" parent="RepairPartSystem/Sockets" instance=ExtResource("9_socket")]
+position = Vector2(-260, 360)
+socket_definition = ExtResource("11_bottom_02")
+
+[node name="SocketBottom03" parent="RepairPartSystem/Sockets" instance=ExtResource("9_socket")]
+position = Vector2(260, 360)
+socket_definition = ExtResource("12_bottom_03")
+
+[node name="SocketBottom04" parent="RepairPartSystem/Sockets" instance=ExtResource("9_socket")]
+position = Vector2(780, 370)
+socket_definition = ExtResource("13_bottom_04")
+
+[node name="SocketMiddle01" parent="RepairPartSystem/Sockets" instance=ExtResource("9_socket")]
+position = Vector2(-780, 0)
+socket_definition = ExtResource("14_middle_01")
+
+[node name="SocketMiddle02" parent="RepairPartSystem/Sockets" instance=ExtResource("9_socket")]
+position = Vector2(-260, 20)
+socket_definition = ExtResource("15_middle_02")
+
+[node name="SocketMiddle03" parent="RepairPartSystem/Sockets" instance=ExtResource("9_socket")]
+position = Vector2(260, 20)
+socket_definition = ExtResource("16_middle_03")
+
+[node name="SocketMiddle04" parent="RepairPartSystem/Sockets" instance=ExtResource("9_socket")]
+position = Vector2(780, 0)
+socket_definition = ExtResource("17_middle_04")
+
+[node name="SocketTop01" parent="RepairPartSystem/Sockets" instance=ExtResource("9_socket")]
+position = Vector2(-780, -420)
+socket_definition = ExtResource("18_top_01")
+
+[node name="SocketTop02" parent="RepairPartSystem/Sockets" instance=ExtResource("9_socket")]
+position = Vector2(-260, -430)
+socket_definition = ExtResource("19_top_02")
+
+[node name="SocketTop03" parent="RepairPartSystem/Sockets" instance=ExtResource("9_socket")]
+position = Vector2(260, -430)
+socket_definition = ExtResource("20_top_03")
+
+[node name="SocketTop04" parent="RepairPartSystem/Sockets" instance=ExtResource("9_socket")]
+position = Vector2(780, -420)
+socket_definition = ExtResource("21_top_04")
