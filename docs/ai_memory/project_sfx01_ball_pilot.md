@@ -65,20 +65,26 @@ Leonardo로 껍질 5종을 통째로 뽑으면 안 됐던 것과 **완전히 같
 
 ## 산출물
 
-```
-docs/ball_guides/sfx/
-  build_sfx.py                        ① 절차적 합성 (재현 스크립트)
-  make_review.py                      ③ 실측 + 오디션 + 시트
-  SFX_Ball_Common_Attack_01..03.wav   5종 공유
-  SFX_Ball_Clockwork_Hit_01..03.wav
-  SFX_Ball_Clockwork_Parry_01.wav
-  SFX_Clockwork_audition.mp3          A어택 B충돌 C8연타 D패링 E실전리듬
-  sfx_pilot_clockwork_sheet.png
-  sfx_elevenlabs_prompts.md           ② 텍스처 단계 프롬프트 3종 + 금지 단어
-  raw/                                ← ElevenLabs 원본 받을 자리 (형락님이 생성)
-```
+> ★ **2026-08-06 형락님 지시로 이 산출물은 전부 삭제됐다.** 아래 목록은 이력이다.
+> `docs/sfx/build_sfx.py` 를 돌리면 바이트 단위로 같은 파일이 복원된다.
+> 삭제 범위와 다시 만들 때 알아야 할 것은 [[sound-spec]] §9 참고.
 
-레이어 분해본(`layers/`)은 컨테이너에만 있다. ②단계에서 재질 레이어만 갈아끼울 때 쓴다.
+폴더는 대상별로 나뉘어 있다. 위치는 `docs/sfx/` 다 (`ball_guides` 아래가 아니다 —
+벽·플리퍼 소리가 들어오면서 이름이 안 맞게 됐다). 전체 구조는 `docs/sfx/README.md` 참고.
+
+```
+docs/sfx/
+  build_sfx.py                              ① 절차적 합성 (재현 스크립트)
+  make_review.py                            ③ 실측 + 오디션 + 시트
+  ball/SFX_Ball_Common_Attack_01..03.wav    5종 공유
+  ball/SFX_Ball_Clockwork_Hit_01..03.wav
+  ball/SFX_Ball_Clockwork_Parry_01.wav
+  audition/SFX_Clockwork_audition.mp3       A어택 B충돌 C8연타 D패링 E실전리듬
+  layers/ball/                              레이어 분해본. ②단계에서 재질만 갈아끼운다
+  prompts/sfx_elevenlabs_prompts.md         ② 텍스처 단계 프롬프트 3종 + 금지 단어
+  prompts/sfx_pilot_clockwork_sheet.png
+  raw/                                      ← ElevenLabs 원본 받을 자리 (형락님이 생성)
+```
 
 ## 프롬프트 금지 단어 (화풍 이탈 규칙의 사운드판)
 
