@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="RepairPartDefinition" format=3 uid="uid://btbkt1aoy4ikj"]
+
+[ext_resource type="Script" uid="uid://gxxb7iydtty0" path="res://scripts/repair_parts/data/repair_part_definition.gd" id="1"]
+[ext_resource type="Script" uid="uid://b66il38vk2kco" path="res://scripts/repair_parts/data/repair_part_rank_data.gd" id="2"]
+
+[sub_resource type="Resource" id="Rank1"]
+script = ExtResource("2")
+window_seconds = 6.0
+score_weight = 3.0
+
+[sub_resource type="Resource" id="Rank2"]
+script = ExtResource("2")
+window_seconds = 7.0
+score_weight = 4.0
+
+[sub_resource type="Resource" id="Rank3"]
+script = ExtResource("2")
+window_seconds = 8.0
+score_weight = 5.0
+
+[resource]
+script = ExtResource("1")
+part_id = &"starlight_brooch"
+display_name = "별빛 브로치"
+bumper_kind_id = &"starlight_brooch"
+action_line = "다른 부품 둘을 거쳐 돌아오면 수리를 완성합니다"
+rank_data = Array[ExtResource("2")]([SubResource("Rank1"), SubResource("Rank2"), SubResource("Rank3")])
