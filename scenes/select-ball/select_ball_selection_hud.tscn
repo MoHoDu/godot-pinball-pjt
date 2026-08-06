@@ -1,7 +1,7 @@
 [gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/select_ball/select_ball_selection_hud.gd" id="1_script"]
-[ext_resource type="Theme" path="res://Resources/ui/wave_hud_runtime_dark/wave_hud_theme.tres" id="2_theme"]
+[ext_resource type="Theme" path="res://Resources/wave_hud/wave_hud_runtime_dark/wave_hud_theme.tres" id="2_theme"]
 [ext_resource type="Texture2D" path="res://Resources/Art/ui/select_ball/overlays/selection_surface_overlay.png" id="3_overlay"]
 [ext_resource type="Texture2D" path="res://Resources/Art/ui/select_ball/effects/selection_confirm_burst.png" id="4_burst"]
 

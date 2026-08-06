@@ -1,0 +1,38 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/board_system/board_demo_controller.gd" id="1_controller"]
+[ext_resource type="PackedScene" path="res://Resources/boards/square_board_layout.tscn" id="2_layout"]
+[ext_resource type="Script" path="res://scripts/board_system/board_placement_interaction.gd" id="3_interaction"]
+[ext_resource type="PackedScene" path="res://Resources/boards/starlight_brooch_placeable.tscn" id="4_brooch"]
+[ext_resource type="PackedScene" path="res://Resources/boards/golden_gears_placeable.tscn" id="5_gears"]
+[ext_resource type="PackedScene" path="res://Resources/boards/crescent_needle_placeable.tscn" id="6_needle"]
+[ext_resource type="PackedScene" path="res://Resources/boards/forgotten_star_bell_placeable.tscn" id="7_bell"]
+
+[node name="BoardSystemDemo" type="Node2D"]
+script = ExtResource("1_controller")
+session_path = NodePath("BoardLayout/PlacementSession")
+status_label_path = NodePath("UI/Status")
+
+[node name="BoardLayout" parent="." instance=ExtResource("2_layout")]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(0.44, 0.44)
+
+[node name="PlacementInteraction" type="Node" parent="."]
+script = ExtResource("3_interaction")
+session_path = NodePath("../BoardLayout/PlacementSession")
+placeable_catalog = Array[PackedScene]([ExtResource("4_brooch"), ExtResource("5_gears"), ExtResource("6_needle"), ExtResource("7_bell")])
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Status" type="Label" parent="UI"]
+offset_left = 32.0
+offset_top = 24.0
+offset_right = 960.0
+offset_bottom = 144.0
+theme_override_colors/font_color = Color(0.95, 0.92, 0.82, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 22
+text = "배치 편집 중 — 1~4 부품 선택 / 좌클릭 선택·배치 / 우클릭 회수 / Enter 확정"

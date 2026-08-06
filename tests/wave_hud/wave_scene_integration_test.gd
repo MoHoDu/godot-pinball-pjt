@@ -78,6 +78,12 @@ func _test_standalone_scene_source() -> void:
 	_expect(scene_source.contains(
 		"res://scenes/select-ball/select_ball_selection_hud.tscn"
 	), "Wave scene must use the confirmed ball-selection HUD.")
+	_expect(scene_source.contains(
+		"res://Resources/boards/wave_repair_board_layout.tscn"
+	), "Wave scene must own the repair-part board layout.")
+	_expect(scene_source.contains(
+		"res://scripts/board_system/board_wave_placement_bridge.gd"
+	), "Wave scene must bridge repair placement to the active WaveManager.")
 
 
 func _test_scene_structure(wave: WaveRuntimeCoordinator) -> void:
@@ -95,20 +101,31 @@ func _test_scene_structure(wave: WaveRuntimeCoordinator) -> void:
 	_expect(wave.wave_manager.current_stage_phase \
 		== WaveManager.StagePhase.REPAIR_PLACEMENT,
 		"Integrated Wave scene must begin at repair placement.")
-	var phase_button := wave.wave_hud.get_stage_phase_button()
-	_expect(wave.wave_hud.is_stage_phase_placeholder_visible() \
-		and wave.wave_hud.get_stage_phase_title_text() == "수리 부품 배치 단계",
-		"Unimplemented repair placement must be visible as a named phase.")
-	_expect(phase_button.text == "다음 단계",
-		"Placeholder phases must expose a next-phase button.")
-	phase_button.emit_signal(&"pressed")
+	var layout := wave.get_node("RepairBoardLayout") as BoardLayout
+	var session := layout.get_node("PlacementSession") as BoardPlacementSession
+	var placement_hud := wave.get_node(
+		"RepairPlacementHUD/RepairPartPlacementHud"
+	) as RepairPartPlacementHud
+	var placement_bridge := wave.get_node(
+		"BoardWavePlacementBridge"
+	) as BoardWavePlacementBridge
+	_expect(session.current_state == BoardPlacementSession.State.EDITING,
+		"Integrated Wave scene must open its real repair placement session.")
+	_expect(placement_hud.visible \
+		and not wave.wave_hud.visible \
+		and not wave.ball_selection_hud.visible,
+		"Repair placement must exclusively own the HUD before confirmation.")
+	_expect(placement_bridge.commit_placement(),
+		"Wave integration must advance only through a valid placement commit.")
 	_expect(wave.wave_manager.current_state == WaveManager.State.SELECTING_BALL,
-		"Placeholder button must advance into the implemented selection flow.")
+		"Placement confirmation must advance into the implemented selection flow.")
 	_expect(wave.wave_manager.current_stage_phase \
 		== WaveManager.StagePhase.BALL_SELECTION,
 		"Wave manager must report the implemented ball-selection phase.")
-	_expect(not wave.wave_hud.is_stage_phase_placeholder_visible(),
-		"Placeholder overlay must hide during implemented gameplay.")
+	_expect(not placement_hud.visible \
+		and wave.wave_hud.visible \
+		and wave.ball_selection_hud.visible,
+		"Placement HUD must yield to the wave and ball-selection HUDs.")
 	snapshot = wave.hud_state.get_snapshot()
 	_expect(int(snapshot[&"target_score"]) == 250000,
 		"Wave 1 target must come from ComboStageSettings through the controller.")
@@ -537,8 +554,18 @@ func _test_bumper_runtime_integration(wave: WaveRuntimeCoordinator) -> void:
 		"A successful result must advance to the reward phase.")
 	_expect(wave.wave_manager.advance_stage_phase(),
 		"The reward placeholder must advance to the next repair phase.")
-	_expect(wave.wave_manager.advance_stage_phase(),
-		"The next repair placeholder must advance to ball selection.")
+	var next_session := wave.get_node(
+		"RepairBoardLayout/PlacementSession"
+	) as BoardPlacementSession
+	var next_bridge := wave.get_node(
+		"BoardWavePlacementBridge"
+	) as BoardWavePlacementBridge
+	_expect(wave.wave_manager.current_stage_phase \
+		== WaveManager.StagePhase.REPAIR_PLACEMENT \
+		and next_session.current_state == BoardPlacementSession.State.EDITING,
+		"The next wave must reopen the repair placement session.")
+	_expect(next_bridge.commit_placement(),
+		"The next wave must also advance through a valid placement commit.")
 	_expect(wave.wave_ball_flow.confirm_selection(),
 		"The next wave must prepare a newly selected ball.")
 	_expect(wave.launcher.launch_prepared_ball(),

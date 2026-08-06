@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=3]
 
-[ext_resource type="Theme" path="res://Resources/ui/wave_hud_runtime_dark/wave_hud_theme.tres" id="1_theme"]
+[ext_resource type="Theme" path="res://Resources/wave_hud/wave_hud_runtime_dark/wave_hud_theme.tres" id="1_theme"]
 [ext_resource type="Texture2D" path="res://Resources/Art/ui/select_ball/slots/selection_slot_pedestal.png" id="2_pedestal"]
 [ext_resource type="Texture2D" path="res://Resources/Art/balls/glass_eye_ball.png" id="3_ball"]
 [ext_resource type="Texture2D" path="res://Resources/Art/ui/select_ball/states/selection_focus_sigil.png" id="4_focus"]
