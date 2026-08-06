@@ -26,11 +26,11 @@
 [ext_resource type="PackedScene" uid="uid://csrwlhfpki4fs" path="res://Resources/balls/mass_var/normal_ball.tscn" id="23_normal_ball"]
 [ext_resource type="PackedScene" uid="uid://bjccffqopu0ej" path="res://Resources/balls/mass_var/heavy_ball.tscn" id="24_heavy_ball"]
 [ext_resource type="PackedScene" path="res://scenes/select-ball/select_ball_selection_hud.tscn" id="25_selection_hud"]
-[ext_resource type="PackedScene" path="res://scenes/bumper_system/button_bumper.tscn" id="26_button_bumper"]
-[ext_resource type="PackedScene" path="res://scenes/bumper_system/cotton_bumper.tscn" id="27_cotton_bumper"]
-[ext_resource type="PackedScene" path="res://scenes/bumper_system/spring_doll_bumper.tscn" id="28_spring_bumper"]
-[ext_resource type="PackedScene" path="res://scenes/bumper_system/toy_drum_bumper.tscn" id="29_drum_bumper"]
-[ext_resource type="PackedScene" path="res://scenes/bumper_system/clockwork_toy_cannon.tscn" id="30_cannon_bumper"]
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/vfx/button_bumper_vfx.tscn" id="26_button_bumper"]
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/vfx/cotton_bumper_vfx.tscn" id="27_cotton_bumper"]
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/vfx/spring_doll_bumper_vfx.tscn" id="28_spring_bumper"]
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/vfx/toy_drum_bumper_vfx.tscn" id="29_drum_bumper"]
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/vfx/clockwork_toy_cannon_vfx.tscn" id="30_cannon_bumper"]
 [ext_resource type="PackedScene" path="res://Resources/boards/wave_repair_board_layout.tscn" id="31_repair_layout"]
 [ext_resource type="PackedScene" path="res://Resources/boards/repair_part_placement_hud.tscn" id="32_repair_hud"]
 [ext_resource type="Script" path="res://scripts/board_system/board_wave_placement_bridge.gd" id="33_repair_bridge"]
@@ -41,6 +41,10 @@
 [ext_resource type="Resource" path="res://settings/bumpers/repair_parts/GoldenGears.tres" id="38_gears_settings"]
 [ext_resource type="Resource" path="res://settings/bumpers/repair_parts/CrescentNeedle.tres" id="39_needle_settings"]
 [ext_resource type="Resource" path="res://settings/bumpers/repair_parts/ForgottenStarBell.tres" id="40_bell_settings"]
+[ext_resource type="Script" path="res://scripts/sfx_system/sfx_director.gd" id="41_sfx_director"]
+[ext_resource type="Script" path="res://scripts/sfx_system/wave_sfx_binder.gd" id="42_sfx_binder"]
+[ext_resource type="Resource" path="res://settings/sfx/WallSfxRules.tres" id="43_wall_sfx"]
+[ext_resource type="Resource" path="res://settings/sfx/FlipperSfxRules.tres" id="44_flipper_sfx"]
 [ext_resource type="PackedScene" path="res://Resources/boards/starlight_brooch_placeable.tscn" id="41_brooch_placeable"]
 [ext_resource type="PackedScene" path="res://Resources/boards/golden_gears_placeable.tscn" id="42_gears_placeable"]
 [ext_resource type="PackedScene" path="res://Resources/boards/crescent_needle_placeable.tscn" id="43_needle_placeable"]
@@ -399,3 +403,11 @@ placement_session = NodePath("../RepairBoardLayout/PlacementSession")
 inventory = NodePath("../RepairPartInventory")
 placement_hud = NodePath("../RepairPlacementHUD/RepairPartPlacementHud")
 wave_bridge = NodePath("../BoardWavePlacementBridge")
+
+[node name="SfxDirector" type="Node" parent="."]
+script = ExtResource("41_sfx_director")
+
+[node name="_WaveSfxBinder" type="Node" parent="."]
+script = ExtResource("42_sfx_binder")
+wall_rules = ExtResource("43_wall_sfx")
+flipper_rules = ExtResource("44_flipper_sfx")
