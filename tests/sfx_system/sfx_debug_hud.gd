@@ -56,6 +56,10 @@ func _process(_delta: float) -> void:
 		lines.append("[ 사운드 연구실 ]")
 		lines.append("  1 2 3  벽 저·중·고속     4 5 6  플리퍼 타격·강타격·패링")
 		lines.append("  7 벽 8연타   8 ★우선순위 시험   0 정지")
+		lines.append("  Q 공 발사음   E 낙하   T ★콤보 사다리 8단   Y 단계")
+		lines.append("  U 콤보 실패   I 웨이브 승   O 웨이브 패")
+		lines.append("  Z X C V B  범퍼 단추·솜·용수철·북·대포")
+		lines.append("  N 파괴   M 리스폰 예고   P 대포 발사")
 		lines.append("  Enter 발사   [ ] 속도   , . 각도   R 리셋   G 중력")
 		lines.append("  ★ Space 플리퍼 작동   방향키 플리퍼 선택")
 		lines.append("  발사 %.0f px/s  %.0f°   중력 %s"

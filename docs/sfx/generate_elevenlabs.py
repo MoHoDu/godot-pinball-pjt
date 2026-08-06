@@ -127,11 +127,41 @@ GROUPS = {
             "Wind-up toy scale, very quiet, close-miked, anechoic, completely "
             "dry. One motion at the very start, then silence."
         ),
+        # ★ 5차 (2026-08-06). 4차 hit 은 6개 전부 4~10kHz 대역이 0.0% 였다.
+        #   유리가 아니라 둔탁한 나무 노크만 나왔다.
+        #
+        #   같은 배치에서 strong 은 5/6 성공(유리 27~58%)했다. 두 프롬프트의
+        #   차이가 원인 전부다:
+        #     ① 소리 명사가 "knock" — 나무·문을 강하게 연상시킨다.
+        #        strong 의 "crack" 은 그렇지 않다. 문자 그대로 노크를 시킨 것이다
+        #     ② "struck by a small paddle" — **두 번째 물체**를 넣었다.
+        #        패들은 나무다. strong 은 "struck hard" 로 물체가 하나뿐이다
+        #     ③ strong 에는 "never dull or deep" 이라는 음색 가드가 있는데
+        #        hit 에는 없었다
+        #
+        #   그래서 strong 의 성공 공식을 그대로 따른다.
+        #   물체는 하나, 소리 명사는 유리를 함의하는 것, 가드를 붙인다.
+        #
+        # ★ 6차 — 5차에서 유리는 나왔지만(hit_04 유리 60%) 8개 중 5개가
+        #   원본 -29~-39dBFS 무음이었다. "lightly struck" 를 의심해 뺐는데
+        #   **결과가 그대로였다** (10개 중 5개 무음). 세기 부사는 원인이 아니다.
+        #
+        #   남은 유력한 원인은 소리 명사 "tick" 이다. strong 의 "crack" 은
+        #   5/6 이 정상 음량으로 나왔다. 작은 소리를 뜻하는 명사를 쓰면
+        #   모델이 실제로 작게 준다.
+        #
+        #   다만 이 역할은 hit_04 로 충족됐다. 역할당 필요한 스트림은 하나다.
+        #   더 검증하지 않고 남겨둔다 — 다시 뽑을 일이 생기면 "tick" 을
+        #   "ping" 이나 "ring" 으로 바꿔보는 것이 다음 수다.
+        #
+        #   무관하지만 확실한 것 하나: **음량은 런타임 파라미터다.**
+        #   속도->음량은 SfxCue 가 재생할 때 건다. AI 에게 작은 소리를
+        #   달라고 할 이유가 애초에 없다.
         "flipper_hit": (
-            "One-shot foley sample. A single bright glassy knock of a hollow "
-            "thin-walled glass ball struck by a small paddle. Toy scale, "
-            "close-miked, anechoic, completely dry. Exactly one knock at the "
-            "very start, then silence."
+            "One-shot foley sample. A single bright glassy tick of a hollow "
+            "thin-walled glass ball, struck once. Clear and ringing, never "
+            "dull or woody. Toy scale, close-miked, anechoic, completely dry. "
+            "Exactly one tick at the very start, then silence."
         ),
         "flipper_strong": (
             "One-shot foley sample. A single sharp glassy crack of a hollow "
@@ -144,6 +174,139 @@ GROUPS = {
             "table tennis ball on a wooden paddle, one clear musical note "
             "with a short bounce. Bright, toy-like, close-miked, anechoic, "
             "completely dry. Exactly one pock at the very start, then silence."
+        ),
+    },
+    # ── Tier 3 · 4 (2026-08-06) ────────────────────────────────
+    #
+    # 검증된 공식을 그대로 쓴다:
+    #   "One-shot foley sample. A single [형용사] [소리 명사] of a [물체 하나].
+    #    Toy scale, close-miked, anechoic, completely dry.
+    #    Exactly one X at the very start, then silence."
+    #
+    # ★ 지키는 것 세 가지 — 전부 실패에서 배운 것이다
+    #   ① 물체는 하나. 둘을 넣으면 모델이 충돌 장면을 만든다 (4차 hit 실패)
+    #   ② 소리 명사가 결과를 지배한다. "knock" 을 시키면 나무를 준다
+    #   ③ 작은 소리를 달라고 하지 않는다. 음량은 런타임이 건다
+    #
+    # 컨셉은 "고장 난 장난감 오락기 + 태엽 기계 + 작은 오컬트 의식".
+    # 사실적인 쇠구슬이나 무거운 산업 기계음이 아니다 (가이드 p.61).
+    "flow": {
+        "flow_launch": (
+            "One-shot foley sample. A single taut spring release of a small "
+            "wind-up toy launcher letting go, bright and springy with a short "
+            "whip of air. Toy scale, close-miked, anechoic, completely dry. "
+            "Exactly one release at the very start, then silence."
+        ),
+        "flow_drain": (
+            "One-shot foley sample. A single hollow wooden thud of a small "
+            "empty toy box, with the pitch sagging downward as it fades. Dull "
+            "and sinking, toy scale, close-miked, anechoic, completely dry. "
+            "Exactly one thud at the very start, then silence."
+        ),
+    },
+    "combo": {
+        # 피치 사다리는 런타임이 만든다. 여기서는 한 음만 필요하다.
+        "combo_rise": (
+            "One-shot foley sample. A single bright chime of a tiny brass "
+            "bell, one clear pitch with a short clean decay. Music-box scale, "
+            "close-miked, anechoic, completely dry. Exactly one chime at the "
+            "very start, then silence."
+        ),
+        "combo_tier": (
+            "One-shot foley sample. A single bright shimmering chime of a "
+            "small crystal glass bell, one clear rising pitch with a short "
+            "sparkling decay. Toy scale, close-miked, anechoic, completely "
+            "dry. Exactly one chime at the very start, then silence."
+        ),
+        # ★ 2차 — 1차는 6개 전부 중심 8394~10202Hz 로 나와 탈락했다.
+        #   "creak"(삐걱) 은 모델에게 **높은 마찰음**이다. 실패를 알리는
+        #   처지는 소리를 원했는데 정반대가 왔다.
+        #   소리 명사를 낮은 몸통을 가진 것("thunk")으로 바꾸고,
+        #   밝기를 막는 가드를 넣는다.
+        "combo_timeout": (
+            "One-shot foley sample. A single low dull wooden thunk of a small "
+            "toy spring going slack, the pitch sagging downward as it dies. "
+            "Dark and deflating, never bright or squeaky. Toy scale, "
+            "close-miked, anechoic, completely dry. Exactly one thunk at the "
+            "very start, then silence."
+        ),
+        "combo_target": (
+            "One-shot foley sample. A single bright glassy shimmer of a small "
+            "crystal chime bar struck once, clear and sparkling with a short "
+            "ring. Toy scale, close-miked, anechoic, completely dry. Exactly "
+            "one shimmer at the very start, then silence."
+        ),
+    },
+    "wave": {
+        "wave_win": (
+            "One-shot foley sample. A single warm bright chime of a small "
+            "music box comb tine plucked once, one clear pitch with a gentle "
+            "ring. Toy scale, close-miked, anechoic, completely dry. Exactly "
+            "one chime at the very start, then silence."
+        ),
+        # ★ 2차 — 1차는 6개 전부 중심 6362~9381Hz. combo_timeout 과 같은 원인이다.
+        #   "groan" 도 모델에게는 높은 마찰음이었다.
+        #   음정이 분명한 낮은 것("hum")으로 바꾸고 가드를 넣는다.
+        "wave_lose": (
+            "One-shot foley sample. A single low slow descending hum of a "
+            "small music box winding down to a stop, one dark pitch sliding "
+            "downward. Never bright or squeaky. Toy scale, close-miked, "
+            "anechoic, completely dry. Exactly one hum at the very start, "
+            "then silence."
+        ),
+    },
+    "bumper": {
+        "bumper_button": (
+            "One-shot foley sample. A single crisp snap of a large plastic "
+            "toy button being pressed down. Hard and clicky, toy scale, "
+            "close-miked, anechoic, completely dry. Exactly one snap at the "
+            "very start, then silence."
+        ),
+        "bumper_cotton": (
+            "One-shot foley sample. A single soft muffled pouf of a small "
+            "cotton stuffed toy being squashed, airy and dull with almost no "
+            "ring. Toy scale, close-miked, anechoic, completely dry. Exactly "
+            "one pouf at the very start, then silence."
+        ),
+        "bumper_spring": (
+            "One-shot foley sample. A single boingy twang of a small coiled "
+            "toy spring released, one wobbling pitch that settles fast. Toy "
+            "scale, close-miked, anechoic, completely dry. Exactly one twang "
+            "at the very start, then silence."
+        ),
+        # ★ 2차 — 1차는 6개 전부 원본 -32~-41dBFS 였다. 저역 100%·배음 99% 라
+        #   북은 맞는데 레벨이 없다. "hollow tap"(속 빈 톡) 이 모델에게
+        #   **아주 작은 소리**로 읽혔다. 그 상태로 증폭하면 노이즈만 커진다.
+        #   때리는 동작과 가죽 면을 명시해 어택이 찍히게 한다.
+        "bumper_drum": (
+            "One-shot foley sample. A single firm strike on the taut skin of "
+            "a small toy drum, a clear attack with a short round body. Toy "
+            "scale, close-miked, anechoic, completely dry. Exactly one strike "
+            "at the very start, then silence."
+        ),
+        "bumper_cannon_click": (
+            "One-shot foley sample. A single dry ratchet click of a small "
+            "wind-up toy crank catching one notch. Tight and brassy, toy "
+            "scale, close-miked, anechoic, completely dry. Exactly one click "
+            "at the very start, then silence."
+        ),
+        "bumper_cannon_fire": (
+            "One-shot foley sample. A single soft pop of a toy cork cannon "
+            "firing, round and airy with a short puff. Toy scale, "
+            "close-miked, anechoic, completely dry. Exactly one pop at the "
+            "very start, then silence."
+        ),
+        "bumper_destroy": (
+            "One-shot foley sample. A single dry splintering crack of a small "
+            "painted wooden toy breaking apart, with a brief scatter of tiny "
+            "fragments. Toy scale, close-miked, anechoic, completely dry. "
+            "Exactly one crack at the very start, then silence."
+        ),
+        "bumper_respawn": (
+            "One-shot foley sample. A single short rising whirr of a small "
+            "toy spring being wound up, brassy and ticking as it tightens. "
+            "Toy scale, close-miked, anechoic, completely dry. Exactly one "
+            "whirr at the very start, then silence."
         ),
     },
     "parry": {
@@ -281,9 +444,22 @@ def main():
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--force", action="store_true",
                     help="이미 받은 변형도 다시 생성한다 (크레딧을 또 쓴다)")
+    # ★ 한 역할만 다시 뽑을 때 쓴다. 없으면 그룹 전체를 돌면서
+    #   이미 걸러내고 지운 반려본 자리까지 다시 채워 크레딧을 낭비한다.
+    ap.add_argument("--only", nargs="+", metavar="역할",
+                    help="이 역할만 생성한다 (예: --only flipper_hit)")
     args = ap.parse_args()
 
     prompts = GROUPS[args.group]
+    if args.only:
+        unknown = [n for n in args.only if n not in prompts]
+        if unknown:
+            print(f"★ 그룹 {args.group} 에 없는 역할: {', '.join(unknown)}")
+            print(f"   가능한 역할: {', '.join(prompts)}")
+            return 1
+
+        prompts = {n: prompts[n] for n in args.only}
+
     calls = len(prompts) * args.variants
 
     bad = check_banned(prompts)
