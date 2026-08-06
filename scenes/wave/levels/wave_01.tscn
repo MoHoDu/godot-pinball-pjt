@@ -37,6 +37,20 @@
 [ext_resource type="Resource" path="res://settings/bumpers/stage_01_compact/ToyDrumBumperCompact.tres" id="40_drum_compact"]
 [ext_resource type="Resource" path="res://settings/bumpers/stage_01_compact/ClockworkToyCannonCompact.tres" id="41_cannon_compact"]
 [ext_resource type="PackedScene" path="res://scenes/wave_hud/bumper_roster_hud.tscn" id="42_roster_hud"]
+[ext_resource type="PackedScene" path="res://Resources/boards/levels/wave_01_repair_layout.tscn" id="43_repair_layout"]
+[ext_resource type="PackedScene" path="res://Resources/boards/repair_part_placement_hud.tscn" id="44_repair_hud"]
+[ext_resource type="Script" path="res://scripts/board_system/board_wave_placement_bridge.gd" id="45_repair_bridge"]
+[ext_resource type="Script" path="res://scripts/board_system/repair_part_placement_controller.gd" id="46_repair_controller"]
+[ext_resource type="Script" path="res://scripts/board_system/repair_part_inventory.gd" id="47_repair_inventory"]
+[ext_resource type="Script" path="res://scripts/board_system/repair_part_inventory_entry.gd" id="48_repair_entry"]
+[ext_resource type="Resource" path="res://settings/bumpers/repair_parts/StarlightBrooch.tres" id="49_brooch_settings"]
+[ext_resource type="Resource" path="res://settings/bumpers/repair_parts/GoldenGears.tres" id="50_gears_settings"]
+[ext_resource type="Resource" path="res://settings/bumpers/repair_parts/CrescentNeedle.tres" id="51_needle_settings"]
+[ext_resource type="Resource" path="res://settings/bumpers/repair_parts/ForgottenStarBell.tres" id="52_bell_settings"]
+[ext_resource type="PackedScene" path="res://Resources/boards/starlight_brooch_placeable.tscn" id="53_brooch_placeable"]
+[ext_resource type="PackedScene" path="res://Resources/boards/golden_gears_placeable.tscn" id="54_gears_placeable"]
+[ext_resource type="PackedScene" path="res://Resources/boards/crescent_needle_placeable.tscn" id="55_needle_placeable"]
+[ext_resource type="PackedScene" path="res://Resources/boards/forgotten_star_bell_placeable.tscn" id="56_bell_placeable"]
 
 [sub_resource type="Resource" id="StageSettings_wave"]
 script = ExtResource("2_bin77")
@@ -89,6 +103,22 @@ size = Vector2(819.329, 24)
 
 [sub_resource type="Resource" id="Resource_shot_strategy"]
 script = ExtResource("36_shot_strategy")
+
+[sub_resource type="Resource" id="RepairEntry_brooch"]
+script = ExtResource("48_repair_entry")
+settings = ExtResource("49_brooch_settings")
+placeable_scene = ExtResource("53_brooch_placeable")
+starting_count = 1
+one_line_feature = "완성한다 · 6초 귀환"
+placeholder_icon = "✦"
+
+[sub_resource type="Resource" id="RepairEntry_gears"]
+script = ExtResource("48_repair_entry")
+settings = ExtResource("50_gears_settings")
+placeable_scene = ExtResource("54_gears_placeable")
+starting_count = 1
+one_line_feature = "구동한다 · 연속 반응"
+placeholder_icon = "⚙"
 
 [node name="Wave" type="Node2D" unique_id=242104030 node_paths=PackedStringArray("launcher", "combo_system", "combo_collision_bridge", "wave_ball_inventory", "wave_ball_flow", "combo_wave_controller", "wave_manager", "flipper_selector", "ball_selection_hud", "ball_drain_area", "hud_state", "wave_hud", "board_camera", "bumpers_root")]
 script = ExtResource("1_borfr")
@@ -459,3 +489,30 @@ maximum_angle_degrees = 80.0
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1316343289]
 position = Vector2(0, 1)
 zoom = Vector2(0.43, 0.43)
+
+[node name="RepairBoardLayout" parent="." instance=ExtResource("43_repair_layout")]
+
+[node name="RepairPlacementHUD" type="CanvasLayer" parent="."]
+layer = 50
+
+[node name="RepairPartPlacementHud" parent="RepairPlacementHUD" instance=ExtResource("44_repair_hud")]
+
+[node name="RepairPartInventory" type="Node" parent="."]
+script = ExtResource("47_repair_inventory")
+entries = Array[ExtResource("48_repair_entry")]([SubResource("RepairEntry_brooch"), SubResource("RepairEntry_gears")])
+
+[node name="BoardWavePlacementBridge" type="Node" parent="." node_paths=PackedStringArray("wave_manager", "placement_session", "combo_system", "wave_hud", "ball_selection_hud", "placement_hud")]
+script = ExtResource("45_repair_bridge")
+wave_manager = NodePath("../WaveManager")
+placement_session = NodePath("../RepairBoardLayout/PlacementSession")
+combo_system = NodePath("../ComboSystem")
+wave_hud = NodePath("../HUD/WaveHud")
+ball_selection_hud = NodePath("../HUD/BallSelectionHud")
+placement_hud = NodePath("../RepairPlacementHUD/RepairPartPlacementHud")
+
+[node name="RepairPartPlacementController" type="Node" parent="." node_paths=PackedStringArray("placement_session", "inventory", "placement_hud", "wave_bridge")]
+script = ExtResource("46_repair_controller")
+placement_session = NodePath("../RepairBoardLayout/PlacementSession")
+inventory = NodePath("../RepairPartInventory")
+placement_hud = NodePath("../RepairPlacementHUD/RepairPartPlacementHud")
+wave_bridge = NodePath("../BoardWavePlacementBridge")
