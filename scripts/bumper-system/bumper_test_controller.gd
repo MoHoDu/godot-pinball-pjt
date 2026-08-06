@@ -252,7 +252,7 @@ func _on_shot_control_started(
 	_bumper: ShotBumper,
 	_ball: RigidBody2D
 ) -> void:
-	_append_event("SHOT · A/D 이전·다음 · W 기본 · Space 발사")
+	_append_event("SHOT · ←/→ 이전·다음 · Space 발사")
 
 
 func _on_shot_selection_changed(
