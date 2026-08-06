@@ -19,6 +19,7 @@ const CANNON_SCENE := "res://scenes/bumper_system/vfx/clockwork_toy_cannon_vfx.t
 const COTTON_ANIM := preload("res://settings/bumpers/anim/CottonAnim.tres")
 const SPRING_ANIM := preload("res://settings/bumpers/anim/SpringDollAnim.tres")
 const DRUM_ANIM := preload("res://settings/bumpers/anim/ToyDrumAnim.tres")
+const CANNON_ANIM := preload("res://settings/bumpers/anim/ClockworkCannonAnim.tres")
 const BUTTON_ANIM := preload("res://settings/bumpers/anim/ButtonAnim.tres")
 const EPSILON := 0.001
 
@@ -39,6 +40,7 @@ func _run() -> void:
 	await _test_press_and_recover()
 	await _test_drum_head_only()
 	await _test_cannon_hold()
+	await _test_cannon_aim()
 	await _test_hit_frame_swap()
 	await _test_destroyed_alpha()
 	_test_rule_intent()
@@ -165,6 +167,49 @@ func _test_cannon_hold() -> void:
 	await process_frame
 	_expect(not anim.is_holding(), "발사하면 유지가 풀려야 한다")
 
+	bumper.queue_free()
+	await process_frame
+
+
+func _test_cannon_aim() -> void:
+	# 38쪽: 포신의 회전만으로도 현재 방향을 확인할 수 있어야 한다.
+	# 아트가 포신 +X 기준이라 회전각이 곧 발사 방향이다.
+	var bumper: Bumper = await _spawn(CANNON_SCENE)
+	var anim := bumper.get_node_or_null(^"_ArtAnimator") as BumperCannonAimAnimator
+	var shot := bumper as ShotBumper
+	_expect(anim != null, "대포에 조준 애니메이터가 있어야 한다")
+	if anim == null or shot == null:
+		bumper.queue_free()
+		return
+
+	var sprite := anim.get_target_sprite()
+	_expect(sprite != null, "대포 아트 스프라이트를 찾아야 한다")
+	if sprite == null:
+		bumper.queue_free()
+		return
+
+	# 기본 상태는 조용해야 한다 (3-2). 포획 전에는 따라 돌지 않는다.
+	_expect(not CANNON_ANIM.aim_while_idle,
+		"기본 상태에서 상시 조준을 따라 돌면 안 된다")
+
+	shot.control_started.emit(shot, null)
+	var waited := 0.0
+	while waited < 0.6:
+		await process_frame
+		waited += root.get_process_delta_time()
+
+	var expected := shot.get_selected_launch_direction().angle()
+	_expect(anim.is_aim_initialised(), "포획 중에는 조준각이 잡혀야 한다")
+	var difference: float = absf(wrapf(anim.get_aim_angle() - expected, -PI, PI))
+	_expect(difference <= 0.05,
+		"포신 각도가 선택된 발사 방향과 맞아야 한다 (기대=%s, 실제=%s)"
+			% [expected, anim.get_aim_angle()])
+
+	# 물리 노드는 여전히 그대로여야 한다.
+	_expect(absf(bumper.global_rotation) <= EPSILON,
+		"조준 회전이 범퍼 본체를 돌리면 안 된다 (실제=%s)" % bumper.global_rotation)
+
+	shot.control_ended.emit(shot, null)
 	bumper.queue_free()
 	await process_frame
 

@@ -5,7 +5,7 @@
 [ext_resource type="Resource" path="res://settings/bumpers/vfx/ClockworkCannonVfx.tres" id="3_rules"]
 [ext_resource type="Texture2D" path="res://Resources/Art/bumpers/clockwork_cannon.png" id="4_art"]
 
-[ext_resource type="Script" path="res://scripts/bumper-system/anim/bumper_art_animator.gd" id="8_anim"]
+[ext_resource type="Script" path="res://scripts/bumper-system/anim/bumper_cannon_aim_animator.gd" id="8_anim"]
 [ext_resource type="Resource" path="res://settings/bumpers/anim/ClockworkCannonAnim.tres" id="9_anim_rules"]
 
 [node name="ClockworkToyCannon" instance=ExtResource("1_base")]
