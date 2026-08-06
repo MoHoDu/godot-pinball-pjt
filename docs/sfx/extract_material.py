@@ -116,12 +116,20 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("group")
     ap.add_argument("--length", type=float, default=80.0, help="잘라낼 길이(ms)")
+    # ★ 길이는 역할마다 다르다. 걸림쇠 '철컥' 은 60ms 면 끝나는데 그룹 전체를
+    #   300ms 로 자르면 뒤에 붙은 잔향까지 들어가 길이 기준에 걸린다.
+    #   소재가 나빠서가 아니라 자르기를 잘못한 것이다.
+    ap.add_argument("--only", nargs="+", metavar="역할",
+                    help="이 역할만 추출한다 (예: --only bumper_cannon_click)")
     args = ap.parse_args()
 
     base = RAW / args.group
 
     # 원본은 역할 폴더의 _source/ 에 있다. 정리 전 평평한 배치도 받아준다.
     files = sorted(base.glob("*/_source/*.wav")) or sorted(base.glob("*.wav"))
+    if args.only:
+        files = [p for p in files if role_of(p.stem) in args.only]
+
     if not files:
         print(f"파일이 없다: {base}")
         return 1

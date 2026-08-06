@@ -47,6 +47,16 @@ ORDER = {
         "ball_clockwork_escapement", "ball_clockwork_glass_pin",
         "ball_clockwork_detent",
     ],
+    # Tier 3 — 게임 흐름
+    "flow": ["flow_launch", "flow_drain"],
+    "combo": ["combo_rise", "combo_tier", "combo_timeout", "combo_target"],
+    "wave": ["wave_win", "wave_lose"],
+    # Tier 4 — 범퍼 5종 + 파괴 + 리스폰
+    "bumper": [
+        "bumper_button", "bumper_cotton", "bumper_spring", "bumper_drum",
+        "bumper_cannon_click", "bumper_cannon_fire",
+        "bumper_destroy", "bumper_respawn",
+    ],
 }
 
 # 각 음원이 게임에서 무엇을 표현하는지.
@@ -67,6 +77,26 @@ ROLES = {
     "ball_clockwork_escapement": "정속 태엽눈 재질음 — 태엽 걸림쇠 클릭",
     "ball_clockwork_glass_pin": "정속 태엽눈 재질음 — 유리 위 금속 톡",
     "ball_clockwork_detent": "정속 태엽눈 재질음 — 태엽 감기 멈춤",
+
+    # Tier 3 — 게임 흐름. 물릴 시그널을 함께 적는다.
+    "flow_launch": "공 발사 — 태엽이 풀리며 튕겨나감 (ball_launched, speed→음량)",
+    "flow_drain": "공 낙하 — 공을 잃음. 하강감 (ball_drained)",
+    "combo_rise": "콤보 상승 — 한 음. 피치 사다리는 런타임 (combo_changed)",
+    "combo_tier": "콤보 단계 상승 — 상승보다 크고 밝게 (combo_tier_changed)",
+    "combo_timeout": "콤보 실패 — 시간 초과로 끊김. 태엽 풀리는 실망 (combo_finished)",
+    "combo_target": "목표 점수 도달 — 밝은 성취 (target_score_reached)",
+    "wave_win": "웨이브 승리 — 저주가 풀림. 오르골 한 음",
+    "wave_lose": "웨이브 패배 — 태엽이 멈춤 (wave_balls_exhausted)",
+
+    # Tier 4 — 범퍼. 가이드의 3층 구조(어택 + 재질음 + 기능 악센트) 중 재질음.
+    "bumper_button": "범퍼 단추 — 딱. 큰 플라스틱 단추가 눌림",
+    "bumper_cotton": "범퍼 솜인형 — 푹. 소리를 먹는 느낌",
+    "bumper_spring": "범퍼 용수철인형 — 끽+팡. 튀어오름",
+    "bumper_drum": "범퍼 장난감 북 — 통. 속 빈 울림",
+    "bumper_cannon_click": "범퍼 태엽대포 조작 — 철컥 (control_started)",
+    "bumper_cannon_fire": "범퍼 태엽대포 발사 — 팡 (control_ended)",
+    "bumper_destroy": "범퍼 공통 파괴음 — 장난감이 부서짐 (durability 0)",
+    "bumper_respawn": "범퍼 리스폰 예고음 — 태엽이 다시 감김 (state_changed)",
 }
 
 
