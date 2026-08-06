@@ -27,6 +27,8 @@ const CASES := [
 	],
 ]
 const GEARS_SCENE := "res://scenes/repair_parts/vfx/golden_gears_vfx.tscn"
+const BROOCH_SCENE := "res://scenes/repair_parts/vfx/starlight_brooch_vfx.tscn"
+const BROOCH_ANIM := preload("res://settings/repair_parts/anim/StarlightBroochAnim.tres")
 const EPSILON := 0.001
 
 
@@ -46,6 +48,7 @@ func _run() -> void:
 	for case: Array in CASES:
 		await _check_scene(String(case[0]), String(case[1]))
 	await _test_gear_spin()
+	await _test_brooch_spin()
 
 	_finish()
 
@@ -156,6 +159,46 @@ func _test_gear_spin() -> void:
 	var settled := await _spin_to(gear, wheel, 0, 0.4)
 	_expect(absf(settled - after_hit) <= 0.05,
 		"단계 초기화가 휠을 되감으면 안 된다 (실제=%s -> %s)" % [after_hit, settled])
+
+	bumper.queue_free()
+	await process_frame
+
+
+## 4-1 E: 기본 상태에는 상시 회전을 쓰지 않는다. 타격 순간에만 돌고 멈춰야 한다.
+func _test_brooch_spin() -> void:
+	var bumper := (load(BROOCH_SCENE) as PackedScene).instantiate() as Bumper
+	_root.add_child(bumper)
+	await process_frame
+	await process_frame
+
+	var spin := bumper.get_node_or_null(^"_ArtAnimator") as BumperArtSpinAnimator
+	_expect(spin != null, "브로치에 회전 애니메이터가 있어야 한다")
+	if spin == null:
+		bumper.queue_free()
+		return
+	var sprite := spin.get_target_sprite()
+
+	# 가만히 두면 돌지 않아야 한다.
+	await _wait(0.3)
+	_expect(absf(sprite.rotation) <= EPSILON,
+		"기본 상태에서 상시 회전하면 안 된다 (실제=%s)" % sprite.rotation)
+
+	bumper.valid_hit_registered.emit(bumper.bumper_id, null, 1, 0)
+	await _wait(0.10)
+	var early := sprite.rotation
+	await _wait(0.10)
+	var mid := sprite.rotation - early
+	await _wait(1.2)
+
+	_expect(early > mid, "회전이 갈수록 느려져야 한다 (앞=%s, 뒤=%s)" % [early, mid])
+	_expect(absf(sprite.rotation - BROOCH_ANIM.spin_arc) <= 0.05,
+		"타격 한 번에 규칙만큼 돌아야 한다 (기대=%s, 실제=%s)"
+			% [BROOCH_ANIM.spin_arc, sprite.rotation])
+	_expect(not spin.is_spinning(), "감속이 끝나면 멈춰 있어야 한다")
+
+	# 물리 노드는 그대로여야 한다.
+	_expect(absf(bumper.global_rotation) <= EPSILON,
+		"아트 회전이 범퍼 본체를 돌리면 안 된다")
 
 	bumper.queue_free()
 	await process_frame
