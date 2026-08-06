@@ -42,12 +42,9 @@
 [ext_resource type="Resource" path="res://settings/bumpers/repair_parts/CrescentNeedle.tres" id="39_needle_settings"]
 [ext_resource type="Resource" path="res://settings/bumpers/repair_parts/ForgottenStarBell.tres" id="40_bell_settings"]
 [ext_resource type="Script" path="res://scripts/sfx_system/sfx_director.gd" id="41_sfx_director"]
-[ext_resource type="Script" path="res://scripts/sfx_system/wave_sfx_binder.gd" id="42_sfx_binder"]
+[ext_resource type="Script" path="res://scripts/sfx_system/wave_sfx_binder_strict.gd" id="42_sfx_binder"]
 [ext_resource type="Resource" path="res://settings/sfx/WallSfxRules.tres" id="43_wall_sfx"]
-[ext_resource type="Resource" path="res://settings/sfx/FlipperSfxRules.tres" id="44_flipper_sfx"]
 [ext_resource type="Resource" path="res://settings/sfx/BallFlowSfxRules.tres" id="45_flow_sfx"]
-[ext_resource type="Resource" path="res://settings/sfx/ComboSfxRules.tres" id="46_combo_sfx"]
-[ext_resource type="Resource" path="res://settings/sfx/BumperSfxRules.tres" id="47_bumper_sfx"]
 [ext_resource type="PackedScene" path="res://Resources/boards/starlight_brooch_placeable.tscn" id="41_brooch_placeable"]
 [ext_resource type="PackedScene" path="res://Resources/boards/golden_gears_placeable.tscn" id="42_gears_placeable"]
 [ext_resource type="PackedScene" path="res://Resources/boards/crescent_needle_placeable.tscn" id="43_needle_placeable"]
@@ -413,7 +410,4 @@ script = ExtResource("41_sfx_director")
 [node name="_WaveSfxBinder" type="Node" parent="."]
 script = ExtResource("42_sfx_binder")
 wall_rules = ExtResource("43_wall_sfx")
-flipper_rules = ExtResource("44_flipper_sfx")
 ball_flow_rules = ExtResource("45_flow_sfx")
-combo_rules = ExtResource("46_combo_sfx")
-bumper_rules = ExtResource("47_bumper_sfx")

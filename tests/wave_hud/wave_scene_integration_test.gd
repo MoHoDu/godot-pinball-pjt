@@ -207,8 +207,8 @@ func _test_bumper_loadout(wave: WaveRuntimeCoordinator) -> void:
 	if wave_cannon != null:
 		_expect(wave_cannon.get_launch_anchors().size() == 7,
 			"Wave clockwork cannon must expose all seven authored directions.")
-		_expect(is_equal_approx(wave_cannon.get_selection_duration(), 0.8),
-			"Wave clockwork cannon must keep the confirmed 0.8 second selection.")
+		_expect(is_equal_approx(wave_cannon.get_selection_duration(), 2.0),
+			"Wave clockwork cannon must keep the confirmed 2.0 second selection.")
 		_expect(is_equal_approx(wave_cannon.get_launch_speed(), 1300.0),
 			"Wave clockwork cannon must keep its authored launch speed.")
 
