@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=9 format=3]
 
 ; wave.tscn 을 **상속**한 씬입니다. 원본은 한 줄도 고치지 않았습니다.
 ; 추가된 것은 SfxDirector 와 _WaveSfxBinder 두 노드뿐입니다.
@@ -11,6 +11,9 @@
 [ext_resource type="Script" path="res://scripts/sfx_system/wave_sfx_binder.gd" id="3_binder"]
 [ext_resource type="Resource" path="res://settings/sfx/WallSfxRules.tres" id="4_wall"]
 [ext_resource type="Resource" path="res://settings/sfx/FlipperSfxRules.tres" id="5_flipper"]
+[ext_resource type="Resource" path="res://settings/sfx/BallFlowSfxRules.tres" id="90_flow"]
+[ext_resource type="Resource" path="res://settings/sfx/ComboSfxRules.tres" id="91_combo"]
+[ext_resource type="Resource" path="res://settings/sfx/BumperSfxRules.tres" id="92_bumper"]
 
 [node name="Wave" instance=ExtResource("1_wave")]
 
@@ -21,3 +24,6 @@ script = ExtResource("2_director")
 script = ExtResource("3_binder")
 wall_rules = ExtResource("4_wall")
 flipper_rules = ExtResource("5_flipper")
+ball_flow_rules = ExtResource("90_flow")
+combo_rules = ExtResource("91_combo")
+bumper_rules = ExtResource("92_bumper")

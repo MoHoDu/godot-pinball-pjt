@@ -61,7 +61,16 @@ func get_director() -> SfxDirector:
 ## 이 공의 소리 요청 전부가 여기를 지납니다.
 ##
 ## speed 는 충돌 속도(px/s)입니다. 속도가 필요 없는 소리는 0을 넣습니다.
-func play(cue: SfxCue, speed: float = 0.0) -> SfxPlayResult:
+## 의도한 음정으로 재생합니다. 콤보 피치 사다리처럼 **피치가 곧 의미**일 때만 씁니다.
+##
+## 일반 재생은 `play()` 를 씁니다. 그쪽은 큐의 ±5% 랜덤이 걸립니다.
+## 사다리에 랜덤이 겹치면 계단이 흔들려 "쌓이고 있다"가 안 읽힙니다.
+func play_with_pitch(cue: SfxCue, speed: float, pitch: float) -> SfxPlayResult:
+	return play(cue, speed, pitch)
+
+
+func play(cue: SfxCue, speed: float = 0.0,
+		pitch_override: float = 0.0) -> SfxPlayResult:
 	var result := SfxPlayResult.new()
 
 	if cue == null or _director == null:
@@ -94,6 +103,7 @@ func play(cue: SfxCue, speed: float = 0.0) -> SfxPlayResult:
 
 	var context := SfxPlayContext.new(get_instance_id(), speed)
 	context.volume_offset_db = cue.get_repeat_volume_db(state.repeat_count)
+	context.pitch_override = pitch_override
 
 	result = _director.request(cue, context)
 

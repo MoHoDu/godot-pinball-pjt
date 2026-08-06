@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=12 format=3]
 
 ; 공 사운드 테스트 씬.
 ;
@@ -28,6 +28,9 @@
 [ext_resource type="Script" path="res://scripts/sfx_system/wave_sfx_binder.gd" id="5_binder"]
 [ext_resource type="Resource" path="res://settings/sfx/WallSfxRules.tres" id="6_wall"]
 [ext_resource type="Resource" path="res://settings/sfx/FlipperSfxRules.tres" id="7_flipper"]
+[ext_resource type="Resource" path="res://settings/sfx/BallFlowSfxRules.tres" id="90_flow"]
+[ext_resource type="Resource" path="res://settings/sfx/ComboSfxRules.tres" id="91_combo"]
+[ext_resource type="Resource" path="res://settings/sfx/BumperSfxRules.tres" id="92_bumper"]
 [ext_resource type="Script" path="res://tests/sfx_system/sfx_debug_hud.gd" id="8_hud"]
 
 [node name="TestFlipperBoard" instance=ExtResource("1_board")]
@@ -47,6 +50,9 @@ script = ExtResource("4_director")
 script = ExtResource("5_binder")
 wall_rules = ExtResource("6_wall")
 flipper_rules = ExtResource("7_flipper")
+ball_flow_rules = ExtResource("90_flow")
+combo_rules = ExtResource("91_combo")
+bumper_rules = ExtResource("92_bumper")
 
 [node name="_SfxDebugHud" type="CanvasLayer" parent="."]
 script = ExtResource("8_hud")
