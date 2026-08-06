@@ -1,0 +1,121 @@
+[gd_resource type="Resource" script_class="FlipperSfxRules" load_steps=12 format=3]
+
+; 플리퍼 SFX 규칙. 기획서 p.20 의 6종을 각각 별도 큐로 둡니다.
+;
+; dB 는 절차적 합성본의 피크 규격(docs/sfx/build_flipper_sfx.py 의 SPECS)과 같은 서열입니다.
+;   선택 -14 / 작동 -9 / 타격 -4 / 강타격 -2.5 / 복귀 -16 / 패링 -1
+; 파일 피크가 이미 그 값이라 여기 base_volume_db 는 0으로 두고, 서열은 파일이 갖습니다.
+;
+; 음원은 Tier 1·2 제작 단계에서 채웁니다.
+
+[ext_resource type="Script" path="res://scripts/sfx_system/rules/flipper_sfx_rules.gd" id="1_rules"]
+[ext_resource type="Script" path="res://scripts/sfx_system/sfx_cue.gd" id="2_cue"]
+[ext_resource type="AudioStream" path="res://Resources/sfx/flippers/SFX_Flipper_Hit.wav" id="3_hit"]
+[ext_resource type="AudioStream" path="res://Resources/sfx/flippers/SFX_Flipper_StrongHit.wav" id="4_strong"]
+[ext_resource type="AudioStream" path="res://Resources/sfx/flippers/SFX_Flipper_Parry.wav" id="5_parry"]
+
+[sub_resource type="Resource" id="SfxCue_select"]
+script = ExtResource("2_cue")
+cue_id = &"flipper_select"
+role = "플리퍼 선택 — 방향키로 조작할 플리퍼 그룹을 바꿀 때. 공과 무관"
+streams = Array[AudioStream]([])
+selection_mode = 0
+priority = 0
+maximum_concurrent = 2
+speed_volume_range = Vector2(0, 0)
+pitch_jitter = 0.04
+minimum_repeat_interval = 0.06
+repeat_attenuation_db = -2.0
+repeat_attenuation_floor_db = -6.0
+
+[sub_resource type="Resource" id="SfxCue_activate"]
+script = ExtResource("2_cue")
+cue_id = &"flipper_activate"
+role = "플리퍼 작동 — Space 로 플리퍼가 올라가는 순간. 공을 못 맞혀도 난다"
+streams = Array[AudioStream]([])
+selection_mode = 0
+priority = 0
+maximum_concurrent = 3
+speed_volume_range = Vector2(0, 0)
+pitch_jitter = 0.05
+minimum_repeat_interval = 0.05
+repeat_attenuation_db = -3.0
+repeat_attenuation_floor_db = -9.0
+
+[sub_resource type="Resource" id="SfxCue_return"]
+script = ExtResource("2_cue")
+cue_id = &"flipper_return"
+role = "플리퍼 복귀 — 제자리로 내려올 때의 태엽 떨림. 있는 줄 모를 만큼 작게"
+streams = Array[AudioStream]([])
+selection_mode = 0
+priority = 0
+maximum_concurrent = 2
+speed_volume_range = Vector2(0, 0)
+pitch_jitter = 0.05
+minimum_repeat_interval = 0.08
+repeat_attenuation_db = -3.0
+repeat_attenuation_floor_db = -9.0
+
+[sub_resource type="Resource" id="SfxCue_hit"]
+script = ExtResource("2_cue")
+cue_id = &"flipper_hit"
+role = "플리퍼 일반 타격 — 플리퍼가 공을 침 (기획서 MUST)"
+streams = Array[AudioStream]([ExtResource("3_hit")])
+selection_mode = 0
+priority = 30
+maximum_concurrent = 3
+speed_reference_range = Vector2(200, 1200)
+speed_volume_range = Vector2(-8, 0)
+pitch_jitter = 0.05
+minimum_repeat_interval = 0.04
+repeat_attenuation_db = -3.0
+repeat_attenuation_floor_db = -9.0
+
+[sub_resource type="Resource" id="SfxCue_strong_hit"]
+script = ExtResource("2_cue")
+cue_id = &"flipper_strong_hit"
+role = "플리퍼 강한 타격 — 세게 쳤을 때. 금속 쾅이 아닌 탄력 있는 쫙"
+streams = Array[AudioStream]([ExtResource("4_strong")])
+selection_mode = 0
+priority = 30
+maximum_concurrent = 2
+speed_reference_range = Vector2(1200, 2000)
+speed_volume_range = Vector2(-2, 0)
+pitch_jitter = 0.04
+minimum_repeat_interval = 0.04
+repeat_attenuation_db = -3.0
+repeat_attenuation_floor_db = -9.0
+
+[sub_resource type="Resource" id="SfxCue_parry_perfect"]
+script = ExtResource("2_cue")
+cue_id = &"flipper_parry_perfect"
+role = "정확한 패링 — 우선순위 1위. 탁 + 밝은 팅 + 원형 파동 3레이어"
+streams = Array[AudioStream]([ExtResource("5_parry")])
+selection_mode = 0
+priority = 50
+maximum_concurrent = 3
+speed_volume_range = Vector2(0, 0)
+pitch_jitter = 0.03
+
+[sub_resource type="Resource" id="SfxCue_parry_normal"]
+script = ExtResource("2_cue")
+cue_id = &"flipper_parry_normal"
+role = "일반 패링 — 정확한 패링보다 작게"
+streams = Array[AudioStream]([ExtResource("5_parry")])
+selection_mode = 0
+priority = 50
+maximum_concurrent = 2
+base_volume_db = -3.5
+speed_volume_range = Vector2(0, 0)
+pitch_jitter = 0.03
+
+[resource]
+script = ExtResource("1_rules")
+select_cue = SubResource("SfxCue_select")
+activate_cue = SubResource("SfxCue_activate")
+return_cue = SubResource("SfxCue_return")
+hit_cue = SubResource("SfxCue_hit")
+strong_hit_cue = SubResource("SfxCue_strong_hit")
+strong_hit_speed_threshold = 1200.0
+parry_perfect_cue = SubResource("SfxCue_parry_perfect")
+parry_normal_cue = SubResource("SfxCue_parry_normal")

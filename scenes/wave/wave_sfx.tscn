@@ -1,0 +1,23 @@
+[gd_scene load_steps=6 format=3]
+
+; wave.tscn 을 **상속**한 씬입니다. 원본은 한 줄도 고치지 않았습니다.
+; 추가된 것은 SfxDirector 와 _WaveSfxBinder 두 노드뿐입니다.
+;
+; 검수를 통과하면 이 두 노드를 wave.tscn 에 병합하고 run/main_scene 을 되돌립니다.
+; 그건 별도 커밋입니다.
+
+[ext_resource type="PackedScene" uid="uid://6fbf244c58gg" path="res://scenes/wave/wave.tscn" id="1_wave"]
+[ext_resource type="Script" path="res://scripts/sfx_system/sfx_director.gd" id="2_director"]
+[ext_resource type="Script" path="res://scripts/sfx_system/wave_sfx_binder.gd" id="3_binder"]
+[ext_resource type="Resource" path="res://settings/sfx/WallSfxRules.tres" id="4_wall"]
+[ext_resource type="Resource" path="res://settings/sfx/FlipperSfxRules.tres" id="5_flipper"]
+
+[node name="Wave" instance=ExtResource("1_wave")]
+
+[node name="SfxDirector" type="Node" parent="."]
+script = ExtResource("2_director")
+
+[node name="_WaveSfxBinder" type="Node" parent="."]
+script = ExtResource("3_binder")
+wall_rules = ExtResource("4_wall")
+flipper_rules = ExtResource("5_flipper")
