@@ -39,7 +39,7 @@ from scipy import signal
 from build_sfx import (
     SR, ROOT, AUDITION,
     secs, tt, env_exp, band_noise, gate, trim_floor, norm_peak,
-    write_wav, measure, short_tail, detune,
+    write_wav, measure, short_tail, detune, ring_wave, GLASS_MODES_PARRY,
 )
 
 # 출력 폴더 (build_sfx 의 ball/ 과 나눠 쓴다)
@@ -47,7 +47,7 @@ OUT = ROOT / "flipper"
 LAYERS = ROOT / "layers" / "flipper"
 for _d in (OUT, LAYERS):
     _d.mkdir(parents=True, exist_ok=True)
-from build_wall_sfx import modal_glide, soft_clip, grain
+from build_wall_sfx import modal_glide, soft_clip, grain, WALL_GLASS_MODES
 
 # (피크 dBFS, 게이트 hold, 게이트 fall)
 # 우선순위상 플리퍼 타격은 벽(-10)보다 크고 패링(-1)보다 작아야 한다.
@@ -57,25 +57,36 @@ SPECS = {
     "Hit": (-4.0, 0.095, 0.150),       # MUST. 벽보다 크고 길다
     "StrongHit": (-2.5, 0.120, 0.185),  # 탄력 있는 쫙/팡. 금속 쾅이 아니다
     "Return": (-16.0, 0.080, 0.130),   # 작은 태엽 떨림. 있는 줄 모를 만큼 작게
+    "Parry": (-1.0, 0.170, 0.300),     # 우선순위 1위(p.42). 전체에서 가장 크고 길다
 }
 
-# 단단한 톡·탁. 고무 얹은 나무 쪽이라 벽(1.2~3.8kHz)보다 낮게 잡되,
-# **너무 낮추면 '탁'이 아니라 둔탁한 쿵이 된다.**
-# 486Hz 기본음일 때 800Hz 미만이 84% 였다(실측). '탁'의 성격은 0.8~3kHz 에 있다.
+# 패링 2번째 레이어에 쓰는 밝은 유리 팅.
+# ★ 여기가 **공별로 갈아끼우는 유일한 자리**다 (p.90 6-3).
+#   1번(탁)과 3번(원형 파동)은 모든 공이 공유한다.
+#   이 파일이 만드는 것은 그 공용 3레이어의 기준본이다.
+PARRY_GLASS_MODES = GLASS_MODES_PARRY
+
+# ★ 2026-08-06 형락님 방향: "플리퍼가 공을 치는 소리는 **유리로 된 탁구공**을 치는 느낌"
+#
+#   가볍고 · 속이 비었고 · 밝다. 무거운 물체의 낮은 쿵이 아니다.
+#   그래서 기본음을 1.8kHz 대로 올리고 감쇠를 짧게 잡는다.
+#   가벼운 물체일수록 고유진동수가 높고 빨리 죽는다 — 그게 "가볍다"로 들리는 이유다.
+#
+#   이력: 486Hz → 저역 84% 로 둔탁 / 742Hz → 여전히 나무 쪽 / 1840Hz → 유리 탁구공
 TAK_MODES = [
-    (742.0, 1.00, 0.0165),
-    (1164.0, 0.68, 0.0122),
-    (1806.0, 0.40, 0.0090),
-    (2635.0, 0.21, 0.0064),
+    (1840.0, 1.00, 0.0118),
+    (2757.0, 0.66, 0.0087),
+    (4118.0, 0.38, 0.0064),
+    (6180.0, 0.20, 0.0045),
 ]
 
-# 강한 타격의 탄력. 일반 타격보다 낮고 길지만 여전히 '쫙/팡'이어야 한다.
-# 352Hz 기본음일 때 800Hz 미만이 96% 였다 — 그건 p.20 이 금지한 금속 쾅 쪽의 둔함이다.
+# 같은 유리 공을 **더 세게** 친 것. 밝기는 유지하고 몸통과 길이만 조금 늘린다.
+# 낮추면 p.20 이 금지한 "금속성 쾅"으로 넘어간다. 강함은 저역이 아니라 배음으로 만든다.
 PANG_MODES = [
-    (568.0, 1.00, 0.0235),
-    (884.0, 0.72, 0.0176),
-    (1462.0, 0.44, 0.0128),
-    (2244.0, 0.24, 0.0092),
+    (1520.0, 1.00, 0.0168),
+    (2356.0, 0.72, 0.0124),
+    (3610.0, 0.44, 0.0091),
+    (5480.0, 0.24, 0.0065),
 ]
 
 # 단추·나무 블록. 아주 짧고 건조하다.
@@ -210,12 +221,56 @@ def flipper_hit(strong=False):
     whoosh = swept_noise(n, 520.0, 2900.0, 0.038, 0.020, seed=8700 + int(strong))
     tex = grain(n, seed=20 + int(strong))
 
+    # ★ 공은 유리눈이다. 벽에 부딪히든 플리퍼에 맞든 유리 성분은 항상 있다.
+    #   벽 충돌음과 **같은 모드**를 쓴다 — 공이 하나뿐이니 공 소리도 하나여야 한다.
+    #   이게 없으면 플리퍼 타격이 "나무 라켓 소리"가 되고 공의 정체성이 사라진다.
+    ball_glass = modal_glide(n, WALL_GLASS_MODES, -40.0, 0.012,
+                             seed=8750 + int(strong))
+    ball_glass = ball_glass / np.max(np.abs(ball_glass))
+
     return assemble(name, {
         "attack": (attack, 0.92 if strong else 0.86),
-        "body": (body, 1.00),
+        "body": (body, 0.40 if strong else 0.48),
+        "ball_glass": (ball_glass, 1.00 if strong else 0.92),
         "whoosh": (whoosh, 0.52 if strong else 0.42),
         "grain": (tex, 0.13),
     }, tail_gain=0.17 if strong else 0.13, drive=2.4 if strong else 2.1)
+
+
+def flipper_parry():
+    """
+    정확한 패링 — 공용 3레이어 (p.90 6-3, p.41 3-10)
+
+      ① 플리퍼와 공이 맞닿은 **명확한 탁**   ← 공용
+      ② 성공을 전달하는 **밝은 유리 팅**     ← 공별로 갈아끼우는 자리
+      ③ 원형 링이 퍼지는 **짧은 웅/팡**      ← 공용
+
+    ★ 일반 타격과 반드시 구분한다 (p.42 3-11).
+      "일반 타격보다 어택이 선명함 / 중앙에 밝은 유리 팅 / 바깥으로 퍼지는 짧은 충격음"
+      → 타격과 같은 탁을 쓰되 **더 두껍고 선명하게** 하고, ②③을 얹어 갈라놓는다.
+
+    ★ 원형 파동은 VFX ③ 과 같은 언어다. 지속 0.12~0.20초 파동에 맞춰 길이를 잡았다.
+    """
+    n = secs(0.360)
+
+    # ① 명확한 탁 — 타격의 어택을 더 두껍게. 벽의 공통 어택은 여전히 쓰지 않는다
+    tak = band_noise(n, 700, 3800, 0.0040, seed=8900)
+    thick = band_noise(n, 420, 2100, 0.0062, seed=8910) * 0.52
+    body = modal_glide(n, TAK_MODES, -80.0, 0.014, seed=8920)
+
+    # ② 밝은 유리 팅 (공별 악센트 자리)
+    glass = modal_glide(n, PARRY_GLASS_MODES, -30.0, 0.020, seed=8930)
+    glass = glass / np.max(np.abs(glass))
+
+    # ③ 원형 파동 웅/팡
+    ring = ring_wave()
+
+    return assemble("Parry", {
+        "tak": (tak + thick, 1.00),
+        "body": (body, 0.58),
+        "glass": (glass, 0.72),
+        "ring": (ring, 0.30),
+    }, tail_gain=0.16, drive=2.2)
 
 
 def flipper_return():
@@ -251,15 +306,24 @@ def audition(takes):
         place(a, takes["Select"], 0.15 + i * 0.28, 0.0, jit())
     out.append(a)
 
-    # B. 한 사이클: 선택 → 작동 → 타격 → 복귀
-    b = np.zeros(secs(2.4))
+    # B. 같은 Space 입력이 세 갈래로 갈리는지 — 이게 이 오디션의 핵심이다
+    #    ① 헛침(작동만) ② 일반 타격 ③ 정확한 패링
+    b = np.zeros(secs(3.4))
     place(b, takes["Select"], 0.12, 0.0, jit())
-    place(b, takes["Activate"], 0.46, 0.0, jit())
-    place(b, takes["Hit"], 0.53, 0.0, jit())
-    place(b, takes["Return"], 0.74, 0.0, jit())
-    place(b, takes["Activate"], 1.28, 0.0, jit())
-    place(b, takes["StrongHit"], 1.35, 0.0, jit())
-    place(b, takes["Return"], 1.62, 0.0, jit())
+    # ① 공을 못 맞힘 — 작동음만
+    place(b, takes["Activate"], 0.50, 0.0, jit())
+    place(b, takes["Return"], 0.72, 0.0, jit())
+    # ② 일반 타격
+    place(b, takes["Activate"], 1.25, 0.0, jit())
+    place(b, takes["Hit"], 1.32, 0.0, jit())
+    place(b, takes["Return"], 1.54, 0.0, jit())
+    # ③ 정확한 패링
+    place(b, takes["Activate"], 2.10, 0.0, jit())
+    place(b, takes["Parry"], 2.17, 0.0, jit())
+    place(b, takes["Return"], 2.48, 0.0, jit())
+    # 강한 타격
+    place(b, takes["Activate"], 2.85, 0.0, jit())
+    place(b, takes["StrongHit"], 2.92, 0.0, jit())
     out.append(b)
 
     # C. 반복 입력 — p.20 "연속 재생 시 일부 레이어를 줄인다"를 -3dB 누적으로 흉내
@@ -282,6 +346,7 @@ def main():
         "Activate": flipper_activate(),
         "Hit": flipper_hit(False),
         "StrongHit": flipper_hit(True),
+        "Parry": flipper_parry(),
         "Return": flipper_return(),
     }
 
@@ -310,7 +375,9 @@ def main():
     checks = [
         ("타격 > 벽 (크기)", peaks["Hit"] > -10.0),
         ("타격 > 벽 (길이)", lens["Hit"] > 0.106),
-        ("타격 < 패링 (크기)", peaks["Hit"] < -1.0),
+        ("패링이 가장 크다", peaks["Parry"] == max(peaks.values())),
+        ("패링이 가장 길다", lens["Parry"] == max(lens.values())),
+        ("패링 > 타격", peaks["Parry"] > peaks["Hit"]),
         ("강타 > 일반 타격", peaks["StrongHit"] > peaks["Hit"]),
         ("선택 < 작동 (크기)", peaks["Select"] < peaks["Activate"]),
         ("선택이 가장 짧다", lens["Select"] < min(lens["Activate"], lens["Hit"])),
@@ -320,12 +387,39 @@ def main():
     for label, passed in checks:
         ok = ok and passed
         print(f"  {label:22s} {'OK' if passed else '★어긋남'}")
+
+    # ★ 검수 항목 "선택음·작동음·패링 성공음이 서로 다른가"(p.5)를 수치로 확인한다.
+    #   어택 12ms 구간의 상관계수. 1.0 이면 같은 소리, 0 근처면 서로 다른 소리다.
+    print()
+    print("어택 12ms 상관 — 0 에 가까울수록 확실히 구분된다")
+    order = ["Select", "Activate", "Hit", "StrongHit", "Parry", "Return"]
+    win = secs(0.012)
+
+    def head(name):
+        x = takes[name][:win].astype(float)
+        return x - x.mean()
+
+    print(f"{'':12s}" + "".join(f"{n[:6]:>8s}" for n in order))
+    worst = 0.0
+    for a in order:
+        row = f"{a[:11]:12s}"
+        for b in order:
+            xa, xb = head(a), head(b)
+            d = np.sqrt((xa * xa).sum() * (xb * xb).sum())
+            c = float((xa * xb).sum() / d) if d > 0 else 0.0
+            row += f"{c:+8.3f}"
+            if a != b:
+                worst = max(worst, abs(c))
+        print(row)
+    print(f"  서로 다른 소리끼리의 최대 상관: {worst:.3f} "
+          f"({'OK — 0.5 미만' if worst < 0.5 else '★ 너무 닮았다'})")
+    ok = ok and worst < 0.5
     print("검증:", "통과" if ok else "★실패")
 
     write_wav(AUDITION / "SFX_Flipper_audition.wav", audition(takes))
     print()
     print("오디션: SFX_Flipper_audition.wav")
-    print("  A 선택 3연타 / B 선택→작동→타격→복귀 / C 반복 입력 감쇠")
+    print("  A 선택 3연타 / B 헛침·타격·패링·강타 네 갈래 / C 반복 입력 감쇠")
     return rows
 
 
