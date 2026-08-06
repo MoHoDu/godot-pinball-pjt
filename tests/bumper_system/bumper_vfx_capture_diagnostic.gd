@@ -84,12 +84,20 @@ func _step() -> float:
 ## 시그널을 기다리지 않고 연출을 직접 띄운다. 물리 낙하를 재현할 필요가 없다.
 func _fire_effects() -> void:
 	for bumper in _bumpers:
+		# 공이 위에서 떨어져 맞은 상황을 가정한다.
+		var ball_position: Vector2 = bumper.global_position + Vector2(0.0, -140.0)
+
+		# 아트 애니메이션도 같이 띄운다. 대포는 포획 유지 상태로 둔다.
+		var anim := bumper.get_node_or_null(^"_ArtAnimator") as BumperArtAnimator
+		if anim != null:
+			if bumper is ShotBumper:
+				anim._on_control_started(bumper as ShotBumper, null)
+			else:
+				anim.press(Vector2.UP)
+
 		var feedback := bumper.get_node_or_null(^"_HitFeedback")
 		if feedback == null:
 			continue
-
-		# 공이 위에서 떨어져 맞은 상황을 가정한다.
-		var ball_position: Vector2 = bumper.global_position + Vector2(0.0, -140.0)
 
 		if feedback is BumperShotFeedback:
 			var shot := feedback as BumperShotFeedback
