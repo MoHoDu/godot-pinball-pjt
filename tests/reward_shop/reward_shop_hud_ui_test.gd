@@ -45,12 +45,22 @@ func _run() -> void:
 		"전체 화면 커튼 배경이 있어야 한다.")
 	_expect(hud.get_node_or_null("ShopBackdropShade") is ColorRect,
 		"배경 명도 조절 레이어가 있어야 한다.")
+	_expect(hud.get_node_or_null("CartoonBackdropDecoration") is Control,
+		"카툰 별 장식 레이어가 있어야 한다.")
 	_expect(hud.get_node_or_null("ShopSafeMargin/ShopPanel") is PanelContainer,
 		"안전 여백 안에 보상 패널이 있어야 한다.")
+	_expect(hud.find_child("BoothBolts", true, false) is Control,
+		"보상 패널에 장난감 부스 볼트 장식이 있어야 한다.")
+	_expect(hud.find_child("WaveClearBadge", true, false) is PanelContainer,
+		"웨이브 결과가 빨간 간판 배지로 표시되어야 한다.")
 	_expect(hud.get_card_count() == 6, "공 3장과 부품 3장이 보여야 한다.")
 	_expect(
 		hud.find_children("OfferArt", "Control", true, false).size() == 6,
 		"모든 카드에 공 또는 부품 아트가 있어야 한다."
+	)
+	_expect(
+		hud.find_children("OfferArtWell", "PanelContainer", true, false).size() == 6,
+		"모든 카드 아트가 잉크 외곽선 슬롯에 들어가야 한다."
 	)
 	_expect(hud.find_child("*Detail*", true, false) == null,
 		"하단 설명 노드는 없어야 한다.")
@@ -68,7 +78,10 @@ func _run() -> void:
 		(cards[0] as Button).pressed.emit()
 		_expect(_state_texts(hud).has("선택됨"),
 			"카드 선택 시 선택됨 배지가 보여야 한다.")
-		(cards[0] as Button).pressed.emit()
+		if proceed != null:
+			_expect(proceed.text.contains("구매 ·"),
+				"선택 후 하단 버튼이 해당 카드 구매 확인으로 바뀌어야 한다.")
+			proceed.pressed.emit()
 		await process_frame
 		var states_after_ball := _state_texts(hud)
 		_expect(states_after_ball.has("보유 · 구매 완료"),
