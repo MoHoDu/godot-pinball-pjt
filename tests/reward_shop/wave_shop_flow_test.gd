@@ -133,6 +133,12 @@ func _run() -> void:
 
 func _win_current_wave(scene: WaveShopCoordinator) -> void:
 	var flow: WaveBallFlowController = scene.wave_ball_flow
+	# main 이 도입한 수리 부품 배치 페이즈를 넘겨야 웨이브가 시작된다.
+	# 인게임에서는 BoardWavePlacementBridge 가 배치 확정 시 호출하는 자리다.
+	var phase := scene.wave_manager.current_stage_phase
+	if phase == WaveManager.StagePhase.REPAIR_PLACEMENT:
+		scene.wave_manager.advance_stage_phase()
+		await process_frame
 	_send_action(flow, &"ball_select_confirm")
 	_expect(
 		flow.current_state == WaveBallFlowController.State.AIMING,

@@ -87,6 +87,12 @@ func _run() -> void:
 
 	# 첫 발사가 배치를 확정하고 재고를 차감한다.
 	var flow: WaveBallFlowController = scene.wave_ball_flow
+	# main 이 도입한 수리 부품 배치 페이즈를 넘겨야 웨이브가 시작된다.
+	# 인게임에서는 BoardWavePlacementBridge 가 배치 확정 시 호출하는 자리다.
+	var phase := scene.wave_manager.current_stage_phase
+	if phase == WaveManager.StagePhase.REPAIR_PLACEMENT:
+		scene.wave_manager.advance_stage_phase()
+		await process_frame
 	_send_action(flow, &"ball_select_confirm")
 	_expect(scene.launcher.launch_prepared_ball(), "공이 발사되어야 한다.")
 	await process_frame
@@ -123,6 +129,12 @@ func _run() -> void:
 
 func _win_current_wave(scene: WaveRepairCoordinator) -> void:
 	var flow: WaveBallFlowController = scene.wave_ball_flow
+	# main 이 도입한 수리 부품 배치 페이즈를 넘겨야 웨이브가 시작된다.
+	# 인게임에서는 BoardWavePlacementBridge 가 배치 확정 시 호출하는 자리다.
+	var phase := scene.wave_manager.current_stage_phase
+	if phase == WaveManager.StagePhase.REPAIR_PLACEMENT:
+		scene.wave_manager.advance_stage_phase()
+		await process_frame
 	_send_action(flow, &"ball_select_confirm")
 	var launched_ball := flow.active_ball
 	_expect(scene.launcher.launch_prepared_ball(), "준비된 공이 발사되어야 한다.")
