@@ -220,6 +220,12 @@ func _test_scene_wiring() -> void:
 	_expect(binder.wall_rules != null and binder.flipper_rules != null,
 		"씬에 규칙 리소스가 물려 있어야 한다.")
 
+	# ★ FlipperSelector 에는 시그널이 없어 폴링으로 붙는다.
+	#   못 찾으면 선택음이 통째로 안 나고, 검수 항목
+	#   "선택음·작동음·패링 성공음이 서로 다른가"(p.5)를 볼 수 없다.
+	_expect(binder.has_selector(),
+		"FlipperSelector 를 찾아야 선택음이 난다.")
+
 	# 목소리 풀이 실제로 만들어졌는지
 	if director != null:
 		_expect(director.get_active_voice_count() == 0,

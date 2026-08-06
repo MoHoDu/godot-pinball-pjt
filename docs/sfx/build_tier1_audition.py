@@ -15,7 +15,7 @@ Tier 1 오디션 — 게임에 반입된 음원을 **게임이 하는 처리 그
 구성
   A 벽 속도 3구간   저 → 중 → 고. 구간마다 음색이 갈리는가
   B 벽 8연타        연타 감쇠가 과하지도 부족하지도 않은가
-  C 플리퍼 세 갈래   ★ 핵심. 같은 입력이 헛침 / 타격 / 패링으로 갈리는가
+  C 플리퍼 네 갈래   ★ 핵심. 같은 Space 가 헛침 / 타격 / 강타격 / 패링으로 갈리는가
   D 실전 리듬        벽·타격·패링이 섞인 흐름
 """
 
@@ -62,6 +62,9 @@ def main():
         "wall_low": load(RESOURCES / "walls" / "SFX_Wall_Hit_Low.wav"),
         "wall_mid": load(RESOURCES / "walls" / "SFX_Wall_Hit_Mid.wav"),
         "wall_high": load(RESOURCES / "walls" / "SFX_Wall_Hit_High.wav"),
+        "select": load(RESOURCES / "flippers" / "SFX_Flipper_Select.wav"),
+        "activate": load(RESOURCES / "flippers" / "SFX_Flipper_Activate.wav"),
+        "return": load(RESOURCES / "flippers" / "SFX_Flipper_Return.wav"),
         "hit": load(RESOURCES / "flippers" / "SFX_Flipper_Hit.wav"),
         "strong": load(RESOURCES / "flippers" / "SFX_Flipper_StrongHit.wav"),
         "parry": load(RESOURCES / "flippers" / "SFX_Flipper_Parry.wav"),
@@ -95,15 +98,31 @@ def main():
         at += max(MIN_INTERVAL, 0.11)
     parts.append(b)
 
-    # C. ★ 플리퍼 세 갈래 — 같은 입력이 어떻게 갈리는가
-    c = np.zeros(secs(3.0))
-    #    ① 헛침 — 아직 작동음이 없다(Tier 2). 지금은 침묵이 정답이다
+    # C. ★ 같은 Space 입력이 네 갈래로 갈리는가 — 이 오디션의 핵심
+    #    작동음은 네 경우 모두 먼저 난다. 그 뒤에 무엇이 붙느냐로 결과가 읽혀야 한다.
+    c = np.zeros(secs(5.6))
+    #    앞머리: 플리퍼 그룹 전환
+    place(c, takes["select"], 0.15)
+    place(c, takes["select"], 0.45)
+
+    #    ① 헛침 — 작동음 + 복귀음만. 공을 못 맞혔다
+    place(c, takes["activate"], 1.10)
+    place(c, takes["return"], 1.42)
+
     #    ② 일반 타격
-    place(c, takes["hit"], 0.90)
+    place(c, takes["activate"], 2.10)
+    place(c, takes["hit"], 2.17)
+    place(c, takes["return"], 2.46)
+
     #    ③ 강한 타격
-    place(c, takes["strong"], 1.60)
-    #    ④ 정확한 패링
-    place(c, takes["parry"], 2.30)
+    place(c, takes["activate"], 3.20)
+    place(c, takes["strong"], 3.27)
+    place(c, takes["return"], 3.58)
+
+    #    ④ 정확한 패링 (리듬 랠리)
+    place(c, takes["activate"], 4.30)
+    place(c, takes["parry"], 4.37)
+    place(c, takes["return"], 4.72)
     parts.append(c)
 
     # D. 실전 리듬 — 벽을 튕기다 플리퍼로 받고 마지막에 패링
@@ -129,7 +148,7 @@ def main():
     write_wav(path, np.clip(out, -1.0, 1.0))
 
     print(f"오디션: {path}")
-    print("  A 벽 속도 3구간 / B 벽 8연타 / C ★ 플리퍼 세 갈래 / D 실전 리듬")
+    print("  A 벽 속도 3구간 / B 벽 8연타 / C ★ 플리퍼 네 갈래 / D 실전 리듬")
     print()
     print("적용한 처리 (settings/sfx/*.tres 와 같은 값)")
     print(f"  피치 ±{PITCH_JITTER * 100:.0f}% · 연타 {REPEAT_STEP_DB}dB"

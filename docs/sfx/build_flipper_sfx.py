@@ -162,9 +162,13 @@ def spring_press(n, seed=0):
     g = 2.0 ** (320.0 / 1200.0) - 1.0
     warp = t + (-g) * 0.030 * (1.0 - np.exp(-t / 0.030))
     coil = np.zeros(n)
-    for f, a, tau in [(586.0, 1.00, 0.030), (1172.0, 0.42, 0.022), (1758.0, 0.20, 0.016)]:
+    # ★ 작은 장난감 스프링이다. 586Hz 기본음일 때 저역이 90.6% 였다(실측) —
+    #   그건 스프링이 아니라 둔탁한 쿵이다. 벽에서 겪은 것과 같은 실수다.
+    #   작고 가벼운 코일일수록 고유진동수가 높다. 게다가 이 소리는 Space 를 누를
+    #   때마다 나므로 탁하면 금방 피로해진다.
+    for f, a, tau in [(884.0, 1.00, 0.024), (1768.0, 0.46, 0.017), (2652.0, 0.22, 0.012)]:
         coil += a * np.sin(2 * np.pi * f * warp) * env_exp(n, tau, attack=0.0016)
-    creak = band_noise(n, 1500, 5200, 0.0135, seed=8100 + seed, order=1) * 0.42
+    creak = band_noise(n, 1800, 6000, 0.0125, seed=8100 + seed, order=1) * 0.54
     y = coil + creak
     return y / np.max(np.abs(y))
 

@@ -66,11 +66,14 @@ func _test_flipper_streams() -> void:
 		_expect(false, "플리퍼 규칙을 불러올 수 없다.")
 		return
 
-	# Tier 1 은 타격·강타격·패링까지. 선택·작동·복귀는 Tier 2 에서 채웁니다.
+	# 플리퍼 6종이 전부 채워져야 합니다 (Tier 1 + Tier 2).
 	var required: Array = [
 		[rules.hit_cue, "일반 타격"],
 		[rules.strong_hit_cue, "강한 타격"],
 		[rules.parry_perfect_cue, "정확한 패링"],
+		[rules.select_cue, "선택"],
+		[rules.activate_cue, "작동"],
+		[rules.return_cue, "복귀"],
 	]
 
 	for entry: Array in required:
@@ -90,6 +93,26 @@ func _test_flipper_streams() -> void:
 			"%s 이 루프면 안 된다." % label)
 		_expect(wav.format != AudioStreamWAV.FORMAT_QOA,
 			"%s 은 무손실이어야 한다." % label)
+
+	# ★ 같은 Space 입력이 세 갈래로 갈린다. 셋의 음원이 서로 달라야 한다.
+	#   헛침(작동만) / 타격(작동+타격) / 패링(작동+패링)
+	var distinct: Array[AudioStream] = []
+	for cue: SfxCue in [rules.select_cue, rules.activate_cue, rules.hit_cue,
+			rules.strong_hit_cue, rules.parry_perfect_cue, rules.return_cue]:
+		if cue != null and not cue.streams.is_empty():
+			_expect(not distinct.has(cue.streams[0]),
+				"플리퍼 6종은 서로 다른 음원이어야 한다. '%s' 가 겹친다." % cue.cue_id)
+			distinct.append(cue.streams[0])
+
+	_expect(distinct.size() == 6, "플리퍼 6종 음원이 전부 있어야 한다. (%d)" % distinct.size())
+
+	# 작동음은 Space 를 누를 때마다 난다. 타격보다 작아야 피로하지 않다
+	_expect(_peak_of(rules.activate_cue) < _peak_of(rules.hit_cue),
+		"작동음은 타격음보다 작아야 한다. 매 입력마다 나기 때문이다.")
+	_expect(_peak_of(rules.select_cue) < _peak_of(rules.activate_cue),
+		"선택음은 작동음보다 작아야 한다 (조작 확인음).")
+	_expect(_peak_of(rules.return_cue) < _peak_of(rules.select_cue),
+		"복귀음이 가장 작아야 한다. 있는 줄 모를 만큼.")
 
 	# 우선순위대로 패링이 가장 길어야 한다
 	var hit_len := _length_of(rules.hit_cue)
@@ -173,6 +196,15 @@ func _test_import_settings() -> void:
 
 
 # ── 헬퍼 ────────────────────────────────────────────────────
+
+## 큐 첫 음원의 피크(dBFS)입니다.
+func _peak_of(cue: SfxCue) -> float:
+	if cue == null or cue.streams.is_empty():
+		return -999.0
+
+	var wav := cue.streams[0] as AudioStreamWAV
+	return _peak_dbfs(wav) if wav != null else -999.0
+
 
 func _length_of(cue: SfxCue) -> float:
 	if cue == null or cue.streams.is_empty() or cue.streams[0] == null:

@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="FlipperSfxRules" load_steps=12 format=3]
+[gd_resource type="Resource" script_class="FlipperSfxRules" load_steps=15 format=3]
 
 ; 플리퍼 SFX 규칙. 기획서 p.20 의 6종을 각각 별도 큐로 둡니다.
 ;
@@ -13,12 +13,15 @@
 [ext_resource type="AudioStream" path="res://Resources/sfx/flippers/SFX_Flipper_Hit.wav" id="3_hit"]
 [ext_resource type="AudioStream" path="res://Resources/sfx/flippers/SFX_Flipper_StrongHit.wav" id="4_strong"]
 [ext_resource type="AudioStream" path="res://Resources/sfx/flippers/SFX_Flipper_Parry.wav" id="5_parry"]
+[ext_resource type="AudioStream" path="res://Resources/sfx/flippers/SFX_Flipper_Select.wav" id="6_select"]
+[ext_resource type="AudioStream" path="res://Resources/sfx/flippers/SFX_Flipper_Activate.wav" id="7_activate"]
+[ext_resource type="AudioStream" path="res://Resources/sfx/flippers/SFX_Flipper_Return.wav" id="8_return"]
 
 [sub_resource type="Resource" id="SfxCue_select"]
 script = ExtResource("2_cue")
 cue_id = &"flipper_select"
 role = "플리퍼 선택 — 방향키로 조작할 플리퍼 그룹을 바꿀 때. 공과 무관"
-streams = Array[AudioStream]([])
+streams = Array[AudioStream]([ExtResource("6_select")])
 selection_mode = 0
 priority = 0
 maximum_concurrent = 2
@@ -32,7 +35,7 @@ repeat_attenuation_floor_db = -6.0
 script = ExtResource("2_cue")
 cue_id = &"flipper_activate"
 role = "플리퍼 작동 — Space 로 플리퍼가 올라가는 순간. 공을 못 맞혀도 난다"
-streams = Array[AudioStream]([])
+streams = Array[AudioStream]([ExtResource("7_activate")])
 selection_mode = 0
 priority = 0
 maximum_concurrent = 3
@@ -46,7 +49,7 @@ repeat_attenuation_floor_db = -9.0
 script = ExtResource("2_cue")
 cue_id = &"flipper_return"
 role = "플리퍼 복귀 — 제자리로 내려올 때의 태엽 떨림. 있는 줄 모를 만큼 작게"
-streams = Array[AudioStream]([])
+streams = Array[AudioStream]([ExtResource("8_return")])
 selection_mode = 0
 priority = 0
 maximum_concurrent = 2

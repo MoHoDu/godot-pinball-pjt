@@ -33,6 +33,14 @@ var _bound_flippers: Array[Node] = []
 var _bound_bridges: Array[Node] = []
 var _source_controllers: Dictionary = {}
 
+## ★ FlipperSelector 에는 시그널이 하나도 없습니다.
+##   그런데 검수 항목에 "선택음·작동음·패링 성공음이 서로 다른가"(p.5)가 있어
+##   선택음은 반드시 필요합니다. 컨트롤러가 4개뿐이라 폴링 비용이 무시할 만하고,
+##   기존 스크립트를 고치지 않아도 됩니다.
+##   시그널 신설은 별도 작업으로 남겨둡니다.
+var _selector: Node
+var _last_selected: Object = null
+
 
 @export_category("Wave SFX 배선")
 
@@ -60,6 +68,25 @@ func _ready() -> void:
 
 	_bind_bridges(scan_root)
 	_bind_flippers()
+	_bind_selector(scan_root)
+
+
+func _process(_delta: float) -> void:
+	if Engine.is_editor_hint() or _selector == null or flipper_rules == null:
+		return
+
+	var current: Variant = _selector.get(&"selected")
+	if current == _last_selected:
+		return
+
+	# 시작 시점의 최초 선택은 조작이 아니므로 울리지 않습니다.
+	var had_previous := _last_selected != null
+	_last_selected = current
+
+	if had_previous and current != null and flipper_rules.select_cue != null:
+		var controller := _controller_for_source(_selector)
+		if controller != null:
+			controller.play(flipper_rules.select_cue, 0.0)
 
 
 ## 무엇에 몇 개 연결됐는지입니다. 배선이 조용히 실패하는 것을 잡는 테스트용입니다.
@@ -138,6 +165,24 @@ func _bind_flippers() -> void:
 				node.connect(FLIPPER_STATE_SIGNAL, bound)
 
 		_bound_flippers.append(node)
+
+
+## FlipperSelector 를 찾습니다. 그룹에 등록돼 있지 않고 시그널도 없어
+## 가지 안에서 속성과 메서드로 알아봅니다.
+func _bind_selector(node: Node) -> void:
+	if node.has_method(&"select_controller") and node.get(&"selected") != null:
+		_selector = node
+		_last_selected = node.get(&"selected")
+		return
+
+	for child in node.get_children():
+		if _selector == null:
+			_bind_selector(child)
+
+
+## 선택 폴링이 붙었는지입니다. 테스트용입니다.
+func has_selector() -> bool:
+	return _selector != null
 
 
 func _is_in_branch(node: Node, branch_root: Node) -> bool:
