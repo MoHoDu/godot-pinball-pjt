@@ -20,7 +20,7 @@ grid_origin = Vector2(0, 0)
 [node name="Boundary" type="Polygon2D" parent="."]
 z_index = -9
 color = Color(0.04, 0.16, 0.19, 0.1)
-polygon = PackedVector2Array(-350, -660, 350, -660, 1150, -330, 1150, 330, 350, 660, -350, 660, -1150, 330, -1150, -330)
+polygon = PackedVector2Array(-350, -700, 350, -700, 1220, -350, 1220, 350, 350, 700, -350, 700, -1220, 350, -1220, -350)
 script = ExtResource("2_boundary")
 board_id = &"wave_03_repair_board"
 
@@ -29,21 +29,21 @@ z_index = -3
 
 [node name="Upper" type="Polygon2D" parent="Zones"]
 color = Color(0.18, 0.52, 0.68, 0.16)
-polygon = PackedVector2Array(-900, -340, 900, -340, 900, -130, -900, -130)
+polygon = PackedVector2Array(-820, -380, 820, -380, 820, -200, -820, -200)
 script = ExtResource("3_zone")
 zone_id = &"upper"
 allowed_kind_ids = PackedStringArray("starlight_brooch", "forgotten_star_bell")
 
 [node name="Middle" type="Polygon2D" parent="Zones"]
 color = Color(0.25, 0.68, 0.52, 0.14)
-polygon = PackedVector2Array(-900, -120, 900, -120, 900, 120, -900, 120)
+polygon = PackedVector2Array(-820, -100, 820, -100, 820, 100, -820, 100)
 script = ExtResource("3_zone")
 zone_id = &"middle"
 allowed_kind_ids = PackedStringArray("starlight_brooch", "crescent_needle")
 
 [node name="Lower" type="Polygon2D" parent="Zones"]
 color = Color(0.66, 0.45, 0.2, 0.15)
-polygon = PackedVector2Array(-900, 130, 900, 130, 900, 340, -900, 340)
+polygon = PackedVector2Array(-820, 200, 820, 200, 820, 380, -820, 380)
 script = ExtResource("3_zone")
 zone_id = &"lower"
 allowed_kind_ids = PackedStringArray("golden_gears", "crescent_needle")
@@ -52,51 +52,75 @@ allowed_kind_ids = PackedStringArray("golden_gears", "crescent_needle")
 z_index = 4
 
 [node name="Upper01" type="Marker2D" parent="Sockets"]
-position = Vector2(-470, -230)
+position = Vector2(-576, -288)
 script = ExtResource("4_socket")
 socket_id = &"upper_01"
 zone_id = &"upper"
 
 [node name="Upper02" type="Marker2D" parent="Sockets"]
-position = Vector2(470, -230)
+position = Vector2(-288, -288)
 script = ExtResource("4_socket")
 socket_id = &"upper_02"
 zone_id = &"upper"
 
+[node name="Upper03" type="Marker2D" parent="Sockets"]
+position = Vector2(288, -288)
+script = ExtResource("4_socket")
+socket_id = &"upper_03"
+zone_id = &"upper"
+
+[node name="Upper04" type="Marker2D" parent="Sockets"]
+position = Vector2(576, -288)
+script = ExtResource("4_socket")
+socket_id = &"upper_04"
+zone_id = &"upper"
+
 [node name="Middle01" type="Marker2D" parent="Sockets"]
-position = Vector2(-450, 60)
+position = Vector2(-720, 0)
 script = ExtResource("4_socket")
 socket_id = &"middle_01"
 zone_id = &"middle"
 
 [node name="Middle02" type="Marker2D" parent="Sockets"]
-position = Vector2(450, 60)
+position = Vector2(-432, 0)
 script = ExtResource("4_socket")
 socket_id = &"middle_02"
 zone_id = &"middle"
 
 [node name="Middle03" type="Marker2D" parent="Sockets"]
-position = Vector2(-790, 0)
+position = Vector2(432, 0)
 script = ExtResource("4_socket")
 socket_id = &"middle_03"
 zone_id = &"middle"
 
 [node name="Middle04" type="Marker2D" parent="Sockets"]
-position = Vector2(790, 0)
+position = Vector2(720, 0)
 script = ExtResource("4_socket")
 socket_id = &"middle_04"
 zone_id = &"middle"
 
 [node name="Lower01" type="Marker2D" parent="Sockets"]
-position = Vector2(-180, 300)
+position = Vector2(-720, 288)
 script = ExtResource("4_socket")
 socket_id = &"lower_01"
 zone_id = &"lower"
 
 [node name="Lower02" type="Marker2D" parent="Sockets"]
-position = Vector2(180, 300)
+position = Vector2(-576, 288)
 script = ExtResource("4_socket")
 socket_id = &"lower_02"
+zone_id = &"lower"
+
+[node name="Lower03" type="Marker2D" parent="Sockets"]
+position = Vector2(288, 288)
+script = ExtResource("4_socket")
+socket_id = &"lower_03"
+zone_id = &"lower"
+
+[node name="Lower04" type="Marker2D" parent="Sockets"]
+position = Vector2(576, 288)
+script = ExtResource("4_socket")
+socket_id = &"lower_04"
 zone_id = &"lower"
 
 [node name="ForbiddenAreas" type="Node2D" parent="."]
@@ -176,28 +200,28 @@ show_during_editing = false
 
 [node name="BottomFlipperSweep" type="Polygon2D" parent="ForbiddenAreas"]
 color = Color(0.72, 0.15, 0.25, 0.1)
-polygon = PackedVector2Array(-420, 430, 420, 430, 420, 700, -420, 700)
+polygon = PackedVector2Array(-330, 430, 330, 430, 330, 650, -330, 650)
 script = ExtResource("5_forbidden")
 area_id = &"bottom_flipper_sweep"
 reason = "하단 플리퍼 작동 범위"
 
 [node name="TopFlipperSweep" type="Polygon2D" parent="ForbiddenAreas"]
 color = Color(0.72, 0.15, 0.25, 0.1)
-polygon = PackedVector2Array(-420, -700, 420, -700, 420, -430, -420, -430)
+polygon = PackedVector2Array(-330, -650, 330, -650, 330, -430, -330, -430)
 script = ExtResource("5_forbidden")
 area_id = &"top_flipper_sweep"
 reason = "상단 플리퍼 작동 범위"
 
 [node name="LeftFlipperSweep" type="Polygon2D" parent="ForbiddenAreas"]
 color = Color(0.72, 0.15, 0.25, 0.1)
-polygon = PackedVector2Array(-1250, -420, -950, -420, -950, 420, -1250, 420)
+polygon = PackedVector2Array(-1140, -320, -950, -320, -950, 320, -1140, 320)
 script = ExtResource("5_forbidden")
 area_id = &"left_flipper_sweep"
 reason = "좌측 플리퍼 작동 범위"
 
 [node name="RightFlipperSweep" type="Polygon2D" parent="ForbiddenAreas"]
 color = Color(0.72, 0.15, 0.25, 0.1)
-polygon = PackedVector2Array(900, -420, 1200, -420, 1200, 420, 900, 420)
+polygon = PackedVector2Array(950, -320, 1140, -320, 1140, 320, 950, 320)
 script = ExtResource("5_forbidden")
 area_id = &"right_flipper_sweep"
 reason = "우측 플리퍼 작동 범위"
