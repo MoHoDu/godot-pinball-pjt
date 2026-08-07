@@ -139,9 +139,9 @@ git 리모트 `https://github.com/MoHoDu/godot-pinball-pjt.git`, 작업 브랜�
 1. ★ **공 VFX ③ 패링 원형 파동** — 2026-08-03 형락님 "꼬리는 넘어가고 패링 VFX로".
    정확한 패링에만, r25~30 → 90~120px, 0.12~0.20초, 금색 보조 링. 텍스처 5종은 이미 있고 시스템만 없다.
    붙일 곳: 플리퍼 `parry_resolved` 시그널의 PERFECT. 상세 수치는 [[HANDOFF]] §3
-2. **SFX ② 텍스처 단계 — 형락님 검수 대기 중.** `docs/ball_guides/sfx/SFX_Clockwork_audition.mp3` 를
+2. **SFX ② 텍스처 단계 — 형락님 검수 대기 중.** `docs/sfx/audition/SFX_Clockwork_audition.mp3` 를
    들어보고 방향 확정 → ElevenLabs 재질음. 프롬프트는 `sfx_elevenlabs_prompts.md` 에 이미 있고,
-   형락님이 직접 생성해 `docs/ball_guides/sfx/raw/` 에 넣기로 했다. **승인 전 나머지 4종 양산 금지**
+   형락님이 직접 생성해 `docs/sfx/raw/` 에 넣기로 했다. **승인 전 나머지 4종 양산 금지**
 3. **`AudioController` 노드 신설** — 문서 12-3 구조. 현재 `base_ball.tscn` 은 Sprite2D + `_Trail` 뿐
 4. **삼각형 보드** (2026-08-02 지시상 원래 1순위였으나 계속 밀렸다)
 5. 범퍼·유물·코인·보스 아트

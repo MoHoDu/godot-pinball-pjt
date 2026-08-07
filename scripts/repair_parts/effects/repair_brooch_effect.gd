@@ -3,15 +3,16 @@ extends RepairPartEffect
 
 
 ## 별빛 브로치 - 마감의 별.
-## 비활성 브로치에 닿으면 공에 마감 표식이 생기고, 제한 시간 안에
+## 비활성 브로치에 닿으면 공에 마감 표식이 생기고, 6.0초 안에
 ## 브로치가 아닌 서로 다른 부품 두 종류(계열 기준)를 맞히면 별 팔이 켜집니다.
 ## 준비된 상태로 브로치에 돌아오면 수리 완성 타격을 SECONDARY_FINISH로 정산합니다.
+##
+## v0.3: 랭크를 제거하고 제한 시간 6.0초 / 완성 타격 배수 x3.0으로 고정했습니다.
+## 제한 시간은 그대로 브로치 완성 연출 애니메이션의 길이이기도 합니다.
 
 
-const REQUIRED_VISIT_FAMILIES := 2
-
-
-## ball_instance_id → { expires_at: float, visited: Dictionary[family → true] }
+## ball_instance_id → { started_at: float, expires_at: float,
+##                      visited: Dictionary[family → true] }
 var _marks: Dictionary = {}
 
 
@@ -21,47 +22,44 @@ func on_own_primary(
 	now: float
 ) -> void:
 	assert(context.trigger_kind == RepairEffectContext.TriggerKind.PRIMARY)
-	var data := get_rank_data()
+	var data := get_definition()
 	if data == null:
 		return
 
 	var ball_id := ball.get_instance_id()
 	if not _marks.has(ball_id):
 		# 한 공에 마감 표식은 하나만 존재합니다.
-		_marks[ball_id] = {
-			&"expires_at": now + data.window_seconds,
-			&"visited": {},
-		}
+		_start_mark(ball_id, data, now)
 		_push_brooch_state(now)
 		return
 
 	var mark: Dictionary = _marks[ball_id]
 	if now > float(mark[&"expires_at"]):
 		# 만료된 표식은 새 표식으로 다시 시작합니다.
-		_marks[ball_id] = {
-			&"expires_at": now + data.window_seconds,
-			&"visited": {},
-		}
+		_start_mark(ball_id, data, now)
 		_push_brooch_state(now)
 		return
 
 	var visited: Dictionary = mark[&"visited"]
-	if visited.size() >= REQUIRED_VISIT_FAMILIES:
-		# 수리 완성. 완성 타격 한 번을 큰 가중치로 정산하고 표식을 초기화합니다.
+	if visited.size() >= data.brooch_required_visits:
+		# 수리 완성. 완성 타격 한 번을 기본 타격의 x3.0 배수로 정산하고
+		# 표식을 초기화합니다. 콤보 횟수는 한 번만 증가합니다.
 		_marks.erase(ball_id)
+		var finish_weight := maxf(data.brooch_finish_multiplier, 0.0)
 		var finish_context := RepairEffectContext.make_secondary(
 			RepairEffectContext.TriggerKind.SECONDARY_FINISH,
 			runtime.get_part_id(),
 			runtime.get_family(),
 			ball_id
 		)
-		router.dispatch_secondary(finish_context, data.score_weight)
-		router.notify_finish_completed(runtime, ball, data.score_weight)
+		router.dispatch_secondary(finish_context, finish_weight)
+		router.notify_finish_completed(runtime, ball, finish_weight)
 		_push_brooch_state(now)
 		return
 
 	# 준비가 끝나기 전에 다시 맞히면 제한 시간만 새로 시작하고 진행도는 초기화합니다.
-	mark[&"expires_at"] = now + data.window_seconds
+	mark[&"started_at"] = now
+	mark[&"expires_at"] = now + data.brooch_window_seconds
 	visited.clear()
 	_push_brooch_state(now)
 
@@ -100,6 +98,10 @@ func tick(now: float) -> void:
 		_marks.erase(ball_id)
 	if not expired_ids.is_empty():
 		_push_brooch_state(now)
+		return
+	if not _marks.is_empty():
+		# 6.0초 진행 애니메이션이 매 프레임 남은 시간을 읽을 수 있게 갱신합니다.
+		_push_brooch_state(now)
 
 
 func reset_transient() -> void:
@@ -118,7 +120,25 @@ func get_visited_family_count(ball_id: int) -> int:
 	return (mark[&"visited"] as Dictionary).size()
 
 
+func _start_mark(
+	ball_id: int,
+	data: RepairPartDefinition,
+	now: float
+) -> void:
+	_marks[ball_id] = {
+		&"started_at": now,
+		&"expires_at": now + data.brooch_window_seconds,
+		&"visited": {},
+	}
+
+
 func _push_brooch_state(now: float) -> void:
+	var data := get_definition()
+	var required := 2
+	var window := 6.0
+	if data != null:
+		required = data.brooch_required_visits
+		window = maxf(data.brooch_window_seconds, 0.001)
 	var lit_arms := 0
 	var remaining := 0.0
 	for mark: Dictionary in _marks.values():
@@ -126,7 +146,11 @@ func _push_brooch_state(now: float) -> void:
 		remaining = maxf(remaining, float(mark[&"expires_at"]) - now)
 	_push_state({
 		&"family": RepairPartDefinition.Family.BROOCH,
-		&"lit_arms": mini(lit_arms, REQUIRED_VISIT_FAMILIES),
+		&"lit_arms": mini(lit_arms, required),
+		&"required_arms": required,
 		&"mark_count": _marks.size(),
 		&"mark_remaining": remaining,
+		# 1.0에서 0.0으로 흐르는 6.0초 애니메이션 진행도입니다.
+		&"mark_progress": clampf(remaining / window, 0.0, 1.0),
+		&"is_ready_to_finish": lit_arms >= required and not _marks.is_empty(),
 	})

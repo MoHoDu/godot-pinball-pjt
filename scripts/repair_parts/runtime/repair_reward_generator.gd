@@ -5,7 +5,7 @@ extends RefCounted
 ## 웨이브 종료 후 수리함 보상 후보를 만듭니다 (기획서 3-3 후보 생성 규칙).
 ##  - 첫 보상에는 현재 보유하지 않은 부품을 최소 하나 포함한다.
 ##  - 같은 후보 세 개가 모두 동일 계열이 되지 않게 한다.
-##  - 최대 랭크 부품은 후보에서 제외한다.
+##  - 이미 보유한 부품은 후보에서 제외한다 (v0.3: 랭크업이 없으므로 중복 무의미).
 ##  - 웨이브당 재추첨 1회를 허용한다.
 
 
@@ -49,7 +49,7 @@ func reroll(
 	)
 
 
-## 후보 part_id 목록을 반환합니다. 새 부품 획득과 기존 부품 랭크업이 섞입니다.
+## 후보 part_id 목록을 반환합니다. 후보는 모두 미보유 부품입니다.
 ## is_first_reward가 true면 미보유 부품을 최소 하나 보장합니다 (3-3 규칙 1).
 func generate_candidates(
 	all_definitions: Array[RepairPartDefinition],
@@ -60,7 +60,7 @@ func generate_candidates(
 	for definition: RepairPartDefinition in all_definitions:
 		if definition == null or not definition.is_valid():
 			continue
-		if inventory != null and inventory.is_max_rank(definition.part_id):
+		if inventory != null and inventory.owns(definition.part_id):
 			continue
 		pool.append(definition.part_id)
 

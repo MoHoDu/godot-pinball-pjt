@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3]
+[gd_scene load_steps=31 format=3]
 
 [ext_resource type="PackedScene" uid="uid://6fbf244c58gg" path="res://scenes/wave/wave.tscn" id="1_board"]
 [ext_resource type="Script" path="res://scripts/wave_hud/wave_repair_coordinator.gd" id="2_coordinator"]
@@ -27,6 +27,7 @@
 [ext_resource type="Script" path="res://scripts/ball_base_system/ball_definition.gd" id="25_definition"]
 [ext_resource type="Script" path="res://scripts/ball_base_system/ball_stock.gd" id="26_stock"]
 [ext_resource type="PackedScene" uid="uid://csrwlhfpki4fs" path="res://Resources/balls/mass_var/normal_ball.tscn" id="27_base_ball"]
+[ext_resource type="Script" path="res://scripts/reward_shop/reward_ball_flow_controller.gd" id="28_flow_v02"]
 
 [sub_resource type="Resource" id="BallDefinition_base"]
 script = ExtResource("25_definition")
@@ -50,9 +51,18 @@ script = ExtResource("22_selection_hud_v02")
 [node name="LifeHud" parent="HUD/WaveHud/DesignSpace" index="0"]
 script = ExtResource("23_life_hud_v02")
 
+[node name="WaveBallFlowController" parent="." index="0"]
+script = ExtResource("28_flow_v02")
+
 [node name="WaveBallInventory" parent="." index="0"]
 script = ExtResource("24_inventory_v02")
 starting_stock = Array[ExtResource("26_stock")]([SubResource("BallStock_base")])
+
+[node name="BoardWavePlacementBridge" parent="."]
+integration_enabled = false
+
+[node name="RepairPlacementHUD" parent="."]
+visible = false
 
 [node name="RepairPartSystem" type="Node2D" parent="."]
 
@@ -67,6 +77,7 @@ script = ExtResource("5_ball_adapter")
 script = ExtResource("6_router")
 combo_adapter_path = NodePath("../RepairComboAdapter")
 ball_adapter_path = NodePath("../RepairBallAdapter")
+runtime_root_path = NodePath("../Sockets")
 
 [node name="RepairBoardController" type="Node" parent="RepairPartSystem"]
 script = ExtResource("7_board_controller")

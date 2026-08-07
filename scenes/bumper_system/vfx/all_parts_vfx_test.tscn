@@ -1,0 +1,14 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/bumper_test.tscn" id="1_base"]
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/vfx/button_bumper_vfx.tscn" id="2_button"]
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/vfx/cotton_bumper_vfx.tscn" id="3_cotton"]
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/vfx/spring_doll_bumper_vfx.tscn" id="4_spring"]
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/vfx/toy_drum_bumper_vfx.tscn" id="5_drum"]
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/vfx/clockwork_toy_cannon_vfx.tscn" id="6_cannon"]
+[ext_resource type="PackedScene" path="res://scenes/repair_parts/vfx/starlight_brooch_vfx.tscn" id="7_brooch"]
+[ext_resource type="PackedScene" path="res://scenes/repair_parts/vfx/golden_gears_vfx.tscn" id="8_gears"]
+[ext_resource type="PackedScene" path="res://scenes/repair_parts/vfx/forgotten_star_bell_vfx.tscn" id="9_bell"]
+
+[node name="BumperTest" instance=ExtResource("1_base")]
+bumper_scenes = Array[PackedScene]([ExtResource("2_button"), ExtResource("3_cotton"), ExtResource("4_spring"), ExtResource("5_drum"), ExtResource("6_cannon"), ExtResource("7_brooch"), ExtResource("8_gears"), ExtResource("9_bell")])

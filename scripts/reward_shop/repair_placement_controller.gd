@@ -29,7 +29,7 @@ const MARKER_NAME := "_PlacementMarker"
 
 
 var _board: RepairBoardController
-var _inventory: RepairPartInventory
+var _inventory: RewardPartInventory
 var _scene_map: RepairPartSceneMap
 
 ## socket_id(StringName) → part_id(StringName). 예약 상태라 재고 차감이 없습니다.
@@ -54,7 +54,7 @@ var focused_socket_id: StringName:
 
 func bind(
 	board: RepairBoardController,
-	inventory: RepairPartInventory,
+	inventory: RewardPartInventory,
 	scene_map: RepairPartSceneMap
 ) -> bool:
 	if board == null or inventory == null or scene_map == null:

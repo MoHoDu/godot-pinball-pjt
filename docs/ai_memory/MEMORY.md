@@ -24,6 +24,7 @@ Pinball_Logue (NAN AI 해커톤, 팀 Hire us Pls) 프로젝트 메모리.
 - [Godot 설치 차단](reference_godot_install_blocked.md) — 릴리스 에셋 호스트 막힘. 엔진 없이 하는 검증 목록
 - [아트 파이프라인](reference_art_pipeline.md) — Leonardo/GPT/Canva 툴 체인과 리소스 검수 통과 기준
 - [코드베이스 컨벤션](reference_codebase_conventions.md) — 폴더·코드 스타일·연출 노드 패턴·테스트 형식, GL Compatibility 제약
+- [사운드 규격 전문](reference_sound_spec.md) — 통합본 PDF의 사운드 전체. 한글 추출은 pdftotext 말고 **pypdf**
 - [테스트 씬 조작키](reference_test_scene_controls.md) — 공 종류 전환 1~7, 패링 모드 0~3. **VFX 검수는 여기서 한다**
 - [경로 대소문자 문제](reference_path_case_issue.md) — `res://resources` 소문자 참조 17곳, Linux/macOS 익스포트 시 전부 깨짐
 
@@ -50,11 +51,14 @@ Pinball_Logue (NAN AI 해커톤, 팀 Hire us Pls) 프로젝트 메모리.
 
 ## SFX
 
+- ★ [사운드 규격 전문](reference_sound_spec.md) — **사운드 작업은 여기부터.** 수치표·우선순위·금지 음색·대상별 음색·필드명 규약을 PDF에서 한 장으로 정리
 - [공 SFX 파일럿](project_sfx01_ball_pilot.md) — AI 사운드는 최소 0.5초라 어택을 못 만든다. 어택·길이는 절차적, AI는 재질음만
 
 ## 범퍼 · 수리 부품
 
 - [수리 부품 시스템](project_repair_parts_system.md) — 범퍼 합성 구조로 4계열 구현(2026-08-04). 엔진 테스트는 로컬에서 미실행
+- [범퍼 아트 리소스](project_bumper_art_resources.md) — STEP1 형태 확정(2026-08-05). **아트 대상 6종 · 이미지 7장 · 인게임 존재 5종**(기차 취소, 용수철 인형만 2프레임, 미끄럼틀 슬롯 없음). 범퍼에는 **텍스처 슬롯 자체가 없다**
+- [수리 부품 아트](project_repair_parts_art.md) — 3종 기본 상태 완료(2026-08-06). **초승달 바늘은 기획서 취소인데 코드엔 구현돼 있다.** 진행 표시는 코드가 그리니 그림에 굽지 말 것
 
 ## 보드 · 벽
 

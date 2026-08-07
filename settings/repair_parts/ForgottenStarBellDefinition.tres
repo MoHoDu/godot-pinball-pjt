@@ -1,43 +1,15 @@
-[gd_resource type="Resource" script_class="RepairPartDefinition" load_steps=6 format=3]
+[gd_resource type="Resource" script_class="RepairPartDefinition" format=3 uid="uid://dwg0xsbgpc2l2"]
 
-[ext_resource type="Script" path="res://scripts/repair_parts/data/repair_part_definition.gd" id="1"]
-[ext_resource type="Script" path="res://scripts/repair_parts/data/repair_part_rank_data.gd" id="2"]
-
-[sub_resource type="Resource" id="Rank1"]
-script = ExtResource("2")
-window_seconds = 0.0
-echo_delay = 0.6
-cooldown_seconds = 1.0
-score_weight = 0.25
-contact_boost = 0.0
-overdrive_boost = 0.0
-max_stack = 3
-
-[sub_resource type="Resource" id="Rank2"]
-script = ExtResource("2")
-window_seconds = 0.0
-echo_delay = 0.5
-cooldown_seconds = 0.85
-score_weight = 0.35
-contact_boost = 0.0
-overdrive_boost = 0.0
-max_stack = 3
-
-[sub_resource type="Resource" id="Rank3"]
-script = ExtResource("2")
-window_seconds = 0.0
-echo_delay = 0.4
-cooldown_seconds = 0.7
-score_weight = 0.5
-contact_boost = 0.0
-overdrive_boost = 0.0
-max_stack = 3
+[ext_resource type="Script" uid="uid://gxxb7iydtty0" path="res://scripts/repair_parts/data/repair_part_definition.gd" id="1"]
 
 [resource]
 script = ExtResource("1")
 part_id = &"forgotten_star_bell"
-family = 3
+family = 2
 display_name = "잊혀진 별방울"
 bumper_kind_id = &"forgotten_star_bell"
-action_line = "실제 접촉 뒤 잠시 후 한 번 더 울립니다"
-rank_data = [SubResource("Rank1"), SubResource("Rank2"), SubResource("Rank3")]
+action_line = "여운이 울릴 때까지 쌓은 콤보만큼 콤보를 한 번에 더합니다"
+bell_echo_delay = 0.6
+bell_cooldown_seconds = 1.0
+bell_echo_combo_multiplier = 0.25
+bell_echo_hit_weight = 1.0

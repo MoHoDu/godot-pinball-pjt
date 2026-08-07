@@ -159,7 +159,9 @@ func _build_repair_placement() -> void:
 	)
 
 	# 첫 웨이브는 부모 _ready()의 enter_wave()가 이미 지나갔으므로 직접 엽니다.
-	if wave_manager.current_state != WaveManager.State.INACTIVE:
+	if wave_manager.current_state != WaveManager.State.INACTIVE \
+			or wave_manager.current_stage_phase \
+			== WaveManager.StagePhase.REPAIR_PLACEMENT:
 		_try_begin_placement()
 
 
@@ -196,8 +198,19 @@ func _build_debug_key_guide() -> void:
 
 
 func _try_begin_placement() -> void:
-	if placement_controller.begin_placement(wave_manager.current_wave_index):
+	var placement_opened := placement_controller.begin_placement(
+		wave_manager.current_wave_index
+	)
+	if placement_opened:
 		_append_event("배치 · Q/E 소켓 · 1~4 부품 예약 · X 해제")
+	# 재고가 없으면 배치 HUD는 열리지 않지만, 파생 웨이브도 main의
+	# 스테이지 페이즈 계약에 따라 공 선택으로 진입해야 합니다.
+	if wave_manager.current_stage_phase \
+			== WaveManager.StagePhase.REPAIR_PLACEMENT:
+		assert(
+			wave_manager.advance_stage_phase(),
+			"수리 부품 배치 확인 후 공 선택 단계로 전환하지 못했습니다."
+		)
 
 
 ## 첫 발사가 확정되는 순간 예약을 소비 처리합니다(8-2).

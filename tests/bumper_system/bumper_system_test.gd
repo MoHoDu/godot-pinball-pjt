@@ -322,8 +322,8 @@ func _test_shot_control_and_deferred_destruction() -> void:
 		"Shot 발사 방향은 씬 자식 노드가 아닌 Settings 배열에서 관리해야 한다.")
 	_expect(safe_count == 1,
 		"캐논 안전 기본 방향은 정확히 하나여야 한다.")
-	_expect_float(cannon.get_selection_duration(), 0.8,
-		"캐논 방향 선택 시간은 0.8초여야 한다.")
+	_expect_float(cannon.get_selection_duration(), 2.0,
+		"캐논 방향 선택 시간은 2.0초여야 한다.")
 	_expect_float(cannon.get_launch_speed(), 1300.0,
 		"캐논 고정 발사 속력은 1300이어야 한다.")
 	_expect(not safe_anchor.release_position.is_zero_approx(),

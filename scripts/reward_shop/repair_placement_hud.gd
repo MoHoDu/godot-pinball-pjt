@@ -6,29 +6,29 @@ extends Control
 ##
 ## 정식 디자인 전까지 텍스트와 키 조작만 제공합니다.
 ##   Q/E     소켓 포커스 이동
-##   1~4     해당 부품을 포커스 소켓에 예약 (같은 부품이면 해제)
+##   1~3     해당 부품을 포커스 소켓에 예약 (같은 부품이면 해제)
 ##   X       포커스 소켓의 예약 해제
 ## 첫 발사가 곧 확정이므로 별도의 완료 입력은 없습니다(8-2).
 
 
-## 숫자키 1~4에 대응하는 부품 순서입니다(카탈로그 노출 순서와 동일).
+## 숫자키 1~3에 대응하는 부품 순서입니다(카탈로그 노출 순서와 동일).
+## v0.3에서 초승달 바늘이 삭제되어 세 부품만 남았습니다.
 const PART_ORDER: Array[StringName] = [
 	&"starlight_brooch",
 	&"golden_gears",
-	&"crescent_needle",
 	&"forgotten_star_bell",
 ]
 
 
 var _controller: RepairPlacementController
-var _inventory: RepairPartInventory
+var _inventory: RewardPartInventory
 var _scene_map: RepairPartSceneMap
 var _panel_label: Label
 
 
 func bind(
 	controller: RepairPlacementController,
-	inventory: RepairPartInventory,
+	inventory: RewardPartInventory,
 	scene_map: RepairPartSceneMap
 ) -> bool:
 	if controller == null or inventory == null or scene_map == null:

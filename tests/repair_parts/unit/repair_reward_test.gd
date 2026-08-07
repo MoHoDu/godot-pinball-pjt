@@ -1,7 +1,7 @@
 extends SceneTree
 
 
-## 수리함·보상 후보 규칙 단위 테스트 (기획서 3-2, 3-3).
+## 수리함·보상 후보 규칙 단위 테스트 (기획서 3-2, 3-3 + v0.3 랭크 삭제).
 ## 실행:
 ## godot --headless --path . \
 ##     --script res://tests/repair_parts/unit/repair_reward_test.gd
@@ -12,9 +12,6 @@ const BROOCH_DEF := preload(
 )
 const GEARS_DEF := preload(
 	"res://settings/repair_parts/GoldenGearsDefinition.tres"
-)
-const NEEDLE_DEF := preload(
-	"res://settings/repair_parts/CrescentNeedleDefinition.tres"
 )
 const BELL_DEF := preload(
 	"res://settings/repair_parts/ForgottenStarBellDefinition.tres"
@@ -30,9 +27,9 @@ func _init() -> void:
 
 func _run() -> void:
 	_test_definitions_are_valid()
-	_test_rank_values_match_spec()
-	_test_inventory_acquire_and_rank_up()
-	_test_candidates_exclude_max_rank()
+	_test_values_match_spec()
+	_test_inventory_has_no_rank()
+	_test_candidates_exclude_owned()
 	_test_first_reward_includes_unowned()
 	_test_reroll_limit()
 	_finish()
@@ -40,7 +37,7 @@ func _run() -> void:
 
 func _all_definitions() -> Array[RepairPartDefinition]:
 	var definitions: Array[RepairPartDefinition] = [
-		BROOCH_DEF, GEARS_DEF, NEEDLE_DEF, BELL_DEF
+		BROOCH_DEF, GEARS_DEF, BELL_DEF
 	]
 	return definitions
 
@@ -53,61 +50,65 @@ func _make_inventory() -> RepairInventory:
 
 
 func _test_definitions_are_valid() -> void:
+	_expect(_all_definitions().size() == 3,
+		"v0.3 수리 부품 정의는 세 개여야 한다.")
 	for definition: RepairPartDefinition in _all_definitions():
 		_expect(definition.is_valid(),
 			"%s 정의가 유효해야 한다." % definition.part_id)
-		_expect(definition.get_max_rank() == 3,
-			"%s 최대 랭크는 3이어야 한다." % definition.part_id)
-
-
-func _test_rank_values_match_spec() -> void:
 	_expect(
-		is_equal_approx(BROOCH_DEF.get_rank_data(1).window_seconds, 6.0)
-			and is_equal_approx(BROOCH_DEF.get_rank_data(3).score_weight, 5.0),
-		"브로치 랭크 수치가 기획서 표와 일치해야 한다."
-	)
-	_expect(
-		is_equal_approx(GEARS_DEF.get_rank_data(2).contact_boost, 120.0)
-			and is_equal_approx(GEARS_DEF.get_rank_data(3).overdrive_boost, 300.0)
-			and is_equal_approx(GEARS_DEF.get_rank_data(1).window_seconds, 2.4),
-		"톱니 랭크 수치가 기획서 표와 일치해야 한다."
-	)
-	_expect(
-		is_equal_approx(NEEDLE_DEF.get_rank_data(1).score_weight, 0.0)
-			and is_equal_approx(NEEDLE_DEF.get_rank_data(3).window_seconds, 5.0),
-		"바늘 랭크 수치가 기획서 표와 일치해야 한다."
-	)
-	_expect(
-		is_equal_approx(BELL_DEF.get_rank_data(1).echo_delay, 0.6)
-			and is_equal_approx(BELL_DEF.get_rank_data(3).cooldown_seconds, 0.7),
-		"방울 랭크 수치가 기획서 표와 일치해야 한다."
+		not ResourceLoader.exists(
+			"res://settings/repair_parts/CrescentNeedleDefinition.tres"
+		),
+		"초승달 바늘 정의 리소스는 삭제되어야 한다."
 	)
 
 
-func _test_inventory_acquire_and_rank_up() -> void:
+func _test_values_match_spec() -> void:
+	_expect(
+		is_equal_approx(BROOCH_DEF.brooch_window_seconds, 6.0)
+			and is_equal_approx(BROOCH_DEF.brooch_finish_multiplier, 3.0)
+			and BROOCH_DEF.brooch_required_visits == 2,
+		"브로치 수치는 6.0초 / x3.0 / 다른 부품 2종이어야 한다."
+	)
+	_expect(
+		GEARS_DEF.gear_contact_multiplier > 1.0
+			and is_equal_approx(GEARS_DEF.gear_overdrive_boost, 180.0)
+			and is_equal_approx(GEARS_DEF.gear_window_seconds, 2.4)
+			and GEARS_DEF.gear_max_stack == 3,
+		"톱니 수치는 접촉 배율 / 과회전 +180px/s / 2.4초 3단계여야 한다."
+	)
+	_expect(
+		is_equal_approx(BELL_DEF.bell_echo_delay, 0.6)
+			and is_equal_approx(BELL_DEF.bell_echo_combo_multiplier, 0.25)
+			and is_equal_approx(BELL_DEF.bell_cooldown_seconds, 1.0),
+		"방울 수치는 0.6초 지연 / 콤보 가중치 0.25 / 쿨다운 1.0초여야 한다."
+	)
+
+
+func _test_inventory_has_no_rank() -> void:
 	var inventory := _make_inventory()
-	_expect(inventory.acquire(&"golden_gears") == 1,
-		"새 부품은 랭크 1로 추가되어야 한다.")
-	_expect(inventory.acquire(&"golden_gears") == 2,
-		"기존 부품 재획득은 랭크를 올려야 한다.")
+	_expect(inventory.acquire(&"golden_gears"),
+		"새 부품은 수리함에 추가되어야 한다.")
+	_expect(inventory.owns(&"golden_gears"), "추가된 부품은 보유 상태여야 한다.")
+	_expect(not inventory.acquire(&"golden_gears"),
+		"랭크가 없으므로 같은 부품 재획득은 아무 변화도 만들지 않아야 한다.")
+	_expect(not inventory.has_method(&"get_rank"),
+		"RepairInventory에 랭크 API가 남아 있으면 안 된다.")
+	_expect(not inventory.has_method(&"is_max_rank"),
+		"RepairInventory에 최대 랭크 API가 남아 있으면 안 된다.")
+
+
+func _test_candidates_exclude_owned() -> void:
+	var inventory := _make_inventory()
 	inventory.acquire(&"golden_gears")
-	_expect(inventory.is_max_rank(&"golden_gears"),
-		"랭크 3이면 최대 랭크여야 한다.")
-	_expect(inventory.acquire(&"golden_gears") == 3,
-		"최대 랭크에서 추가 획득해도 랭크가 넘치면 안 된다.")
-
-
-func _test_candidates_exclude_max_rank() -> void:
-	var inventory := _make_inventory()
-	for _index: int in range(3):
-		inventory.acquire(&"golden_gears")
 	var generator := RepairRewardGenerator.new()
 	generator.setup(inventory, 12345)
 	for _trial: int in range(20):
 		var candidates := generator.generate_candidates(_all_definitions())
 		_expect(not candidates.has(&"golden_gears"),
-			"최대 랭크 부품은 후보에서 제외되어야 한다.")
-		_expect(candidates.size() == 3, "후보는 3개가 제시되어야 한다.")
+			"이미 보유한 부품은 후보에서 제외되어야 한다.")
+		_expect(candidates.size() == 2,
+			"남은 미보유 부품 수만큼만 후보가 제시되어야 한다.")
 
 
 func _test_first_reward_includes_unowned() -> void:
@@ -119,12 +120,10 @@ func _test_first_reward_includes_unowned() -> void:
 		var candidates := generator.generate_candidates(
 			_all_definitions(), 3, true
 		)
-		var has_unowned := false
+		_expect(not candidates.is_empty(), "첫 보상 후보는 비어 있으면 안 된다.")
 		for part_id: StringName in candidates:
-			if not inventory.owns(part_id):
-				has_unowned = true
-		_expect(has_unowned,
-			"첫 보상에는 현재 보유하지 않은 부품이 최소 하나 포함되어야 한다.")
+			_expect(not inventory.owns(part_id),
+				"첫 보상 후보는 모두 미보유 부품이어야 한다.")
 
 
 func _test_reroll_limit() -> void:

@@ -119,11 +119,12 @@ func _test_inventory_states(
 ) -> void:
 	var brooch := hud.get_card(&"starlight_brooch")
 	var gears := hud.get_card(&"golden_gears")
-	var needle := hud.get_card(&"crescent_needle")
 	var bell := hud.get_card(&"forgotten_star_bell")
-	_expect(brooch != null and gears != null and needle != null and bell != null,
-		"Placement drawer must render all four repair-part entries.")
-	_expect(brooch.disabled and gears.disabled and needle.disabled and bell.disabled,
+	_expect(brooch != null and gears != null and bell != null,
+		"Placement drawer must render all three v0.3 repair-part entries.")
+	_expect(hud.get_card(&"crescent_needle") == null,
+		"Placement drawer must not render the removed Crescent Needle entry.")
+	_expect(brooch.disabled and gears.disabled and bell.disabled,
 		"No repair part may be selected until a board socket is selected.")
 	_expect(gears.get_stack_text() == "×2" and gears.has_layered_stack(),
 		"Duplicate repair parts must use a layered corner stack with exact count.")
@@ -161,8 +162,8 @@ func _test_inventory_states(
 
 	_expect(controller.select_socket(&"middle_02"),
 		"The controller must expose socket selection without scene-path coupling.")
-	_expect(not brooch.disabled and needle.disabled == false,
-		"The middle zone must enable repair parts accepted by that zone.")
+	_expect(not brooch.disabled,
+		"The middle zone must enable its remaining v0.3 repair part.")
 	_expect(gears.disabled and bell.disabled,
 		"Parts incompatible with the selected zone must remain disabled.")
 
@@ -193,14 +194,17 @@ func _test_place_remove_and_replace(
 	_expect(inventory.get_available_count(&"golden_gears") == 1,
 		"One of two stacked gears must remain after initial placement.")
 	_expect(controller.place_kind_at_socket(
-		&"crescent_needle", &"lower_02"
-	), "Dropping a different compatible part must replace the socket content.")
-	var replacement := session.find_placeable_at_socket(&"lower_02")
+		&"starlight_brooch", &"upper_02"
+	), "An upper-zone socket must accept the Starlight Brooch.")
+	_expect(controller.place_kind_at_socket(
+		&"forgotten_star_bell", &"upper_02"
+	), "Dropping another v0.3 part must replace the socket content.")
+	var replacement := session.find_placeable_at_socket(&"upper_02")
 	_expect(replacement != null and replacement.get_kind_id() \
-		== &"crescent_needle",
+		== &"forgotten_star_bell",
 		"Replacement must leave only the newly selected repair part on the socket.")
-	_expect(inventory.get_available_count(&"golden_gears") == 2 \
-		and inventory.get_available_count(&"crescent_needle") == 0,
+	_expect(inventory.get_available_count(&"starlight_brooch") == 1 \
+		and inventory.get_available_count(&"forgotten_star_bell") == 0,
 		"Replacement must return the old part and reserve the new part atomically.")
 
 

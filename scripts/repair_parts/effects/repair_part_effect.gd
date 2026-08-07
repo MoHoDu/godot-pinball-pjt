@@ -20,8 +20,8 @@ func setup(
 	router = effect_router
 
 
-func get_rank_data() -> RepairPartRankData:
-	return runtime.get_rank_data() if runtime != null else null
+func get_definition() -> RepairPartDefinition:
+	return runtime.definition if runtime != null else null
 
 
 ## 자기 부품의 유효 접촉입니다. context는 항상 PRIMARY입니다.

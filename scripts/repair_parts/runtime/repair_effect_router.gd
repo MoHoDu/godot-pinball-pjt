@@ -8,21 +8,12 @@ extends Node
 ## 효과 처리 순서: 접촉 중복 제거 → 기본 콤보 타격(기존 파이프라인) →
 ## 부품 상태 갱신 → 2차 효과 → 피드백.
 
-signal part_primary_triggered(
-	part: Node,
-	ball: RigidBody2D,
-	family: int,
-	rank: int
-)
+signal part_primary_triggered(part: Node, ball: RigidBody2D, family: int)
 signal part_secondary_triggered(part_id: StringName, effect_type: int)
 signal repair_finish_completed(ball: RigidBody2D, bonus_weight: float)
-signal stitch_completed(
-	ball: RigidBody2D,
-	target_part: Node,
-	bonus_weight: float
-)
 signal bell_echo_scheduled(ball: RigidBody2D, delay: float)
-signal bell_echo_fired(ball_id: int, bonus_weight: float)
+## 여운이 실제로 추가한 콤보 횟수입니다(정수).
+signal bell_echo_fired(ball_id: int, bonus_combo_count: int)
 signal gear_overdrive_fired(
 	part: Node,
 	ball: RigidBody2D,
@@ -33,6 +24,9 @@ signal gear_overdrive_fired(
 
 @export var combo_adapter_path: NodePath = NodePath("")
 @export var ball_adapter_path: NodePath = NodePath("")
+## 비워 두면 기존 호환 동작대로 SceneTree 전체에서 부품을 찾습니다.
+## 여러 웨이브 런타임이 상속으로 겹치는 씬에서는 각 보드 루트를 지정합니다.
+@export var runtime_root_path: NodePath = NodePath("")
 ## true면 물리 프레임마다 내부 시계를 진행합니다. 테스트에서는 끄고
 ## advance_time을 직접 호출할 수 있습니다.
 @export var auto_advance: bool = true
@@ -59,10 +53,8 @@ func _physics_process(delta: float) -> void:
 func rescan_parts() -> void:
 	if not is_inside_tree():
 		return
-	for runtime: Node in get_tree().get_nodes_in_group(
-		RepairPartRuntime.RUNTIME_GROUP
-	):
-		register_part(runtime as RepairPartRuntime)
+	for runtime: RepairPartRuntime in _get_scoped_runtimes():
+		register_part(runtime)
 
 
 func register_part(runtime: RepairPartRuntime) -> void:
@@ -115,12 +107,25 @@ func dispatch_secondary(
 	context: RepairEffectContext,
 	score_weight: float
 ) -> bool:
+	return dispatch_secondary_combo_hits(context, 1, score_weight) > 0
+
+
+## 2차 타격으로 콤보를 한 번에 여러 번 적립합니다(방울 여운).
+## 실제로 적립한 콤보 횟수를 반환합니다.
+func dispatch_secondary_combo_hits(
+	context: RepairEffectContext,
+	hit_count: int,
+	score_weight_each: float
+) -> int:
 	assert(context.trigger_kind != RepairEffectContext.TriggerKind.PRIMARY)
 	context.can_trigger_parts = false
-	var registered := (
-		_combo_adapter != null
-		and _combo_adapter.register_secondary_hit(context, score_weight)
-	)
+	var registered := 0
+	if _combo_adapter != null:
+		registered = _combo_adapter.register_secondary_combo_hits(
+			context,
+			hit_count,
+			score_weight_each
+		)
 	part_secondary_triggered.emit(context.source_part_id, context.trigger_kind)
 	return registered
 
@@ -154,15 +159,6 @@ func notify_finish_completed(
 	repair_finish_completed.emit(ball, bonus_weight)
 
 
-func notify_stitch_completed(
-	_needle: RepairPartRuntime,
-	ball: RigidBody2D,
-	target_part: RepairPartRuntime,
-	bonus_weight: float
-) -> void:
-	stitch_completed.emit(ball, target_part, bonus_weight)
-
-
 func notify_bell_echo_scheduled(
 	_bell: RepairPartRuntime,
 	ball: RigidBody2D,
@@ -174,9 +170,9 @@ func notify_bell_echo_scheduled(
 func notify_bell_echo_fired(
 	_bell: RepairPartRuntime,
 	ball_id: int,
-	bonus_weight: float
+	bonus_combo_count: int
 ) -> void:
-	bell_echo_fired.emit(ball_id, bonus_weight)
+	bell_echo_fired.emit(ball_id, bonus_combo_count)
 
 
 func notify_gear_overdrive(
@@ -194,19 +190,14 @@ func _on_part_primary(runtime: RepairPartRuntime, ball: RigidBody2D) -> void:
 		runtime.get_family(),
 		ball.get_instance_id()
 	)
-	part_primary_triggered.emit(
-		runtime,
-		ball,
-		runtime.get_family(),
-		runtime.current_rank
-	)
+	part_primary_triggered.emit(runtime, ball, runtime.get_family())
 
-	# 1) 자기 부품 상태 갱신 (톱니 가속·방울 예약·바늘 대기·브로치 표식/완성)
+	# 1) 자기 부품 상태 갱신 (톱니 가속·방울 예약·브로치 표식/완성)
 	var own_effect := get_effect_for(runtime)
 	if own_effect != null:
 		own_effect.on_own_primary(ball, context, _now)
 
-	# 2) 다른 부품의 교차 판정 (바늘 봉합 성공·브로치 방문 점등)
+	# 2) 다른 부품의 교차 판정 (브로치 방문 점등)
 	for effect: RepairPartEffect in _effects.values():
 		if effect == own_effect:
 			continue
@@ -230,10 +221,30 @@ func _on_part_exiting(runtime: RepairPartRuntime) -> void:
 func _reset_all_transient() -> void:
 	for effect: RepairPartEffect in _effects.values():
 		effect.reset_transient()
-	for runtime: Node in get_tree().get_nodes_in_group(
+	for runtime: RepairPartRuntime in _get_scoped_runtimes():
+		runtime.reset_transient()
+
+
+func _get_scoped_runtimes() -> Array[RepairPartRuntime]:
+	var runtimes: Array[RepairPartRuntime] = []
+	if not is_inside_tree():
+		return runtimes
+	var runtime_root: Node
+	if not runtime_root_path.is_empty():
+		runtime_root = get_node_or_null(runtime_root_path)
+		if runtime_root == null:
+			return runtimes
+	for candidate: Node in get_tree().get_nodes_in_group(
 		RepairPartRuntime.RUNTIME_GROUP
 	):
-		(runtime as RepairPartRuntime).reset_transient()
+		if not candidate is RepairPartRuntime:
+			continue
+		if runtime_root != null \
+				and candidate != runtime_root \
+				and not runtime_root.is_ancestor_of(candidate):
+			continue
+		runtimes.append(candidate as RepairPartRuntime)
+	return runtimes
 
 
 func _create_effect(family: int) -> RepairPartEffect:
@@ -242,8 +253,6 @@ func _create_effect(family: int) -> RepairPartEffect:
 			return RepairBroochEffect.new()
 		RepairPartDefinition.Family.GEAR:
 			return RepairGearEffect.new()
-		RepairPartDefinition.Family.NEEDLE:
-			return RepairNeedleEffect.new()
 		RepairPartDefinition.Family.BELL:
 			return RepairBellEffect.new()
 	return null
