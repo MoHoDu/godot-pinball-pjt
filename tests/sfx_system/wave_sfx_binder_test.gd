@@ -10,7 +10,6 @@ extends SceneTree
 ##   이 테스트는 정확히 그 조건(코드 인스턴스화 = current_scene 이 null)에서
 ##   배선이 되는지 봅니다. 옛 방식이면 여기서 0을 찾고 실패합니다.
 
-const SCENE_PATH := "res://scenes/wave/wave_sfx.tscn"
 const WALL_RULES_PATH := "res://settings/sfx/WallSfxRules.tres"
 const FLIPPER_RULES_PATH := "res://settings/sfx/FlipperSfxRules.tres"
 
@@ -47,6 +46,12 @@ func _test_sfx_lab_scene() -> void:
 	root.add_child(scene)
 	await physics_frame
 	await physics_frame
+
+	# ★ 코드로 인스턴스화하면 current_scene 이 이 씬이 아니다.
+	#   과거에 바인더가 current_scene 으로 대상을 찾다가 **에러 없이 조용히**
+	#   아무것도 못 찾은 적이 있다. 이 조건에서 배선이 되는지가 핵심이다.
+	_expect(current_scene != scene,
+		"이 테스트는 current_scene 이 아닌 상태를 재현해야 의미가 있다.")
 
 	# ★ NodePath 익스포트가 비어 있지 않은가 — 이게 비면 모든 키가 안 먹는다
 	_expect(not (scene.ball_path as NodePath).is_empty(),
@@ -170,59 +175,6 @@ func _test_rules_resources() -> void:
 
 
 
-## ★ 핵심 회귀 — 코드 인스턴스화 상태에서 배선되는가
-func _test_scene_wiring() -> void:
-	var packed := load(SCENE_PATH) as PackedScene
-	_expect(packed != null, "wave_sfx.tscn 을 불러올 수 있어야 한다.")
-
-	if packed == null:
-		return
-
-	var scene := packed.instantiate()
-	root.add_child(scene)
-	await physics_frame
-	await physics_frame
-
-	# 이 경로에서는 current_scene 이 이 씬이 아니다.
-	_expect(current_scene != scene,
-		"이 테스트는 current_scene 이 아닌 상태를 재현해야 의미가 있다.")
-
-	var director := scene.get_node_or_null(^"SfxDirector") as SfxDirector
-	var binder := scene.get_node_or_null(^"_WaveSfxBinder") as WaveSfxBinder
-
-	_expect(director != null, "상속 씬에 SfxDirector 가 있어야 한다.")
-	_expect(binder != null, "상속 씬에 _WaveSfxBinder 가 있어야 한다.")
-
-	if binder == null:
-		scene.queue_free()
-		return
-
-	_expect(binder.get_director() == director,
-		"바인더가 형제 SfxDirector 를 찾아야 한다.")
-
-	var counts := binder.get_bound_source_counts()
-	_expect(int(counts[&"bridges"]) >= 1,
-		"★ ComboCollisionBridge 를 찾아야 한다. 못 찾으면 벽·플리퍼 충돌음이 통째로 안 난다. (%d)"
-			% int(counts[&"bridges"]))
-	_expect(int(counts[&"flippers"]) >= 8,
-		"★ 플리퍼 8개(4그룹×좌우)를 전부 찾아야 한다. (%d)" % int(counts[&"flippers"]))
-
-	_expect(binder.wall_rules != null and binder.flipper_rules != null,
-		"씬에 규칙 리소스가 물려 있어야 한다.")
-
-	# ★ FlipperSelector 에는 시그널이 없어 폴링으로 붙는다.
-	#   못 찾으면 선택음이 통째로 안 나고, 검수 항목
-	#   "선택음·작동음·패링 성공음이 서로 다른가"(p.5)를 볼 수 없다.
-	_expect(binder.has_selector(),
-		"FlipperSelector 를 찾아야 선택음이 난다.")
-
-	# 목소리 풀이 실제로 만들어졌는지
-	if director != null:
-		_expect(director.get_active_voice_count() == 0,
-			"시작 시점에는 울리는 목소리가 없어야 한다.")
-
-	scene.queue_free()
-	await physics_frame
 
 
 ## 상속 씬만 쓰고 원본은 건드리지 않았는지
