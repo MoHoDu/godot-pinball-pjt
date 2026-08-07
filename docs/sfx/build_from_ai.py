@@ -37,6 +37,24 @@ from build_sfx import (SR, ROOT, band_noise, gate, modal, norm_peak, secs,
 from sfx_layout import RAW, ROLES
 
 RESOURCES = ROOT.parent.parent / "Resources" / "sfx"
+INBOX = ROOT / "inbox"
+
+# 형락님이 직접 뽑아 넣는 슬롯 번호. inbox/ 의 파일 이름에 이 번호가 들어간다.
+# 번호표는 docs/sfx/inbox/README.md 와 같아야 한다.
+SLOT_CODES = {
+    "flipper_select": "A1",
+    "flipper_activate": "A2",
+    "flipper_return": "A3",
+    "flipper_hit": "A4",
+    "flipper_strong": "A5",
+    "flipper_parry": "A6",
+    "wall_low": "B1",
+    "wall_mid": "B2",
+    "wall_high": "B3",
+    "flow_launch": "B4",
+    "flow_drain": "B5",
+    "ball_select": "B6",
+}
 
 # 역할 -> (그룹, 폴더, 파일, 반출 경로, 피크dB, 게이트 hold, fall, 고른 근거)
 #
@@ -45,20 +63,25 @@ TARGETS = {
     # ── 플리퍼. 값은 build_flipper_sfx.py SPECS 와 같아야 한다 ──
     "flipper_select": ("flipper", "flippers/SFX_Flipper_Select",
                        -14.0, 0.030, 0.055, "flipper_select_05.wav",
-                       "21ms 중심 3268Hz — 가장 짧고 깔끔한 딸깍"),
-    # ★ AI 소재 + 절차적 기계층. flipper_activate() 참고
+                       "★ 형락님 채택본(Firefly) — 35ms 짧은 딸깍 2연타(24ms 간격), "
+                       "SNR 79dB. 중심 9998Hz 로 밝은 편이다"),
+    # ★ 형락님 채택본이 inbox 에 있으면 그것을 쓴다.
+    #   없을 때만 flipper_activate() 합성본으로 떨어진다.
     "flipper_activate": ("flipper", "flippers/SFX_Flipper_Activate",
                          -9.0, 0.150, 0.235, None,
-                         "★ AI 공기감 + 태엽 걸림쇠 합성 — '쩅' 을 줄이고 '끼리릭' 을 넣음"),
+                         "★ 형락님 채택본 — 철컥+덜컹. 타격 2개가 37ms 간격, "
+                         "쇠(1~12kHz 64%) + 몸통(150Hz 아래 24%)"),
     "flipper_hit": ("flipper", "flippers/SFX_Flipper_Hit",
-                    -4.0, 0.095, 0.150, "flipper_hit_04.wav",
-                    "유리 60% 배음 59% — 18번 만에 나온 유일한 유리"),
+                    -2.0, 0.095, 0.150, "flipper_hit_04.wav",
+                    "★ 형락님 채택본(Firefly + 목소리) — 풀스케일, SNR 94dB, "
+                    "중심 1527Hz. 1~6kHz 63%로 어택이 살아 있다"),
     "flipper_strong": ("flipper", "flippers/SFX_Flipper_StrongHit",
-                       -2.5, 0.120, 0.185, "flipper_strong_02.wav",
+                       -1.6, 0.120, 0.185, "flipper_strong_02.wav",
                        "중심 6017Hz 유리 58% — 타격보다 밝아 세기가 읽힌다"),
     "flipper_return": ("flipper", "flippers/SFX_Flipper_Return",
-                       -16.0, 0.080, 0.130, "flipper_return_02.wav",
-                       "유리 78% 배음 77% — 초고역 히스가 아닌 태엽 틱"),
+                       -15.0, 0.080, 0.130, None,
+                       "★ A2 작동음에서 파생 — 덜컹만 남기고 철컥은 흔적만. "
+                       "같은 기계에서 나야 플리퍼가 하나로 들린다"),
     "flipper_parry": ("flipper", "flippers/SFX_Flipper_Parry",
                       -1.0, 0.130, 0.240, "flipper_parry_06.wav",
                       "57ms 중심 1618Hz 배음 54% — 음정이 읽히는 짧은 폭"),
@@ -122,6 +145,8 @@ TARGETS = {
 PROCEDURAL = {
     "bumper_cannon_fire": lambda: cannon_fire(),
     "flipper_activate": lambda: flipper_activate(),
+    # ★ A2 에서 파생한다. inbox 에 A3 가 들어오면 그쪽이 우선한다.
+    "flipper_return": lambda: flipper_return(),
 }
 
 IMPORT_TEMPLATE = """[remap]
@@ -251,6 +276,61 @@ def flipper_activate():
     return np.tanh(x * 1.2) / np.tanh(1.2)
 
 
+def flipper_return():
+    """플리퍼 복귀음 — ★ A2(작동음)에서 파생한다.
+
+    형락님 지시(2026-08-07): "플리퍼가 아래로 내려갔을 때 소리도 A2 참고해서".
+
+    맞는 판단이다. **같은 기계에서 나는 소리**라 따로 뽑으면 재질이 어긋나
+    두 장치처럼 들린다. 올라가는 소리와 내려오는 소리가 다른 물건이면
+    플리퍼 하나가 아니라 둘이 있는 것처럼 들린다.
+
+    물리적으로도 둘은 다르다.
+      올라갈 때 — 솔레노이드가 **때린다**. 철컥(쇠 걸쇠) + 덜컹(통)
+      내려올 때 — 그냥 **떨어진다**. 때리는 힘이 없으니 철컥이 거의 없고
+                  통이 받는 덜컹만 남는다
+
+    그래서 A2 의 **두 번째 타격(덜컹)부터** 가져오고, 첫 타격(철컥)은
+    흔적만 남긴다. 고역도 함께 깎는다 — 힘이 안 실린 접촉은 밝지 않다.
+    """
+    src = find_inbox("flipper", "flipper_activate")
+    if src is None:
+        return None
+
+    x = align_to_onset(load_mono(src))
+
+    # 타격 두 개를 찾는다. 파일이 바뀌어도 따라가도록 위치를 고정하지 않는다.
+    w = max(int(0.003 * SR), 1)
+    env = np.sqrt(np.convolve(x ** 2, np.ones(w) / w, "same"))
+    rise = np.diff(env)
+    rise[rise < 0] = 0.0
+    peaks, _ = signal.find_peaks(
+        rise, height=np.max(rise) * 0.25, distance=int(0.02 * SR)
+    )
+
+    if len(peaks) >= 2:
+        landing = max(int(peaks[1]) - int(0.004 * SR), 0)
+        y = np.zeros(len(x) - landing)
+        y[:] = x[landing:]
+
+        # 철컥의 흔적. 아주 작게 앞에 둔다 — 걸쇠가 풀리는 소리는 남는다
+        head = x[:landing]
+        n = min(len(head), len(y))
+        # ★ 철컥 흔적을 거의 없앤다. 남기면 A2 와 구분이 안 된다는 지적이 나왔다.
+        y[:n] += head[:n] * 0.05
+    else:
+        y = x.copy()
+
+    # ★ 떨어지는 접촉은 눌러 앉는다. 살짝 낮춰 A2 와 음높이를 벌린다.
+    #   같은 기계인 것은 유지하되 "올라감/내려옴"이 귀로 갈려야 한다.
+    idx = np.arange(0, len(y), 0.94)
+    y = np.interp(idx, np.arange(len(y)), y)
+
+    # 힘이 안 실린 접촉은 밝지 않다
+    # ★ 너무 죽이면 A2 옆에서 아예 안 들린다. 어둡되 윤곽은 남긴다.
+    return tilt_highs(y, cutoff=2800.0, amount=0.62)
+
+
 def cannon_fire():
     """태엽대포 발사 '팡' — ★ 절차적 대체본이다.
 
@@ -288,6 +368,55 @@ def find_source(group, filename):
     return hits[0] if hits else None
 
 
+def find_inbox(group, role):
+    """★ 형락님이 직접 뽑아 넣은 파일이 있으면 그것을 최우선으로 쓴다.
+
+    `docs/sfx/inbox/<그룹>/` 에서 슬롯 번호(A1~A6 · B1~B6)로 찾는다.
+    파일 이름은 번호만 맞으면 된다 — `A2.wav` · `A2_01.wav` · `A2 좋은거.wav`.
+
+    여러 개가 있으면 이름 순으로 첫 번째를 쓴다. 고르는 것은 사람의 일이고
+    이 스크립트는 마감만 한다.
+    """
+    code = SLOT_CODES.get(role)
+    if code is None:
+        return None
+
+    d = INBOX / group
+    if not d.is_dir():
+        return None
+
+    hits = [p for p in sorted(d.iterdir())
+            if p.suffix.lower() in (".wav", ".mp3") and code in p.stem.upper()]
+    return hits[0] if hits else None
+
+
+def align_to_onset(x, rate=SR, pre_ms=2.0):
+    """첫 타격 바로 앞에서 자른다.
+
+    ★ 앞에 붙은 무음을 안 자르면 그만큼 소리가 늦게 난다. 받은 A1 은
+      15ms 가 비어 있었다. 충돌음에서 15ms 지연은 어긋난 것으로 들린다.
+
+    ★ 순간값이 아니라 3ms 이동 RMS 로 본다. 조용한 파일에서는 앞쪽 잡음이
+      순간 문턱을 먼저 넘어 타격이 아니라 무음을 잘라내게 된다
+      (extract_material.first_onset 과 같은 이유).
+    """
+    if np.max(np.abs(x)) <= 0:
+        return x
+
+    win = max(int(0.003 * rate), 1)
+    usable = x[:len(x) // win * win]
+    if len(usable) < win:
+        return x
+
+    frames = np.sqrt((usable.reshape(-1, win) ** 2).mean(axis=1))
+    above = np.where(frames > frames.max() * 0.35)[0]
+    if not len(above):
+        return x
+
+    start = max(int(above[0] * win) - int(pre_ms / 1000.0 * rate), 0)
+    return x[start:]
+
+
 def load_mono(path):
     rate, data = wavfile.read(str(path))
     x = data.astype(np.float64) / 32768.0
@@ -322,14 +451,21 @@ def main():
 
     lengths, peaks = {}, {}
     for role, (group, rel, peak_db, hold, fall, filename, why) in targets.items():
-        if filename is None:
-            raw = PROCEDURAL[role]()          # AI 소재가 없어 합성한 것
+        # ★ 소재 우선순위: 받은 파일 > 절차적 합성 > AI 원본
+        inbox = find_inbox(group, role)
+        if inbox is not None:
+            raw = align_to_onset(load_mono(inbox))
+            origin = f"받음 {inbox.name}"
+        elif filename is None:
+            raw = PROCEDURAL[role]()
+            origin = "절차적 합성"
         else:
             src = find_source(group, filename)
             if src is None:
                 print(f"★ 소재가 없다: {group}/**/{filename}")
                 return 1
             raw = load_mono(src)
+            origin = f"AI {filename}"
 
         # 재질은 AI, 엔벨로프와 음량은 절차적. 왕복이 만나는 지점이다.
         x = norm_peak(trim_floor(gate(raw, hold, fall)), peak_db)
@@ -338,7 +474,7 @@ def main():
         print(f"{role:22s}{lengths[role] * 1000:8.1f}ms{measure(x)['peak_dbfs']:8.1f}dB"
               f"{centroid(x):7.0f}Hz  {rel}.wav")
         print(f"{'':22s}{ROLES.get(role, '')}")
-        print(f"{'':22s}└ {why}")
+        print(f"{'':22s}└ {origin}  ·  {why}")
 
         if args.dry_run:
             continue

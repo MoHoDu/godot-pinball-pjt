@@ -217,12 +217,14 @@ func _test_scene_wiring() -> void:
 	_expect(int(counts[&"flippers"]) >= 8,
 		"★ 플리퍼 8개(4그룹×좌우)를 전부 찾아야 한다. (%d)" % int(counts[&"flippers"]))
 
-	_expect(binder.wall_rules != null and binder.ball_flow_rules != null,
-		"승인된 벽·공 흐름 규칙이 씬에 물려 있어야 한다.")
-	_expect(binder.flipper_rules == null \
-		and binder.combo_rules == null \
-		and binder.bumper_rules == null,
-		"미승인 플리퍼·콤보·범퍼 규칙은 실제 웨이브에서 비활성화해야 한다.")
+	# ★ "승인된 것만 씬에 물린다"는 정책은 그대로다. 승인 목록만 바뀐다.
+	#   2026-08-07 현재 플리퍼 5종 · 벽 3종 · 공 흐름 3종 · 범퍼 8종이 통과했다.
+	#   콤보·웨이브만 아직 만들지 않아 규칙이 settings/sfx/_pending/ 에 있다.
+	_expect(binder.wall_rules != null and binder.flipper_rules != null
+			and binder.ball_flow_rules != null and binder.bumper_rules != null,
+		"승인된 벽·플리퍼·흐름·범퍼 규칙이 씬에 물려 있어야 한다.")
+	_expect(binder.combo_rules == null,
+		"아직 만들지 않은 콤보 규칙이 물려 있으면 안 된다.")
 
 	# ★ FlipperSelector 에는 시그널이 없어 폴링으로 붙는다.
 	#   못 찾으면 선택음이 통째로 안 나고, 검수 항목
@@ -255,8 +257,8 @@ func _test_main_scene_wiring() -> void:
 	_expect(binder is WaveSfxBinderStrict,
 		"메인 wave.tscn 은 인자 수를 검증하는 엄격한 바인더를 사용해야 한다.")
 	_expect(binder != null and binder.wall_rules != null \
-		and binder.ball_flow_rules != null,
-		"메인 wave.tscn 에 승인된 벽·공 흐름 규칙이 연결되어야 한다.")
+		and binder.flipper_rules != null,
+		"메인 wave.tscn 에 승인된 벽·플리퍼 규칙이 연결되어야 한다.")
 	scene.free()
 
 
