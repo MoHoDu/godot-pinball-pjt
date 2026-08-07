@@ -64,6 +64,7 @@ func _process(_delta: float) -> void:
 			lines.append("  Z 발사 약   X 발사 강   C 낙하   V 공 선택")
 			lines.append("  F1~F5 범퍼 솜·북·용수철·단추·대포 (낮은 순)")
 			lines.append("  F6 대포 발사   F8 리스폰 예고   F9 대포 조준")
+			lines.append("  T 콤보 사다리   Y 단계   U 실패   P 목표   I 승리   O 패배")
 		else:
 			lines.append("[ 플리퍼 연구실 ]")
 			lines.append("  1 2 3  벽 저·중·고속     4 5 6  타격·강타격·패링")

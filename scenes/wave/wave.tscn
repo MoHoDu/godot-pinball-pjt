@@ -89,6 +89,7 @@
 [ext_resource type="Resource" path="res://settings/sfx/WallSfxRules.tres" id="80_wall"]
 [ext_resource type="Resource" path="res://settings/sfx/BallFlowSfxRules.tres" id="81_flow"]
 [ext_resource type="Resource" path="res://settings/sfx/BumperSfxRules.tres" id="82_bumper"]
+[ext_resource type="Resource" path="res://settings/sfx/ComboSfxRules.tres" id="83_combo"]
 
 [ext_resource type="PackedScene" path="res://Resources/boards/starlight_brooch_placeable.tscn" id="41_brooch_placeable"]
 
@@ -590,6 +591,7 @@ flipper_rules = ExtResource("44_flipper_sfx")
 wall_rules = ExtResource("80_wall")
 ball_flow_rules = ExtResource("81_flow")
 bumper_rules = ExtResource("82_bumper")
+combo_rules = ExtResource("83_combo")
 
 [node name="WaveRepairEffects" type="Node" parent="."]
 

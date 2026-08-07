@@ -159,6 +159,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			_play_raw(_combo(&"wave_won_cue"), 0.0, "웨이브 승리")
 		KEY_O:
 			_play_raw(_combo(&"wave_lost_cue"), 0.0, "웨이브 패배")
+		KEY_P:
+			_play_raw(_combo(&"target_reached_cue"), 0.0, "목표 점수 도달")
 
 		# ── Tier 4 범퍼 5종 (Z X C V B) ──
 		KEY_Z:
