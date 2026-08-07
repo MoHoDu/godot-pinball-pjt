@@ -53,15 +53,23 @@ func _process(_delta: float) -> void:
 	var lab := get_node_or_null(lab_path)
 
 	if lab != null:
-		lines.append("[ 사운드 연구실 ]")
-		lines.append("  1 2 3  벽 저·중·고속     4 5 6  플리퍼 타격·강타격·패링")
-		lines.append("  7 벽 8연타   8 ★우선순위 시험   0 정지")
-		lines.append("  Q 공 발사음   E 낙하   T ★콤보 사다리 8단   Y 단계")
-		lines.append("  U 콤보 실패   I 웨이브 승   O 웨이브 패")
-		lines.append("  Z X C V B  범퍼 단추·솜·용수철·북·대포")
-		lines.append("  N 파괴   M 리스폰 예고   P 대포 발사")
-		lines.append("  Enter 발사   [ ] 속도   , . 각도   R 리셋   G 중력")
-		lines.append("  ★ Space 플리퍼 작동   방향키 플리퍼 선택")
+		# ★ 연구실이 둘이고 키 배치가 다릅니다. 겹쳐 보여주면 어느 것이
+		#   지금 먹는 키인지 알 수 없어 오히려 방해가 됩니다.
+		var is_ball_lab: bool = lab.has_method(&"_demo_wall_tiers")
+
+		if is_ball_lab:
+			lines.append("[ 공·벽 연구실 ]  플리퍼 하나")
+			lines.append("  ★ B  벽 3단 자동 시연 (저→중→고 이어서)")
+			lines.append("  1 2 3  벽 저·중·고속     7 벽 8연타")
+			lines.append("  Z 발사 약   X 발사 강   C 낙하   V 공 선택")
+		else:
+			lines.append("[ 플리퍼 연구실 ]")
+			lines.append("  1 2 3  벽 저·중·고속     4 5 6  타격·강타격·패링")
+			lines.append("  7 벽 8연타   8 ★우선순위 시험")
+
+		lines.append("  0 정지   Enter 발사   [ ] 속도   , . 각도   R 리셋   G 중력")
+		lines.append("  ★ Space 플리퍼 작동" +
+			("" if is_ball_lab else "   방향키 플리퍼 선택"))
 		lines.append("  발사 %.0f px/s  %.0f°   중력 %s"
 			% [lab.get_launch_speed(), lab.get_launch_angle(),
 				"켬" if lab.is_gravity_on() else "끔"])

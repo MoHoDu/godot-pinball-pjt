@@ -10,7 +10,7 @@
 ;
 ; 벽은 group "combo_walls" 에 등록돼 있어야 ComboCollisionBridge 가 잡습니다.
 
-[ext_resource type="Script" path="res://tests/sfx_system/sfx_lab.gd" id="1_lab"]
+[ext_resource type="Script" path="res://tests/sfx_system/sfx_lab_ball.gd" id="1_lab"]
 [ext_resource type="PackedScene" uid="uid://bhh5qyc3llygr" path="res://Resources/balls/base/base_ball.tscn" id="2_ball"]
 [ext_resource type="Script" path="res://scripts/combo_system/combo_system.gd" id="3_combo"]
 [ext_resource type="Script" path="res://scripts/combo_system/combo_collision_bridge.gd" id="4_bridge"]
@@ -34,7 +34,7 @@ size = Vector2(60, 900)
 friction = 0.05
 bounce = 0.98
 
-[node name="SfxLab" type="Node2D"]
+[node name="SfxLabBall" type="Node2D"]
 script = ExtResource("1_lab")
 ball_path = NodePath("PinballBall")
 director_path = NodePath("SfxDirector")
@@ -103,23 +103,7 @@ position = Vector2(0, 220)
 script = ExtResource("11_controller")
 
 [node name="LeftFlipper" parent="FlipperSelector/BottomController" instance=ExtResource("12_left")]
-position = Vector2(-480, 0)
-flipper_length = 500.0
-
-[node name="RightFlipper" parent="FlipperSelector/BottomController" instance=ExtResource("13_right")]
-position = Vector2(480, 0)
-flipper_length = 500.0
-
-[node name="TopController" type="Node2D" parent="FlipperSelector"]
-position = Vector2(0, -240)
-script = ExtResource("11_controller")
-
-[node name="LeftFlipper" parent="FlipperSelector/TopController" instance=ExtResource("12_left")]
-position = Vector2(-480, 0)
-flipper_length = 500.0
-
-[node name="RightFlipper" parent="FlipperSelector/TopController" instance=ExtResource("13_right")]
-position = Vector2(480, 0)
+position = Vector2(-240, 0)
 flipper_length = 500.0
 
 [node name="PinballBall" parent="." instance=ExtResource("2_ball")]

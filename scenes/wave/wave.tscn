@@ -88,6 +88,7 @@
 
 
 [ext_resource type="Resource" path="res://settings/sfx/FlipperSfxRules.tres" id="44_flipper_sfx"]
+[ext_resource type="Resource" path="res://settings/sfx/WallSfxRules.tres" id="80_wall"]
 
 [ext_resource type="PackedScene" path="res://Resources/boards/starlight_brooch_placeable.tscn" id="41_brooch_placeable"]
 
@@ -587,3 +588,4 @@ script = ExtResource("41_sfx_director")
 [node name="_WaveSfxBinder" type="Node" parent="."]
 script = ExtResource("42_sfx_binder")
 flipper_rules = ExtResource("44_flipper_sfx")
+wall_rules = ExtResource("80_wall")
