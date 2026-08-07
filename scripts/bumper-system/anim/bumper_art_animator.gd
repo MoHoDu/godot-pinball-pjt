@@ -236,7 +236,11 @@ func _apply_frame() -> void:
 		want_hit = true
 	elif _press_elapsed >= 0.0:
 		var total := rules.press_seconds + rules.release_seconds
-		want_hit = _press_elapsed <= total * rules.hit_frame_window
+		# 비율과 최소 노출 시간 중 **긴 쪽**을 쓴다. 눌림이 짧아도 프레임이 보인다.
+		var window: float = maxf(
+			total * rules.hit_frame_window, rules.hit_frame_min_seconds
+		)
+		want_hit = _press_elapsed <= window
 	var wanted: Texture2D = rules.hit_texture if want_hit else _base_texture
 	if _sprite.texture != wanted:
 		_sprite.texture = wanted

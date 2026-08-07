@@ -132,6 +132,15 @@ var hit_frame_window: float = 0.45:
 		hit_frame_window = clampf(value, 0.05, 1.0)
 		emit_changed()
 
+## 타격 프레임의 **최소 노출 시간**입니다.
+## 비율만 쓰면 눌림·복귀가 짧은 범퍼에서 프레임이 스쳐 지나가 안 보인다.
+## 실제로 용수철 인형이 0.11초만 나와 안 보인다는 지적을 받았다(2026-08-07).
+@export_range(0.0, 1.0, 0.01, "suffix:s")
+var hit_frame_min_seconds: float = 0.0:
+	set(value):
+		hit_frame_min_seconds = clampf(value, 0.0, 1.0)
+		emit_changed()
+
 
 @export_category("상태")
 

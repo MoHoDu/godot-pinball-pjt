@@ -36,6 +36,14 @@ func _run() -> void:
 	var flow: WaveBallFlowController = scene.wave_ball_flow
 	var combo: ComboSystem = scene.combo_system
 	var launcher: PinballLauncher = scene.launcher
+	# main의 최신 스테이지 계약은 수리 배치 확인 뒤 웨이브를 시작합니다.
+	if wave_manager.current_stage_phase == WaveManager.StagePhase.REPAIR_PLACEMENT:
+		var placement_bridge := scene.get_node(
+			"BoardWavePlacementBridge"
+		) as BoardWavePlacementBridge
+		_expect(placement_bridge.commit_placement(),
+			"코인 데모도 초기 수리 배치 단계를 통과해야 한다.")
+		await process_frame
 
 	_expect(scene.coin_wallet != null, "코인 지갑이 씬에 붙어야 한다.")
 	_expect(scene.coin_field != null, "코인 필드가 씬에 붙어야 한다.")

@@ -39,6 +39,7 @@ func _run() -> void:
 
 	_test_initial_phase(wave, layout, session, hud)
 	_test_board_authoring_contract(layout)
+	_seed_inventory_for_ui_contract(inventory, session, bridge)
 	_test_inventory_states(hud, controller)
 	_test_place_remove_and_replace(session, inventory, hud, controller)
 	await physics_frame
@@ -57,6 +58,21 @@ func _run() -> void:
 	demo.queue_free()
 	await process_frame
 	_finish()
+
+
+func _seed_inventory_for_ui_contract(
+	inventory: RepairPartInventory,
+	session: BoardPlacementSession,
+	bridge: BoardWavePlacementBridge
+) -> void:
+	# 실제 스테이지는 보상 구매 전까지 0개로 시작합니다. 이 테스트는 배치 UI의
+	# 수량·예약·교체 동작을 확인하므로, 보상 구매 결과에 해당하는 재고를 주입합니다.
+	inventory.cancel_reservation()
+	inventory.add(&"starlight_brooch", 1)
+	inventory.add(&"golden_gears", 2)
+	inventory.add(&"forgotten_star_bell", 1)
+	session.end_wave()
+	bridge.call(&"_begin_placement", &"wave_0")
 
 
 func _test_initial_phase(

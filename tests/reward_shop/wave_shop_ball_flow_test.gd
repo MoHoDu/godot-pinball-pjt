@@ -29,7 +29,8 @@ func _run() -> void:
 
 	_expect(scene.stage_ball_inventory != null, "스테이지 공 인벤토리가 붙어야 한다.")
 	var base_ids := _available_ids(inventory)
-	_expect(base_ids.size() == 3, "첫 웨이브 선택지는 기본 3종이어야 한다. (%d)" % base_ids.size())
+	_expect(base_ids == [&"normal"],
+		"첫 웨이브 선택지는 기본 보통 공 1종이어야 한다. (%s)" % base_ids)
 
 	# 코인을 채우고 웨이브를 이긴다.
 	scene.coin_wallet.add(60)
@@ -62,7 +63,7 @@ func _run() -> void:
 		next_ids.has(bought_ball),
 		"산 공 %s이 다음 웨이브 선택지에 있어야 한다. (%s)" % [bought_ball, next_ids]
 	)
-	_expect(next_ids.size() == 4, "기본 3종 + 해금 1종 = 4종이어야 한다.")
+	_expect(next_ids.size() == 2, "기본 1종 + 해금 1종 = 2종이어야 한다.")
 
 	# 실제로 그 공을 선택할 수 있어야 한다.
 	_expect(
@@ -89,7 +90,11 @@ func _win_current_wave(scene: WaveShopBallCoordinator) -> void:
 	# 인게임에서는 BoardWavePlacementBridge 가 배치 확정 시 호출하는 자리다.
 	var phase := scene.wave_manager.current_stage_phase
 	if phase == WaveManager.StagePhase.REPAIR_PLACEMENT:
-		scene.wave_manager.advance_stage_phase()
+		var placement_bridge := scene.get_node(
+			"BoardWavePlacementBridge"
+		) as BoardWavePlacementBridge
+		_expect(placement_bridge.commit_placement(),
+			"상점 공 데모도 초기 수리 배치 단계를 통과해야 한다.")
 		await process_frame
 	_send_action(flow, &"ball_select_confirm")
 	var launched_ball := flow.active_ball

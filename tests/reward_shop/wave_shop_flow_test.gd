@@ -32,6 +32,11 @@ func _run() -> void:
 	var wave_manager: WaveManager = scene.wave_manager
 
 	_expect(scene.shop_controller != null, "상점 컨트롤러가 붙어야 한다.")
+	_expect(scene.shop_controller.stage_id == scene.shop_stage_id \
+		and StageRewardRepository.stage_num_from_id(
+			scene.shop_controller.stage_id
+		) == 1,
+		"상점 컨트롤러는 현재 스테이지 DB ID와 번호를 사용해야 한다.")
 	_expect(scene.shop_hud != null, "상점 HUD가 붙어야 한다.")
 	_expect(
 		scene.reward_controller == null,
@@ -73,10 +78,11 @@ func _run() -> void:
 	if part_index >= 0:
 		var part_id: StringName = scene.shop_controller.part_offers[part_index].part_id
 		var bundle: int = scene.shop_controller.part_offers[part_index].bundle_count
+		var count_before := scene.part_inventory.count_of(part_id)
 		_expect(scene.shop_controller.buy_part(part_index), "부품 구매가 성공해야 한다.")
 		_expect(
-			scene.part_inventory.count_of(part_id) == bundle,
-			"부품 재고가 묶음 수량만큼 늘어야 한다."
+			scene.part_inventory.count_of(part_id) == count_before + bundle,
+			"메인 수리 배치 인벤토리에 묶음 수량만큼 늘어야 한다."
 		)
 
 	scene.shop_hud.proceed_requested.emit()
@@ -133,11 +139,13 @@ func _run() -> void:
 
 func _win_current_wave(scene: WaveShopCoordinator) -> void:
 	var flow: WaveBallFlowController = scene.wave_ball_flow
-	# main 이 도입한 수리 부품 배치 페이즈를 넘겨야 웨이브가 시작된다.
-	# 인게임에서는 BoardWavePlacementBridge 가 배치 확정 시 호출하는 자리다.
-	var phase := scene.wave_manager.current_stage_phase
-	if phase == WaveManager.StagePhase.REPAIR_PLACEMENT:
-		scene.wave_manager.advance_stage_phase()
+	if scene.wave_manager.current_stage_phase \
+			== WaveManager.StagePhase.REPAIR_PLACEMENT:
+		var placement_bridge := scene.get_node_or_null(
+			^"BoardWavePlacementBridge"
+		) as BoardWavePlacementBridge
+		_expect(placement_bridge != null and placement_bridge.commit_placement(),
+			"첫 웨이브는 수리 배치를 확정한 뒤 공 선택으로 넘어가야 한다.")
 		await process_frame
 	_send_action(flow, &"ball_select_confirm")
 	_expect(

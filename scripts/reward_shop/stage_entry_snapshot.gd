@@ -20,7 +20,7 @@ static func capture(
 	snapshot_name: StringName,
 	wallet: CoinWallet,
 	stage_balls: StageBallInventory,
-	parts: RewardPartInventory
+	parts: RepairPartInventory
 ) -> StageEntrySnapshot:
 	var snapshot := StageEntrySnapshot.new()
 	snapshot.snapshot_id = snapshot_name

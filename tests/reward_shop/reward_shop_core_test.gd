@@ -18,6 +18,7 @@ func _run() -> void:
 	_test_catalog_data()
 	_test_ball_generation()
 	_test_part_generation()
+	_test_weighted_selection()
 	_test_affordability_guard()
 	await _test_purchase_flow()
 	_finish()
@@ -26,8 +27,7 @@ func _run() -> void:
 func _test_catalog_data() -> void:
 	var catalog := CATALOG as RewardShopCatalog
 	_expect(catalog.ball_offers.size() == 5, "공 카드는 5종이어야 한다.")
-	# v0.3에서 초승달 바늘이 삭제되어 부품은 세 종류입니다.
-	_expect(catalog.part_offers.size() == 3, "부품 카드는 3종이어야 한다.")
+	_expect(catalog.part_offers.size() == 3, "v0.3 부품 카드는 3종이어야 한다.")
 
 	# 기획서 4-2·4-3 가격표 검증.
 	var ball_prices := {}
@@ -142,6 +142,27 @@ func _test_part_generation() -> void:
 		_expect(has_partner, "보상 2 이후에는 연결형 부품이 최소 1장 있어야 한다.")
 
 
+func _test_weighted_selection() -> void:
+	var low := RewardBallOffer.new()
+	low.ball_id = &"low_weight"
+	low.weight = 1.0
+	var high := RewardBallOffer.new()
+	high.ball_id = &"high_weight"
+	high.weight = 9.0
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 20260807
+	var low_count := 0
+	var high_count := 0
+	for _draw in 2000:
+		var picked := RewardOfferGenerator._pick_weighted([low, high], 1, rng)
+		if not picked.is_empty() and picked[0] == high:
+			high_count += 1
+		else:
+			low_count += 1
+	_expect(high_count > low_count * 5,
+		"9:1 weights must strongly favor the high-weight reward.")
+
+
 func _test_affordability_guard() -> void:
 	var catalog := CATALOG as RewardShopCatalog
 	var no_unlocked: Array[StringName] = []
@@ -197,7 +218,7 @@ func _test_purchase_flow() -> void:
 	root.add_child(holder)
 	var wallet := CoinWallet.new()
 	holder.add_child(wallet)
-	var inventory := RewardPartInventory.new()
+	var inventory := RepairPartInventory.new()
 	holder.add_child(inventory)
 	var shop := RewardShopController.new()
 	shop.catalog = CATALOG
@@ -266,7 +287,9 @@ func _test_purchase_flow() -> void:
 
 	# 다음 보상: 해금한 공은 후보에서 빠지고, 부품은 다시 살 수 있다.
 	wallet.reset(24)
-	_expect(shop.open_shop(1, 1), "다음 보상 화면이 열려야 한다.")
+	_expect(shop.open_shop(1, 99), "다음 보상 화면이 열려야 한다.")
+	_expect(shop._reward_index == 1,
+		"보상 문맥은 누적 횟수 힌트가 아니라 실제 웨이브 인덱스를 사용해야 한다.")
 	for offer in shop.ball_offers:
 		_expect(
 			offer.ball_id != bought_ball_id,

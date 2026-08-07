@@ -51,6 +51,13 @@ extends Resource
 ## 대포가 공을 물어 조준을 시작할 때. 철컥.
 @export var cannon_control_cue: SfxCue
 
+## 조준 방향을 한 칸 옮길 때마다. 태엽이 맞물리는 작은 소리입니다.
+##
+## ★ 이게 없으면 방향을 바꿔도 아무 반응이 없어, 조작이 먹었는지를
+##   화면만 보고 판단해야 합니다. 플리퍼 선택음(A1)과 같은 역할이라
+##   같은 계열로 들리게 만들었습니다.
+@export var cannon_aim_cue: SfxCue
+
 ## 대포가 공을 쏠 때. 팡.
 @export var cannon_fire_cue: SfxCue
 

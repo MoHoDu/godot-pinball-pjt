@@ -103,6 +103,20 @@ func _test_repair_content_configuration(wave: WaveRuntimeCoordinator) -> void:
 		"Wave repair inventory must contain brooch, gears, and bell.")
 	_expect(&"crescent_needle" not in part_ids,
 		"Crescent Needle must not remain in the v0.3 repair inventory.")
+	_expect(inventory.total_count == 0,
+		"A fresh stage must begin without free repair parts.")
+	inventory.add(&"starlight_brooch", 1)
+	# 배치 세션은 씬 시작 시점의 0개 재고를 이미 예약했습니다. 이 테스트가
+	# 주입한 부품을 반영하도록 동일 웨이브의 배치 세션만 다시 엽니다.
+	var session := wave.get_node(
+		"RepairBoardLayout/PlacementSession"
+	) as BoardPlacementSession
+	var placement_bridge := wave.get_node(
+		"BoardWavePlacementBridge"
+	) as BoardWavePlacementBridge
+	inventory.cancel_reservation()
+	session.end_wave()
+	placement_bridge.call(&"_begin_placement", &"wave_0")
 
 	var placement_controller := wave.get_node(
 		"RepairPartPlacementController"
@@ -111,7 +125,7 @@ func _test_repair_content_configuration(wave: WaveRuntimeCoordinator) -> void:
 		&"starlight_brooch", &"middle_02"
 	), "Wave placement must accept the latest Starlight Brooch scene.")
 	var layout := wave.get_node("RepairBoardLayout") as BoardLayout
-	var session := layout.get_node("PlacementSession") as BoardPlacementSession
+	session = layout.get_node("PlacementSession") as BoardPlacementSession
 	var placeable := session.find_placeable_at_socket(&"middle_02")
 	var bumper := placeable.get_bumper() if placeable != null else null
 	var runtime := bumper.get_node_or_null(^"RepairPartRuntime") \
@@ -135,7 +149,9 @@ func _test_scene_structure(wave: WaveRuntimeCoordinator) -> void:
 	_expect(int(snapshot[&"target_score"]) == 0,
 		"Repair placement must begin before a wave target is configured.")
 	_expect((snapshot[&"life_slots"] as Array).size() == 3,
-		"Runtime session must expose the actual three-ball inventory.")
+		"Runtime session must expose the three launches available per wave.")
+	_expect(wave.wave_ball_inventory.get_owned_definitions().size() == 1,
+		"A fresh stage must begin with only the normal ball owned.")
 	_expect(wave.wave_manager.current_stage_phase \
 		== WaveManager.StagePhase.REPAIR_PLACEMENT,
 		"Integrated Wave scene must begin at repair placement.")
@@ -197,8 +213,8 @@ func _test_korean_selection_hud(wave: WaveRuntimeCoordinator) -> void:
 		"Ball selection HUD must be visible while choosing the first ball.")
 	_expect(hud.title_label.text == "다음 공 선택",
 		"Ball selection title must retain the authored Korean copy.")
-	_expect(hud.ball_name_label.text in ["가벼운 공", "보통 공", "무거운 공"],
-		"Selected ball name must use a Korean inventory label.")
+	_expect(hud.ball_name_label.text == "보통 공",
+		"A fresh stage must select the authored Korean normal-ball label.")
 	_expect(not hud.stock_label.visible,
 		"Unique owned balls must not expose legacy quantity information.")
 	_expect(hud.mass_label.text.begins_with("무게 "),
@@ -455,22 +471,22 @@ func _test_life_connection(wave: WaveRuntimeCoordinator) -> void:
 	) -> void:
 		manager_drains[0] += 1
 	)
-	_expect(wave.wave_ball_inventory.select_ball(&"heavy"),
-		"Player must be able to choose a non-sequential remaining ball.")
-	_expect(wave.hud_state.get_current_life_type() == &"heavy",
+	_expect(wave.wave_ball_inventory.select_ball(&"normal"),
+		"The initially owned normal ball must be selectable.")
+	_expect(wave.hud_state.get_current_life_type() == &"normal",
 		"HUD current slot must follow the selected inventory definition.")
-	var heavy_scene := wave.wave_ball_inventory.selected_definition.ball_scene
+	var selected_scene := wave.wave_ball_inventory.selected_definition.ball_scene
 	_expect(wave.wave_ball_flow.confirm_selection(),
-		"Selected heavy ball must prepare through the real flow.")
+		"Selected normal ball must prepare through the real flow.")
 	_expect(wave.wave_ball_inventory.total_remaining == 3,
 		"Confirmation alone must not mark the selected ball used.")
-	_expect(wave.launcher.ball_scene == heavy_scene,
+	_expect(wave.launcher.ball_scene == selected_scene,
 		"Launcher scene must match the ball type highlighted by the HUD.")
 	var first_ball := wave.wave_ball_flow.active_ball
 	_expect(wave.launcher.launch_prepared_ball(),
 		"Selected heavy ball must launch through the real launcher.")
 	_expect(wave.wave_ball_inventory.total_remaining == 2,
-		"An actual launch must lock exactly one ball for the wave.")
+		"An actual launch must spend exactly one shared wave launch.")
 	_expect(wave.combo_wave_controller.ball_is_active,
 		"Launch must enter ComboWaveController through WaveManager.")
 	_expect(manager_launches[0] == 1,
@@ -480,9 +496,12 @@ func _test_life_connection(wave: WaveRuntimeCoordinator) -> void:
 		"Collision bridge must follow the HUD-selected dynamic ball.")
 	wave.call(&"_handle_ball_drained", "HUD integration")
 	var slots: Array = wave.hud_state.get_snapshot()[&"life_slots"]
-	var heavy_slot := _find_life_slot(slots, &"heavy")
-	_expect(int(heavy_slot[&"state"]) == WaveHudStateSource.LifeState.SPENT,
-		"Drain must spend the selected non-sequential HUD slot.")
+	var spent_count := 0
+	for slot: Dictionary in slots:
+		if int(slot[&"state"]) == WaveHudStateSource.LifeState.SPENT:
+			spent_count += 1
+	_expect(spent_count == 1,
+		"Drain must spend exactly one HUD launch slot.")
 	_expect(wave.hud_state.get_current_life_type()
 			== wave.wave_ball_inventory.selected_definition.ball_id,
 		"After drain, HUD current slot must match the next inventory selection.")
@@ -502,12 +521,19 @@ func _test_life_connection(wave: WaveRuntimeCoordinator) -> void:
 	await process_frame
 	_expect(wave.wave_manager.current_state == WaveManager.State.LOST,
 		"Exhausting stock below target must reach the manager defeat state.")
-	_expect(wave.wave_manager.retry_wave(),
-		"Integrated HUD scene must retry through WaveManager.")
+	await process_frame
+	_expect(wave.wave_manager.current_stage_phase \
+		== WaveManager.StagePhase.REPAIR_PLACEMENT,
+		"A failed stage must roll back to wave-one repair placement.")
+	var placement_bridge := wave.get_node(
+		"BoardWavePlacementBridge"
+	) as BoardWavePlacementBridge
+	_expect(placement_bridge.commit_placement(),
+		"Rollback placement must restart wave one through the normal bridge.")
 	_expect(wave.hud_state.get_remaining_life_count() == 3,
-		"Retry must restore HUD lives from inventory stock reset.")
+		"Restarting wave one must restore all HUD launch slots.")
 	_expect(wave.wave_ball_inventory.total_remaining == 3,
-		"Retry must restore the actual selectable inventory.")
+		"Restarting wave one must restore the shared launch budget.")
 	_expect(int(wave.hud_state.get_snapshot()[&"current_score"]) == 0,
 		"Retry must synchronize the reset combo score to the HUD.")
 
@@ -600,18 +626,28 @@ func _test_bumper_runtime_integration(wave: WaveRuntimeCoordinator) -> void:
 	wave.combo_system.register_hit(1.0)
 	wave.combo_system.finish_combo(ComboSystem.EndReason.MANUAL)
 	await process_frame
+	var reward_bridge := wave.get_node(
+		"WaveRewardShopBridge"
+	) as WaveRewardShopBridge
 	_expect(wave.wave_manager.current_stage_phase \
-		== WaveManager.StagePhase.WAVE_RESULT,
-		"Reaching the target during Shot bumper control must finish the wave.")
+		== WaveManager.StagePhase.PINBALL \
+		and reward_bridge.clear_delay.is_delay_active,
+		"Reaching the target must keep Shot control alive during the clear delay.")
+	wave.wave_ball_flow.on_ball_drained(wave.ball)
+	await process_frame
+	await process_frame
+	_expect(wave.wave_manager.current_stage_phase \
+		== WaveManager.StagePhase.REWARD,
+		"Draining during the clear delay must automatically open rewards.")
 	_expect(int(wave.get(&"_active_shot_controls")) == 0,
-		"Immediate wave clear must release aggregate Shot bumper control.")
+		"Clear-delay settlement must release aggregate Shot bumper control.")
 	_expect(not wave.flipper_selector.input_enabled,
 		"Flipper input must stay disabled on the wave-result phase.")
 
-	_expect(wave.wave_manager.advance_stage_phase(),
-		"A successful result must advance to the reward phase.")
-	_expect(wave.wave_manager.advance_stage_phase(),
-		"The reward placeholder must advance to the next repair phase.")
+	_expect(reward_bridge.shop_controller.is_open,
+		"Automatic reward entry must open the real shop controller.")
+	reward_bridge.shop_hud.proceed_requested.emit()
+	await process_frame
 	var next_session := wave.get_node(
 		"RepairBoardLayout/PlacementSession"
 	) as BoardPlacementSession
