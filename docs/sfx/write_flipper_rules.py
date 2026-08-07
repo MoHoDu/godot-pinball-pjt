@@ -52,6 +52,8 @@ SPEED_AWARE = {"hit_cue", "strong_hit_cue"}
 HEADER = """[gd_resource type="Resource" script_class="FlipperSfxRules" load_steps={steps} format=3]
 
 ; ★ 이 파일은 write_flipper_rules.py 가 생성한다. 손으로 고치지 않는다.
+;   (Godot 이 임포트할 때 다시 저장하면서 이 주석과 기본값 줄을 지운다.
+;    내용은 같다. 값을 바꾸려면 스크립트를 고치고 다시 돌린다.)
 ;   Resources/sfx/flippers/ 에 **실제로 있는 음원만** 적는다.
 ;
 ;   없는 파일을 ext_resource 로 참조하면 리소스 전체 로딩이 깨지고,
