@@ -26,7 +26,7 @@ func _run() -> void:
 		&"stage_01", StageRewardRepository.CATEGORY_PART, 1, 1
 	)
 	_expect(balls.size() == 5, "Stage 01 must load five reward balls.")
-	_expect(parts.size() == 4, "Stage 01 must load four repair-part rewards.")
+	_expect(parts.size() == 3, "Stage 01 must load three enabled v0.3 repair parts.")
 
 	var clockwork := repository.get_reward(
 		&"stage_01", StageRewardRepository.CATEGORY_BALL, &"clockwork"

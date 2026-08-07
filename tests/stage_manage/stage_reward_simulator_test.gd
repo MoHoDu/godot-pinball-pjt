@@ -28,8 +28,8 @@ func _run() -> void:
 		_finish()
 		return
 	var rows: Array = result[&"rows"]
-	_expect(rows.size() == 27,
-		"Three waves must report five balls and four parts each.")
+	_expect(rows.size() == 24,
+		"Three waves must report five balls and three enabled parts each.")
 	for wave_num in range(1, 4):
 		var ball_total := 0
 		var part_total := 0

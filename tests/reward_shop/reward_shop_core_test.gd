@@ -27,7 +27,7 @@ func _run() -> void:
 func _test_catalog_data() -> void:
 	var catalog := CATALOG as RewardShopCatalog
 	_expect(catalog.ball_offers.size() == 5, "공 카드는 5종이어야 한다.")
-	_expect(catalog.part_offers.size() == 4, "부품 카드는 4종이어야 한다.")
+	_expect(catalog.part_offers.size() == 3, "v0.3 부품 카드는 3종이어야 한다.")
 
 	# 기획서 4-2·4-3 가격표 검증.
 	var ball_prices := {}
@@ -43,7 +43,7 @@ func _test_catalog_data() -> void:
 		part_data[part.part_id] = [part.bundle_count, part.price]
 	_expect(part_data == {
 		&"starlight_brooch": [1, 11], &"golden_gears": [2, 12],
-		&"crescent_needle": [2, 10], &"forgotten_star_bell": [3, 9],
+		&"forgotten_star_bell": [3, 9],
 	}, "부품 수량·가격이 기획서 4-3과 같아야 한다. (%s)" % part_data)
 
 	_expect(

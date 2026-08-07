@@ -1,5 +1,5 @@
 reward_id,display_name,first_stage_num,first_wave_num,weight,price,bundle_count,works_standalone,needs_partner,required_partner_kinds,enabled
 starlight_brooch,별빛 브로치,1,1,1,11,1,FALSE,TRUE,2,TRUE
 golden_gears,황금 톱니바퀴,1,1,1,12,2,TRUE,FALSE,0,TRUE
-crescent_needle,초승달 바늘,1,1,1,10,2,FALSE,TRUE,1,TRUE
+crescent_needle,초승달 바늘,1,1,1,10,2,FALSE,TRUE,1,FALSE
 forgotten_star_bell,잊혀진 별방울,1,1,1,9,3,TRUE,FALSE,0,TRUE
