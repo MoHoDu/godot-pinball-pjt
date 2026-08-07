@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/stage_system/stage_flow_manager.gd" id="1_manager"]
+[ext_resource type="PackedScene" path="res://scenes/stage_system/stage_reward_placeholder.tscn" id="2_reward"]
+
+[node name="StageFlowManager" type="Node" node_paths=PackedStringArray("scene_container")]
+script = ExtResource("1_manager")
+reward_scene = ExtResource("2_reward")
+scene_container = NodePath("SceneContainer")
+
+[node name="SceneContainer" type="Node" parent="."]
