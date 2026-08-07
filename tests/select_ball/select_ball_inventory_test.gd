@@ -54,7 +54,53 @@ func _run() -> void:
 
 	inventory.queue_free()
 	await process_frame
+	await _test_reusable_owned_ball_mode()
 	_finish()
+
+
+func _test_reusable_owned_ball_mode() -> void:
+	var inventory := SelectBallInventory.new()
+	inventory.reusable_owned_balls = true
+	inventory.launches_per_wave = 3
+	var normal := _make_stock(&"normal", "보통 공", NORMAL_BALL, 3)
+	inventory.starting_stock = [normal]
+	root.add_child(inventory)
+	await process_frame
+
+	_expect(inventory.total_remaining == 3,
+		"Reusable mode should expose the configured launch budget.")
+	var reward_definition := SelectBallDefinition.new()
+	reward_definition.ball_id = &"clockwork"
+	reward_definition.display_name = "정속 태엽눈"
+	reward_definition.ball_scene = NORMAL_BALL
+	reward_definition.feature_summary = "속도를 일정하게 유지합니다."
+	_expect(inventory.add_owned_definition(reward_definition),
+		"A purchased reward ball should join the persistent owned list.")
+	_expect(inventory.get_owned_definitions().size() == 2,
+		"Purchased ownership should be independent from launch count.")
+	_expect(inventory.begin_selection(&"clockwork") \
+		and inventory.selected_definition == reward_definition,
+		"A purchased ball should be selectable before launch.")
+	_expect(inventory.mark_selected_ball_used() == reward_definition,
+		"Launching a purchased ball should succeed.")
+	_expect(inventory.total_remaining == 2 \
+		and inventory.select_ball(&"clockwork"),
+		"The same owned ball should remain selectable for the next launch.")
+	_expect(inventory.mark_selected_ball_used() == reward_definition \
+		and inventory.total_remaining == 1,
+		"Repeated use should spend only the shared wave launch budget.")
+	_expect(inventory.select_ball(&"normal") \
+		and inventory.mark_selected_ball_used() == normal.definition,
+		"The final launch may switch back to another owned ball.")
+	_expect(inventory.total_remaining == 0,
+		"Three successful launches should exhaust the wave budget.")
+	_expect(inventory.reset_stock() and inventory.total_remaining == 3,
+		"A new wave should restore three launches without removing purchases.")
+	_expect(inventory.get_owned_definitions().size() == 2,
+		"Wave reset must preserve purchased ball ownership.")
+
+	inventory.queue_free()
+	await process_frame
 
 
 func _make_stock(
