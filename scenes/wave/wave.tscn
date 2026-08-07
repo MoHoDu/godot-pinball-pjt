@@ -511,23 +511,23 @@ position = Vector2(0, 1)
 zoom = Vector2(0.43, 0.43)
 
 [node name="TriangleTopLeft" parent="Walls" instance=ExtResource("90_rebound_wall")]
-position = Vector2(-625, -379)
-rotation = -0.348772
+position = Vector2(-624.46, -378.51)
+rotation = 2.7928207
 bumper_id = &"rebound_wall_top_left"
 
 [node name="TriangleTopRight" parent="Walls" instance=ExtResource("90_rebound_wall")]
-position = Vector2(624, -379)
-rotation = 0.34877196
+position = Vector2(623.46, -378.51)
+rotation = -2.7928207
 bumper_id = &"rebound_wall_top_right"
 
 [node name="TriangleBottomLeft" parent="Walls" instance=ExtResource("90_rebound_wall")]
-position = Vector2(-618, 390)
-rotation = -2.7928207
+position = Vector2(-617.46, 389.51)
+rotation = 0.348772
 bumper_id = &"rebound_wall_bottom_left"
 
 [node name="TriangleBottomRight" parent="Walls" instance=ExtResource("90_rebound_wall")]
-position = Vector2(617, 390)
-rotation = 2.7928207
+position = Vector2(616.46, 389.51)
+rotation = -0.348772
 bumper_id = &"rebound_wall_bottom_right"
 
 [node name="Bumpers" type="Node2D" parent="." unique_id=1144402446]
