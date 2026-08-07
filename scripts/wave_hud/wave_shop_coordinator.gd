@@ -64,9 +64,11 @@ func _build_reward_system() -> void:
 
 
 func _build_shop_system() -> void:
-	part_inventory = RepairPartInventory.new()
-	part_inventory.name = "RepairPartInventory"
-	add_child(part_inventory)
+	part_inventory = get_node_or_null(^"RepairPartInventory") as RepairPartInventory
+	if part_inventory == null:
+		part_inventory = RewardShopPartInventory.new()
+		part_inventory.name = "RepairPartInventory"
+		add_child(part_inventory)
 
 	shop_controller = RewardShopController.new()
 	shop_controller.name = "RewardShopController"

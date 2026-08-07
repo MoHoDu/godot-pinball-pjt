@@ -31,6 +31,8 @@ static func generate_ball_offers(
 			continue
 		if unlocked_ids.has(offer.ball_id):
 			continue
+		if not _is_available_for_reward(offer, reward_index):
+			continue
 		pool.append(offer)
 
 	if pool.size() <= 3:
@@ -68,7 +70,9 @@ static func generate_part_offers(
 ) -> Array[RepairPartOffer]:
 	var pool: Array[RepairPartOffer] = []
 	for offer in catalog.part_offers:
-		if offer != null and offer.is_valid():
+		if offer != null \
+				and offer.is_valid() \
+				and _is_available_for_reward(offer, reward_index):
 			pool.append(offer)
 	if pool.size() <= 3:
 		return pool
@@ -130,7 +134,8 @@ static func ensure_affordable_pair(
 	part_offers: Array[RepairPartOffer],
 	catalog: RewardShopCatalog,
 	unlocked_ids: Array[StringName],
-	wallet_balance: int
+	wallet_balance: int,
+	reward_index: int = 0
 ) -> bool:
 	if wallet_balance < AFFORDABLE_GUARD_MIN_WALLET:
 		return has_affordable_pair(ball_offers, part_offers, wallet_balance)
@@ -139,7 +144,7 @@ static func ensure_affordable_pair(
 
 	# 최저가 공으로 교체를 시도합니다.
 	var cheapest_ball := _cheapest_ball_not_shown(
-		catalog, unlocked_ids, ball_offers
+		catalog, unlocked_ids, ball_offers, reward_index
 	)
 	if cheapest_ball != null and not ball_offers.is_empty():
 		var expensive_index := _most_expensive_ball_index(ball_offers)
@@ -149,7 +154,9 @@ static func ensure_affordable_pair(
 		return true
 
 	# 그래도 안 되면 최저가 부품으로 교체를 시도합니다.
-	var cheapest_part := _cheapest_part_not_shown(catalog, part_offers)
+	var cheapest_part := _cheapest_part_not_shown(
+		catalog, part_offers, reward_index
+	)
 	if cheapest_part != null and not part_offers.is_empty():
 		var expensive_part_index := _most_expensive_part_index(part_offers)
 		if cheapest_part.price < part_offers[expensive_part_index].price:
@@ -186,7 +193,10 @@ static func _pick_one_per_group(
 				candidates.append(offer)
 		if candidates.is_empty():
 			return []
-		picked.append(candidates[rng.randi_range(0, candidates.size() - 1)])
+		var selected := _pick_weighted(candidates, 1, rng)
+		if selected.is_empty():
+			return []
+		picked.append(selected[0])
 	return picked
 
 
@@ -195,11 +205,9 @@ static func _pick_random(
 	count: int,
 	rng: RandomNumberGenerator
 ) -> Array[RewardBallOffer]:
-	var shuffled := pool.duplicate()
-	_shuffle_with_rng(shuffled, rng)
 	var picked: Array[RewardBallOffer] = []
-	for offer_index in mini(count, shuffled.size()):
-		picked.append(shuffled[offer_index])
+	for offer in _pick_weighted(pool, count, rng):
+		picked.append(offer as RewardBallOffer)
 	return picked
 
 
@@ -208,21 +216,49 @@ static func _pick_random_parts(
 	count: int,
 	rng: RandomNumberGenerator
 ) -> Array[RepairPartOffer]:
-	var shuffled := pool.duplicate()
-	_shuffle_with_rng(shuffled, rng)
 	var picked: Array[RepairPartOffer] = []
-	for offer_index in mini(count, shuffled.size()):
-		picked.append(shuffled[offer_index])
+	for offer in _pick_weighted(pool, count, rng):
+		picked.append(offer as RepairPartOffer)
 	return picked
 
 
-## Array.shuffle()은 전역 시드를 쓰므로 재현 가능한 rng로 직접 섞습니다.
-static func _shuffle_with_rng(items: Array, rng: RandomNumberGenerator) -> void:
-	for item_index in range(items.size() - 1, 0, -1):
-		var swap_index := rng.randi_range(0, item_index)
-		var swapped: Variant = items[item_index]
-		items[item_index] = items[swap_index]
-		items[swap_index] = swapped
+## CSV probability를 상대 가중치로 사용하는 비복원 추첨입니다.
+static func _pick_weighted(
+	pool: Array,
+	count: int,
+	rng: RandomNumberGenerator
+) -> Array:
+	var remaining := pool.duplicate()
+	var picked: Array = []
+	for _pick_index in mini(count, remaining.size()):
+		var total_weight := 0.0
+		for offer: Variant in remaining:
+			total_weight += maxf(float(offer.get(&"probability")), 0.0)
+		if total_weight <= 0.0:
+			break
+		var cursor := rng.randf() * total_weight
+		var selected_index := remaining.size() - 1
+		for index in remaining.size():
+			cursor -= maxf(float(remaining[index].get(&"probability")), 0.0)
+			if cursor <= 0.0:
+				selected_index = index
+				break
+		picked.append(remaining[selected_index])
+		remaining.remove_at(selected_index)
+	return picked
+
+
+static func _is_available_for_reward(offer: Resource, reward_index: int) -> bool:
+	if float(offer.get(&"probability")) <= 0.0:
+		return false
+	var normalized_index := maxi(reward_index, 0)
+	var current_wave_id := &"boss_wave" \
+		if normalized_index >= BOSS_REWARD_INDEX \
+		else StringName("wave_%02d" % (normalized_index + 1))
+	return StageRewardRepository.is_available_in_wave(
+		StringName(offer.get(&"first_wave_id")),
+		current_wave_id
+	)
 
 
 static func _distinct_group_count(offers: Array[RewardBallOffer]) -> int:
@@ -250,11 +286,15 @@ static func _has_partner_type(offers: Array[RepairPartOffer]) -> bool:
 static func _cheapest_ball_not_shown(
 	catalog: RewardShopCatalog,
 	unlocked_ids: Array[StringName],
-	shown: Array[RewardBallOffer]
+	shown: Array[RewardBallOffer],
+	reward_index: int
 ) -> RewardBallOffer:
 	var cheapest: RewardBallOffer = null
 	for offer in catalog.ball_offers:
-		if offer == null or unlocked_ids.has(offer.ball_id) or shown.has(offer):
+		if offer == null \
+				or unlocked_ids.has(offer.ball_id) \
+				or shown.has(offer) \
+				or not _is_available_for_reward(offer, reward_index):
 			continue
 		if cheapest == null or offer.price < cheapest.price:
 			cheapest = offer
@@ -263,11 +303,14 @@ static func _cheapest_ball_not_shown(
 
 static func _cheapest_part_not_shown(
 	catalog: RewardShopCatalog,
-	shown: Array[RepairPartOffer]
+	shown: Array[RepairPartOffer],
+	reward_index: int
 ) -> RepairPartOffer:
 	var cheapest: RepairPartOffer = null
 	for offer in catalog.part_offers:
-		if offer == null or shown.has(offer):
+		if offer == null \
+				or shown.has(offer) \
+				or not _is_available_for_reward(offer, reward_index):
 			continue
 		if cheapest == null or offer.price < cheapest.price:
 			cheapest = offer

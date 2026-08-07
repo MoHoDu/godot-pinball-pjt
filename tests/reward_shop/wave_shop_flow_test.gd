@@ -73,10 +73,11 @@ func _run() -> void:
 	if part_index >= 0:
 		var part_id: StringName = scene.shop_controller.part_offers[part_index].part_id
 		var bundle: int = scene.shop_controller.part_offers[part_index].bundle_count
+		var count_before := scene.part_inventory.count_of(part_id)
 		_expect(scene.shop_controller.buy_part(part_index), "부품 구매가 성공해야 한다.")
 		_expect(
-			scene.part_inventory.count_of(part_id) == bundle,
-			"부품 재고가 묶음 수량만큼 늘어야 한다."
+			scene.part_inventory.count_of(part_id) == count_before + bundle,
+			"메인 수리 배치 인벤토리에 묶음 수량만큼 늘어야 한다."
 		)
 
 	scene.shop_hud.proceed_requested.emit()
@@ -133,6 +134,14 @@ func _run() -> void:
 
 func _win_current_wave(scene: WaveShopCoordinator) -> void:
 	var flow: WaveBallFlowController = scene.wave_ball_flow
+	if scene.wave_manager.current_stage_phase \
+			== WaveManager.StagePhase.REPAIR_PLACEMENT:
+		var placement_bridge := scene.get_node_or_null(
+			^"BoardWavePlacementBridge"
+		) as BoardWavePlacementBridge
+		_expect(placement_bridge != null and placement_bridge.commit_placement(),
+			"첫 웨이브는 수리 배치를 확정한 뒤 공 선택으로 넘어가야 한다.")
+		await process_frame
 	_send_action(flow, &"ball_select_confirm")
 	_expect(
 		flow.current_state == WaveBallFlowController.State.AIMING,

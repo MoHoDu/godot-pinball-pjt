@@ -34,6 +34,7 @@ const CATEGORY_PART: StringName = &"part"
 
 
 @export var catalog: RewardShopCatalog
+@export var stage_id: StringName = &"stage_01"
 
 ## 0이면 매번 다르게 뽑습니다.
 @export var random_seed := 0
@@ -51,6 +52,7 @@ var _part_offers: Array[RepairPartOffer] = []
 var _ball_purchase_used := false
 var _part_purchase_used := false
 var _unlocked_ball_ids: Array[StringName] = []
+var _stage_database_applied := false
 
 
 var is_open: bool:
@@ -97,6 +99,7 @@ func bind(wallet: CoinWallet, part_inventory: RepairPartInventory) -> bool:
 func open_shop(wave_id: int, reward_index: int) -> bool:
 	if _is_open or catalog == null or _wallet == null:
 		return false
+	_apply_stage_database()
 	_is_open = true
 	_wave_id = wave_id
 	_reward_index = maxi(reward_index, 0)
@@ -110,7 +113,12 @@ func open_shop(wave_id: int, reward_index: int) -> bool:
 		catalog, _reward_index, _rng, _owned_part_kinds()
 	)
 	var affordable := RewardOfferGenerator.ensure_affordable_pair(
-		_ball_offers, _part_offers, catalog, _unlocked_ball_ids, _wallet.balance
+		_ball_offers,
+		_part_offers,
+		catalog,
+		_unlocked_ball_ids,
+		_wallet.balance,
+		_reward_index
 	)
 
 	shop_opened.emit(_wave_id)
@@ -212,6 +220,17 @@ func _owned_part_kinds() -> Array[StringName]:
 
 func reset_unlocked_balls(next_ids: Array[StringName] = []) -> void:
 	_unlocked_ball_ids = next_ids.duplicate()
+
+
+func _apply_stage_database() -> void:
+	if _stage_database_applied:
+		return
+	var repository := get_node_or_null(
+		"/root/StageDataRepository"
+	) as StageRewardRepository
+	if repository == null:
+		return
+	_stage_database_applied = repository.apply_to_catalog(stage_id, catalog)
 
 
 func _offer_ball_ids() -> Array[StringName]:

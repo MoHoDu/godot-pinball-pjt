@@ -21,6 +21,8 @@ enum PerformanceGroup {
 @export var display_name: String = "공"
 @export var price := 9
 @export var performance_group := PerformanceGroup.MID
+@export var first_wave_id: StringName = &"wave_01"
+@export_range(0.0, 1000.0, 0.01) var probability := 1.0
 
 ## 카드에 장점과 대가를 같은 비중으로 표시합니다(7-3. 함정 카드가 아니다).
 @export_multiline var merit_text := ""
@@ -28,4 +30,7 @@ enum PerformanceGroup {
 
 
 func is_valid() -> bool:
-	return ball_id != &"" and price > 0
+	return ball_id != &"" \
+		and price > 0 \
+		and first_wave_id != &"" \
+		and probability >= 0.0
