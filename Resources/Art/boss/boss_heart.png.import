@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cn836bu27o72n"
-path="res://.godot/imported/golden_gears_wheel.png-f3fb6478787c40b2167a0fca4f1e3e30.ctex"
+uid="uid://l87xi8dttv2d"
+path="res://.godot/imported/boss_heart.png-939871fdc0ef85692205bac5351dde35.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Resources/Art/repair_parts/golden_gears_wheel.png"
-dest_files=["res://.godot/imported/golden_gears_wheel.png-f3fb6478787c40b2167a0fca4f1e3e30.ctex"]
+source_file="res://Resources/Art/boss/boss_heart.png"
+dest_files=["res://.godot/imported/boss_heart.png-939871fdc0ef85692205bac5351dde35.ctex"]
 
 [params]
 

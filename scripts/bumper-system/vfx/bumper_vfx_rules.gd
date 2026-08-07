@@ -133,9 +133,70 @@ var chip_lifetime: float = DEFAULT_CHIP_LIFETIME:
 		chip_lifetime = clampf(value, MIN_LIFETIME, MAX_LIFETIME)
 		emit_changed()
 
+## 조각을 별 모양으로 그릴 때의 꼭짓점 수입니다. **0 이면 원**입니다.
+##
+## 수리 부품 가이드 4-1(별빛 브로치)·4-4(잊혀진 별방울)가 "별 모양 파티클" 을
+## 요구합니다. 텍스처를 쓰지 않고 폴리곤으로 그리는 이유는 조각이 화면에서
+## 4~6px 라 래스터로 만들면 뭉개지고, 색을 규칙에서 못 바꾸기 때문입니다.
+@export_range(0, 8, 1)
+var chip_star_points: int = 0:
+	set(value):
+		chip_star_points = clampi(value, 0, 8)
+		emit_changed()
+
 @export var chip_color := Color(0.86, 0.82, 0.72, 0.90):
 	set(value):
 		chip_color = value
+		emit_changed()
+
+
+@export_category("화려함")
+
+## 선과 원호를 여러 겹으로 그려 만드는 가짜 글로우 세기입니다. 0 이면 끕니다.
+##
+## GL Compatibility 라 실제 블룸을 못 씁니다. 대신 같은 도형을 **넓고 옅게 →
+## 중간 → 좁고 진하게** 세 번 겹쳐 그려 빛나 보이게 합니다. 알파 블렌딩이라
+## 겹친 부분이 밝아집니다.
+@export_range(0.0, 1.0, 0.05)
+var glow_strength: float = 0.55:
+	set(value):
+		glow_strength = clampf(value, 0.0, 1.0)
+		emit_changed()
+
+## 타격 순간 접촉 지점에 터지는 섬광의 크기입니다. 0 이면 끕니다.
+@export_range(0.0, 0.8, 0.01)
+var flash_radius_ratio: float = 0.30:
+	set(value):
+		flash_radius_ratio = clampf(value, 0.0, 0.8)
+		emit_changed()
+
+@export_range(0.02, 0.60, 0.01, "suffix:s")
+var flash_lifetime: float = 0.14:
+	set(value):
+		flash_lifetime = clampf(value, 0.02, 0.60)
+		emit_changed()
+
+@export var flash_color := Color(1.0, 0.96, 0.86, 0.75):
+	set(value):
+		flash_color = value
+		emit_changed()
+
+## 튀는 네 갈래 반짝임의 개수입니다. 별 파티클과 달리 제자리에서 커졌다 사라집니다.
+@export_range(0, 6, 1)
+var sparkle_count: int = 2:
+	set(value):
+		sparkle_count = clampi(value, 0, 6)
+		emit_changed()
+
+@export_range(0.05, 0.60, 0.01)
+var sparkle_radius_ratio: float = 0.22:
+	set(value):
+		sparkle_radius_ratio = clampf(value, 0.05, 0.60)
+		emit_changed()
+
+@export var sparkle_color := Color(1.0, 0.98, 0.90, 0.9):
+	set(value):
+		sparkle_color = value
 		emit_changed()
 
 

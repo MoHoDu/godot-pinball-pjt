@@ -85,6 +85,21 @@ func _check_scene(vfx_path: String, origin_path: String) -> void:
 	_expect(bumper.get_node_or_null(^"_ArtAnimator") != null,
 		"%s 에 애니메이터가 있어야 한다" % vfx_path)
 
+	# 수리 부품도 범퍼와 같은 피드백 노드를 쓴다 (4-1/4-2/4-4 F 절).
+	var feedback := bumper.get_node_or_null(^"_HitFeedback") as BumperHitFeedback
+	_expect(feedback != null, "%s 에 타격 피드백이 있어야 한다" % vfx_path)
+	if feedback != null:
+		_expect(feedback.rules != null, "%s 피드백에 규칙이 꽂혀 있어야 한다" % vfx_path)
+		# VFX 는 표시 반지름에 붙는다. 충돌 반지름을 쓰면 아트 밑에 깔린다.
+		var visual_radius: float = bumper.settings.visual_diameter * 0.5
+		var contact: Vector2 = feedback.contact_point_for(
+			bumper.global_position + Vector2.RIGHT * 500.0
+		)
+		var reach := contact.distance_to(bumper.global_position)
+		_expect(absf(reach - visual_radius) <= 1.0,
+			"%s 접촉 지점이 표시 원 위여야 한다 (기대=%s, 실제=%s)"
+				% [vfx_path, visual_radius, reach])
+
 	# 원본 씬은 그대로여야 한다.
 	var origin_packed := load(origin_path) as PackedScene
 	if origin_packed != null:

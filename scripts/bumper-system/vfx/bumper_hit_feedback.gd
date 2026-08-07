@@ -55,6 +55,8 @@ var _ticks: Array[Dictionary] = []
 var _chips: Array[Dictionary] = []
 var _debris: Array[Dictionary] = []
 var _threads: Array[Dictionary] = []
+var _flashes: Array[Dictionary] = []
+var _sparkles: Array[Dictionary] = []
 
 
 func _init() -> void:
@@ -124,8 +126,12 @@ func _bumper_center() -> Vector2:
 	return global_position
 
 
+## VFX 는 **표시 반지름**에 붙는다. 충돌 반지름을 쓰면 아트 밑에 깔려 안 보인다.
+## 표시가 충돌보다 4.5~14.3% 크다(범퍼마다 다름). 2026-08-07 에 실제로 걸렸다.
 func _bumper_radius() -> float:
 	if is_instance_valid(_bumper):
+		if _bumper.settings != null and _bumper.settings.visual_diameter > 0.0:
+			return _bumper.settings.visual_diameter * 0.5
 		var radius := _bumper.get_collision_radius()
 		if radius > 0.0:
 			return radius
@@ -143,10 +149,15 @@ func _process(delta: float) -> void:
 	if _telegraph_active and _telegraph_until >= 0.0 and _time > _telegraph_until:
 		_telegraph_active = false
 
+	var flashes_alive := _expire(_flashes)
+	var sparkles_alive := _expire(_sparkles)
 	var ticks_alive := _expire(_ticks)
 	var chips_alive := _expire(_chips)
 	var threads_alive := _expire(_threads)
-	var alive := ticks_alive or chips_alive or threads_alive
+	var alive := (
+		ticks_alive or chips_alive or threads_alive
+		or flashes_alive or sparkles_alive
+	)
 	var debris_alive := _expire(_debris)
 
 	if alive or _telegraph_active:
@@ -245,6 +256,27 @@ func spawn_hit(ball_position: Vector2) -> void:
 			"radius": radius * rules.chip_radius_ratio * randf_range(0.7, 1.0),
 		})
 
+	if rules.flash_radius_ratio > 0.0:
+		_flashes.append({
+			"born": _time,
+			"life": rules.flash_lifetime,
+			"origin": origin,
+			"radius": radius * rules.flash_radius_ratio,
+		})
+
+	for index in rules.sparkle_count:
+		# 접촉 지점 주변에 흩어 둔다. 전부 한 점에 겹치면 하나로 보인다.
+		var scatter := base_angle + randf_range(-spread, spread) * 1.4
+		var away := randf_range(0.15, 0.75) * radius * 0.5
+		_sparkles.append({
+			"born": _time,
+			# 조금씩 늦게 터져야 "반짝" 하고 이어진다.
+			"life": rules.flash_lifetime * randf_range(1.0, 1.7),
+			"origin": origin + Vector2.from_angle(scatter) * away,
+			"radius": radius * rules.sparkle_radius_ratio * randf_range(0.6, 1.0),
+			"angle": randf_range(0.0, PI),
+		})
+
 	queue_redraw()
 
 
@@ -257,9 +289,10 @@ func spawn_thread_snap() -> void:
 	_threads.append({
 		"born": _time,
 		"life": rules.chip_lifetime * 1.6,
-		"origin": _bumper_center() + Vector2.from_angle(angle) * radius * 0.55,
+		# 실밥은 범퍼 표면 위에 있어야 한다. 바깥으로 나가면 허공에 뜬 자국이 된다.
+		"origin": _bumper_center() + Vector2.from_angle(angle) * radius * 0.32,
 		"dir": Vector2.from_angle(angle),
-		"length": radius * 0.42,
+		"length": radius * 0.30,
 	})
 	queue_redraw()
 
@@ -283,6 +316,14 @@ func spawn_debris() -> void:
 		})
 	if _debris_layer != null:
 		_debris_layer.queue_redraw()
+
+
+func live_flash_count() -> int:
+	return _flashes.size()
+
+
+func live_sparkle_count() -> int:
+	return _sparkles.size()
 
 
 func live_tick_count() -> int:
@@ -320,16 +361,50 @@ func _draw() -> void:
 		var color := rules.tick_color
 		color.a *= 1.0 - t
 		var origin: Vector2 = item["origin"] - center
-		var start: Vector2 = origin + item["dir"] * float(item["length"]) * 0.25 * t
-		var end: Vector2 = origin + item["dir"] * float(item["length"]) * (0.55 + 0.45 * t)
-		draw_line(start, end, color, rules.tick_width * (1.0 - 0.4 * t), true)
+		# 태어나는 순간부터 길이의 80% 를 쓴다. 예전엔 55% 라 한 프레임짜리
+		# 타격선이 실제 설정값보다 훨씬 짧게 보였다 (2026-08-07).
+		var start: Vector2 = origin + item["dir"] * float(item["length"]) * 0.35 * t
+		var end: Vector2 = origin + item["dir"] * float(item["length"]) * (0.80 + 0.20 * t)
+		draw_glow_line(start, end, color, rules.tick_width * (1.0 - 0.4 * t))
+
+	# 섬광은 가장 먼저 커졌다 사라진다. 다른 요소 밑에 깔려야 자연스럽다.
+	for item in _flashes:
+		var t := _progress(item)
+		var color := rules.flash_color
+		color.a *= (1.0 - t) * (1.0 - t)
+		var position: Vector2 = item["origin"] - center
+		var flash_radius: float = float(item["radius"]) * (0.45 + 0.85 * t)
+		_draw_glow_disc(position, flash_radius, color, rules.glow_strength)
+
+	for item in _sparkles:
+		var t := _progress(item)
+		var color := rules.sparkle_color
+		color.a *= 1.0 - t
+		# 빠르게 커졌다가 다시 줄어든다. 한 번 "반짝" 하는 리듬을 만든다.
+		var pop := sin(clampf(t, 0.0, 1.0) * PI)
+		_draw_sparkle(
+			item["origin"] - center,
+			float(item["radius"]) * pop,
+			float(item["angle"]) + t * 1.2,
+			color
+		)
 
 	for item in _chips:
 		var t := _progress(item)
 		var color := rules.chip_color
 		color.a *= 1.0 - t * t
 		var position: Vector2 = item["origin"] - center + item["dir"] * float(item["length"]) * t
-		draw_circle(position, float(item["radius"]) * (1.0 - 0.35 * t), color)
+		var chip_radius: float = float(item["radius"]) * (1.0 - 0.35 * t)
+		if rules.chip_star_points >= 3:
+			# 조각이 날아가며 같이 돈다. 별이 굳어 보이지 않게 한다.
+			draw_colored_polygon(
+				_star_points(
+					position, chip_radius, rules.chip_star_points, t * PI
+				),
+				color
+			)
+		else:
+			draw_circle(position, chip_radius, color)
 
 	for item in _threads:
 		var t := _progress(item)
@@ -367,6 +442,80 @@ func draw_debris_into(layer: Node2D) -> void:
 			var a := spin + TAU * float(corner) / 3.0
 			points.append(position + Vector2.from_angle(a) * size)
 		layer.draw_colored_polygon(points, color)
+
+
+## 선을 세 겹으로 겹쳐 빛나 보이게 그립니다.
+## GL Compatibility 에 블룸이 없어 이렇게 흉내 냅니다.
+func draw_glow_line(
+	start: Vector2, end: Vector2, color: Color, width: float
+) -> void:
+	var glow: float = rules.glow_strength if rules != null else 0.0
+	if glow > 0.0:
+		var halo := color
+		halo.a *= 0.16 * glow
+		draw_line(start, end, halo, width * 3.2, true)
+		halo.a = color.a * 0.30 * glow
+		draw_line(start, end, halo, width * 1.9, true)
+	draw_line(start, end, color, width, true)
+
+
+## 원호를 세 겹으로 겹쳐 빛나 보이게 그립니다.
+func draw_glow_arc(radius: float, color: Color, width: float) -> void:
+	var glow: float = rules.glow_strength if rules != null else 0.0
+	if glow > 0.0:
+		var halo := color
+		halo.a *= 0.15 * glow
+		draw_arc(Vector2.ZERO, radius, 0.0, TAU, 64, halo, width * 3.4, true)
+		halo.a = color.a * 0.28 * glow
+		draw_arc(Vector2.ZERO, radius, 0.0, TAU, 64, halo, width * 2.0, true)
+	draw_arc(Vector2.ZERO, radius, 0.0, TAU, 64, color, width, true)
+
+
+## 가운데가 밝고 가장자리로 사라지는 빛 덩어리입니다.
+##
+## 반투명 원 하나로 그리면 배경 위에 **테두리가 뚜렷한 회색 얼룩**이 됩니다.
+## 동심원을 바깥(옅게)부터 안쪽(진하게)으로 겹쳐 그려 그러데이션을 만듭니다.
+## 알파가 누적돼 가운데가 저절로 밝아집니다.
+func _draw_glow_disc(
+	center: Vector2, radius: float, color: Color, glow: float
+) -> void:
+	var steps := 5 if glow > 0.0 else 1
+	for index in steps:
+		# 1.0 -> 0.2 로 좁혀 들어간다.
+		var shrink := 1.0 - 0.8 * (float(index) / float(steps))
+		var layer := color
+		# 바깥은 아주 옅게, 안으로 갈수록 진하게.
+		layer.a = color.a * lerpf(0.10 * glow, 1.0, float(index) / float(steps - 1)) 			if steps > 1 else color.a
+		draw_circle(center, radius * (1.6 * shrink), layer)
+
+
+## 네 갈래 반짝임입니다. 가로·세로로 길고 가운데가 밝은 고전적인 별빛 모양입니다.
+func _draw_sparkle(
+	center: Vector2, radius: float, angle: float, color: Color
+) -> void:
+	var long_axis := radius
+	var short_axis := radius * 0.16
+	var points := PackedVector2Array()
+	for index in 8:
+		var step := float(index) * PI * 0.25
+		var r: float = long_axis if index % 2 == 0 else short_axis
+		points.append(center + Vector2.from_angle(angle + step) * r)
+	draw_colored_polygon(points, color)
+
+
+## 별 폴리곤 꼭짓점입니다. 안쪽 반지름은 바깥의 0.45 배로 둡니다.
+## 더 크면 별이 아니라 톱니로, 더 작으면 바늘처럼 보입니다.
+func _star_points(
+	center: Vector2, radius: float, points: int, phase: float
+) -> PackedVector2Array:
+	var result := PackedVector2Array()
+	var step := PI / float(points)
+	for index in points * 2:
+		var r: float = radius if index % 2 == 0 else radius * 0.45
+		# -PI/2 를 더해 꼭짓점 하나가 위를 보게 한다.
+		var angle := phase - PI * 0.5 + float(index) * step
+		result.append(center + Vector2.from_angle(angle) * r)
+	return result
 
 
 func _progress(item: Dictionary) -> float:
