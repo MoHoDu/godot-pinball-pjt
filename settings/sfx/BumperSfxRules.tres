@@ -19,8 +19,8 @@
 [ext_resource type="AudioStream" path="res://Resources/sfx/bumpers/SFX_Bumper_Spring.wav" id="5_spring"]
 [ext_resource type="AudioStream" path="res://Resources/sfx/bumpers/SFX_Bumper_Drum.wav" id="6_drum"]
 [ext_resource type="AudioStream" path="res://Resources/sfx/bumpers/SFX_Bumper_CannonClick.wav" id="7_click"]
+[ext_resource type="AudioStream" path="res://Resources/sfx/bumpers/SFX_Bumper_CannonAim.wav" id="11_aim"]
 [ext_resource type="AudioStream" path="res://Resources/sfx/bumpers/SFX_Bumper_CannonFire.wav" id="8_fire"]
-[ext_resource type="AudioStream" path="res://Resources/sfx/bumpers/SFX_Bumper_Destroy.wav" id="9_destroy"]
 [ext_resource type="AudioStream" path="res://Resources/sfx/bumpers/SFX_Bumper_Respawn.wav" id="10_respawn"]
 
 [sub_resource type="Resource" id="SfxCue_button"]
@@ -106,6 +106,19 @@ pitch_jitter = 0.03
 minimum_repeat_interval = 0.15
 repeat_attenuation_db = 0.0
 
+[sub_resource type="Resource" id="SfxCue_aim"]
+script = ExtResource("2_cue")
+cue_id = &"bumper_cannon_aim"
+role = "태엽 대포 조준 — 방향을 한 칸 옮길 때마다 태엽이 맞물린다"
+streams = Array[AudioStream]([ExtResource("11_aim")])
+selection_mode = 0
+priority = 0
+maximum_concurrent = 1
+speed_volume_range = Vector2(0, 0)
+pitch_jitter = 0.04
+minimum_repeat_interval = 0.04
+repeat_attenuation_db = 0.0
+
 [sub_resource type="Resource" id="SfxCue_fire"]
 script = ExtResource("2_cue")
 cue_id = &"bumper_cannon_fire"
@@ -118,19 +131,6 @@ speed_volume_range = Vector2(0, 0)
 pitch_jitter = 0.04
 minimum_repeat_interval = 0.15
 repeat_attenuation_db = 0.0
-
-[sub_resource type="Resource" id="SfxCue_destroy"]
-script = ExtResource("2_cue")
-cue_id = &"bumper_destroy"
-role = "범퍼 파괴 — 내구도가 다해 부서진다. 종류와 무관하게 공통"
-streams = Array[AudioStream]([ExtResource("9_destroy")])
-selection_mode = 0
-priority = 20
-maximum_concurrent = 2
-speed_volume_range = Vector2(0, 0)
-pitch_jitter = 0.05
-minimum_repeat_interval = 0.1
-repeat_attenuation_db = -3.0
 
 [sub_resource type="Resource" id="SfxCue_respawn"]
 script = ExtResource("2_cue")
@@ -153,7 +153,7 @@ spring_doll_cue = SubResource("SfxCue_spring")
 toy_drum_cue = SubResource("SfxCue_drum")
 cannon_cue = SubResource("SfxCue_cannon")
 fallback_cue = SubResource("SfxCue_button")
-destroy_cue = SubResource("SfxCue_destroy")
 respawn_telegraph_cue = SubResource("SfxCue_respawn")
 cannon_control_cue = SubResource("SfxCue_click")
+cannon_aim_cue = SubResource("SfxCue_aim")
 cannon_fire_cue = SubResource("SfxCue_fire")
