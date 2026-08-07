@@ -38,11 +38,12 @@ func _enter_boss_for_debug() -> void:
 			return
 		await get_tree().process_frame
 		await get_tree().process_frame
-		if wave_manager.current_stage_phase != WaveManager.StagePhase.WAVE_RESULT:
-			_update_debug_status("Wave result transition did not complete.")
-			return
-		if not wave_manager.advance_stage_phase():
-			_update_debug_status("Wave result could not advance to reward.")
+		if wave_manager.current_stage_phase == WaveManager.StagePhase.WAVE_RESULT:
+			if not wave_manager.advance_stage_phase():
+				_update_debug_status("Wave result could not advance to reward.")
+				return
+		if wave_manager.current_stage_phase != WaveManager.StagePhase.REWARD:
+			_update_debug_status("Wave reward transition did not complete.")
 			return
 		if not wave_manager.advance_stage_phase():
 			_update_debug_status("Reward could not advance.")
@@ -65,17 +66,26 @@ func _complete_normal_wave_with_public_api(expected_wave_index: int) -> bool:
 				!= WaveManager.StagePhase.REPAIR_PLACEMENT \
 			or wave_manager.current_wave_index != expected_wave_index:
 		return false
-	if not wave_manager.advance_stage_phase():
+	var placement_bridge := get_node_or_null(
+		^"BoardWavePlacementBridge"
+	) as BoardWavePlacementBridge
+	if placement_bridge == null or not placement_bridge.commit_placement():
 		return false
 	if not wave_ball_flow.confirm_selection():
 		return false
+	var active_ball: Pinball = wave_ball_flow.active_ball
 	if not launcher.launch_prepared_ball():
 		return false
 
 	combo_system.stage_base_score = maxi(wave_manager.target_score, 1)
 	combo_system.register_hit(1.0)
 	combo_system.finish_combo(ComboSystem.EndReason.MANUAL)
-	return true
+	if wave_ball_flow.current_state == WaveBallFlowController.State.IN_PLAY:
+		return wave_ball_flow.on_ball_drained(active_ball)
+	return wave_manager.current_stage_phase in [
+		WaveManager.StagePhase.WAVE_RESULT,
+		WaveManager.StagePhase.REWARD,
+	]
 
 
 func _debug_dependencies_are_valid() -> bool:

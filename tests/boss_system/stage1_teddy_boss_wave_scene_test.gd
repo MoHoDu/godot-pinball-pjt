@@ -7,12 +7,6 @@ const ProductionWaveScene: PackedScene = preload(
 const ComboSystemScript: Script = preload(
 	"res://scripts/combo_system/combo_system.gd"
 )
-const WaveManagerScript: Script = preload(
-	"res://scripts/ball_base_system/wave_manager.gd"
-)
-const BallFlowScript: Script = preload(
-	"res://scripts/ball_base_system/wave_ball_flow_controller.gd"
-)
 const FlipperScript: Script = preload(
 	"res://scripts/flipper_system/flipper.gd"
 )
@@ -55,6 +49,9 @@ func _run() -> void:
 		"WaveBallFlowController"
 	) as WaveBallFlowController
 	var launcher := wave.get_node_or_null("PinballLauncher") as PinballLauncher
+	var placement_bridge := wave.get_node_or_null(
+		"BoardWavePlacementBridge"
+	) as BoardWavePlacementBridge
 	var hud := wave.get_node_or_null("HUD/WaveHud") as WaveHud
 	var hud_state := wave.get_node_or_null(
 		"WaveHudStateSource"
@@ -67,12 +64,14 @@ func _run() -> void:
 		[combo, "Existing ComboSystem must be reused."],
 		[ball_flow, "Existing BallFlow must be reused."],
 		[launcher, "Existing Launcher must be reused."],
+		[placement_bridge, "Existing Board placement bridge must be reused."],
 		[hud, "Existing WaveHud must be reused."],
 		[hud_state, "Existing HUD state source must be reused."],
 	]:
 		_expect(check[0] != null, String(check[1]))
 	if bridge == null or boss == null or manager == null or combo == null \
-			or ball_flow == null or launcher == null or hud == null \
+			or ball_flow == null or launcher == null \
+			or placement_bridge == null or hud == null \
 			or hud_state == null:
 		wave.queue_free()
 		await process_frame
@@ -86,7 +85,13 @@ func _run() -> void:
 		"Boss Runtime must stay inactive before the BOSS phase.")
 	_expect(not boss.visible, "Boss visuals must be hidden before BOSS.")
 
-	await _advance_three_normal_waves(manager, ball_flow, launcher, combo)
+	await _advance_three_normal_waves(
+		manager,
+		placement_bridge,
+		ball_flow,
+		launcher,
+		combo
+	)
 	_expect(manager.current_stage_phase == WaveManager.StagePhase.BOSS,
 		"Three normal Waves must lead to BOSS.")
 	_expect(boss.is_battle_active(), "Entering BOSS must start Teddy Runtime.")
@@ -119,17 +124,17 @@ func _test_no_duplicate_wave_systems(
 ) -> void:
 	_expect(_count_script(wave, ComboSystemScript) == 1,
 		"Production Wave must contain exactly one ComboSystem.")
-	_expect(_count_script(wave, WaveManagerScript) == 1,
+	_expect(_count_wave_managers(wave) == 1,
 		"Production Wave must contain exactly one WaveManager.")
-	_expect(_count_script(wave, BallFlowScript) == 1,
+	_expect(_count_ball_flows(wave) == 1,
 		"Production Wave must contain exactly one BallFlow.")
 	_expect(_count_script(wave, FlipperScript) == 8,
 		"Production Wave must reuse exactly eight Flippers.")
 	_expect(_count_script(boss, ComboSystemScript) == 0,
 		"Boss-only Runtime must not contain ComboSystem.")
-	_expect(_count_script(boss, WaveManagerScript) == 0,
+	_expect(_count_wave_managers(boss) == 0,
 		"Boss-only Runtime must not contain WaveManager.")
-	_expect(_count_script(boss, BallFlowScript) == 0,
+	_expect(_count_ball_flows(boss) == 0,
 		"Boss-only Runtime must not contain BallFlow.")
 	_expect(_count_script(boss, FlipperScript) == 0,
 		"Boss-only Runtime must not create Flippers.")
@@ -139,26 +144,39 @@ func _test_no_duplicate_wave_systems(
 
 func _advance_three_normal_waves(
 	manager: WaveManager,
+	placement_bridge: BoardWavePlacementBridge,
 	ball_flow: WaveBallFlowController,
 	launcher: PinballLauncher,
 	combo: ComboSystem
 ) -> void:
 	for wave_index: int in 3:
-		_expect(manager.advance_stage_phase(),
-			"Repair placement must start each normal Wave.")
+		_expect(placement_bridge.commit_placement(),
+			"Repair placement must be committed before each normal Wave.")
 		_expect(ball_flow.confirm_selection(),
 			"Existing BallFlow must prepare the selected Ball.")
+		var active_ball: Pinball = ball_flow.active_ball
 		_expect(launcher.launch_prepared_ball(),
 			"Existing Launcher must launch the selected Ball.")
 		combo.stage_base_score = manager.target_score
 		combo.register_hit(1.0)
 		combo.finish_combo(ComboSystem.EndReason.MANUAL)
+		if ball_flow.current_state == WaveBallFlowController.State.IN_PLAY:
+			_expect(ball_flow.on_ball_drained(active_ball),
+				"Normal Wave Ball must settle through the existing BallFlow.")
 		await process_frame
 		await process_frame
-		_expect(manager.current_stage_phase == WaveManager.StagePhase.WAVE_RESULT,
-			"Normal Wave clear must enter WAVE_RESULT.")
-		_expect(manager.advance_stage_phase(),
-			"WAVE_RESULT must advance to REWARD.")
+		_expect(
+			manager.current_stage_phase in [
+				WaveManager.StagePhase.WAVE_RESULT,
+				WaveManager.StagePhase.REWARD,
+			],
+			"Normal Wave clear must reach its result or reward phase."
+		)
+		if manager.current_stage_phase == WaveManager.StagePhase.WAVE_RESULT:
+			_expect(manager.advance_stage_phase(),
+				"WAVE_RESULT must advance to REWARD.")
+		_expect(manager.current_stage_phase == WaveManager.StagePhase.REWARD,
+			"Normal Wave result must expose REWARD before continuing.")
 		_expect(manager.advance_stage_phase(),
 			"REWARD must advance to the next Wave or BOSS.")
 		if wave_index < 2:
@@ -350,6 +368,20 @@ func _count_script(node: Node, target_script: Script) -> int:
 	var count: int = 1 if node.get_script() == target_script else 0
 	for child: Node in node.get_children():
 		count += _count_script(child, target_script)
+	return count
+
+
+func _count_wave_managers(node: Node) -> int:
+	var count: int = 1 if node is WaveManager else 0
+	for child: Node in node.get_children():
+		count += _count_wave_managers(child)
+	return count
+
+
+func _count_ball_flows(node: Node) -> int:
+	var count: int = 1 if node is WaveBallFlowController else 0
+	for child: Node in node.get_children():
+		count += _count_ball_flows(child)
 	return count
 
 

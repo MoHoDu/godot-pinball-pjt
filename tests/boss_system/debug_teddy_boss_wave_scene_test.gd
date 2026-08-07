@@ -10,12 +10,6 @@ const ProductionWaveScene: PackedScene = preload(
 const ComboSystemScript: Script = preload(
 	"res://scripts/combo_system/combo_system.gd"
 )
-const WaveManagerScript: Script = preload(
-	"res://scripts/ball_base_system/wave_manager.gd"
-)
-const BallFlowScript: Script = preload(
-	"res://scripts/ball_base_system/wave_ball_flow_controller.gd"
-)
 const FlipperScript: Script = preload(
 	"res://scripts/flipper_system/flipper.gd"
 )
@@ -46,11 +40,11 @@ func _run() -> void:
 	var launcher: PinballLauncher = wave.launcher
 	var boss := wave.get_node("Stage1TeddyBossRuntime") \
 		as Stage1TeddyBossRuntime
-	_expect(_count_script(wave, WaveManagerScript) == 1,
+	_expect(_count_wave_managers(wave) == 1,
 		"Debug inheritance must keep one production WaveManager.")
 	_expect(_count_script(wave, ComboSystemScript) == 1,
 		"Debug inheritance must keep one production ComboSystem.")
-	_expect(_count_script(wave, BallFlowScript) == 1,
+	_expect(_count_ball_flows(wave) == 1,
 		"Debug inheritance must keep one production BallFlow.")
 	_expect(_count_script(wave, FlipperScript) == 8,
 		"Debug inheritance must keep the eight production Flippers.")
@@ -111,6 +105,20 @@ func _count_script(node: Node, target_script: Script) -> int:
 	var count: int = 1 if node.get_script() == target_script else 0
 	for child: Node in node.get_children():
 		count += _count_script(child, target_script)
+	return count
+
+
+func _count_wave_managers(node: Node) -> int:
+	var count: int = 1 if node is WaveManager else 0
+	for child: Node in node.get_children():
+		count += _count_wave_managers(child)
+	return count
+
+
+func _count_ball_flows(node: Node) -> int:
+	var count: int = 1 if node is WaveBallFlowController else 0
+	for child: Node in node.get_children():
+		count += _count_ball_flows(child)
 	return count
 
 
