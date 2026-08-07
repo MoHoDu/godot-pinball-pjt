@@ -6,7 +6,7 @@ extends SceneTree
 ## 테스트 시간을 줄이려고 유예를 0.6초로 줄여 실행합니다.
 
 
-const WAVE_SCENE := preload("res://scenes/wave/wave_repair.tscn")
+const WAVE_SCENE := preload("res://scenes/wave/wave.tscn")
 
 const HIT_WEIGHT := 20000.0
 const MAX_TIMEOUT_FRAMES := 300
@@ -21,14 +21,17 @@ func _init() -> void:
 
 
 func _run() -> void:
-	var scene := WAVE_SCENE.instantiate() as WaveRepairCoordinator
+	var scene := WAVE_SCENE.instantiate() as WaveRuntimeCoordinator
 	root.add_child(scene)
 	await process_frame
 	await process_frame
 
 	var wave_manager: WaveManager = scene.wave_manager
-	scene.clear_delay.duration = 0.6
-	scene.clear_delay.wave_clear_delay_finished.connect(
+	var clear_delay := scene.get_node(
+		^"CoinSystem/WaveClearDelayController"
+	) as WaveClearDelayController
+	clear_delay.duration = 0.6
+	clear_delay.wave_clear_delay_finished.connect(
 		func(
 			reason: StringName,
 			_delay_score: int,
@@ -36,6 +39,13 @@ func _run() -> void:
 			_board_coin: int
 		) -> void:
 			_finish_reasons.append(reason)
+	)
+	var placement_bridge := scene.get_node(
+		^"BoardWavePlacementBridge"
+	) as BoardWavePlacementBridge
+	_expect(
+		placement_bridge.commit_placement(),
+		"수리 부품 배치를 확정하고 웨이브에 진입해야 한다."
 	)
 
 	# 공을 발사한 채 목표 점수를 채우고, 낙하시키지 않고 유예 만료를 기다린다.
@@ -45,11 +55,14 @@ func _run() -> void:
 	event.pressed = true
 	flow._unhandled_input(event)
 	_expect(scene.launcher.launch_prepared_ball(), "공이 발사되어야 한다.")
+	# 물리 궤적으로 먼저 낙하하면 타임아웃 경로를 검증할 수 없으므로 고정한다.
+	if is_instance_valid(flow.active_ball):
+		flow.active_ball.freeze = true
 	# 점수는 콤보 정산 시점에 반영되므로 수동으로 정산해 목표를 달성시킨다.
 	scene.combo_system.register_hit(HIT_WEIGHT)
 	scene.combo_system.finish_combo(ComboSystem.EndReason.MANUAL)
 	_expect(
-		scene.clear_delay.is_delay_active,
+		clear_delay.is_delay_active,
 		"목표 달성 시 종료 유예가 시작되어야 한다."
 	)
 

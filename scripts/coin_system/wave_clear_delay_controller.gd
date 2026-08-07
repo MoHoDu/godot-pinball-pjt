@@ -76,17 +76,26 @@ func bind(
 	if wave_manager == null or wave_manager.combo_wave == null \
 			or wave_manager.ball_flow == null:
 		return false
+	if _wave_manager == wave_manager and _wallet == wallet \
+			and _coin_field == coin_field:
+		return true
 	_wave_manager = wave_manager
 	_combo_wave = wave_manager.combo_wave
 	_ball_flow = wave_manager.ball_flow
 	_wallet = wallet
 	_coin_field = coin_field
+	_wave_manager.set_target_completion_deferred(true)
 
-	_combo_wave.target_score_reached.connect(_on_target_score_reached)
-	_wave_manager.clear_choice_requested.connect(_on_clear_choice_requested)
-	_wave_manager.wave_won.connect(_on_wave_won)
-	_wave_manager.wave_entered.connect(_on_wave_entered)
-	_wave_manager.wave_retried.connect(_on_wave_retried)
+	if not _combo_wave.target_score_reached.is_connected(_on_target_score_reached):
+		_combo_wave.target_score_reached.connect(_on_target_score_reached)
+	if not _wave_manager.clear_choice_requested.is_connected(_on_clear_choice_requested):
+		_wave_manager.clear_choice_requested.connect(_on_clear_choice_requested)
+	if not _wave_manager.wave_won.is_connected(_on_wave_won):
+		_wave_manager.wave_won.connect(_on_wave_won)
+	if not _wave_manager.wave_entered.is_connected(_on_wave_entered):
+		_wave_manager.wave_entered.connect(_on_wave_entered)
+	if not _wave_manager.wave_retried.is_connected(_on_wave_retried):
+		_wave_manager.wave_retried.connect(_on_wave_retried)
 	return true
 
 

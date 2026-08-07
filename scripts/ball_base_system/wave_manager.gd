@@ -66,6 +66,7 @@ var _terminal_finalize_queued := false
 var _stage_phase: StagePhase = StagePhase.INACTIVE
 var _stage_is_active := false
 var _last_wave_was_won := false
+var _target_completion_deferred := false
 
 
 var current_state: State:
@@ -165,6 +166,12 @@ func bind_collision_bridge(next_bridge: ComboCollisionBridge) -> bool:
 		collision_bridge.bind_combo_system(combo_system)
 	collision_bridge.bind_ball(active_ball)
 	return true
+
+
+## 종료 유예 같은 외부 규칙이 목표 달성 뒤 현재 공을 계속 진행할 때 사용합니다.
+## 기본값은 false라 기존 WaveManager 단독 흐름은 즉시 완료 동작을 유지합니다.
+func set_target_completion_deferred(is_deferred: bool) -> void:
+	_target_completion_deferred = is_deferred
 
 
 func enter_stage(stage_settings: Resource, start_wave_index := 0) -> bool:
@@ -457,7 +464,8 @@ func _on_wave_clear_requested(_score: int, _target: int) -> void:
 
 
 func _on_target_score_reached(_score: int, _target: int) -> void:
-	if _state == State.IN_PLAY and combo_wave != null:
+	if _state == State.IN_PLAY and combo_wave != null \
+			and not _target_completion_deferred:
 		combo_wave.complete_reached_target()
 
 
