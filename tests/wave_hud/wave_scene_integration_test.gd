@@ -26,6 +26,7 @@ func _run() -> void:
 	await process_frame
 
 	_test_standalone_scene_source()
+	_test_repair_content_configuration(wave)
 	_test_scene_structure(wave)
 	_test_korean_selection_hud(wave)
 	_test_bumper_loadout(wave)
@@ -84,6 +85,43 @@ func _test_standalone_scene_source() -> void:
 	_expect(scene_source.contains(
 		"res://scripts/board_system/board_wave_placement_bridge.gd"
 	), "Wave scene must bridge repair placement to the active WaveManager.")
+	_expect(scene_source.contains(
+		"res://scripts/repair_parts/runtime/repair_effect_router.gd"
+	), "Wave scene must route the latest repair-part effects.")
+
+
+func _test_repair_content_configuration(wave: WaveRuntimeCoordinator) -> void:
+	var inventory := wave.get_node("RepairPartInventory") as RepairPartInventory
+	var part_ids: Array[StringName] = []
+	for item: Dictionary in inventory.get_snapshot():
+		part_ids.append(StringName(item[&"kind_id"]))
+	_expect(part_ids.size() == 3,
+		"Wave repair inventory must expose the three v0.3 part families.")
+	_expect(&"starlight_brooch" in part_ids \
+		and &"golden_gears" in part_ids \
+		and &"forgotten_star_bell" in part_ids,
+		"Wave repair inventory must contain brooch, gears, and bell.")
+	_expect(&"crescent_needle" not in part_ids,
+		"Crescent Needle must not remain in the v0.3 repair inventory.")
+
+	var placement_controller := wave.get_node(
+		"RepairPartPlacementController"
+	) as RepairPartPlacementController
+	_expect(placement_controller.place_kind_at_socket(
+		&"starlight_brooch", &"middle_02"
+	), "Wave placement must accept the latest Starlight Brooch scene.")
+	var layout := wave.get_node("RepairBoardLayout") as BoardLayout
+	var session := layout.get_node("PlacementSession") as BoardPlacementSession
+	var placeable := session.find_placeable_at_socket(&"middle_02")
+	var bumper := placeable.get_bumper() if placeable != null else null
+	var runtime := bumper.get_node_or_null(^"RepairPartRuntime") \
+		as RepairPartRuntime if bumper != null else null
+	_expect(runtime != null,
+		"Placed Wave parts must include the v0.3 RepairPartRuntime.")
+	_expect(bumper != null and bumper.get_node_or_null(^"_ArtSprite") != null,
+		"Placed Wave parts must include their latest production art.")
+	_expect(bumper != null and bumper.combo_hit_source is RepairPartHitSource,
+		"Placed Wave parts must use the v0.3 contact gate.")
 
 
 func _test_scene_structure(wave: WaveRuntimeCoordinator) -> void:
@@ -117,6 +155,18 @@ func _test_scene_structure(wave: WaveRuntimeCoordinator) -> void:
 		"Repair placement must exclusively own the HUD before confirmation.")
 	_expect(placement_bridge.commit_placement(),
 		"Wave integration must advance only through a valid placement commit.")
+	var placed := session.find_placeable_at_socket(&"middle_02")
+	var placed_bumper := placed.get_bumper() if placed != null else null
+	var placed_runtime := placed_bumper.get_node_or_null(^"RepairPartRuntime") \
+		as RepairPartRuntime if placed_bumper != null else null
+	var repair_router := wave.get_node(
+		"WaveRepairEffects/RepairEffectRouter"
+	) as RepairEffectRouter
+	_expect(placement_bridge.repair_effect_router == repair_router,
+		"Wave placement bridge must target the live repair-effect router.")
+	_expect(placed_runtime != null \
+		and repair_router.get_effect_for(placed_runtime) != null,
+		"Committed Wave parts must register their v0.3 gameplay effect.")
 	_expect(wave.wave_manager.current_state == WaveManager.State.SELECTING_BALL,
 		"Placement confirmation must advance into the implemented selection flow.")
 	_expect(wave.wave_manager.current_stage_phase \

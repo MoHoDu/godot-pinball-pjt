@@ -28,8 +28,32 @@ func _run() -> void:
 	var wave_manager: WaveManager = scene.wave_manager
 	var inventory: RewardPartInventory = scene.part_inventory
 	var placement: RepairPlacementController = scene.placement_controller
+	var base_bridge := scene.get_node(
+		^"BoardWavePlacementBridge"
+	) as BoardWavePlacementBridge
+	var base_router := scene.get_node(
+		^"WaveRepairEffects/RepairEffectRouter"
+	) as RepairEffectRouter
+	var repair_router := scene.get_node(
+		^"RepairPartSystem/RepairEffectRouter"
+	) as RepairEffectRouter
 
 	_expect(scene.repair_board != null, "수리 보드 컨트롤러가 붙어야 한다.")
+	_expect(
+		not base_bridge.integration_enabled,
+		"파생 수리 웨이브에서 기본 배치 브리지는 비활성이어야 한다."
+	)
+	_expect(
+		base_router.runtime_root_path == NodePath("../../RepairBoardLayout")
+		and repair_router.runtime_root_path == NodePath("../Sockets"),
+		"기본과 파생 이펙트 라우터는 각자의 보드만 처리해야 한다."
+	)
+	_expect(
+		wave_manager.current_state == WaveManager.State.SELECTING_BALL
+		and wave_manager.current_stage_phase
+		== WaveManager.StagePhase.BALL_SELECTION,
+		"재고가 없는 첫 웨이브도 공 선택 단계로 진입해야 한다."
+	)
 	_expect(
 		scene.repair_board.get_sockets().size() == 12,
 		"소켓은 12개여야 한다(9-1). (%d)"
@@ -104,6 +128,18 @@ func _run() -> void:
 	_expect(
 		scene.repair_board.get_equipped_count() == 1,
 		"확정된 부품이 보드에 장착되어야 한다."
+	)
+	var placed_runtime := scene.repair_board.get_sockets()[0].get_child(0) \
+		as RepairPartRuntime
+	if placed_runtime == null:
+		placed_runtime = scene.repair_board.get_sockets()[0].find_child(
+			"RepairPartRuntime", true, false
+		) as RepairPartRuntime
+	_expect(
+		placed_runtime != null
+		and repair_router.get_effect_for(placed_runtime) != null
+		and base_router.get_effect_for(placed_runtime) == null,
+		"파생 보드의 부품은 파생 라우터에만 등록되어야 한다."
 	)
 
 	# 웨이브를 끝내면 장착 개체는 보드에서 사라진다(1회용).
