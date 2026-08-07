@@ -15,6 +15,7 @@ func _run() -> void:
 	await _test_live_target_reached_ends_immediately()
 	await _test_target_reached_ends_immediately_and_retry()
 	await _test_confirmed_stage_phase_sequence()
+	await _test_boss_ball_cycle_preserves_phase()
 	await _test_exhaustion_defeat()
 	await _test_stage_rejects_non_three_ball_inventory()
 	await _test_terminal_signal_reentrancy()
@@ -129,13 +130,113 @@ func _test_confirmed_stage_phase_sequence() -> void:
 		_expect(manager.current_stage_phase == expected_phase,
 			"Reward must lead to the next wave or boss.")
 
-	_expect(manager.advance_stage_phase(), "Boss placeholder must advance.")
+	_expect(not manager.advance_stage_phase(),
+		"Boss phase must not advance before its Ball cycle is completed.")
+	_expect(manager.start_boss_ball_cycle(),
+		"Boss phase must start its managed Ball cycle.")
+	_expect(manager.finish_boss_ball_cycle(),
+		"Boss phase must finish its managed Ball cycle.")
+	_expect(manager.advance_stage_phase(),
+		"Completed Boss Ball cycle must advance.")
 	_expect(manager.current_stage_phase == WaveManager.StagePhase.STAGE_COMPLETE,
 		"Boss must lead to stage completion.")
 	_expect(manager.advance_stage_phase(), "Stage completion must be restartable.")
 	_expect(manager.current_stage_phase == WaveManager.StagePhase.REPAIR_PLACEMENT \
 		and manager.current_wave_index == 0,
 		"Stage restart must return to Wave 1 repair placement.")
+	await _destroy_fixture(fixture)
+
+
+func _test_boss_ball_cycle_preserves_phase() -> void:
+	var fixture := await _create_fixture(3, 100)
+	var manager: WaveManager = fixture.manager
+	var flow: WaveBallFlowController = fixture.flow
+	var launcher: PinballLauncher = fixture.launcher
+	var combo: ComboSystem = fixture.combo
+	var inventory: WaveBallInventory = fixture.inventory
+	var settings: ComboStageSettings = fixture.settings
+	settings.wave_target_scores = PackedInt32Array([100, 100, 100, 500])
+
+	_expect(manager.enter_stage(settings), "Boss-cycle stage must enter.")
+	_expect(not manager.start_boss_ball_cycle(),
+		"Boss Ball cycle must reject every non-BOSS stage phase.")
+	for wave_index in 3:
+		_expect(manager.advance_stage_phase(),
+			"Each repair phase must start its normal Wave.")
+		_expect(flow.confirm_selection(), "Normal Wave must select a Ball.")
+		var normal_ball: Pinball = flow.active_ball
+		_expect(launcher.launch_prepared_ball(), "Normal Wave Ball must launch.")
+		combo.register_hit(1.0)
+		_expect(flow.on_ball_drained(normal_ball),
+			"Normal Wave Ball must drain through the existing flow.")
+		await process_frame
+		_expect(
+			manager.current_stage_phase == WaveManager.StagePhase.WAVE_RESULT,
+			"Normal Wave completion must remain unchanged."
+		)
+		_expect(manager.advance_stage_phase(),
+			"Normal result must advance to reward.")
+		_expect(manager.advance_stage_phase(),
+			"Normal reward must advance to the next phase.")
+
+	_expect(manager.current_stage_phase == WaveManager.StagePhase.BOSS,
+		"Third reward must enter BOSS.")
+	var boss_wave_index: int = manager.current_wave_index
+	_expect(not manager.advance_stage_phase(),
+		"BOSS cannot reach stage completion before Boss completion.")
+	_expect(manager.start_boss_ball_cycle(),
+		"BOSS must start the existing Ball selection flow.")
+	_expect(combo.total_score == 0,
+		"Boss Ball cycle must reset the prior normal Wave Combo score.")
+	_expect(manager.is_boss_ball_cycle_active(),
+		"Boss Ball cycle must report active.")
+	_expect(flow.current_state == WaveBallFlowController.State.SELECTING,
+		"Boss cycle must begin with existing Ball selection.")
+	_expect(manager.current_stage_phase == WaveManager.StagePhase.BOSS,
+		"Boss selection must preserve the BOSS phase.")
+	_expect(manager.current_wave_index == boss_wave_index,
+		"Boss Ball cycle must not increment normal Wave index.")
+	_expect(not manager.start_boss_ball_cycle(),
+		"The same BOSS phase must not reset Ball stock twice.")
+
+	_expect(flow.confirm_selection(), "Boss cycle must prepare a stocked Ball.")
+	var boss_ball: Pinball = flow.active_ball
+	_expect(is_instance_valid(boss_ball), "Boss cycle must expose active Ball.")
+	_expect(launcher.launch_prepared_ball(), "Boss cycle Ball must launch.")
+	_expect(manager.current_state == WaveManager.State.IN_PLAY,
+		"Boss launch must use the existing in-play state.")
+	_expect(manager.current_stage_phase == WaveManager.StagePhase.BOSS,
+		"Boss launch must preserve the BOSS phase.")
+	_expect(flow.on_ball_drained(boss_ball),
+		"Boss Ball must drain through the existing flow.")
+	await process_frame
+	_expect(flow.current_state == WaveBallFlowController.State.SELECTING,
+		"Boss drain must select another Ball while stock remains.")
+	_expect(inventory.total_remaining == 2,
+		"Boss drain must preserve existing BallStock accounting.")
+	_expect(manager.current_stage_phase == WaveManager.StagePhase.BOSS,
+		"Boss drain must not enter WAVE_RESULT or REWARD.")
+	_expect(not manager.advance_stage_phase(),
+		"Active Boss cycle must still block stage completion.")
+
+	_expect(manager.finish_boss_ball_cycle(),
+		"Boss completion must close its Ball cycle safely.")
+	_expect(not manager.is_boss_ball_cycle_active(),
+		"Finished Boss Ball cycle must report inactive.")
+	_expect(flow.current_state == WaveBallFlowController.State.INACTIVE,
+		"Finished Boss cycle must close BallFlow.")
+	_expect(manager.current_stage_phase == WaveManager.StagePhase.BOSS,
+		"Finishing Ball cycle alone must retain BOSS until phase advance.")
+	_expect(manager.advance_stage_phase(),
+		"Completed Boss cycle must allow BOSS to advance.")
+	_expect(manager.current_stage_phase == WaveManager.StagePhase.STAGE_COMPLETE,
+		"Boss completion must enter STAGE_COMPLETE.")
+	_expect(manager.advance_stage_phase(),
+		"Stage completion must restart the normal stage.")
+	_expect(
+		manager.current_stage_phase == WaveManager.StagePhase.REPAIR_PLACEMENT,
+		"Stage restart must restore normal Wave flow."
+	)
 	await _destroy_fixture(fixture)
 
 

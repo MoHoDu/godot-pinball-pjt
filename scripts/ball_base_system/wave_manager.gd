@@ -66,6 +66,9 @@ var _terminal_finalize_queued := false
 var _stage_phase: StagePhase = StagePhase.INACTIVE
 var _stage_is_active := false
 var _last_wave_was_won := false
+var _boss_ball_cycle_started := false
+var _boss_ball_cycle_active := false
+var _boss_phase_completion_ready := false
 
 
 var current_state: State:
@@ -185,6 +188,9 @@ func enter_stage(stage_settings: Resource, start_wave_index := 0) -> bool:
 	_wave_index = clampi(start_wave_index, 0, NORMAL_WAVE_COUNT - 1)
 	_stage_is_active = true
 	_last_wave_was_won = false
+	_boss_ball_cycle_started = false
+	_boss_ball_cycle_active = false
+	_boss_phase_completion_ready = false
 	combo_system.reset_wave()
 	_set_state(State.INACTIVE)
 	_set_stage_phase(StagePhase.REPAIR_PLACEMENT)
@@ -212,9 +218,15 @@ func advance_stage_phase() -> bool:
 				_wave_index += 1
 				_set_stage_phase(StagePhase.REPAIR_PLACEMENT)
 			else:
+				_boss_ball_cycle_started = false
+				_boss_ball_cycle_active = false
+				_boss_phase_completion_ready = false
 				_set_stage_phase(StagePhase.BOSS)
 			return true
 		StagePhase.BOSS:
+			if not _boss_phase_completion_ready:
+				return false
+			_boss_phase_completion_ready = false
 			_set_stage_phase(StagePhase.STAGE_COMPLETE)
 			stage_completed.emit(StringName(_stage_settings.get(&"stage_id")))
 			return true
@@ -223,6 +235,72 @@ func advance_stage_phase() -> bool:
 			_set_stage_phase(StagePhase.INACTIVE)
 			return enter_stage(_stage_settings, 0)
 	return false
+
+
+func start_boss_ball_cycle() -> bool:
+	if not _stage_is_active \
+			or _stage_phase != StagePhase.BOSS \
+			or _boss_ball_cycle_started \
+			or _boss_phase_completion_ready \
+			or ball_flow == null \
+			or combo_system == null \
+			or ball_flow.inventory == null \
+			or ball_flow.current_state \
+				not in [
+					WaveBallFlowController.State.INACTIVE,
+					WaveBallFlowController.State.EXHAUSTED,
+				]:
+		return false
+
+	_boss_ball_cycle_started = true
+	_boss_ball_cycle_active = true
+	_clear_after_drain = false
+	_pending_terminal_state = State.INACTIVE
+	_terminal_finalize_queued = false
+	_set_state(State.ENTERING)
+	if ball_flow.start_wave(true):
+		combo_system.reset_wave()
+		return true
+
+	_boss_ball_cycle_started = false
+	_boss_ball_cycle_active = false
+	_set_state(State.INACTIVE)
+	return false
+
+
+func finish_boss_ball_cycle() -> bool:
+	if not _stage_is_active \
+			or _stage_phase != StagePhase.BOSS \
+			or not _boss_ball_cycle_started \
+			or _boss_phase_completion_ready \
+			or ball_flow == null:
+		return false
+
+	var active_ball_was_in_play: bool = (
+		ball_flow.current_state == WaveBallFlowController.State.IN_PLAY
+	)
+	if ball_flow.current_state in [
+		WaveBallFlowController.State.SELECTING,
+		WaveBallFlowController.State.AIMING,
+		WaveBallFlowController.State.IN_PLAY,
+		WaveBallFlowController.State.EXHAUSTED,
+	]:
+		if not ball_flow.finish_wave_immediately():
+			return false
+	if active_ball_was_in_play and combo_system != null:
+		combo_system.on_ball_drained()
+
+	_boss_ball_cycle_active = false
+	_boss_phase_completion_ready = true
+	_set_state(State.INACTIVE)
+	return true
+
+
+func is_boss_ball_cycle_active() -> bool:
+	return _boss_ball_cycle_active \
+		and _stage_phase == StagePhase.BOSS \
+		and ball_flow != null \
+		and is_instance_valid(ball_flow)
 
 
 func is_placeholder_phase() -> bool:
@@ -384,6 +462,9 @@ func _on_ball_flow_state_changed(
 	_previous_state: WaveBallFlowController.State,
 	next_state: WaveBallFlowController.State
 ) -> void:
+	if _boss_ball_cycle_active:
+		_on_boss_ball_flow_state_changed(next_state)
+		return
 	match next_state:
 		WaveBallFlowController.State.INACTIVE:
 			if _state not in [State.CLEAR_CHOICE, State.WON, State.LOST]:
@@ -414,11 +495,33 @@ func _on_ball_flow_state_changed(
 				_queue_terminal_state(State.LOST)
 
 
+func _on_boss_ball_flow_state_changed(
+	next_state: WaveBallFlowController.State
+) -> void:
+	match next_state:
+		WaveBallFlowController.State.INACTIVE:
+			_set_state(State.INACTIVE)
+		WaveBallFlowController.State.SELECTING:
+			_set_state(State.SELECTING_BALL)
+		WaveBallFlowController.State.AIMING:
+			_set_state(State.AIMING)
+		WaveBallFlowController.State.IN_PLAY:
+			_set_state(State.IN_PLAY)
+		WaveBallFlowController.State.EXHAUSTED:
+			_set_state(State.INACTIVE)
+
+
 func _on_flow_active_ball_changed(next_ball: Pinball) -> void:
 	_set_active_ball(next_ball)
 
 
 func _on_flow_ball_launched(ball: Pinball, balls_remaining: int) -> void:
+	if _boss_ball_cycle_active:
+		if combo_system != null:
+			combo_system.on_ball_launched()
+		_set_state(State.IN_PLAY)
+		ball_cycle_started.emit(ball, balls_remaining)
+		return
 	if combo_wave == null or not combo_wave.on_ball_launched():
 		return
 	_set_state(State.IN_PLAY)
@@ -426,6 +529,13 @@ func _on_flow_ball_launched(ball: Pinball, balls_remaining: int) -> void:
 
 
 func _on_flow_ball_drained(ball: Pinball, balls_remaining: int) -> void:
+	if _boss_ball_cycle_active:
+		_set_state(State.RESOLVING_BALL)
+		var boss_awarded_score: int = 0
+		if combo_system != null:
+			boss_awarded_score = combo_system.on_ball_drained()
+		ball_cycle_resolved.emit(ball, balls_remaining, boss_awarded_score)
+		return
 	if combo_wave == null:
 		return
 	_set_state(State.RESOLVING_BALL)
@@ -440,12 +550,16 @@ func _on_clear_choice_requested(
 	_target: int,
 	_balls_remaining: int
 ) -> void:
+	if _boss_ball_cycle_active:
+		return
 	_set_state(State.CLEAR_CHOICE)
 	clear_choice_requested.emit(_score, _target, _balls_remaining)
 	choose_clear()
 
 
 func _on_clear_choice_resolved(use_remaining_balls: bool) -> void:
+	if _boss_ball_cycle_active:
+		return
 	if use_remaining_balls \
 			and ball_flow != null \
 			and ball_flow.current_state == WaveBallFlowController.State.SELECTING:
@@ -453,10 +567,14 @@ func _on_clear_choice_resolved(use_remaining_balls: bool) -> void:
 
 
 func _on_wave_clear_requested(_score: int, _target: int) -> void:
+	if _boss_ball_cycle_active:
+		return
 	_queue_terminal_state(State.WON)
 
 
 func _on_target_score_reached(_score: int, _target: int) -> void:
+	if _boss_ball_cycle_active:
+		return
 	if _state == State.IN_PLAY and combo_wave != null:
 		combo_wave.complete_reached_target()
 

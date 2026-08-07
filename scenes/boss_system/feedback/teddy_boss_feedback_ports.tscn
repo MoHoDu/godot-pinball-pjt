@@ -1,0 +1,61 @@
+[gd_scene format=3]
+
+[node name="TeddyBossFeedbackPorts" type="Node"]
+
+[node name="Visual" type="Node2D" parent="."]
+
+[node name="BossVisualRoot" type="Node2D" parent="Visual"]
+
+[node name="TelegraphPattern1" type="Node2D" parent="Visual"]
+
+[node name="TelegraphPattern2" type="Node2D" parent="Visual"]
+
+[node name="ArmImpact" type="Node2D" parent="Visual"]
+
+[node name="ArmReflection" type="Node2D" parent="Visual"]
+
+[node name="BossNormalHit" type="Node2D" parent="Visual"]
+
+[node name="BossCounterHit" type="Node2D" parent="Visual"]
+
+[node name="CounterEarned" type="Node2D" parent="Visual"]
+
+[node name="CounterExpired" type="Node2D" parent="Visual"]
+
+[node name="Phase2Transition" type="Node2D" parent="Visual"]
+
+[node name="CottonSpawn" type="Node2D" parent="Visual"]
+
+[node name="CottonHit" type="Node2D" parent="Visual"]
+
+[node name="BossDefeat" type="Node2D" parent="Visual"]
+
+[node name="Audio" type="Node" parent="."]
+
+[node name="BattleStart" type="AudioStreamPlayer" parent="Audio"]
+
+[node name="TelegraphPattern1" type="AudioStreamPlayer" parent="Audio"]
+
+[node name="TelegraphPattern2" type="AudioStreamPlayer" parent="Audio"]
+
+[node name="ArmSwing" type="AudioStreamPlayer" parent="Audio"]
+
+[node name="ArmImpact" type="AudioStreamPlayer" parent="Audio"]
+
+[node name="ArmReflection" type="AudioStreamPlayer" parent="Audio"]
+
+[node name="BossNormalHit" type="AudioStreamPlayer" parent="Audio"]
+
+[node name="BossCounterHit" type="AudioStreamPlayer" parent="Audio"]
+
+[node name="CounterEarned" type="AudioStreamPlayer" parent="Audio"]
+
+[node name="CounterExpired" type="AudioStreamPlayer" parent="Audio"]
+
+[node name="Phase2Transition" type="AudioStreamPlayer" parent="Audio"]
+
+[node name="CottonSpawn" type="AudioStreamPlayer" parent="Audio"]
+
+[node name="CottonHit" type="AudioStreamPlayer" parent="Audio"]
+
+[node name="BossDefeat" type="AudioStreamPlayer" parent="Audio"]
