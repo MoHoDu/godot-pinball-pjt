@@ -13,6 +13,7 @@ const ATTACK_SECONDS: float = 0.22
 const RECOVERY_SECONDS: float = 1.35
 
 @onready var _rig: BossArtRig = $Rig
+@onready var _vfx: BossVfxLayer = $Vfx
 @onready var _label: Label = $Label
 
 var _sequence := -1.0
@@ -27,9 +28,17 @@ func _unhandled_input(event: InputEvent) -> void:
 		KEY_2: _play("팔 공격 예고", func() -> void: _rig.play_telegraph())
 		KEY_3: _play("팔 공격", func() -> void: _rig.play_attack())
 		KEY_4: _play("공격 후 경직", func() -> void: _rig.play_recovery())
-		KEY_5: _play("일반 피격", func() -> void: _rig.play_hit(1.0))
-		KEY_6: _play("강한 피격(반격)", func() -> void: _rig.play_hit_strong(-1.0))
-		KEY_7: _play("페이즈 전환 포효", func() -> void: _rig.play_roar())
+		KEY_5: _play("일반 피격", func() -> void:
+			_rig.play_hit(1.0)
+			_vfx.spawn_hit(Vector2(-126.0, -10.0), Vector2.LEFT, false))
+		KEY_6: _play("강한 피격(고콤보)", func() -> void:
+			_rig.play_hit_strong(-1.0)
+			_vfx.spawn_hit(Vector2(128.0, -6.0), Vector2.RIGHT, true))
+		KEY_7: _play("페이즈 전환 포효", func() -> void:
+			_rig.play_roar()
+			_vfx.spawn_roar())
+		KEY_B: _play("팔-공 충돌", func() -> void:
+			_vfx.spawn_ball_impact(Vector2(-150.0, 40.0), Vector2(-0.55, -0.84)))
 		KEY_SPACE:
 			_sequence = 0.0
 			_rig.play_telegraph()
