@@ -1,0 +1,74 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/wave/test_teddy_phase1_arm_reflection_runtime.tscn" id="1_phase1"]
+[ext_resource type="PackedScene" path="res://scenes/boss_system/teddy_arm_sweep_attack.tscn" id="2_attack"]
+[ext_resource type="Script" path="res://scripts/boss_system/attacks/teddy_double_arm_up_sweep_attack.gd" id="3_double_attack"]
+[ext_resource type="Script" path="res://scripts/boss_system/debug/teddy_phase2_runtime_prototype.gd" id="4_prototype"]
+[ext_resource type="Script" path="res://scripts/boss_system/boss_phase_transition_controller.gd" id="5_transition"]
+[ext_resource type="Resource" path="res://settings/bosses/Stage1BossPhase1Rules.tres" id="6_phase1_rules"]
+[ext_resource type="Resource" path="res://settings/bosses/TeddyPhase2AttackRules.tres" id="7_phase2_rules"]
+
+[node name="TeddyPhase2Runtime" type="Node2D"]
+
+[node name="Phase1Runtime" parent="." instance=ExtResource("1_phase1")]
+
+[node name="TeddyDoubleArmUpSweepAttack" parent="." instance=ExtResource("2_attack")]
+position = Vector2(0, -260)
+visible = false
+script = ExtResource("3_double_attack")
+idle_angle_degrees = 70.0
+telegraph_angle_degrees = 82.0
+active_angle_degrees = -105.0
+
+[node name="Phase2Integration" type="Node" parent="." node_paths=PackedStringArray("health", "phase_transition", "attack_runtime", "scheduler", "coordinator", "controller", "pattern_1_attack", "pattern_2_attack", "arm_hit_tracker", "arm_ball_reflector", "reset_button", "phase_label", "pattern_label", "phase_event_log")]
+script = ExtResource("4_prototype")
+phase1_rules = ExtResource("6_phase1_rules")
+phase2_rules = ExtResource("7_phase2_rules")
+health = NodePath("../Phase1Runtime/BossPrototype/Phase1Damage/BossHealthComponent")
+phase_transition = NodePath("BossPhaseTransitionController")
+attack_runtime = NodePath("../Phase1Runtime/BossPrototype/Phase1Attack/Runtime")
+scheduler = NodePath("../Phase1Runtime/BossPrototype/Phase1Attack/Scheduler")
+coordinator = NodePath("../Phase1Runtime/BossPrototype/Phase1Attack/Coordinator")
+controller = NodePath("../Phase1Runtime/BossPrototype/BossAttackController")
+pattern_1_attack = NodePath("../Phase1Runtime/BossPrototype/TeddyArmSweepAttack")
+pattern_2_attack = NodePath("../TeddyDoubleArmUpSweepAttack")
+arm_hit_tracker = NodePath("../Phase1Runtime/BossPrototype/Phase1Damage/BossArmHitBallTracker")
+arm_ball_reflector = NodePath("../Phase1Runtime/BossPrototype/Phase1Damage/BossArmBallReflector")
+reset_button = NodePath("../Phase1Runtime/BossPrototype/DebugCanvas/DebugUI/Panel/VBox/ButtonRow/ResetButton")
+phase_label = NodePath("../Phase2DebugCanvas/Panel/VBox/PhaseLabel")
+pattern_label = NodePath("../Phase2DebugCanvas/Panel/VBox/PatternLabel")
+phase_event_log = NodePath("../Phase2DebugCanvas/Panel/VBox/EventLog")
+
+[node name="BossPhaseTransitionController" type="Node" parent="Phase2Integration"]
+script = ExtResource("5_transition")
+
+[node name="Phase2DebugCanvas" type="CanvasLayer" parent="."]
+layer = 101
+
+[node name="Panel" type="PanelContainer" parent="Phase2DebugCanvas"]
+offset_left = 1580.0
+offset_top = 20.0
+offset_right = 1900.0
+offset_bottom = 300.0
+
+[node name="VBox" type="VBoxContainer" parent="Phase2DebugCanvas/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="Phase2DebugCanvas/Panel/VBox"]
+layout_mode = 2
+text = "Teddy Phase 2 Runtime"
+
+[node name="PhaseLabel" type="Label" parent="Phase2DebugCanvas/Panel/VBox"]
+layout_mode = 2
+text = "Phase: 1"
+
+[node name="PatternLabel" type="Label" parent="Phase2DebugCanvas/Panel/VBox"]
+layout_mode = 2
+text = "Current Pattern: 1"
+
+[node name="EventLog" type="RichTextLabel" parent="Phase2DebugCanvas/Panel/VBox"]
+custom_minimum_size = Vector2(300, 180)
+layout_mode = 2
+scroll_active = true
+text = "Waiting for Phase 2 setup..."
