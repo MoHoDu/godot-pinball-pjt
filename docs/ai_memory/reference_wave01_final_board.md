@@ -71,10 +71,21 @@
 
 검증: `layout.validate_layout().issues.size() == 0`
 
-## 아직 이 기준을 안 따르는 것
+## 이 기준을 따르는 씬 (2026-08-07 전부 정렬 완료)
 
-- `scenes/wave/levels/wave_02.tscn` 및 `wave_02_repair_layout.tscn`
-- `scenes/wave/levels/wave_03.tscn`, `boss_wave`
-- `scenes/wave/wave.tscn` (프로젝트 메인 씬)
+| 씬 | 파생 레이아웃 |
+|---|---|
+| `scenes/wave/levels/wave_01.tscn` | `wave_01_repair_layout.tscn` |
+| `scenes/wave/levels/wave_02.tscn` | `wave_02_repair_layout.tscn` |
+| `scenes/wave/levels/wave_03.tscn` | `wave_03_repair_layout.tscn` |
+| `scenes/wave/wave.tscn` (메인) | `wave_repair_board_layout.tscn` |
 
-이들은 아직 이전 보드 수치를 쓴다. 확정본으로 맞출 때 이 문서를 기준으로 한다.
+네 씬 모두 `Walls` / `FlipperSelector` / `PinballLauncher` / `BallDrainArea`
+노드 트리가 wave_01 과 동일하다. 보드를 다시 손보면 **네 씬 전부**에
+같은 트리를 이식하고 위 파생물 4종을 다시 계산해야 한다.
+
+## 제외
+
+- `scenes/wave/wave01.tscn`, `scenes/wave/wave01_triangle.tscn`
+  어디서도 참조되지 않는 프로토타입이라 정렬 대상에서 뺐다.
+- 보스 웨이브는 아직 전용 씬이 없다 (`Stage01BumperLayout` 에 로드아웃만 존재).
