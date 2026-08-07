@@ -15,13 +15,15 @@ signal placement_blocked(result: BoardValidationResult)
 @export var placement_hud: RepairPartPlacementHud
 @export var repair_effect_router: RepairEffectRouter
 @export var commit_action: StringName = &"ui_accept"
-@export var enforce_launch_gate := true
+@export var integration_enabled := true
 
 
 var _placement_committed_for_wave := false
 
 
 func _ready() -> void:
+	if not integration_enabled:
+		return
 	_assert_dependencies()
 	if wave_manager == null or placement_session == null:
 		return
@@ -101,11 +103,10 @@ func _on_ball_cycle_started(
 	_ball: Pinball,
 	_remaining_balls: int
 ) -> void:
-	if enforce_launch_gate:
-		assert(
-			_placement_committed_for_wave,
-			"The first ball cannot launch before board placement is committed."
-		)
+	assert(
+		_placement_committed_for_wave,
+		"The first ball cannot launch before board placement is committed."
+	)
 	if placement_session.current_state == BoardPlacementSession.State.COMMITTED:
 		placement_session.lock()
 

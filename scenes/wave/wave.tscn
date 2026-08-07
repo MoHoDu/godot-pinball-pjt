@@ -600,6 +600,7 @@ script = ExtResource("47_repair_ball_adapter")
 script = ExtResource("48_repair_effect_router")
 combo_adapter_path = NodePath("../RepairComboAdapter")
 ball_adapter_path = NodePath("../RepairBallAdapter")
+runtime_root_path = NodePath("../../RepairBoardLayout")
 
 [node name="RepairSessionController" type="Node" parent="WaveRepairEffects"]
 script = ExtResource("49_repair_session_controller")

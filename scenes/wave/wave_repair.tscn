@@ -59,7 +59,10 @@ script = ExtResource("24_inventory_v02")
 starting_stock = Array[ExtResource("26_stock")]([SubResource("BallStock_base")])
 
 [node name="BoardWavePlacementBridge" parent="."]
-enforce_launch_gate = false
+integration_enabled = false
+
+[node name="RepairPlacementHUD" parent="."]
+visible = false
 
 [node name="RepairPartSystem" type="Node2D" parent="."]
 
@@ -74,6 +77,7 @@ script = ExtResource("5_ball_adapter")
 script = ExtResource("6_router")
 combo_adapter_path = NodePath("../RepairComboAdapter")
 ball_adapter_path = NodePath("../RepairBallAdapter")
+runtime_root_path = NodePath("../Sockets")
 
 [node name="RepairBoardController" type="Node" parent="RepairPartSystem"]
 script = ExtResource("7_board_controller")
