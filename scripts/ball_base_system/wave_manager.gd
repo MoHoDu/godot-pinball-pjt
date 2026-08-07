@@ -201,6 +201,37 @@ func enter_stage(stage_settings: Resource, start_wave_index := 0) -> bool:
 	return true
 
 
+func enter_boss_stage(stage_settings: Resource) -> bool:
+	if stage_settings == null \
+			or not stage_settings.has_method(&"get_wave_target_score") \
+			or ball_flow == null \
+			or combo_wave == null \
+			or combo_system == null \
+			or _stage_phase not in [StagePhase.INACTIVE, StagePhase.STAGE_COMPLETE]:
+		return false
+	if ball_flow.inventory == null \
+			or not ball_flow.inventory.reset_stock() \
+			or ball_flow.inventory.total_remaining != BALLS_PER_WAVE:
+		push_warning("Confirmed Boss flow requires exactly three wave balls.")
+		return false
+
+	_stage_settings = stage_settings
+	_wave_index = NORMAL_WAVE_COUNT - 1
+	_stage_is_active = true
+	_last_wave_was_won = false
+	_boss_ball_cycle_started = false
+	_boss_ball_cycle_active = false
+	_boss_phase_completion_ready = false
+	combo_system.reset_wave()
+	_set_state(State.INACTIVE)
+	_set_stage_phase(StagePhase.BOSS)
+	stage_entered.emit(
+		StringName(stage_settings.get(&"stage_id")),
+		_wave_index
+	)
+	return true
+
+
 func advance_stage_phase() -> bool:
 	if not _stage_is_active or _stage_settings == null:
 		return false

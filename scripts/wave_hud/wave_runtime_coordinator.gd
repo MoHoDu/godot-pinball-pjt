@@ -68,9 +68,16 @@ func _ready() -> void:
 		is_current_bumper_loadout_valid(),
 		"Wave scene bumper instances must satisfy the configured stage loadout."
 	)
-	wave_manager.enter_stage(_wave_settings, wave_stage_index)
+	_enter_initial_stage(_wave_settings, wave_stage_index)
 	_initialize_hud_state()
 	_fit_board_camera(true)
+
+
+func _enter_initial_stage(
+	stage_settings: Resource,
+	start_wave_index: int
+) -> bool:
+	return wave_manager.enter_stage(stage_settings, start_wave_index)
 
 
 func _process(_delta: float) -> void:

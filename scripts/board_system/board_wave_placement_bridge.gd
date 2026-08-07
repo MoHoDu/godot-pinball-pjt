@@ -103,6 +103,8 @@ func _on_ball_cycle_started(
 	_ball: Pinball,
 	_remaining_balls: int
 ) -> void:
+	if wave_manager.current_stage_phase == WaveManager.StagePhase.BOSS:
+		return
 	assert(
 		_placement_committed_for_wave,
 		"The first ball cannot launch before board placement is committed."
