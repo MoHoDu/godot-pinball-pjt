@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/wave_hud/wave_hud.gd" id="1_script"]
 [ext_resource type="Theme" path="res://Resources/wave_hud/wave_hud_runtime_dark/wave_hud_theme.tres" id="2_theme"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" path="res://scenes/wave_hud/score_repair_hud.tscn" id="4_score"]
 [ext_resource type="PackedScene" path="res://scenes/wave_hud/world_combo_hud.tscn" id="5_combo"]
 [ext_resource type="PackedScene" path="res://scenes/wave_hud/settings_button.tscn" id="6_settings"]
+[ext_resource type="PackedScene" path="res://scenes/wave_hud/coin_wallet_hud.tscn" id="7_coin_wallet"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBox_stage_phase"]
 bg_color = Color(0.047, 0.055, 0.078, 0.98)
@@ -64,6 +65,10 @@ position = Vector2(850, 258)
 [node name="SettingsButton" parent="DesignSpace" instance=ExtResource("6_settings")]
 unique_name_in_owner = true
 position = Vector2(1820, 24)
+
+[node name="CoinWalletHud" parent="DesignSpace" instance=ExtResource("7_coin_wallet")]
+unique_name_in_owner = true
+position = Vector2(1604, 24)
 
 [node name="StagePhaseOverlay" type="Control" parent="DesignSpace"]
 unique_name_in_owner = true

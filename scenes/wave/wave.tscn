@@ -103,6 +103,13 @@
 [ext_resource type="Script" path="res://scripts/repair_parts/runtime/repair_session_controller.gd" id="49_repair_session_controller"]
 
 [ext_resource type="Script" uid="uid://fn00hc0gpbf4" path="res://scripts/reward_shop/wave_reward_shop_bridge.gd" id="50_reward_bridge"]
+[ext_resource type="Resource" path="res://settings/coin/BasicCoin.tres" id="51_coin_definition"]
+[ext_resource type="Script" path="res://scripts/coin_system/coin_field_controller.gd" id="52_coin_field"]
+[ext_resource type="Script" path="res://scripts/coin_system/coin_wallet.gd" id="53_coin_wallet"]
+[ext_resource type="Script" path="res://scripts/coin_system/wave_clear_delay_controller.gd" id="54_clear_delay"]
+[ext_resource type="Script" path="res://scripts/coin_system/wave_coin_session.gd" id="55_coin_session"]
+[ext_resource type="Script" path="res://scripts/coin_system/coin_spawn_point.gd" id="56_coin_point"]
+[ext_resource type="PackedScene" path="res://scenes/wave_hud/bumper_roster_hud.tscn" id="57_roster_hud"]
 
 [sub_resource type="Resource" id="StageSettings_wave"]
 script = ExtResource("3_combo_stage")
@@ -548,6 +555,94 @@ configured_combo_wave = NodePath("../ComboWaveController")
 configured_combo_system = NodePath("../ComboSystem")
 configured_collision_bridge = NodePath("../ComboCollisionBridge")
 
+[node name="CoinSystem" type="Node2D" parent="." node_paths=PackedStringArray("spawn_points_root", "board_layout", "bumpers_root")]
+z_index = 3
+script = ExtResource("52_coin_field")
+coin_definition = ExtResource("51_coin_definition")
+spawn_points_root = NodePath("SpawnPoints")
+board_layout = NodePath("../RepairBoardLayout")
+bumpers_root = NodePath("../Bumpers")
+expected_spawn_count = 12
+expected_main_count = 10
+expected_risk_count = 2
+
+[node name="CoinWallet" type="Node" parent="CoinSystem"]
+script = ExtResource("53_coin_wallet")
+
+[node name="WaveClearDelayController" type="Node" parent="CoinSystem"]
+script = ExtResource("54_clear_delay")
+
+[node name="CoinSession" type="Node" parent="CoinSystem" node_paths=PackedStringArray("wave_manager", "wallet", "field", "clear_delay", "wallet_label")]
+script = ExtResource("55_coin_session")
+wave_manager = NodePath("../../WaveManager")
+wallet = NodePath("../CoinWallet")
+field = NodePath("..")
+clear_delay = NodePath("../WaveClearDelayController")
+wallet_label = NodePath("../../HUD/WaveHud/DesignSpace/CoinWalletHud/Margin/Row/BalanceLabel")
+
+[node name="SpawnPoints" type="Node2D" parent="CoinSystem"]
+
+[node name="Main01" type="Marker2D" parent="CoinSystem/SpawnPoints"]
+position = Vector2(-850, -300)
+script = ExtResource("56_coin_point")
+point_id = &"main_01"
+
+[node name="Main02" type="Marker2D" parent="CoinSystem/SpawnPoints"]
+position = Vector2(850, -300)
+script = ExtResource("56_coin_point")
+point_id = &"main_02"
+
+[node name="Main03" type="Marker2D" parent="CoinSystem/SpawnPoints"]
+position = Vector2(-900, 0)
+script = ExtResource("56_coin_point")
+point_id = &"main_03"
+
+[node name="Main04" type="Marker2D" parent="CoinSystem/SpawnPoints"]
+position = Vector2(900, 0)
+script = ExtResource("56_coin_point")
+point_id = &"main_04"
+
+[node name="Main05" type="Marker2D" parent="CoinSystem/SpawnPoints"]
+position = Vector2(-850, 300)
+script = ExtResource("56_coin_point")
+point_id = &"main_05"
+
+[node name="Main06" type="Marker2D" parent="CoinSystem/SpawnPoints"]
+position = Vector2(850, 300)
+script = ExtResource("56_coin_point")
+point_id = &"main_06"
+
+[node name="Main07" type="Marker2D" parent="CoinSystem/SpawnPoints"]
+position = Vector2(0, -380)
+script = ExtResource("56_coin_point")
+point_id = &"main_07"
+
+[node name="Main08" type="Marker2D" parent="CoinSystem/SpawnPoints"]
+script = ExtResource("56_coin_point")
+point_id = &"main_08"
+
+[node name="Main09" type="Marker2D" parent="CoinSystem/SpawnPoints"]
+position = Vector2(-400, 330)
+script = ExtResource("56_coin_point")
+point_id = &"main_09"
+
+[node name="Main10" type="Marker2D" parent="CoinSystem/SpawnPoints"]
+position = Vector2(400, 330)
+script = ExtResource("56_coin_point")
+point_id = &"main_10"
+
+[node name="Risk01" type="Marker2D" parent="CoinSystem/SpawnPoints"]
+position = Vector2(-800, -400)
+script = ExtResource("56_coin_point")
+point_id = &"risk_01"
+route_kind = 1
+
+[node name="Risk02" type="Marker2D" parent="CoinSystem/SpawnPoints"]
+position = Vector2(800, -400)
+script = ExtResource("56_coin_point")
+point_id = &"risk_02"
+route_kind = 1
+
 [node name="WaveHudStateSource" type="Node" parent="." unique_id=76749773]
 script = ExtResource("2_state")
 
@@ -556,6 +651,8 @@ script = ExtResource("2_state")
 [node name="BallSelectionHud" parent="HUD" unique_id=1456410610 instance=ExtResource("25_selection_hud")]
 
 [node name="WaveHud" parent="HUD" unique_id=414747941 instance=ExtResource("5_wave_hud")]
+
+[node name="BumperRosterHud" parent="HUD" instance=ExtResource("57_roster_hud")]
 
 [node name="RepairPlacementHUD" type="CanvasLayer" parent="."]
 layer = 50
@@ -583,7 +680,7 @@ inventory = NodePath("../RepairPartInventory")
 placement_hud = NodePath("../RepairPlacementHUD/RepairPartPlacementHud")
 wave_bridge = NodePath("../BoardWavePlacementBridge")
 
-[node name="WaveRewardShopBridge" type="Node" parent="." node_paths=PackedStringArray("wave_manager", "combo_system", "ball_inventory", "part_inventory", "placement_session", "wave_hud", "ball_selection_hud")]
+[node name="WaveRewardShopBridge" type="Node" parent="." node_paths=PackedStringArray("wave_manager", "combo_system", "ball_inventory", "part_inventory", "placement_session", "wave_hud", "ball_selection_hud", "wallet", "clear_delay")]
 script = ExtResource("50_reward_bridge")
 wave_manager = NodePath("../WaveManager")
 combo_system = NodePath("../ComboSystem")
@@ -592,6 +689,8 @@ part_inventory = NodePath("../RepairPartInventory")
 placement_session = NodePath("../RepairBoardLayout/PlacementSession")
 wave_hud = NodePath("../HUD/WaveHud")
 ball_selection_hud = NodePath("../HUD/BallSelectionHud")
+wallet = NodePath("../CoinSystem/CoinWallet")
+clear_delay = NodePath("../CoinSystem/WaveClearDelayController")
 
 [node name="SfxDirector" type="Node" parent="."]
 script = ExtResource("41_sfx_director")

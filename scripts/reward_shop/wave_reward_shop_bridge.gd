@@ -32,6 +32,11 @@ const MAIN_COORDINATOR_SCRIPT_PATH := \
 @export var placement_session: BoardPlacementSession
 @export var wave_hud: CanvasItem
 @export var ball_selection_hud: CanvasItem
+@export var wallet: CoinWallet
+@export var clear_delay: WaveClearDelayController
+
+## 외부 StageFlowManager가 보상 씬을 교체하는 경우 중복 보상 화면을 만들지 않습니다.
+@export var embedded_reward_enabled := true
 
 @export_category("Score Coin")
 @export_range(0.5, 10.0, 0.1) var clear_delay_seconds := 3.0
@@ -43,8 +48,6 @@ const MAIN_COORDINATOR_SCRIPT_PATH := \
 @export var debug_fill_coin_amount := 999
 
 
-var wallet: CoinWallet
-var clear_delay: WaveClearDelayController
 var shop_controller: RewardShopController
 var shop_hud: RewardShopHud
 
@@ -74,6 +77,9 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _initialize() -> void:
+	if not embedded_reward_enabled:
+		set_process_unhandled_input(false)
+		return
 	# wave.tscn을 상속하는 기존 데모들은 각자 코인·상점 조립자를 갖습니다.
 	# 메인 WaveRuntimeCoordinator 씬에서만 새 통합 브리지를 활성화합니다.
 	var parent_script := get_parent().get_script() as Script
@@ -87,20 +93,21 @@ func _initialize() -> void:
 			or ball_inventory == null or part_inventory == null:
 		return
 
-	wallet = CoinWallet.new()
-	wallet.name = "RewardCoinWallet"
-	add_child(wallet)
-
-	clear_delay = WaveClearDelayController.new()
-	clear_delay.name = "RewardClearDelay"
-	clear_delay.duration = clear_delay_seconds
-	clear_delay.score_ratio_per_coin = score_ratio_per_coin
-	clear_delay.clear_delay_coin_cap = score_coin_cap
-	add_child(clear_delay)
-	assert(
-		clear_delay.bind(wave_manager, wallet, null),
-		"Reward bridge could not bind score coin settlement."
-	)
+	if wallet == null:
+		wallet = CoinWallet.new()
+		wallet.name = "RewardCoinWallet"
+		add_child(wallet)
+	if clear_delay == null:
+		clear_delay = WaveClearDelayController.new()
+		clear_delay.name = "RewardClearDelay"
+		clear_delay.duration = clear_delay_seconds
+		clear_delay.score_ratio_per_coin = score_ratio_per_coin
+		clear_delay.clear_delay_coin_cap = score_coin_cap
+		add_child(clear_delay)
+		assert(
+			clear_delay.bind(wave_manager, wallet, null),
+			"Reward bridge could not bind score coin settlement."
+		)
 
 	shop_controller = RewardShopController.new()
 	shop_controller.name = "RewardShopController"
@@ -135,6 +142,11 @@ func _initialize() -> void:
 
 	_capture_stage_entry()
 	_sync_current_phase()
+
+
+func use_external_stage_rewards() -> void:
+	embedded_reward_enabled = false
+	set_process_unhandled_input(false)
 
 
 func _on_clear_delay_finished(

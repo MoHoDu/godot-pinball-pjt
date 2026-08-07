@@ -4,32 +4,31 @@ extends Resource
 
 ## 웨이브 하나의 코인 배치 데이터입니다.
 ##
-## 기획서 3-1: 웨이브당 12개 × 2코인 = 24코인.
-## 주요 경로 9개(18코인)는 목표 스코어를 정상적으로 노리는 플레이가 지나는 자리,
-## 분기·위험 경로 3개(6코인)는 저축을 노리는 자리입니다.
+## 기획서 레벨 디자인 탭: 웨이브당 12개 × 2코인 = 24코인.
+## 현재 wave(웨이브 1)는 주요 경로 10개, 분기·위험 경로 2개입니다.
 ## 좌표는 보드 월드 기준(board_world_bounds Rect2(-1180, -700, 2360, 1400))입니다.
 
 
 @export var coin_value := 2
 
-## 주요 경로 9개. 초기값은 자리표시자이며 레벨 디자인에서 조정합니다.
+## 웨이브 1 주요 경로 10개. wave.tscn의 에디터 배치와 같은 기본값입니다.
 @export var main_path_positions: PackedVector2Array = PackedVector2Array([
-	Vector2(-800.0, -350.0),
-	Vector2(-500.0, -500.0),
-	Vector2(-200.0, -560.0),
-	Vector2(100.0, -560.0),
-	Vector2(400.0, -500.0),
-	Vector2(700.0, -350.0),
-	Vector2(-350.0, -150.0),
-	Vector2(0.0, -100.0),
-	Vector2(350.0, -150.0),
+	Vector2(-850.0, -300.0),
+	Vector2(850.0, -300.0),
+	Vector2(-900.0, 0.0),
+	Vector2(900.0, 0.0),
+	Vector2(-850.0, 300.0),
+	Vector2(850.0, 300.0),
+	Vector2(0.0, -350.0),
+	Vector2(0.0, 0.0),
+	Vector2(-400.0, 330.0),
+	Vector2(400.0, 330.0),
 ])
 
-## 분기·위험 경로 3개.
+## 웨이브 1 분기·위험 경로 2개.
 @export var risk_path_positions: PackedVector2Array = PackedVector2Array([
-	Vector2(-1050.0, -580.0),
-	Vector2(1050.0, -580.0),
-	Vector2(0.0, -640.0),
+	Vector2(-560.0, -520.0),
+	Vector2(560.0, -520.0),
 ])
 
 
