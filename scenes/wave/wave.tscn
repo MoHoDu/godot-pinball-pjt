@@ -38,7 +38,7 @@
 
 [ext_resource type="Script" uid="uid://cudkgw71kx8vj" path="res://scripts/combo_system/combo_wave_controller.gd" id="18_combo_wave"]
 
-[ext_resource type="Script" uid="uid://cm3baeo6imaxa" path="res://scripts/ball_base_system/wave_manager.gd" id="19_manager"]
+[ext_resource type="Script" uid="uid://m0u8ehpn0uri" path="res://scripts/reward_shop/reward_wave_manager.gd" id="19_manager"]
 
 [ext_resource type="Script" path="res://scripts/select_ball/select_ball_definition.gd" id="20_definition"]
 
@@ -104,6 +104,8 @@
 
 [ext_resource type="Script" path="res://scripts/repair_parts/runtime/repair_session_controller.gd" id="49_repair_session_controller"]
 
+[ext_resource type="Script" uid="uid://fn00hc0gpbf4" path="res://scripts/reward_shop/wave_reward_shop_bridge.gd" id="50_reward_bridge"]
+
 [sub_resource type="Resource" id="StageSettings_wave"]
 script = ExtResource("3_combo_stage")
 stage_id = &"cursed_toy_demo"
@@ -137,7 +139,7 @@ feature_summary = "균형 잡힌 무게와 탄성으로 안정적인 궤적을 �
 [sub_resource type="Resource" id="BallStock_normal"]
 script = ExtResource("21_stock")
 definition = SubResource("BallDefinition_normal")
-count = 1
+count = 3
 
 [sub_resource type="Resource" id="BallDefinition_heavy"]
 script = ExtResource("20_definition")
@@ -155,7 +157,7 @@ count = 1
 script = ExtResource("36_repair_entry")
 settings = ExtResource("37_brooch_settings")
 placeable_scene = ExtResource("41_brooch_placeable")
-starting_count = 1
+starting_count = 0
 one_line_feature = "완성한다 · 6초 귀환"
 placeholder_icon = "✦"
 
@@ -163,7 +165,7 @@ placeholder_icon = "✦"
 script = ExtResource("36_repair_entry")
 settings = ExtResource("38_gears_settings")
 placeable_scene = ExtResource("42_gears_placeable")
-starting_count = 2
+starting_count = 0
 one_line_feature = "구동한다 · 연속 반응"
 placeholder_icon = "⚙"
 
@@ -171,7 +173,7 @@ placeholder_icon = "⚙"
 script = ExtResource("36_repair_entry")
 settings = ExtResource("40_bell_settings")
 placeable_scene = ExtResource("44_bell_placeable")
-starting_count = 1
+starting_count = 0
 one_line_feature = "울린다 · 반응 전달"
 placeholder_icon = "✧"
 
@@ -540,7 +542,9 @@ configured_combo_system = NodePath("../ComboSystem")
 
 [node name="WaveBallInventory" type="Node" parent="." unique_id=150677151]
 script = ExtResource("16_inventory")
-starting_stock = Array[ExtResource("21_stock")]([SubResource("BallStock_light"), SubResource("BallStock_normal"), SubResource("BallStock_heavy")])
+starting_stock = Array[ExtResource("21_stock")]([SubResource("BallStock_normal")])
+reusable_owned_balls = true
+launches_per_wave = 3
 
 [node name="WaveBallFlowController" type="Node" parent="." unique_id=1559637729 node_paths=PackedStringArray("configured_inventory", "configured_launcher")]
 script = ExtResource("17_flow")
@@ -591,6 +595,16 @@ placement_session = NodePath("../RepairBoardLayout/PlacementSession")
 inventory = NodePath("../RepairPartInventory")
 placement_hud = NodePath("../RepairPlacementHUD/RepairPartPlacementHud")
 wave_bridge = NodePath("../BoardWavePlacementBridge")
+
+[node name="WaveRewardShopBridge" type="Node" parent="." node_paths=PackedStringArray("wave_manager", "combo_system", "ball_inventory", "part_inventory", "placement_session", "wave_hud", "ball_selection_hud")]
+script = ExtResource("50_reward_bridge")
+wave_manager = NodePath("../WaveManager")
+combo_system = NodePath("../ComboSystem")
+ball_inventory = NodePath("../WaveBallInventory")
+part_inventory = NodePath("../RepairPartInventory")
+placement_session = NodePath("../RepairBoardLayout/PlacementSession")
+wave_hud = NodePath("../HUD/WaveHud")
+ball_selection_hud = NodePath("../HUD/BallSelectionHud")
 
 [node name="SfxDirector" type="Node" parent="."]
 script = ExtResource("41_sfx_director")

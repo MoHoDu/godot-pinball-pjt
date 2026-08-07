@@ -34,13 +34,14 @@ const CATEGORY_PART: StringName = &"part"
 
 
 @export var catalog: RewardShopCatalog
+@export var stage_id: StringName = &"stage_01"
 
 ## 0이면 매번 다르게 뽑습니다.
 @export var random_seed := 0
 
 
 var _wallet: CoinWallet
-var _part_inventory: RewardPartInventory
+var _part_inventory: RepairPartInventory
 var _rng := RandomNumberGenerator.new()
 
 var _is_open := false
@@ -51,6 +52,7 @@ var _part_offers: Array[RepairPartOffer] = []
 var _ball_purchase_used := false
 var _part_purchase_used := false
 var _unlocked_ball_ids: Array[StringName] = []
+var _stage_database_applied := false
 
 
 var is_open: bool:
@@ -85,7 +87,7 @@ func _ready() -> void:
 		_rng.randomize()
 
 
-func bind(wallet: CoinWallet, part_inventory: RewardPartInventory) -> bool:
+func bind(wallet: CoinWallet, part_inventory: RepairPartInventory) -> bool:
 	if wallet == null or part_inventory == null:
 		return false
 	_wallet = wallet
@@ -93,24 +95,38 @@ func bind(wallet: CoinWallet, part_inventory: RewardPartInventory) -> bool:
 	return true
 
 
-## 보상 화면을 엽니다. reward_index는 0부터(보상 1 = 0)입니다.
-func open_shop(wave_id: int, reward_index: int) -> bool:
+## 보상 화면을 엽니다. 실제 웨이브 인덱스는 wave_id를 기준으로 계산합니다.
+## 두 번째 인자는 기존 호출부 호환을 위해 유지하며 보상 문맥 계산에는 사용하지 않습니다.
+func open_shop(wave_id: int, _reward_index_hint: int = 0) -> bool:
 	if _is_open or catalog == null or _wallet == null:
 		return false
+	var stage_num := StageRewardRepository.stage_num_from_id(stage_id)
+	if stage_num < 1:
+		push_error("Reward shop stage_id must use stage_<number>: %s" % stage_id)
+		return false
+	var actual_reward_index := maxi(wave_id, 0)
+	_apply_stage_database()
+	_apply_stage_context(stage_num, mini(actual_reward_index + 1, 4))
 	_is_open = true
 	_wave_id = wave_id
-	_reward_index = maxi(reward_index, 0)
+	_reward_index = actual_reward_index
 	_ball_purchase_used = false
 	_part_purchase_used = false
 
 	_ball_offers = RewardOfferGenerator.generate_ball_offers(
-		catalog, _unlocked_ball_ids, _reward_index, _rng
+		catalog, _unlocked_ball_ids, _reward_index, _rng, stage_num
 	)
 	_part_offers = RewardOfferGenerator.generate_part_offers(
-		catalog, _reward_index, _rng, _owned_part_kinds()
+		catalog, _reward_index, _rng, _owned_part_kinds(), stage_num
 	)
 	var affordable := RewardOfferGenerator.ensure_affordable_pair(
-		_ball_offers, _part_offers, catalog, _unlocked_ball_ids, _wallet.balance
+		_ball_offers,
+		_part_offers,
+		catalog,
+		_unlocked_ball_ids,
+		_wallet.balance,
+		_reward_index,
+		stage_num
 	)
 
 	shop_opened.emit(_wave_id)
@@ -212,6 +228,26 @@ func _owned_part_kinds() -> Array[StringName]:
 
 func reset_unlocked_balls(next_ids: Array[StringName] = []) -> void:
 	_unlocked_ball_ids = next_ids.duplicate()
+
+
+func _apply_stage_database() -> void:
+	if _stage_database_applied:
+		return
+	var repository := get_node_or_null(
+		"/root/StageDataRepository"
+	) as StageRewardRepository
+	if repository == null:
+		return
+	_stage_database_applied = repository.apply_to_catalog(stage_id, catalog)
+
+
+func _apply_stage_context(stage_num: int, wave_num: int) -> void:
+	var repository := get_node_or_null(
+		"/root/StageDataRepository"
+	) as StageRewardRepository
+	if repository == null or not _stage_database_applied:
+		return
+	repository.apply_context_weights(stage_id, catalog, stage_num, wave_num)
 
 
 func _offer_ball_ids() -> Array[StringName]:
