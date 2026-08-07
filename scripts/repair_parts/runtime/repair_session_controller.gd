@@ -19,9 +19,10 @@ var _board_controller: RepairBoardController = null
 
 func _ready() -> void:
 	_router = get_node_or_null(router_path) as RepairEffectRouter
-	_board_controller = get_node_or_null(
-		board_controller_path
-	) as RepairBoardController
+	if not board_controller_path.is_empty():
+		_board_controller = get_node_or_null(
+			board_controller_path
+		) as RepairBoardController
 	_wave_manager = get_node_or_null(wave_manager_path)
 	if _wave_manager == null or _router == null:
 		push_warning(

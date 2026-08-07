@@ -562,10 +562,11 @@ func _test_stage01_wave_layout() -> void:
 	var wave2: Resource = layout.call(&"get_wave", 1)
 	var wave3: Resource = layout.call(&"get_wave", 2)
 	var boss: Resource = layout.call(&"get_wave", 3)
-	_expect(wave1.get(&"normal_count_range") == Vector2i(4, 6) \
-			and wave1.get(&"bounce_count_range") == Vector2i.ZERO \
+	# 웨이브 1 레벨 디자인: 대각 벽 4곳의 리바운드(Bounce)와 중앙 Normal 묶음.
+	_expect(wave1.get(&"normal_count_range") == Vector2i(2, 3) \
+			and wave1.get(&"bounce_count_range") == Vector2i(4, 4) \
 			and wave1.get(&"shot_count_range") == Vector2i.ZERO,
-		"웨이브 1은 Normal 4~6개만 사용해야 한다.")
+		"웨이브 1은 벽 리바운드 4개와 중앙 Normal 2~3개를 사용해야 한다.")
 	_expect(wave2.get(&"bounce_count_range") == Vector2i(2, 3) \
 			and wave2.get(&"shot_count_range") == Vector2i.ZERO,
 		"웨이브 2에서 Bounce 2~3개를 처음 도입해야 한다.")

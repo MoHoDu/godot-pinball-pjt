@@ -78,8 +78,6 @@
 
 [ext_resource type="Resource" path="res://settings/bumpers/repair_parts/GoldenGears.tres" id="38_gears_settings"]
 
-[ext_resource type="Resource" path="res://settings/bumpers/repair_parts/CrescentNeedle.tres" id="39_needle_settings"]
-
 [ext_resource type="Resource" path="res://settings/bumpers/repair_parts/ForgottenStarBell.tres" id="40_bell_settings"]
 
 [ext_resource type="Script" path="res://scripts/sfx_system/sfx_director.gd" id="41_sfx_director"]
@@ -94,9 +92,15 @@
 
 [ext_resource type="PackedScene" path="res://Resources/boards/golden_gears_placeable.tscn" id="42_gears_placeable"]
 
-[ext_resource type="PackedScene" path="res://Resources/boards/crescent_needle_placeable.tscn" id="43_needle_placeable"]
-
 [ext_resource type="PackedScene" path="res://Resources/boards/forgotten_star_bell_placeable.tscn" id="44_bell_placeable"]
+
+[ext_resource type="Script" path="res://scripts/repair_parts/adapters/repair_combo_adapter.gd" id="46_repair_combo_adapter"]
+
+[ext_resource type="Script" path="res://scripts/repair_parts/adapters/repair_ball_adapter.gd" id="47_repair_ball_adapter"]
+
+[ext_resource type="Script" path="res://scripts/repair_parts/runtime/repair_effect_router.gd" id="48_repair_effect_router"]
+
+[ext_resource type="Script" path="res://scripts/repair_parts/runtime/repair_session_controller.gd" id="49_repair_session_controller"]
 
 [sub_resource type="Resource" id="StageSettings_wave"]
 script = ExtResource("3_combo_stage")
@@ -160,14 +164,6 @@ placeable_scene = ExtResource("42_gears_placeable")
 starting_count = 2
 one_line_feature = "구동한다 · 연속 반응"
 placeholder_icon = "⚙"
-
-[sub_resource type="Resource" id="RepairEntry_needle"]
-script = ExtResource("36_repair_entry")
-settings = ExtResource("39_needle_settings")
-placeable_scene = ExtResource("43_needle_placeable")
-starting_count = 1
-one_line_feature = "봉합한다 · 연결 복원"
-placeholder_icon = "☾"
 
 [sub_resource type="Resource" id="RepairEntry_bell"]
 script = ExtResource("36_repair_entry")
@@ -564,9 +560,9 @@ layer = 50
 
 [node name="RepairPartInventory" type="Node" parent="."]
 script = ExtResource("35_repair_inventory")
-entries = Array[ExtResource("36_repair_entry")]([SubResource("RepairEntry_brooch"), SubResource("RepairEntry_gears"), SubResource("RepairEntry_needle"), SubResource("RepairEntry_bell")])
+entries = Array[ExtResource("36_repair_entry")]([SubResource("RepairEntry_brooch"), SubResource("RepairEntry_gears"), SubResource("RepairEntry_bell")])
 
-[node name="BoardWavePlacementBridge" type="Node" parent="." node_paths=PackedStringArray("wave_manager", "placement_session", "combo_system", "wave_hud", "ball_selection_hud", "placement_hud")]
+[node name="BoardWavePlacementBridge" type="Node" parent="." node_paths=PackedStringArray("wave_manager", "placement_session", "combo_system", "wave_hud", "ball_selection_hud", "placement_hud", "repair_effect_router")]
 script = ExtResource("33_repair_bridge")
 wave_manager = NodePath("../WaveManager")
 placement_session = NodePath("../RepairBoardLayout/PlacementSession")
@@ -574,6 +570,7 @@ combo_system = NodePath("../ComboSystem")
 wave_hud = NodePath("../HUD/WaveHud")
 ball_selection_hud = NodePath("../HUD/BallSelectionHud")
 placement_hud = NodePath("../RepairPlacementHUD/RepairPartPlacementHud")
+repair_effect_router = NodePath("../WaveRepairEffects/RepairEffectRouter")
 
 [node name="RepairPartPlacementController" type="Node" parent="." node_paths=PackedStringArray("placement_session", "inventory", "placement_hud", "wave_bridge")]
 script = ExtResource("34_repair_controller")
@@ -589,3 +586,23 @@ script = ExtResource("41_sfx_director")
 script = ExtResource("42_sfx_binder")
 wall_rules = ExtResource("43_wall_sfx")
 ball_flow_rules = ExtResource("45_flow_sfx")
+
+[node name="WaveRepairEffects" type="Node" parent="."]
+
+[node name="RepairComboAdapter" type="Node" parent="WaveRepairEffects"]
+script = ExtResource("46_repair_combo_adapter")
+combo_system_path = NodePath("../../ComboSystem")
+
+[node name="RepairBallAdapter" type="Node" parent="WaveRepairEffects"]
+script = ExtResource("47_repair_ball_adapter")
+
+[node name="RepairEffectRouter" type="Node" parent="WaveRepairEffects"]
+script = ExtResource("48_repair_effect_router")
+combo_adapter_path = NodePath("../RepairComboAdapter")
+ball_adapter_path = NodePath("../RepairBallAdapter")
+runtime_root_path = NodePath("../../RepairBoardLayout")
+
+[node name="RepairSessionController" type="Node" parent="WaveRepairEffects"]
+script = ExtResource("49_repair_session_controller")
+wave_manager_path = NodePath("../../WaveManager")
+router_path = NodePath("../RepairEffectRouter")

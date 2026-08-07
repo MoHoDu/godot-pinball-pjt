@@ -26,7 +26,7 @@ func _run() -> void:
 	await _test_scene_wiring()
 	await _test_sound_test_scene()
 	await _test_sfx_lab_scene()
-	await _test_original_scene_untouched()
+	await _test_main_scene_wiring()
 	_finish()
 
 
@@ -200,8 +200,8 @@ func _test_scene_wiring() -> void:
 	var director := scene.get_node_or_null(^"SfxDirector") as SfxDirector
 	var binder := scene.get_node_or_null(^"_WaveSfxBinder") as WaveSfxBinder
 
-	_expect(director != null, "상속 씬에 SfxDirector 가 있어야 한다.")
-	_expect(binder != null, "상속 씬에 _WaveSfxBinder 가 있어야 한다.")
+	_expect(director != null, "호환 씬에 SfxDirector 가 있어야 한다.")
+	_expect(binder != null, "호환 씬에 _WaveSfxBinder 가 있어야 한다.")
 
 	if binder == null:
 		scene.queue_free()
@@ -217,8 +217,12 @@ func _test_scene_wiring() -> void:
 	_expect(int(counts[&"flippers"]) >= 8,
 		"★ 플리퍼 8개(4그룹×좌우)를 전부 찾아야 한다. (%d)" % int(counts[&"flippers"]))
 
-	_expect(binder.wall_rules != null and binder.flipper_rules != null,
-		"씬에 규칙 리소스가 물려 있어야 한다.")
+	_expect(binder.wall_rules != null and binder.ball_flow_rules != null,
+		"승인된 벽·공 흐름 규칙이 씬에 물려 있어야 한다.")
+	_expect(binder.flipper_rules == null \
+		and binder.combo_rules == null \
+		and binder.bumper_rules == null,
+		"미승인 플리퍼·콤보·범퍼 규칙은 실제 웨이브에서 비활성화해야 한다.")
 
 	# ★ FlipperSelector 에는 시그널이 없어 폴링으로 붙는다.
 	#   못 찾으면 선택음이 통째로 안 나고, 검수 항목
@@ -235,19 +239,24 @@ func _test_scene_wiring() -> void:
 	await physics_frame
 
 
-## 상속 씬만 쓰고 원본은 건드리지 않았는지
-func _test_original_scene_untouched() -> void:
+## 승인된 SFX가 실제 메인 웨이브에 병합되었는지
+func _test_main_scene_wiring() -> void:
 	var original := load("res://scenes/wave/wave.tscn") as PackedScene
-	_expect(original != null, "원본 wave.tscn 을 불러올 수 있어야 한다.")
+	_expect(original != null, "메인 wave.tscn 을 불러올 수 있어야 한다.")
 
 	if original == null:
 		return
 
 	var scene := original.instantiate()
-	_expect(scene.get_node_or_null(^"SfxDirector") == null,
-		"원본 wave.tscn 은 승인 전까지 그대로여야 한다 (씬 복제 규칙).")
-	_expect(scene.get_node_or_null(^"_WaveSfxBinder") == null,
-		"원본에 바인더가 들어가면 안 된다.")
+	var director := scene.get_node_or_null(^"SfxDirector") as SfxDirector
+	var binder := scene.get_node_or_null(^"_WaveSfxBinder") as WaveSfxBinder
+	_expect(director != null,
+		"메인 wave.tscn 에 승인된 SfxDirector가 있어야 한다.")
+	_expect(binder is WaveSfxBinderStrict,
+		"메인 wave.tscn 은 인자 수를 검증하는 엄격한 바인더를 사용해야 한다.")
+	_expect(binder != null and binder.wall_rules != null \
+		and binder.ball_flow_rules != null,
+		"메인 wave.tscn 에 승인된 벽·공 흐름 규칙이 연결되어야 한다.")
 	scene.free()
 
 

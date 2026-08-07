@@ -24,6 +24,9 @@ signal gear_overdrive_fired(
 
 @export var combo_adapter_path: NodePath = NodePath("")
 @export var ball_adapter_path: NodePath = NodePath("")
+## 비워 두면 기존 호환 동작대로 SceneTree 전체에서 부품을 찾습니다.
+## 여러 웨이브 런타임이 상속으로 겹치는 씬에서는 각 보드 루트를 지정합니다.
+@export var runtime_root_path: NodePath = NodePath("")
 ## true면 물리 프레임마다 내부 시계를 진행합니다. 테스트에서는 끄고
 ## advance_time을 직접 호출할 수 있습니다.
 @export var auto_advance: bool = true
@@ -50,10 +53,8 @@ func _physics_process(delta: float) -> void:
 func rescan_parts() -> void:
 	if not is_inside_tree():
 		return
-	for runtime: Node in get_tree().get_nodes_in_group(
-		RepairPartRuntime.RUNTIME_GROUP
-	):
-		register_part(runtime as RepairPartRuntime)
+	for runtime: RepairPartRuntime in _get_scoped_runtimes():
+		register_part(runtime)
 
 
 func register_part(runtime: RepairPartRuntime) -> void:
@@ -220,10 +221,30 @@ func _on_part_exiting(runtime: RepairPartRuntime) -> void:
 func _reset_all_transient() -> void:
 	for effect: RepairPartEffect in _effects.values():
 		effect.reset_transient()
-	for runtime: Node in get_tree().get_nodes_in_group(
+	for runtime: RepairPartRuntime in _get_scoped_runtimes():
+		runtime.reset_transient()
+
+
+func _get_scoped_runtimes() -> Array[RepairPartRuntime]:
+	var runtimes: Array[RepairPartRuntime] = []
+	if not is_inside_tree():
+		return runtimes
+	var runtime_root: Node
+	if not runtime_root_path.is_empty():
+		runtime_root = get_node_or_null(runtime_root_path)
+		if runtime_root == null:
+			return runtimes
+	for candidate: Node in get_tree().get_nodes_in_group(
 		RepairPartRuntime.RUNTIME_GROUP
 	):
-		(runtime as RepairPartRuntime).reset_transient()
+		if not candidate is RepairPartRuntime:
+			continue
+		if runtime_root != null \
+				and candidate != runtime_root \
+				and not runtime_root.is_ancestor_of(candidate):
+			continue
+		runtimes.append(candidate as RepairPartRuntime)
+	return runtimes
 
 
 func _create_effect(family: int) -> RepairPartEffect:
