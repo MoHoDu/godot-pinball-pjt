@@ -36,6 +36,20 @@ func _ready() -> void:
 
 
 func _build_coin_system() -> void:
+	# 최신 wave.tscn은 에디터 배치가 보이는 CoinSystem을 직접 보유합니다.
+	# 과거 파생 씬도 이를 상속하므로 두 번째 필드/지갑을 만들지 않고 재사용합니다.
+	var authored_field := get_node_or_null(^"CoinSystem") as CoinFieldController
+	var authored_session := get_node_or_null(
+		^"CoinSystem/CoinSession"
+	) as WaveCoinSession
+	if authored_field != null and authored_session != null:
+		coin_field = authored_field
+		coin_wallet = authored_session.wallet
+		clear_delay = authored_session.clear_delay
+		_coin_label = authored_session.wallet_label
+		_connect_coin_event_log()
+		return
+
 	coin_wallet = CoinWallet.new()
 	coin_wallet.name = "CoinWallet"
 	add_child(coin_wallet)
@@ -55,9 +69,7 @@ func _build_coin_system() -> void:
 	_build_coin_label()
 
 	coin_wallet.wallet_changed.connect(_on_wallet_changed)
-	coin_field.coin_pickup_collected.connect(_on_coin_collected)
-	clear_delay.wave_clear_delay_started.connect(_on_delay_started)
-	clear_delay.wave_clear_delay_finished.connect(_on_delay_finished)
+	_connect_coin_event_log()
 	wave_manager.wave_entered.connect(_on_coin_wave_entered)
 	wave_manager.wave_retried.connect(_on_coin_wave_retried)
 
@@ -65,6 +77,15 @@ func _build_coin_system() -> void:
 	if wave_manager.current_state != WaveManager.State.INACTIVE:
 		coin_field.spawn_for_wave(wave_manager.current_wave_index)
 	_refresh_coin_label()
+
+
+func _connect_coin_event_log() -> void:
+	if not coin_field.coin_pickup_collected.is_connected(_on_coin_collected):
+		coin_field.coin_pickup_collected.connect(_on_coin_collected)
+	if not clear_delay.wave_clear_delay_started.is_connected(_on_delay_started):
+		clear_delay.wave_clear_delay_started.connect(_on_delay_started)
+	if not clear_delay.wave_clear_delay_finished.is_connected(_on_delay_finished):
+		clear_delay.wave_clear_delay_finished.connect(_on_delay_finished)
 
 
 ## 코인 HUD가 정식 디자인되기 전까지 쓰는 자리표시자 라벨입니다.

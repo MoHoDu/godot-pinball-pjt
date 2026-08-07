@@ -5,5 +5,5 @@
 [resource]
 script = ExtResource("1_layout")
 coin_value = 2
-main_path_positions = PackedVector2Array(-800, -350, -500, -500, -200, -560, 100, -560, 400, -500, 700, -350, -350, -150, 0, -100, 350, -150)
-risk_path_positions = PackedVector2Array(-1050, -580, 1050, -580, 0, -640)
+main_path_positions = PackedVector2Array(-850, -300, 850, -300, -900, 0, 900, 0, -850, 300, 850, 300, 0, -450, 0, 0, -120, 330, 120, 330)
+risk_path_positions = PackedVector2Array(-560, -520, 560, -520)

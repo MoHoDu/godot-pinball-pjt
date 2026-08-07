@@ -102,6 +102,13 @@
 
 [ext_resource type="Script" path="res://scripts/repair_parts/runtime/repair_session_controller.gd" id="49_repair_session_controller"]
 
+[ext_resource type="Resource" path="res://settings/coin/BasicCoin.tres" id="51_coin_definition"]
+[ext_resource type="Script" path="res://scripts/coin_system/coin_field_controller.gd" id="52_coin_field"]
+[ext_resource type="Script" path="res://scripts/coin_system/coin_wallet.gd" id="53_coin_wallet"]
+[ext_resource type="Script" path="res://scripts/coin_system/wave_clear_delay_controller.gd" id="54_clear_delay"]
+[ext_resource type="Script" path="res://scripts/coin_system/wave_coin_session.gd" id="55_coin_session"]
+[ext_resource type="Script" path="res://scripts/coin_system/coin_spawn_point.gd" id="56_coin_point"]
+
 [sub_resource type="Resource" id="StageSettings_wave"]
 script = ExtResource("3_combo_stage")
 stage_id = &"cursed_toy_demo"
@@ -544,10 +551,106 @@ configured_combo_wave = NodePath("../ComboWaveController")
 configured_combo_system = NodePath("../ComboSystem")
 configured_collision_bridge = NodePath("../ComboCollisionBridge")
 
+[node name="CoinSystem" type="Node2D" parent="." node_paths=PackedStringArray("spawn_points_root", "board_layout", "bumpers_root")]
+z_index = 3
+script = ExtResource("52_coin_field")
+coin_definition = ExtResource("51_coin_definition")
+spawn_points_root = NodePath("SpawnPoints")
+board_layout = NodePath("../RepairBoardLayout")
+bumpers_root = NodePath("../Bumpers")
+
+[node name="CoinWallet" type="Node" parent="CoinSystem"]
+script = ExtResource("53_coin_wallet")
+
+[node name="WaveClearDelayController" type="Node" parent="CoinSystem"]
+script = ExtResource("54_clear_delay")
+
+[node name="CoinSession" type="Node" parent="CoinSystem" node_paths=PackedStringArray("wave_manager", "wallet", "field", "clear_delay", "wallet_label")]
+script = ExtResource("55_coin_session")
+wave_manager = NodePath("../../WaveManager")
+wallet = NodePath("../CoinWallet")
+field = NodePath("..")
+clear_delay = NodePath("../WaveClearDelayController")
+wallet_label = NodePath("../../HUD/CoinWalletLabel")
+
+[node name="SpawnPoints" type="Node2D" parent="CoinSystem"]
+
+[node name="Main01" type="Marker2D" parent="CoinSystem/SpawnPoints"]
+position = Vector2(-850, -300)
+script = ExtResource("56_coin_point")
+point_id = &"main_01"
+
+[node name="Main02" type="Marker2D" parent="CoinSystem/SpawnPoints"]
+position = Vector2(850, -300)
+script = ExtResource("56_coin_point")
+point_id = &"main_02"
+
+[node name="Main03" type="Marker2D" parent="CoinSystem/SpawnPoints"]
+position = Vector2(-900, 0)
+script = ExtResource("56_coin_point")
+point_id = &"main_03"
+
+[node name="Main04" type="Marker2D" parent="CoinSystem/SpawnPoints"]
+position = Vector2(900, 0)
+script = ExtResource("56_coin_point")
+point_id = &"main_04"
+
+[node name="Main05" type="Marker2D" parent="CoinSystem/SpawnPoints"]
+position = Vector2(-850, 300)
+script = ExtResource("56_coin_point")
+point_id = &"main_05"
+
+[node name="Main06" type="Marker2D" parent="CoinSystem/SpawnPoints"]
+position = Vector2(850, 300)
+script = ExtResource("56_coin_point")
+point_id = &"main_06"
+
+[node name="Main07" type="Marker2D" parent="CoinSystem/SpawnPoints"]
+position = Vector2(0, -450)
+script = ExtResource("56_coin_point")
+point_id = &"main_07"
+
+[node name="Main08" type="Marker2D" parent="CoinSystem/SpawnPoints"]
+script = ExtResource("56_coin_point")
+point_id = &"main_08"
+
+[node name="Main09" type="Marker2D" parent="CoinSystem/SpawnPoints"]
+position = Vector2(-120, 330)
+script = ExtResource("56_coin_point")
+point_id = &"main_09"
+
+[node name="Main10" type="Marker2D" parent="CoinSystem/SpawnPoints"]
+position = Vector2(120, 330)
+script = ExtResource("56_coin_point")
+point_id = &"main_10"
+
+[node name="Risk01" type="Marker2D" parent="CoinSystem/SpawnPoints"]
+position = Vector2(-560, -520)
+script = ExtResource("56_coin_point")
+point_id = &"risk_01"
+route_kind = 1
+
+[node name="Risk02" type="Marker2D" parent="CoinSystem/SpawnPoints"]
+position = Vector2(560, -520)
+script = ExtResource("56_coin_point")
+point_id = &"risk_02"
+route_kind = 1
+
 [node name="WaveHudStateSource" type="Node" parent="." unique_id=76749773]
 script = ExtResource("2_state")
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=739204287]
+
+[node name="CoinWalletLabel" type="Label" parent="HUD"]
+offset_left = 24.0
+offset_top = 240.0
+offset_right = 470.0
+offset_bottom = 284.0
+theme_override_colors/font_color = Color(0.9, 0.72, 0.25, 1)
+theme_override_colors/font_outline_color = Color(0.05, 0.06, 0.08, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 30
+text = "COIN 0  ·  WAVE +0"
 
 [node name="BallSelectionHud" parent="HUD" unique_id=1456410610 instance=ExtResource("25_selection_hud")]
 

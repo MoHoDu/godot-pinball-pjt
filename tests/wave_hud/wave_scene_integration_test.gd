@@ -600,11 +600,21 @@ func _test_bumper_runtime_integration(wave: WaveRuntimeCoordinator) -> void:
 	wave.combo_system.register_hit(1.0)
 	wave.combo_system.finish_combo(ComboSystem.EndReason.MANUAL)
 	await process_frame
+	var clear_delay := wave.get_node(
+		^"CoinSystem/WaveClearDelayController"
+	) as WaveClearDelayController
+	_expect(clear_delay.is_delay_active \
+		and wave.wave_manager.current_stage_phase == WaveManager.StagePhase.PINBALL,
+		"Reaching the target must keep the active ball during the coin clear delay.")
+	# 타임아웃을 직접 발생시켜 Shot 범퍼 제어 중인 공도 정상 종료되는지 확인한다.
+	clear_delay.call(&"_on_timer_timeout")
+	await process_frame
+	await process_frame
 	_expect(wave.wave_manager.current_stage_phase \
 		== WaveManager.StagePhase.WAVE_RESULT,
-		"Reaching the target during Shot bumper control must finish the wave.")
+		"Clear-delay timeout during Shot bumper control must finish the wave.")
 	_expect(int(wave.get(&"_active_shot_controls")) == 0,
-		"Immediate wave clear must release aggregate Shot bumper control.")
+		"Clear-delay completion must release aggregate Shot bumper control.")
 	_expect(not wave.flipper_selector.input_enabled,
 		"Flipper input must stay disabled on the wave-result phase.")
 
@@ -630,7 +640,7 @@ func _test_bumper_runtime_integration(wave: WaveRuntimeCoordinator) -> void:
 		"The next wave must launch its selected ball.")
 	await process_frame
 	_expect(wave.flipper_selector.input_enabled,
-		"The next wave must restore flipper input after an immediate clear.")
+		"The next wave must restore flipper input after clear-delay completion.")
 
 
 func _test_world_anchor_and_hit_fade(wave: WaveRuntimeCoordinator) -> void:
