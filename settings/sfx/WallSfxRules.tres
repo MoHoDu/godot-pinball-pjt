@@ -1,0 +1,38 @@
+[gd_resource type="Resource" script_class="WallSfxRules" load_steps=6 format=3]
+
+; 벽 충돌 SFX 규칙.
+;
+; 음원은 아직 비어 있습니다 (Tier 1 제작 단계에서 채웁니다).
+; 지금은 배선과 규격 값만 확정된 상태이고, 음원이 없으면 DROPPED_EMPTY 로 조용히 넘어갑니다.
+;
+; 수치 근거는 전부 기획서 p.62 입니다:
+;   길이 0.06~0.14초 / 피치 ±5% / 동시 4개 / 간격 0.04초 / 연타 -3dB / 패링 대비 -8~-10dB
+
+[ext_resource type="Script" path="res://scripts/sfx_system/rules/wall_sfx_rules.gd" id="1_rules"]
+[ext_resource type="Script" path="res://scripts/sfx_system/sfx_cue.gd" id="2_cue"]
+[ext_resource type="AudioStream" path="res://Resources/sfx/walls/SFX_Wall_Hit_Low.wav" id="3_low"]
+[ext_resource type="AudioStream" path="res://Resources/sfx/walls/SFX_Wall_Hit_Mid.wav" id="4_mid"]
+[ext_resource type="AudioStream" path="res://Resources/sfx/walls/SFX_Wall_Hit_High.wav" id="5_high"]
+
+[sub_resource type="Resource" id="SfxCue_wall_hit"]
+script = ExtResource("2_cue")
+cue_id = &"wall_hit"
+role = "벽 충돌 — 저·중·고속 3종. 공이 벽에 부딪힐 때"
+streams = Array[AudioStream]([ExtResource("3_low"), ExtResource("4_mid"), ExtResource("5_high")])
+selection_mode = 1
+speed_tier_thresholds = PackedFloat32Array(420, 1050)
+priority = 10
+maximum_concurrent = 4
+base_volume_db = 0.0
+speed_reference_range = Vector2(120, 900)
+speed_volume_range = Vector2(-14, 0)
+silence_below_speed = 45.0
+pitch_jitter = 0.05
+minimum_repeat_interval = 0.04
+repeat_attenuation_db = -3.0
+repeat_attenuation_floor_db = -9.0
+repeat_chain_reset_time = 0.24
+
+[resource]
+script = ExtResource("1_rules")
+hit_cue = SubResource("SfxCue_wall_hit")

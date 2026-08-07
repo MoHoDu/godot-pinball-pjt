@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="BumperInstanceOverrides" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/bumper-system/bumper_instance_overrides.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+base_score = -1
+score_weight = -1.0
+max_durability = 999
+respawn_delay = -1.0
+speed_multiplier = -1.0
+minimum_release_speed = -1.0
+maximum_response_speed = -1.0
+selection_duration = -1.0
+launch_speed = -1.0

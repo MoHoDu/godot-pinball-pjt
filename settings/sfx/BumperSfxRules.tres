@@ -1,0 +1,159 @@
+[gd_resource type="Resource" script_class="BumperSfxRules" load_steps=11 format=3]
+
+; 범퍼 SFX — 기획서 3층 구조 중 재질음.
+;
+; ★ 5종이 서로 확실히 갈려야 합니다.
+;   음색이 겹치면 무엇을 맞혔는지 화면을 봐야 압니다.
+;   단추(딱) / 솜(푹) / 용수철(끽팡) / 북(통) / 대포(철컥)
+;
+; 대체 큐(fallback)는 단추를 씁니다. 새 범퍼가 늘어도 무음이 되지 않습니다.
+;
+; dB 서열은 파일 피크가 갖고 있습니다.
+;   단추 -6 / 솜 -9 / 용수철 -6 / 북 -6 / 대포조작 -12 / 대포발사 -5
+;   파괴 -4 / 리스폰 -13
+
+[ext_resource type="Script" path="res://scripts/sfx_system/rules/bumper_sfx_rules.gd" id="1_rules"]
+[ext_resource type="Script" path="res://scripts/sfx_system/sfx_cue.gd" id="2_cue"]
+[ext_resource type="AudioStream" path="res://Resources/sfx/bumpers/SFX_Bumper_Button.wav" id="3_button"]
+[ext_resource type="AudioStream" path="res://Resources/sfx/bumpers/SFX_Bumper_Cotton.wav" id="4_cotton"]
+[ext_resource type="AudioStream" path="res://Resources/sfx/bumpers/SFX_Bumper_Spring.wav" id="5_spring"]
+[ext_resource type="AudioStream" path="res://Resources/sfx/bumpers/SFX_Bumper_Drum.wav" id="6_drum"]
+[ext_resource type="AudioStream" path="res://Resources/sfx/bumpers/SFX_Bumper_CannonClick.wav" id="7_click"]
+[ext_resource type="AudioStream" path="res://Resources/sfx/bumpers/SFX_Bumper_CannonFire.wav" id="8_fire"]
+[ext_resource type="AudioStream" path="res://Resources/sfx/bumpers/SFX_Bumper_Destroy.wav" id="9_destroy"]
+[ext_resource type="AudioStream" path="res://Resources/sfx/bumpers/SFX_Bumper_Respawn.wav" id="10_respawn"]
+
+[sub_resource type="Resource" id="SfxCue_button"]
+script = ExtResource("2_cue")
+cue_id = &"bumper_button"
+role = "단추 범퍼 — 딱. 큰 플라스틱 단추가 눌린다"
+streams = Array[AudioStream]([ExtResource("3_button")])
+selection_mode = 0
+priority = 20
+maximum_concurrent = 3
+speed_reference_range = Vector2(120, 900)
+speed_volume_range = Vector2(-8, 0)
+pitch_jitter = 0.05
+minimum_repeat_interval = 0.05
+repeat_attenuation_db = -3.0
+
+[sub_resource type="Resource" id="SfxCue_cotton"]
+script = ExtResource("2_cue")
+cue_id = &"bumper_cotton"
+role = "솜 범퍼 — 푹. 소리를 먹는다"
+streams = Array[AudioStream]([ExtResource("4_cotton")])
+selection_mode = 0
+priority = 20
+maximum_concurrent = 3
+speed_reference_range = Vector2(120, 900)
+speed_volume_range = Vector2(-8, 0)
+pitch_jitter = 0.05
+minimum_repeat_interval = 0.05
+repeat_attenuation_db = -3.0
+
+[sub_resource type="Resource" id="SfxCue_spring"]
+script = ExtResource("2_cue")
+cue_id = &"bumper_spring_doll"
+role = "용수철 인형 — 끽 + 팡. 튀어오른다"
+streams = Array[AudioStream]([ExtResource("5_spring")])
+selection_mode = 0
+priority = 20
+maximum_concurrent = 3
+speed_reference_range = Vector2(120, 900)
+speed_volume_range = Vector2(-8, 0)
+pitch_jitter = 0.05
+minimum_repeat_interval = 0.05
+repeat_attenuation_db = -3.0
+
+[sub_resource type="Resource" id="SfxCue_drum"]
+script = ExtResource("2_cue")
+cue_id = &"bumper_toy_drum"
+role = "장난감 북 — 통. 속 빈 울림"
+streams = Array[AudioStream]([ExtResource("6_drum")])
+selection_mode = 0
+priority = 20
+maximum_concurrent = 3
+speed_reference_range = Vector2(120, 900)
+speed_volume_range = Vector2(-8, 0)
+pitch_jitter = 0.05
+minimum_repeat_interval = 0.05
+repeat_attenuation_db = -3.0
+
+[sub_resource type="Resource" id="SfxCue_cannon"]
+script = ExtResource("2_cue")
+cue_id = &"bumper_cannon_body"
+role = "태엽 대포 몸통에 부딪힘 — 조작이 아니라 충돌"
+streams = Array[AudioStream]([ExtResource("7_click")])
+selection_mode = 0
+priority = 20
+maximum_concurrent = 2
+speed_reference_range = Vector2(120, 900)
+speed_volume_range = Vector2(-8, 0)
+pitch_jitter = 0.05
+minimum_repeat_interval = 0.05
+repeat_attenuation_db = -3.0
+
+[sub_resource type="Resource" id="SfxCue_click"]
+script = ExtResource("2_cue")
+cue_id = &"bumper_cannon_control"
+role = "태엽 대포 조작 시작 — 철컥. 공을 물어 조준에 들어간다"
+streams = Array[AudioStream]([ExtResource("7_click")])
+selection_mode = 0
+priority = 20
+maximum_concurrent = 1
+speed_volume_range = Vector2(0, 0)
+pitch_jitter = 0.03
+minimum_repeat_interval = 0.15
+repeat_attenuation_db = 0.0
+
+[sub_resource type="Resource" id="SfxCue_fire"]
+script = ExtResource("2_cue")
+cue_id = &"bumper_cannon_fire"
+role = "태엽 대포 발사 — 팡. ★ 절차적 대체본(AI 6개 전부 탈락)"
+streams = Array[AudioStream]([ExtResource("8_fire")])
+selection_mode = 0
+priority = 20
+maximum_concurrent = 2
+speed_volume_range = Vector2(0, 0)
+pitch_jitter = 0.04
+minimum_repeat_interval = 0.15
+repeat_attenuation_db = 0.0
+
+[sub_resource type="Resource" id="SfxCue_destroy"]
+script = ExtResource("2_cue")
+cue_id = &"bumper_destroy"
+role = "범퍼 파괴 — 내구도가 다해 부서진다. 종류와 무관하게 공통"
+streams = Array[AudioStream]([ExtResource("9_destroy")])
+selection_mode = 0
+priority = 20
+maximum_concurrent = 2
+speed_volume_range = Vector2(0, 0)
+pitch_jitter = 0.05
+minimum_repeat_interval = 0.1
+repeat_attenuation_db = -3.0
+
+[sub_resource type="Resource" id="SfxCue_respawn"]
+script = ExtResource("2_cue")
+cue_id = &"bumper_respawn"
+role = "범퍼 리스폰 예고 — 태엽이 다시 감긴다. 알림이지 사건이 아니다"
+streams = Array[AudioStream]([ExtResource("10_respawn")])
+selection_mode = 0
+priority = 0
+maximum_concurrent = 2
+speed_volume_range = Vector2(0, 0)
+pitch_jitter = 0.04
+minimum_repeat_interval = 0.2
+repeat_attenuation_db = -3.0
+
+[resource]
+script = ExtResource("1_rules")
+button_cue = SubResource("SfxCue_button")
+cotton_cue = SubResource("SfxCue_cotton")
+spring_doll_cue = SubResource("SfxCue_spring")
+toy_drum_cue = SubResource("SfxCue_drum")
+cannon_cue = SubResource("SfxCue_cannon")
+fallback_cue = SubResource("SfxCue_button")
+destroy_cue = SubResource("SfxCue_destroy")
+respawn_telegraph_cue = SubResource("SfxCue_respawn")
+cannon_control_cue = SubResource("SfxCue_click")
+cannon_fire_cue = SubResource("SfxCue_fire")

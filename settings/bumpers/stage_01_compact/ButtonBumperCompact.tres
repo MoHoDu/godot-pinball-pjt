@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="BumperSettings" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/bumper-system/bumper_settings.gd" id="1"]
+[ext_resource type="Resource" path="res://settings/bumpers/presentation/ButtonPresentation.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+bumper_kind_id = &"stage01_button"
+display_name = "단추 범퍼"
+theme_keywords = PackedStringArray()
+max_durability = 2
+speed_multiplier = 2.3
+collision_diameter = 64.0
+visual_diameter = 68.0
+respawn_safe_margin = 28.0
+presentation = ExtResource("2")

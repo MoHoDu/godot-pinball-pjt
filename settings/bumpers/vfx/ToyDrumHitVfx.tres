@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="BumperBounceVfxRules" format=3]
+
+[ext_resource type="Script" path="res://scripts/bumper-system/vfx/bumper_bounce_vfx_rules.gd" id="1_rules"]
+
+[resource]
+script = ExtResource("1_rules")
+tick_count = 1
+tick_length_ratio = 0.12
+tick_width = 2.5
+tick_spread_degrees = 20.0
+tick_lifetime = 0.08
+tick_color = Color(0.9, 0.85, 0.75, 0.55)
+chip_count = 0
+chip_radius_ratio = 0.05
+chip_travel_ratio = 0.3
+chip_lifetime = 0.2
+chip_color = Color(0.62, 0.3, 0.34, 0.85)
+debris_count = 7
+debris_lifetime = 0.6
+telegraph_amplitude_ratio = 0.035
+telegraph_hz = 4.5
+telegraph_color = Color(0.62, 0.45, 0.38, 0.5)
+ring_count = 2
+ring_start_ratio = 0.9
+ring_end_ratio = 1.85
+ring_width = 6.0
+ring_lifetime = 0.24
+ring_color = Color(0.95, 0.87, 0.7, 0.75)
+burst_count = 2
+burst_length_ratio = 0.3
+burst_lifetime = 0.16
+burst_color = Color(0.9, 0.56, 0.26, 0.75)

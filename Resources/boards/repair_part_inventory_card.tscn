@@ -1,0 +1,234 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://scripts/board_system/repair_part_inventory_card.gd" id="1_script"]
+[ext_resource type="FontFile" path="res://Resources/fonts/black_and_white_picture/BlackAndWhitePicture-Regular.ttf" id="2_font"]
+[ext_resource type="Texture2D" path="res://Resources/Art/ui/textures/panels/cursed_toy_panel_texture.png" id="3_texture"]
+
+[sub_resource type="StyleBoxFlat" id="Style_card_normal"]
+bg_color = Color(0.055, 0.17, 0.2, 0.96)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.34, 0.45, 0.44, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 3
+corner_radius_bottom_right = 7
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="Style_card_hover"]
+bg_color = Color(0.075, 0.23, 0.26, 0.98)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.4, 0.85, 0.81, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 3
+corner_radius_bottom_right = 7
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="Style_card_pressed"]
+bg_color = Color(0.095, 0.29, 0.31, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.95, 0.9, 0.78, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 3
+corner_radius_bottom_right = 7
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="Style_card_disabled"]
+bg_color = Color(0.035, 0.11, 0.13, 0.82)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.27, 0.38, 0.37, 0.65)
+corner_radius_top_left = 8
+corner_radius_top_right = 3
+corner_radius_bottom_right = 7
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="Style_thumbnail"]
+bg_color = Color(0.03, 0.13, 0.16, 0.96)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.66, 0.51, 0.25, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 2
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="Style_stack_back"]
+bg_color = Color(0.04, 0.15, 0.18, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.34, 0.45, 0.44, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 2
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="Style_stack_middle"]
+bg_color = Color(0.11, 0.25, 0.29, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.95, 0.9, 0.78, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 2
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="Style_stack_front"]
+bg_color = Color(0.14, 0.36, 0.39, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.4, 0.85, 0.81, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 2
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 3
+
+[node name="RepairPartInventoryCard" type="Button"]
+custom_minimum_size = Vector2(430, 126)
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 6
+theme_override_styles/normal = SubResource("Style_card_normal")
+theme_override_styles/hover = SubResource("Style_card_hover")
+theme_override_styles/pressed = SubResource("Style_card_pressed")
+theme_override_styles/disabled = SubResource("Style_card_disabled")
+script = ExtResource("1_script")
+
+[node name="Texture" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+modulate = Color(0.47, 0.72, 0.74, 0.14)
+texture = ExtResource("3_texture")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Thumbnail" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = 104.0
+offset_bottom = 112.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("Style_thumbnail")
+
+[node name="IconLabel" type="Label" parent="Thumbnail"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.66, 0.51, 0.25, 1)
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 42
+text = "✦"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TypeLabel" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 120.0
+offset_top = 15.0
+offset_right = 300.0
+offset_bottom = 35.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.66, 0.51, 0.25, 1)
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 14
+text = "수리 부품"
+
+[node name="NameLabel" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 120.0
+offset_top = 38.0
+offset_right = 374.0
+offset_bottom = 69.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.95, 0.9, 0.78, 1)
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 25
+text = "별빛 브로치"
+
+[node name="FeatureLabel" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 120.0
+offset_top = 76.0
+offset_right = 394.0
+offset_bottom = 104.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.4, 0.85, 0.81, 1)
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 16
+text = "완성한다 · 6초 귀환"
+text_overrun_behavior = 3
+
+[node name="StackBack" type="Panel" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 374.0
+offset_top = 18.0
+offset_right = 408.0
+offset_bottom = 44.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("Style_stack_back")
+
+[node name="StackMiddle" type="Panel" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 380.0
+offset_top = 13.0
+offset_right = 414.0
+offset_bottom = 39.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("Style_stack_middle")
+
+[node name="StackFront" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 386.0
+offset_top = 8.0
+offset_right = 422.0
+offset_bottom = 36.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("Style_stack_front")
+
+[node name="StackCount" type="Label" parent="StackFront"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.95, 0.9, 0.78, 1)
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 14
+text = "×1"
+horizontal_alignment = 1
+vertical_alignment = 1

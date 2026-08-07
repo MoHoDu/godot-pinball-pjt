@@ -1,46 +1,82 @@
-[gd_resource type="Resource" script_class="BumperSettings" load_steps=7 format=3]
+[gd_resource type="Resource" script_class="BumperSettings" format=3 uid="uid://c6tkb6xh48tnk"]
 
-[ext_resource type="Script" path="res://scripts/bumper-system/bumper_settings.gd" id="1"]
+[ext_resource type="Script" uid="uid://dkco2v1hj7wk6" path="res://scripts/bumper-system/bumper_settings.gd" id="1"]
+[ext_resource type="Script" uid="uid://cqx2stde48kda" path="res://scripts/bumper-system/bumper_common_settings.gd" id="1_iw5tq"]
 [ext_resource type="Resource" path="res://settings/bumpers/presentation/ClockworkCannonPresentation.tres" id="2"]
-[ext_resource type="Script" path="res://scripts/bumper-system/shot_launch_anchor.gd" id="3_anchor"]
+[ext_resource type="Script" uid="uid://buj3gtl3fogcq" path="res://scripts/bumper-system/shot_launch_anchor.gd" id="3_anchor"]
+[ext_resource type="Script" uid="uid://d330dqgtrfmxx" path="res://scripts/bumper-system/bumper_object_settings.gd" id="3_um6a5"]
+[ext_resource type="Script" uid="uid://cxcdnsfpf8plg" path="res://scripts/bumper-system/bumper_type_settings.gd" id="6_5dsfg"]
 
-[sub_resource type="Resource" id="ShotDirection_up"]
+[sub_resource type="Resource" id="Resource_7musi"]
+script = ExtResource("1_iw5tq")
+bumper_kind_id = &"stage01_clockwork_cannon"
+display_name = "태엽 장난감 대포"
+theme_keywords = PackedStringArray()
+max_durability = 2
+respawn_delay = 6.0
+
+[sub_resource type="Resource" id="Resource_kepv4"]
+script = ExtResource("3_um6a5")
+collision_diameter = 112.0
+visual_diameter = 128.0
+respawn_safe_margin = 52.0
+presentation = ExtResource("2")
+
+[sub_resource type="Resource" id="Resource_iw5tq"]
 script = ExtResource("3_anchor")
-display_name = "위쪽"
-input_action = &"flipper_select_up"
+display_name = "발사 방향 1"
 is_safe_default = true
-release_position = Vector2(0, -82)
+release_position = Vector2(-4.196293e-06, -96)
 
-[sub_resource type="Resource" id="ShotDirection_left"]
+[sub_resource type="Resource" id="Resource_um6a5"]
 script = ExtResource("3_anchor")
-display_name = "왼쪽"
-input_action = &"flipper_select_left"
-release_position = Vector2(-82, 0)
+display_name = "발사 방향 2"
+release_position = Vector2(64.494934, -64.30228)
 
-[sub_resource type="Resource" id="ShotDirection_right"]
+[sub_resource type="Resource" id="Resource_5dsfg"]
 script = ExtResource("3_anchor")
-display_name = "오른쪽"
-input_action = &"flipper_select_right"
-release_position = Vector2(82, 0)
+display_name = "발사 방향 3"
+release_position = Vector2(95.043884, 0.001335144)
+
+[sub_resource type="Resource" id="Resource_4dojf"]
+script = ExtResource("3_anchor")
+display_name = "발사 방향 4"
+release_position = Vector2(64.306366, 63.173515)
+
+[sub_resource type="Resource" id="Resource_5xc5j"]
+script = ExtResource("3_anchor")
+display_name = "발사 방향 5"
+release_position = Vector2(-63.16942, 63.739235)
+
+[sub_resource type="Resource" id="Resource_0xb0r"]
+script = ExtResource("3_anchor")
+display_name = "발사 방향 6"
+release_position = Vector2(-93.90692, -0.37580872)
+
+[sub_resource type="Resource" id="Resource_ouvrv"]
+script = ExtResource("3_anchor")
+display_name = "발사 방향 7"
+release_position = Vector2(-63.16942, -63.736553)
+
+[sub_resource type="Resource" id="Resource_osghq"]
+script = ExtResource("6_5dsfg")
+bumper_type = 3
+selection_duration = 2.0
+shot_launch_directions = Array[ExtResource("3_anchor")]([SubResource("Resource_iw5tq"), SubResource("Resource_um6a5"), SubResource("Resource_5dsfg"), SubResource("Resource_4dojf"), SubResource("Resource_5xc5j"), SubResource("Resource_0xb0r"), SubResource("Resource_ouvrv")])
 
 [resource]
 script = ExtResource("1")
+object_settings = SubResource("Resource_kepv4")
+common_settings = SubResource("Resource_7musi")
+type_settings = SubResource("Resource_osghq")
 bumper_kind_id = &"stage01_clockwork_cannon"
 display_name = "태엽 장난감 대포"
 bumper_type = 3
-is_repair_part = false
-base_score = 100
-score_weight = 1.0
+theme_keywords = PackedStringArray()
 max_durability = 2
-durability_damage_per_hit = 1
 respawn_delay = 6.0
-respawn_telegraph_duration = 0.4
-speed_multiplier = 1.0
-minimum_release_speed = 0.0
-maximum_response_speed = 1540.0
-selection_duration = 0.8
-launch_speed = 1300.0
-shot_launch_directions = Array[ExtResource("3_anchor")]([SubResource("ShotDirection_up"), SubResource("ShotDirection_left"), SubResource("ShotDirection_right")])
+selection_duration = 2.0
+shot_launch_directions = Array[ExtResource("3_anchor")]([SubResource("Resource_iw5tq"), SubResource("Resource_um6a5"), SubResource("Resource_5dsfg"), SubResource("Resource_4dojf"), SubResource("Resource_5xc5j"), SubResource("Resource_0xb0r"), SubResource("Resource_ouvrv")])
 collision_diameter = 112.0
 visual_diameter = 128.0
 respawn_safe_margin = 52.0
