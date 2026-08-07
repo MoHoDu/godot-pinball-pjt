@@ -67,10 +67,10 @@ func configure(
 	return true
 
 
-func set_random_seed(seed: int) -> void:
-	_explicit_random_seed = seed
+func set_random_seed(rng_seed: int) -> void:
+	_explicit_random_seed = rng_seed
 	_has_explicit_random_seed = true
-	_random_number_generator.seed = seed
+	_random_number_generator.seed = rng_seed
 
 
 func start() -> bool:
