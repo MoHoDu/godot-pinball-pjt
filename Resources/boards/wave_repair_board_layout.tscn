@@ -127,7 +127,7 @@ zone_id = &"lower"
 z_index = -2
 
 [node name="FixedBumperCenter" type="Polygon2D" parent="ForbiddenAreas"]
-position = Vector2(0, -270)
+position = Vector2(0, -288)
 color = Color(0.72, 0.15, 0.25, 0.05)
 polygon = PackedVector2Array(52, 0, 36.77, 36.77, 0, 52, -36.77, 36.77, -52, 0, -36.77, -36.77, -0, -52, 36.77, -36.77)
 script = ExtResource("5_forbidden")
@@ -136,7 +136,7 @@ reason = "웨이브에 고정된 중앙 범퍼"
 show_during_editing = false
 
 [node name="FixedBumperUpperLeft" type="Polygon2D" parent="ForbiddenAreas"]
-position = Vector2(-420, -190)
+position = Vector2(-432, -144)
 color = Color(0.72, 0.15, 0.25, 0.05)
 polygon = PackedVector2Array(52, 0, 36.77, 36.77, 0, 52, -36.77, 36.77, -52, 0, -36.77, -36.77, -0, -52, 36.77, -36.77)
 script = ExtResource("5_forbidden")
@@ -145,7 +145,7 @@ reason = "웨이브에 고정된 좌상단 범퍼"
 show_during_editing = false
 
 [node name="FixedBumperUpperRight" type="Polygon2D" parent="ForbiddenAreas"]
-position = Vector2(420, -190)
+position = Vector2(432, -144)
 color = Color(0.72, 0.15, 0.25, 0.05)
 polygon = PackedVector2Array(52, 0, 36.77, 36.77, 0, 52, -36.77, 36.77, -52, 0, -36.77, -36.77, -0, -52, 36.77, -36.77)
 script = ExtResource("5_forbidden")
@@ -154,7 +154,7 @@ reason = "웨이브에 고정된 우상단 범퍼"
 show_during_editing = false
 
 [node name="FixedBumperLowerLeft" type="Polygon2D" parent="ForbiddenAreas"]
-position = Vector2(-460, 210)
+position = Vector2(-432, 144)
 color = Color(0.72, 0.15, 0.25, 0.05)
 polygon = PackedVector2Array(52, 0, 36.77, 36.77, 0, 52, -36.77, 36.77, -52, 0, -36.77, -36.77, -0, -52, 36.77, -36.77)
 script = ExtResource("5_forbidden")
@@ -163,7 +163,7 @@ reason = "웨이브에 고정된 좌하단 범퍼"
 show_during_editing = false
 
 [node name="FixedBumperLowerRight" type="Polygon2D" parent="ForbiddenAreas"]
-position = Vector2(460, 210)
+position = Vector2(432, 144)
 color = Color(0.72, 0.15, 0.25, 0.05)
 polygon = PackedVector2Array(52, 0, 36.77, 36.77, 0, 52, -36.77, 36.77, -52, 0, -36.77, -36.77, -0, -52, 36.77, -36.77)
 script = ExtResource("5_forbidden")
@@ -172,7 +172,7 @@ reason = "웨이브에 고정된 우하단 범퍼"
 show_during_editing = false
 
 [node name="FixedBumperCannon" type="Polygon2D" parent="ForbiddenAreas"]
-position = Vector2(0, 190)
+position = Vector2(0, 144)
 color = Color(0.72, 0.15, 0.25, 0.05)
 polygon = PackedVector2Array(52, 0, 36.77, 36.77, 0, 52, -36.77, 36.77, -52, 0, -36.77, -36.77, -0, -52, 36.77, -36.77)
 script = ExtResource("5_forbidden")

@@ -533,23 +533,23 @@ bumper_id = &"rebound_wall_bottom_right"
 [node name="Bumpers" type="Node2D" parent="." unique_id=1144402446]
 
 [node name="BumperCenter" parent="Bumpers" unique_id=1184156493 instance=ExtResource("26_button_bumper")]
-position = Vector2(0, -270)
+position = Vector2(0, -288)
 
 [node name="BumperUpperLeft" parent="Bumpers" unique_id=2016466414 instance=ExtResource("27_cotton_bumper")]
-position = Vector2(-420, -190)
+position = Vector2(-432, -144)
 
 [node name="BumperUpperRight" parent="Bumpers" unique_id=976731568 instance=ExtResource("26_button_bumper")]
-position = Vector2(420, -190)
+position = Vector2(432, -144)
 bumper_id = &"button_bumper_right"
 
 [node name="BumperLowerLeft" parent="Bumpers" unique_id=1155343190 instance=ExtResource("28_spring_bumper")]
-position = Vector2(-460, 210)
+position = Vector2(-432, 144)
 
 [node name="BumperLowerRight" parent="Bumpers" unique_id=1847381481 instance=ExtResource("29_drum_bumper")]
-position = Vector2(460, 210)
+position = Vector2(432, 144)
 
 [node name="BumperCannon" parent="Bumpers" unique_id=1628015170 instance=ExtResource("30_cannon_bumper")]
-position = Vector2(0, 190)
+position = Vector2(0, 144)
 response_strategy = SubResource("Resource_jkexw")
 
 [node name="RepairBoardLayout" parent="." instance=ExtResource("31_repair_layout")]
