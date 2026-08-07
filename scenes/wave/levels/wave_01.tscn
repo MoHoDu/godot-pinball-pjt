@@ -36,6 +36,7 @@
 [ext_resource type="Resource" path="res://settings/bumpers/stage_01_compact/SpringDollBumperCompact.tres" id="39_spring_compact"]
 [ext_resource type="Resource" path="res://settings/bumpers/stage_01_compact/ToyDrumBumperCompact.tres" id="40_drum_compact"]
 [ext_resource type="Resource" path="res://settings/bumpers/stage_01_compact/ClockworkToyCannonCompact.tres" id="41_cannon_compact"]
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/rebound_test_bumper.tscn" id="50_rebound"]
 [ext_resource type="PackedScene" path="res://scenes/wave_hud/bumper_roster_hud.tscn" id="42_roster_hud"]
 [ext_resource type="PackedScene" path="res://Resources/boards/levels/wave_01_repair_layout.tscn" id="43_repair_layout"]
 [ext_resource type="PackedScene" path="res://Resources/boards/repair_part_placement_hud.tscn" id="44_repair_hud"]
@@ -165,35 +166,40 @@ debug_color = Color(0.94972855, 0.16442639, 0.39801326, 0.41960785)
 
 [node name="Bumpers" type="Node2D" parent="." unique_id=249523259]
 
-[node name="BumperWallUpperLeft" parent="Bumpers" instance=ExtResource("31_button_bumper")]
-position = Vector2(-650, -399)
-bumper_id = &"button_wall_upper_left"
-settings = ExtResource("37_button_compact")
+[node name="ReboundUpperLeft" parent="Bumpers" instance=ExtResource("50_rebound")]
+position = Vector2(-652.46, -407.51)
+rotation = 2.7928207
+bumper_id = &"rebound_upper_left"
 
-[node name="BumperWallUpperRight" parent="Bumpers" instance=ExtResource("31_button_bumper")]
-position = Vector2(650, -399)
-bumper_id = &"button_wall_upper_right"
-settings = ExtResource("37_button_compact")
+[node name="ReboundUpperRight" parent="Bumpers" instance=ExtResource("50_rebound")]
+position = Vector2(652.46, -407.51)
+rotation = -2.7928207
+bumper_id = &"rebound_upper_right"
 
-[node name="BumperWallLowerLeft" parent="Bumpers" instance=ExtResource("31_button_bumper")]
-position = Vector2(-643, 409)
-bumper_id = &"button_wall_lower_left"
-settings = ExtResource("37_button_compact")
+[node name="ReboundLowerLeft" parent="Bumpers" instance=ExtResource("50_rebound")]
+position = Vector2(-645.46, 417.51)
+rotation = 0.3487720
+bumper_id = &"rebound_lower_left"
 
-[node name="BumperWallLowerRight" parent="Bumpers" instance=ExtResource("31_button_bumper")]
-position = Vector2(643, 409)
-bumper_id = &"button_wall_lower_right"
-settings = ExtResource("37_button_compact")
+[node name="ReboundLowerRight" parent="Bumpers" instance=ExtResource("50_rebound")]
+position = Vector2(645.46, 417.51)
+rotation = -0.3487720
+bumper_id = &"rebound_lower_right"
 
-[node name="BumperTopCenter" parent="Bumpers" instance=ExtResource("31_button_bumper")]
-position = Vector2(0, -250)
-bumper_id = &"button_top_center"
-settings = ExtResource("37_button_compact")
-
-[node name="BumperLaunchGate" parent="Bumpers" instance=ExtResource("32_cotton_bumper")]
-position = Vector2(0, 250)
-bumper_id = &"cotton_launch_gate"
+[node name="BumperCoreTop" parent="Bumpers" instance=ExtResource("32_cotton_bumper")]
+position = Vector2(0, -288)
+bumper_id = &"cotton_core_top"
 settings = ExtResource("38_cotton_compact")
+
+[node name="BumperCoreLeft" parent="Bumpers" instance=ExtResource("31_button_bumper")]
+position = Vector2(-288, 0)
+bumper_id = &"button_core_left"
+settings = ExtResource("37_button_compact")
+
+[node name="BumperCoreRight" parent="Bumpers" instance=ExtResource("31_button_bumper")]
+position = Vector2(288, 0)
+bumper_id = &"button_core_right"
+settings = ExtResource("37_button_compact")
 
 [node name="PinballLauncher" type="Node2D" parent="." unique_id=537150401]
 position = Vector2(0, 400)
