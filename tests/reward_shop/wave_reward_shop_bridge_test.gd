@@ -22,6 +22,12 @@ func _run() -> void:
 	var manager := wave.wave_manager as RewardWaveManager
 	var inventory := wave.wave_ball_inventory as SelectBallInventory
 	var parts := wave.get_node("RepairPartInventory") as RepairPartInventory
+	var placement_controller := wave.get_node(
+		"RepairPartPlacementController"
+	) as RepairPartPlacementController
+	var placement_session := wave.get_node(
+		"RepairBoardLayout/PlacementSession"
+	) as BoardPlacementSession
 	var placement := wave.get_node(
 		"BoardWavePlacementBridge"
 	) as BoardWavePlacementBridge
@@ -96,6 +102,23 @@ func _run() -> void:
 	_expect(bridge.wallet.balance == carried_balance,
 		"Unused coins must carry across normal waves in the stage.")
 
+	# 상점이 닫히면 후보 배열이 비워지므로, 보유 수량이 생긴 실제 부품 ID를 찾습니다.
+	var placed_part_id: StringName = &""
+	for part_id: StringName in parts.snapshot():
+		if parts.count_of(part_id) > 0:
+			placed_part_id = part_id
+			break
+	_expect(not placed_part_id.is_empty(),
+		"The purchased part id must remain available for placement.")
+	var placed := false
+	for socket: BoardPlacementSocket in placement_session.layout.get_sockets():
+		if placement_controller.place_kind_at_socket(
+			placed_part_id, socket.socket_id
+		):
+			placed = true
+			break
+	_expect(placed,
+		"A purchased part must be placeable before the rollback check.")
 	_expect(placement.commit_placement(),
 		"Purchased inventory must proceed into the next wave.")
 	manager.call(&"_finish_lost")
@@ -108,6 +131,8 @@ func _run() -> void:
 		and inventory.get_owned_definitions().size() == 1 \
 		and parts.total_count == 0,
 		"Failure must restore stage-entry coins, reward balls, and parts.")
+	_expect(placement_session.layout.get_placeables().is_empty(),
+		"Failure must remove stage-purchased parts already placed on the board.")
 
 	wave.queue_free()
 	await process_frame

@@ -583,12 +583,13 @@ inventory = NodePath("../RepairPartInventory")
 placement_hud = NodePath("../RepairPlacementHUD/RepairPartPlacementHud")
 wave_bridge = NodePath("../BoardWavePlacementBridge")
 
-[node name="WaveRewardShopBridge" type="Node" parent="." node_paths=PackedStringArray("wave_manager", "combo_system", "ball_inventory", "part_inventory", "wave_hud", "ball_selection_hud")]
+[node name="WaveRewardShopBridge" type="Node" parent="." node_paths=PackedStringArray("wave_manager", "combo_system", "ball_inventory", "part_inventory", "placement_session", "wave_hud", "ball_selection_hud")]
 script = ExtResource("50_reward_bridge")
 wave_manager = NodePath("../WaveManager")
 combo_system = NodePath("../ComboSystem")
 ball_inventory = NodePath("../WaveBallInventory")
 part_inventory = NodePath("../RepairPartInventory")
+placement_session = NodePath("../RepairBoardLayout/PlacementSession")
 wave_hud = NodePath("../HUD/WaveHud")
 ball_selection_hud = NodePath("../HUD/BallSelectionHud")
 

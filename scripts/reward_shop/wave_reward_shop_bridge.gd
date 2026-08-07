@@ -29,6 +29,7 @@ const MAIN_COORDINATOR_SCRIPT_PATH := \
 @export var combo_system: ComboSystem
 @export var ball_inventory: SelectBallInventory
 @export var part_inventory: RepairPartInventory
+@export var placement_session: BoardPlacementSession
 @export var wave_hud: CanvasItem
 @export var ball_selection_hud: CanvasItem
 
@@ -254,7 +255,7 @@ func _rollback_to_stage_entry() -> void:
 	if wave_manager.current_state != WaveManager.State.LOST:
 		return
 	var failure_wave := wave_manager.current_wave_index
-	part_inventory.cancel_reservation()
+	_clear_runtime_placements()
 	part_inventory.restore(_entry_part_counts)
 	ball_inventory.restore_owned_definitions(_entry_owned_definitions)
 	shop_controller.reset_unlocked_balls(_entry_unlocked_reward_ids)
@@ -264,6 +265,23 @@ func _rollback_to_stage_entry() -> void:
 		push_error("Reward bridge could not roll the stage back to wave one.")
 		return
 	stage_state_rolled_back.emit(stage_id, failure_wave)
+
+
+func _clear_runtime_placements() -> void:
+	part_inventory.cancel_reservation()
+	if placement_session == null:
+		return
+	if placement_session.current_state != BoardPlacementSession.State.IDLE:
+		placement_session.end_wave()
+	if placement_session.layout == null:
+		return
+	# manager의 REPAIR_PLACEMENT 신호가 같은 호출에서 새 예약 세션을 열므로
+	# queue_free가 아니라 즉시 트리에서 제거해 기존 배치가 용량에 섞이지 않게 합니다.
+	for placeable: BoardPlaceable in placement_session.layout.get_placeables():
+		var parent := placeable.get_parent()
+		if parent != null:
+			parent.remove_child(placeable)
+		placeable.free()
 
 
 func _on_stage_completed(_stage_runtime_id: StringName) -> void:
@@ -281,5 +299,7 @@ func _assert_dependencies() -> void:
 	assert(combo_system != null, "Reward bridge requires ComboSystem.")
 	assert(ball_inventory != null, "Reward bridge requires SelectBallInventory.")
 	assert(part_inventory != null, "Reward bridge requires RepairPartInventory.")
+	assert(placement_session != null,
+		"Reward bridge requires BoardPlacementSession.")
 	assert(ball_inventory == null or ball_inventory.reusable_owned_balls,
 		"Reward bridge requires reusable-owned-ball inventory mode.")
