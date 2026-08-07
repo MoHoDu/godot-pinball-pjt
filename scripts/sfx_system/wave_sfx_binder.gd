@@ -21,6 +21,8 @@ const FLIPPER_STATE_SIGNAL: StringName = &"state_changed"
 
 const FLIPPER_GROUP: StringName = &"combo_flippers"
 const BUMPER_GROUP: StringName = &"bumper_objects"
+const BALL_GROUP: StringName = &"pinball_balls"
+const BODY_ENTERED_SIGNAL: StringName = &"body_entered"
 
 # Tier 3·4 시그널. 전부 기존 스크립트에 이미 있는 것들입니다.
 const LAUNCH_SIGNAL: StringName = &"ball_launched"
@@ -60,6 +62,13 @@ var _selector: Node
 var _last_selected: Object = null
 
 var _bound_bumpers: Array[Node] = []
+var _bound_balls: Array[Node] = []
+
+## 공별로 "이 물리 프레임에 타격음을 이미 냈는가"를 적어 둡니다.
+var _hit_frames: Dictionary = {}
+
+## 플리퍼 상태 전이도 프레임 단위로 묶습니다. 이유는 _on_flipper_state_changed 참고.
+var _state_frames: Dictionary = {}
 var _bound_emitters: Array[Node] = []
 
 
@@ -95,6 +104,7 @@ func _ready() -> void:
 	_bind_selector(scan_root)
 	_bind_bumpers()
 	_bind_emitters(scan_root)
+	_bind_ball_contacts()
 
 
 func _process(_delta: float) -> void:
@@ -121,6 +131,7 @@ func get_bound_source_counts() -> Dictionary:
 		&"bridges": _bound_bridges.size(),
 		&"flippers": _bound_flippers.size(),
 		&"bumpers": _bound_bumpers.size(),
+		&"balls": _bound_balls.size(),
 		&"emitters": _bound_emitters.size(),
 	}
 
@@ -271,6 +282,71 @@ func _connect_once(node: Node, signal_name: StringName, target: Callable) -> boo
 	return true
 
 
+## ★ 공이 플리퍼에 닿는 **모든** 순간을 잡습니다.
+##
+## 브릿지의 `flipper_contact_registered` 는 **ACTIVE 스윕 접촉일 때만** 옵니다
+## (combo_collision_bridge.gd:165-172). 콤보 타이머가 대기·복귀 중인 플리퍼의
+## 패시브 접촉으로 갱신되면 안 되기 때문입니다. 그건 콤보에는 맞는 조건입니다.
+##
+## 그런데 **소리는 조건이 다릅니다.** 공이 멈춰 있는 플리퍼에 부딪혀도 소리는
+## 나야 합니다. 실제로 "플리퍼가 공을 칠 때마다 소리가 나야 하는데 안 난다"는
+## 지적이 나왔고, 원인이 정확히 이것이었습니다.
+##
+## 공은 `contact_monitor` 가 켜져 있어(pinball.gd:92) 접촉을 직접 알려줍니다.
+## 브릿지 구독은 그대로 둡니다 — 겹쳐 울리는 것은 큐의 최소 간격(0.04초)이 막습니다.
+func _bind_ball_contacts() -> void:
+	var scan_root := _scan_root()
+	if scan_root == null:
+		return
+
+	for ball in get_tree().get_nodes_in_group(BALL_GROUP):
+		if not _is_in_branch(ball, scan_root):
+			continue
+
+		_connect_once(ball, BODY_ENTERED_SIGNAL, _on_ball_body_entered.bind(ball))
+		_bound_balls.append(ball)
+
+
+## 벽은 브릿지가 맡습니다. 여기서는 플리퍼 접촉만 봅니다.
+func _on_ball_body_entered(body: Node, ball: RigidBody2D) -> void:
+	if body == null or not body.is_in_group(FLIPPER_GROUP):
+		return
+
+	_play_flipper_hit(ball)
+
+
+## ★ 한 번의 접촉에는 타격음 **하나**만 납니다.
+##
+## 같은 접촉이 두 경로로 들어옵니다 — 공의 `body_entered` 와 브릿지의
+## `flipper_contact_registered`. 둘 다 각자 속도를 읽어 큐를 고르는데,
+## 그 사이에 속도가 임계값(1200px/s)을 넘나들면 **하나는 일반 타격,
+## 하나는 강한 타격**을 골라 두 소리가 겹칩니다. 큐가 다르면 최소 간격
+## 스로틀도 막지 못합니다.
+##
+## 그래서 물리 프레임 단위로 래치를 걸어 먼저 온 것만 울립니다.
+## 세게 친 것은 강한 타격 하나로 들려야지, 둘이 같이 나면 안 됩니다.
+func _play_flipper_hit(ball: RigidBody2D) -> void:
+	if flipper_rules == null or not is_instance_valid(ball):
+		return
+
+	var frame := Engine.get_physics_frames()
+	var ball_id := ball.get_instance_id()
+	if _hit_frames.get(ball_id, -1) == frame:
+		return
+
+	var speed := _ball_speed(ball)
+	var cue := flipper_rules.get_hit_cue(speed)
+	if cue == null:
+		return
+
+	var controller := _controller_for_ball(ball)
+	if controller == null:
+		return
+
+	_hit_frames[ball_id] = frame
+	controller.play(cue, speed)
+
+
 ## 선택 폴링이 붙었는지입니다. 테스트용입니다.
 func has_selector() -> bool:
 	return _selector != null
@@ -343,17 +419,9 @@ func _on_wall_contact(_wall: Node, ball: RigidBody2D) -> void:
 
 
 func _on_flipper_contact(_flipper: Node, ball: RigidBody2D) -> void:
-	if flipper_rules == null:
-		return
+	# 공의 body_entered 와 같은 래치를 탑니다. 자세한 이유는 _play_flipper_hit 참고.
+	_play_flipper_hit(ball)
 
-	var speed := _ball_speed(ball)
-	var cue := flipper_rules.get_hit_cue(speed)
-	if cue == null:
-		return
-
-	var controller := _controller_for_ball(ball)
-	if controller != null:
-		controller.play(cue, speed)
 
 
 func _on_parry_resolved(
@@ -377,6 +445,17 @@ func _on_parry_resolved(
 		controller.play(cue, _ball_speed(ball))
 
 
+## ★ Space 한 번에 소리 하나.
+##
+## 한 컨트롤러의 **좌우 플리퍼가 함께** 움직입니다. 그래서 상태 전이가 두 번
+## 오고 작동음도 두 번 요청됩니다. 문제가 둘입니다.
+##
+##   ① 기계는 하나인데 소리가 둘이면 겹쳐서 지저분해집니다
+##   ② 작동음·복귀음은 AMBIENT 클래스(하드캡 2)라, 좌우 작동음이 두 자리를
+##      다 먹으면 **뒤따라오는 복귀음이 통째로 버려집니다.**
+##      실제로 그래서 "A3 가 작동을 안 한다"는 지적이 나왔습니다.
+##
+## 그래서 같은 물리 프레임의 같은 상태 전이는 **먼저 온 것만** 울립니다.
 func _on_flipper_state_changed(_previous: int, current: int, flipper: Node) -> void:
 	if flipper_rules == null:
 		return
@@ -391,9 +470,18 @@ func _on_flipper_state_changed(_previous: int, current: int, flipper: Node) -> v
 	if cue == null:
 		return
 
-	var controller := _controller_for_source(flipper)
+	var frame := Engine.get_physics_frames()
+	if _state_frames.get(current, -1) == frame:
+		return
+
+	_state_frames[current] = frame
+
+	# 소스를 플리퍼가 아니라 바인더로 둡니다. 좌우가 각자 컨트롤러를 가지면
+	# 연타 감쇠와 최소 간격이 따로 세어져 묶은 의미가 없어집니다.
+	var controller := _controller_for_source(self)
 	if controller != null:
 		controller.play(cue, 0.0)
+
 
 
 # ── Tier 3 흐름·콤보 ────────────────────────────────────────
