@@ -107,6 +107,32 @@ func _run() -> void:
 	if proceed != null:
 		_expect(proceed.text == "구매 없이 진행",
 			"초기 버튼은 구매 없이 진행이어야 한다.")
+		var no_purchase_proceeded := [false]
+		hud.proceed_requested.connect(
+			func() -> void: no_purchase_proceeded[0] = true,
+			CONNECT_ONE_SHOT
+		)
+		proceed.pressed.emit()
+		await process_frame
+		var handoff_confirm := hud.find_child(
+			"HandoffConfirmButton", true, false
+		) as Button
+		_expect(handoff != null and handoff.visible,
+			"구매 없이 진행해도 NEXT WAVE 확인 화면이 유지되어야 한다.")
+		await create_timer(0.65).timeout
+		_expect(not no_purchase_proceeded[0],
+			"확인 전에는 다음 웨이브 진행 신호가 자동 발생하지 않아야 한다.")
+		_expect(handoff_confirm != null and not handoff_confirm.disabled,
+			"NEXT WAVE 화면에 다음 웨이브 시작 버튼이 있어야 한다.")
+		if handoff_confirm != null:
+			handoff_confirm.pressed.emit()
+		_expect(no_purchase_proceeded[0],
+			"NEXT WAVE 확인 버튼을 누른 뒤 진행 신호가 발생해야 한다.")
+		shop.close_shop()
+		await process_frame
+		_expect(shop.open_shop(0, 0),
+			"확인 동작 뒤 구매 상태 검증을 위해 상점을 다시 열 수 있어야 한다.")
+		await process_frame
 
 	var cards := hud.find_children("OfferCard*", "Button", true, false)
 	_expect(cards.size() == 6, "상호작용 가능한 카드 버튼이 6개여야 한다.")
@@ -151,7 +177,14 @@ func _run() -> void:
 			_expect(handoff != null and handoff.visible,
 				"진행 버튼을 누르면 NEXT WAVE 전환 화면이 보여야 한다.")
 			await create_timer(0.65).timeout
-			_expect(proceeded[0], "전환 화면 뒤 다음 웨이브 진행 신호가 발생해야 한다.")
+			_expect(not proceeded[0],
+				"구매 후에도 확인 전에는 다음 웨이브로 자동 진행하지 않아야 한다.")
+			var handoff_confirm := hud.find_child(
+				"HandoffConfirmButton", true, false
+			) as Button
+			if handoff_confirm != null:
+				handoff_confirm.pressed.emit()
+			_expect(proceeded[0], "확인 버튼 뒤 다음 웨이브 진행 신호가 발생해야 한다.")
 
 	holder.queue_free()
 	await process_frame

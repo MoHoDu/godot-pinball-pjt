@@ -43,8 +43,6 @@ const CARD_RADIUS := 16
 const PANEL_RADIUS := 28
 const BALL_ICON_SIZE := 96
 const PART_ICON_SIZE := 96
-const HANDOFF_DURATION_SECONDS := 0.55
-
 const PERFORMANCE_NAMES: Array[String] = [
 	"안정형",
 	"완충형",
@@ -85,6 +83,7 @@ var _handoff_wave_label: Label
 var _handoff_ball_label: Label
 var _handoff_part_label: Label
 var _handoff_coin_label: Label
+var _handoff_confirm_button: Button
 var _cards: Array[Button] = []
 var _card_views: Array[Dictionary] = []
 
@@ -143,6 +142,12 @@ func get_card_count() -> int:
 func _unhandled_input(event: InputEvent) -> void:
 	if not visible or _shop == null or not _shop.is_open:
 		return
+	if _handoff_in_progress:
+		if event.is_action_pressed(&"ball_select_confirm") \
+				or event.is_action_pressed(&"wave_choose_clear"):
+			_confirm_handoff()
+			get_viewport().set_input_as_handled()
+		return
 	if event.is_action_pressed(&"ball_select_next"):
 		_move_selection(1)
 		get_viewport().set_input_as_handled()
@@ -153,7 +158,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		_confirm_selected()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed(&"wave_choose_clear"):
-		proceed_requested.emit()
+		_on_proceed_pressed()
 		get_viewport().set_input_as_handled()
 
 
@@ -400,16 +405,28 @@ func _build_handoff_overlay() -> void:
 	ready_chip.add_child(_make_label("NEXT WAVE · READY", 9, COLOR_INK, true))
 	track.add_child(ready_chip)
 
-	var ready_stamp := PanelContainer.new()
-	ready_stamp.name = "ReadyStamp"
-	ready_stamp.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	ready_stamp.add_theme_stylebox_override(
-		&"panel", _make_style(COLOR_NAVY_WOOD, COLOR_INK, 4, 9, 6)
+	_handoff_confirm_button = Button.new()
+	_handoff_confirm_button.name = "HandoffConfirmButton"
+	_handoff_confirm_button.text = "다음 웨이브 시작"
+	_handoff_confirm_button.custom_minimum_size = Vector2(_d(240.0), _d(54.0))
+	_handoff_confirm_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_handoff_confirm_button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	_handoff_confirm_button.add_theme_font_override(&"font", DISPLAY_FONT)
+	_handoff_confirm_button.add_theme_font_size_override(&"font_size", _di(18))
+	_handoff_confirm_button.add_theme_color_override(&"font_color", COLOR_CREAM_LIGHT)
+	_handoff_confirm_button.add_theme_color_override(&"font_hover_color", COLOR_CREAM_LIGHT)
+	_handoff_confirm_button.add_theme_color_override(&"font_pressed_color", COLOR_CREAM_LIGHT)
+	_handoff_confirm_button.add_theme_stylebox_override(
+		&"normal", _make_proceed_style(COLOR_NAVY_WOOD, false)
 	)
-	var ready_text := _make_label("READY!", 15, COLOR_CREAM_LIGHT, true)
-	ready_text.add_theme_font_override(&"font", DISPLAY_FONT)
-	ready_stamp.add_child(ready_text)
-	column.add_child(ready_stamp)
+	_handoff_confirm_button.add_theme_stylebox_override(
+		&"hover", _make_proceed_style(COLOR_NAVY_WOOD.lightened(0.08), false)
+	)
+	_handoff_confirm_button.add_theme_stylebox_override(
+		&"pressed", _make_proceed_style(COLOR_NAVY_WOOD.darkened(0.08), true)
+	)
+	_handoff_confirm_button.pressed.connect(_confirm_handoff)
+	column.add_child(_handoff_confirm_button)
 
 
 func _make_handoff_chip(
@@ -970,17 +987,21 @@ func _on_proceed_pressed() -> void:
 
 func _play_handoff_then_proceed() -> void:
 	_handoff_in_progress = true
-	set_process_unhandled_input(false)
 	_refresh_handoff_summary()
 	_handoff_overlay.modulate = Color(1.0, 1.0, 1.0, 0.0)
 	_handoff_overlay.visible = true
+	_handoff_confirm_button.disabled = false
 	var fade_in := create_tween()
 	fade_in.tween_property(_handoff_overlay, ^"modulate:a", 1.0, 0.12)
-	await get_tree().create_timer(HANDOFF_DURATION_SECONDS).timeout
-	if not is_inside_tree() or not _handoff_in_progress:
+	_handoff_confirm_button.call_deferred(&"grab_focus")
+
+
+func _confirm_handoff() -> void:
+	if not _handoff_in_progress:
 		return
-	proceed_requested.emit()
 	_handoff_in_progress = false
+	_handoff_confirm_button.disabled = true
+	proceed_requested.emit()
 
 
 func _refresh_handoff_summary() -> void:
