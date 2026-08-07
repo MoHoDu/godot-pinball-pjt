@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="BumperSettings" load_steps=2 format=3]
+
+; 대각 벽에 밀착하는 삼각 리바운드 범퍼.
+; test/ReboundTestBumper.tres 를 정식화한 것으로, 벽 부착물이라
+; 사실상 부서지지 않게 내구도를 높게 둔다.
+; 웨이브 로드아웃 검증 대상이 아니다 — Bumpers 루트가 아닌 Walls 아래에 배치된다.
+
+[ext_resource type="Script" path="res://scripts/bumper-system/bumper_settings.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+bumper_kind_id = &"rebound_wall"
+display_name = "삼각 리바운드"
+bumper_type = 1
+is_repair_part = false
+mechanics_status = 0
+concept_role = "벽 반사 가속"
+base_score = 50
+score_weight = 0.5
+max_durability = 99
+durability_damage_per_hit = 1
+respawn_delay = 0.5
+respawn_telegraph_duration = 0.2
+speed_multiplier = 1.35
+minimum_release_speed = 1000.0
+maximum_response_speed = 1540.0
+collision_diameter = 250.0
+visual_diameter = 250.0
+respawn_safe_margin = 30.0
