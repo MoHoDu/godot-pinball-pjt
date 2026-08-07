@@ -130,7 +130,10 @@ func _enter_boss_phase() -> void:
 		wave_manager.get_stage_phase_button_text(),
 		false
 	)
-	boss_runtime.start_battle()
+	if not boss_runtime.start_battle():
+		return
+	if not wave_manager.start_boss_ball_cycle():
+		boss_runtime.stop_battle()
 
 
 func _on_battle_completed() -> void:
@@ -138,9 +141,11 @@ func _on_battle_completed() -> void:
 			or wave_manager.current_stage_phase != WaveManager.StagePhase.BOSS:
 		return
 	_boss_completion_in_progress = true
-	wave_manager.advance_stage_phase()
+	if wave_manager.finish_boss_ball_cycle():
+		wave_manager.advance_stage_phase()
 	_boss_completion_in_progress = false
-	_set_placeholder_advance_disabled(false)
+	if wave_manager.current_stage_phase != WaveManager.StagePhase.BOSS:
+		_set_placeholder_advance_disabled(false)
 
 
 func _set_placeholder_advance_disabled(disabled: bool) -> void:

@@ -4,9 +4,6 @@ extends SceneTree
 const ProductionWaveScene: PackedScene = preload(
 	"res://scenes/wave/stage1_teddy_boss_wave.tscn"
 )
-const NormalBallScene: PackedScene = preload(
-	"res://Resources/balls/mass_var/normal_ball.tscn"
-)
 const ComboSystemScript: Script = preload(
 	"res://scripts/combo_system/combo_system.gd"
 )
@@ -93,6 +90,12 @@ func _run() -> void:
 	_expect(manager.current_stage_phase == WaveManager.StagePhase.BOSS,
 		"Three normal Waves must lead to BOSS.")
 	_expect(boss.is_battle_active(), "Entering BOSS must start Teddy Runtime.")
+	_expect(manager.is_boss_ball_cycle_active(),
+		"Entering BOSS must start the managed Boss Ball cycle.")
+	_expect(manager.current_stage_phase == WaveManager.StagePhase.BOSS,
+		"Boss Ball selection must preserve the BOSS phase.")
+	_expect(not manager.advance_stage_phase(),
+		"BOSS must not advance before battle completion.")
 	_expect(hud.get_stage_phase_button().disabled,
 		"BOSS placeholder advance must be disabled until defeat.")
 	_expect(
@@ -103,7 +106,7 @@ func _run() -> void:
 	)
 
 	await _test_existing_ball_damage_counter_and_phase(wave, boss, ball_flow)
-	await _test_battle_completion(manager, boss, hud)
+	await _test_battle_completion(manager, boss, ball_flow, hud)
 
 	wave.queue_free()
 	await process_frame
@@ -191,13 +194,25 @@ func _test_existing_ball_damage_counter_and_phase(
 	var flipper := wave.get_node(
 		"FlipperSelector/BottomController/LeftFlipper"
 	) as PinballFlipper
-	var ball := NormalBallScene.instantiate() as Pinball
-	wave.add_child(ball)
+	_expect(
+		ball_flow.current_state == WaveBallFlowController.State.SELECTING,
+		"Boss Ball cycle must reuse existing Ball selection."
+	)
+	_expect(ball_flow.confirm_selection(),
+		"Boss Ball cycle must prepare an existing inventory Ball.")
+	var ball: Pinball = ball_flow.active_ball
+	var launcher := wave.get_node("PinballLauncher") as PinballLauncher
+	_expect(is_instance_valid(ball),
+		"Boss Ball selection must create the actual active Pinball.")
+	_expect(launcher.launch_prepared_ball(),
+		"Boss Ball cycle must use the existing Launcher.")
+	_expect(ball_flow.current_state == WaveBallFlowController.State.IN_PLAY,
+		"Boss Ball launch must enter the existing in-play state.")
+	_expect(
+		wave.wave_manager.current_stage_phase == WaveManager.StagePhase.BOSS,
+		"Boss Ball launch must not replace the BOSS phase."
+	)
 	ball.global_position = Vector2(-200.0, -100.0)
-	var definition := BallDefinition.new()
-	definition.ball_id = &"normal"
-	ball_flow.ball_selection_confirmed.emit(definition, 0)
-	ball_flow.active_ball_changed.emit(ball)
 
 	var hp_before: int = health.get_current_health()
 	hurtbox.body_entered.emit(ball)
@@ -221,6 +236,22 @@ func _test_existing_ball_damage_counter_and_phase(
 	_expect(not window.is_ready(),
 		"The next valid Boss hit must consume Counter exactly once.")
 	hurtbox.body_exited.emit(ball)
+	_expect(ball_flow.on_ball_drained(ball),
+		"Boss Ball drain must use the existing BallFlow contract.")
+	await process_frame
+	_expect(
+		wave.wave_manager.current_stage_phase == WaveManager.StagePhase.BOSS,
+		"Boss Ball drain must preserve the BOSS phase."
+	)
+	_expect(
+		ball_flow.current_state == WaveBallFlowController.State.SELECTING,
+		"A Boss Ball drain with stock remaining must select the next Ball."
+	)
+	_expect(ball_flow.confirm_selection(),
+		"The next Boss Ball must come from the existing inventory.")
+	ball = ball_flow.active_ball
+	_expect(launcher.launch_prepared_ball(),
+		"The next Boss Ball must use the existing Launcher.")
 
 	var threshold_hp: int = int(
 		float(health.get_max_health()) * boss.phase1_rules.phase2_hp_ratio
@@ -273,13 +304,10 @@ func _test_existing_ball_damage_counter_and_phase(
 		"The first valid RECOVERY hit must consume Counter.")
 	hurtbox.body_exited.emit(ball)
 
-	ball.queue_free()
-	await process_frame
-
-
 func _test_battle_completion(
 	manager: WaveManager,
 	boss: Stage1TeddyBossRuntime,
+	ball_flow: WaveBallFlowController,
 	hud: WaveHud
 ) -> void:
 	var health := boss.get_node("Components/BossHealthComponent") \
@@ -292,6 +320,10 @@ func _test_battle_completion(
 	await process_frame
 	_expect(manager.current_stage_phase == WaveManager.StagePhase.STAGE_COMPLETE,
 		"Boss completion must advance BOSS to STAGE_COMPLETE.")
+	_expect(not manager.is_boss_ball_cycle_active(),
+		"Boss completion must close the managed Boss Ball cycle.")
+	_expect(ball_flow.current_state == WaveBallFlowController.State.INACTIVE,
+		"Boss completion must close the existing BallFlow safely.")
 	_expect(completion_count[0] == 1,
 		"Existing WaveManager stage_completed must occur exactly once.")
 	_expect(not boss.is_battle_active(),
