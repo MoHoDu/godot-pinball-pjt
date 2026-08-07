@@ -33,8 +33,13 @@ func _run() -> void:
 	)
 	_expect(int(clockwork.get(&"price", 0)) == 13,
 		"Clockwork price must come from reward_balls.csv.")
-	_expect(is_equal_approx(float(clockwork.get(&"probability", 0.0)), 1.0),
-		"Clockwork probability must come from reward_balls.csv.")
+	_expect(is_equal_approx(float(clockwork.get(&"weight", 0.0)), 1.0),
+		"Clockwork weight must come from reward_balls.csv.")
+	_expect(String(clockwork.get(&"display_name", "")) == "정속 태엽눈" \
+		and int(clockwork.get(&"performance_group", -1)) \
+			== RewardBallOffer.PerformanceGroup.GOOD \
+		and bool(clockwork.get(&"enabled", false)),
+		"Display name, performance group, and enabled must come from CSV.")
 	_expect(int(clockwork.get(&"first_stage_num", 0)) == 1 \
 		and int(clockwork.get(&"first_wave_num", 0)) == 1,
 		"Clockwork first stage and wave must come from reward_balls.csv.")
@@ -49,22 +54,28 @@ func _run() -> void:
 	var invalid_path := "user://stage_reward_invalid_wave.csv"
 	var invalid_file := FileAccess.open(invalid_path, FileAccess.WRITE)
 	invalid_file.store_string(
-		"reward_id,first_stage_num,first_wave_num,probability,price\n" \
-			+ "invalid,0,1,1.0,9\n"
+		"reward_id,display_name,performance_group,first_stage_num," \
+			+ "first_wave_num,weight,price,enabled\n" \
+			+ "invalid,잘못된 공,GOOD,0,1,1.0,9,TRUE\n"
 	)
 	invalid_file.close()
-	var invalid_result := StageRewardRepository.parse_csv_file(invalid_path)
+	var invalid_result := StageRewardRepository.parse_reward_csv_file(
+		invalid_path, StageRewardRepository.CATEGORY_BALL
+	)
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(invalid_path))
 	_expect(not bool(invalid_result.get(&"ok", true)),
 		"Stage and wave values below one must fail CSV validation.")
 	var invalid_late_path := "user://stage_reward_invalid_late_wave.csv"
 	var invalid_late_file := FileAccess.open(invalid_late_path, FileAccess.WRITE)
 	invalid_late_file.store_string(
-		"reward_id,first_stage_num,first_wave_num,probability,price\n" \
-			+ "invalid,1,5,1.0,9\n"
+		"reward_id,display_name,performance_group,first_stage_num," \
+			+ "first_wave_num,weight,price,enabled\n" \
+			+ "invalid,늦은 공,GOOD,1,5,1.0,9,TRUE\n"
 	)
 	invalid_late_file.close()
-	var invalid_late_result := StageRewardRepository.parse_csv_file(invalid_late_path)
+	var invalid_late_result := StageRewardRepository.parse_reward_csv_file(
+		invalid_late_path, StageRewardRepository.CATEGORY_BALL
+	)
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(invalid_late_path))
 	_expect(not bool(invalid_late_result.get(&"ok", true)),
 		"Wave values above the four-wave stage must fail CSV validation.")
@@ -74,14 +85,16 @@ func _run() -> void:
 	clockwork_offer.price = 999
 	clockwork_offer.first_stage_num = 3
 	clockwork_offer.first_wave_num = 3
-	clockwork_offer.probability = 0.25
+	clockwork_offer.weight = 0.25
+	clockwork_offer.display_name = "덮어쓰기 전"
 	_expect(repository.apply_to_catalog(&"stage_01", catalog),
 		"Repository must apply loaded values to the reward catalog.")
 	_expect(clockwork_offer.price == 13 \
 		and clockwork_offer.first_stage_num == 1 \
 		and clockwork_offer.first_wave_num == 1 \
-		and is_equal_approx(clockwork_offer.probability, 1.0),
-		"Catalog price, first stage/wave, and probability must be overwritten by CSV.")
+		and clockwork_offer.display_name == "정속 태엽눈" \
+		and is_equal_approx(clockwork_offer.weight, 1.0),
+		"Catalog display, price, stage/wave, and weight must be overwritten by CSV.")
 	var extra_offer := RewardBallOffer.new()
 	extra_offer.ball_id = &"not_in_stage_csv"
 	extra_offer.display_name = "CSV에서 제거된 공"
@@ -106,7 +119,7 @@ func _run() -> void:
 	clockwork_offer.first_wave_num = 1
 	for offer: RewardBallOffer in catalog.ball_offers:
 		if offer != clockwork_offer:
-			offer.probability = 0.0
+			offer.weight = 0.0
 	var before_stage := RewardOfferGenerator.generate_ball_offers(
 		catalog,
 		[],
@@ -144,7 +157,7 @@ func _run() -> void:
 		"Pre-boss rewards must first appear after clearing normal wave three.")
 
 	clockwork_offer.first_wave_num = 1
-	clockwork_offer.probability = 0.0
+	clockwork_offer.weight = 0.0
 	var disabled := RewardOfferGenerator.generate_ball_offers(
 		catalog,
 		[],
@@ -152,7 +165,40 @@ func _run() -> void:
 		RandomNumberGenerator.new()
 	)
 	_expect(not _ball_ids(disabled).has(&"clockwork"),
-		"A zero probability must disable the reward.")
+		"A zero weight must disable the reward.")
+
+	var override_path := "user://stage_reward_override.csv"
+	var override_file := FileAccess.open(override_path, FileAccess.WRITE)
+	override_file.store_string(
+		"stage_num,wave_num,reward_id,weight\n1,2,clockwork,7.5\n"
+	)
+	override_file.close()
+	var override_result := StageRewardRepository.parse_override_csv_file(override_path)
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(override_path))
+	_expect(bool(override_result.get(&"ok", false)) \
+		and is_equal_approx(float(
+			(override_result[&"records"] as Dictionary)["1:2:clockwork"][&"weight"]
+		), 7.5),
+		"Wave-specific weights must parse from reward_weight_overrides.csv.")
+	if bool(override_result.get(&"ok", false)):
+		repository._stage_overrides[&"stage_01"] = override_result[&"records"]
+		_expect(repository.apply_context_weights(&"stage_01", catalog, 1, 2) \
+			and is_equal_approx(clockwork_offer.weight, 7.5),
+			"Wave-specific weights must override the catalog at that checkpoint.")
+		_expect(repository.apply_context_weights(&"stage_01", catalog, 1, 1) \
+			and is_equal_approx(clockwork_offer.weight, 1.0),
+			"Base weight must return when no checkpoint override exists.")
+
+	var disabled_catalog := (CATALOG as RewardShopCatalog).duplicate(true) \
+		as RewardShopCatalog
+	var stage_categories: Dictionary = repository._stage_records[&"stage_01"]
+	var ball_records: Dictionary = stage_categories[StageRewardRepository.CATEGORY_BALL]
+	var disabled_record := (ball_records[&"clockwork"] as Dictionary).duplicate(true)
+	disabled_record[&"enabled"] = false
+	ball_records[&"clockwork"] = disabled_record
+	_expect(repository.apply_to_catalog(&"stage_01", disabled_catalog) \
+		and not _ball_ids(disabled_catalog.ball_offers).has(&"clockwork"),
+		"An enabled=FALSE row must be removed from the active reward catalog.")
 
 	repository.queue_free()
 	_finish()

@@ -16,7 +16,8 @@ extends Resource
 @export var price := 9
 @export_range(1, 999, 1) var first_stage_num := 1
 @export_range(1, 4, 1) var first_wave_num := 1
-@export_range(0.0, 1000.0, 0.01) var probability := 1.0
+@export_range(0.0, 1000.0, 0.01) var weight := 1.0
+@export var enabled := true
 
 ## 대표 동사(5-3). 완성한다 / 감고 터뜨린다 / 잇는다 / 늦게 울린다.
 @export var verb_text := ""
@@ -43,4 +44,5 @@ func is_valid() -> bool:
 		and first_stage_num >= 1 \
 		and first_wave_num >= 1 \
 		and first_wave_num <= 4 \
-		and probability >= 0.0
+		and weight >= 0.0 \
+		and enabled

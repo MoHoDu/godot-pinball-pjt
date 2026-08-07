@@ -39,6 +39,12 @@ func _run() -> void:
 		push_error("Synced reward_balls.csv did not reload correctly.")
 		quit(1)
 		return
+	if not FileAccess.file_exists(
+		"res://Resources/stage/stage_01/reward_weight_overrides.csv"
+	):
+		push_error("Synced reward_weight_overrides.csv is missing.")
+		quit(1)
+		return
 	print("PASS: stage_database_sync_test")
 	quit(0)
 

@@ -227,7 +227,7 @@ static func _pick_random_parts(
 	return picked
 
 
-## CSV probability를 상대 가중치로 사용하는 비복원 추첨입니다.
+## CSV weight를 상대 가중치로 사용하는 비복원 추첨입니다.
 static func _pick_weighted(
 	pool: Array,
 	count: int,
@@ -238,13 +238,13 @@ static func _pick_weighted(
 	for _pick_index in mini(count, remaining.size()):
 		var total_weight := 0.0
 		for offer: Variant in remaining:
-			total_weight += maxf(float(offer.get(&"probability")), 0.0)
+			total_weight += maxf(float(offer.get(&"weight")), 0.0)
 		if total_weight <= 0.0:
 			break
 		var cursor := rng.randf() * total_weight
 		var selected_index := remaining.size() - 1
 		for index in remaining.size():
-			cursor -= maxf(float(remaining[index].get(&"probability")), 0.0)
+			cursor -= maxf(float(remaining[index].get(&"weight")), 0.0)
 			if cursor <= 0.0:
 				selected_index = index
 				break
@@ -258,7 +258,7 @@ static func _is_available_for_reward(
 	reward_index: int,
 	current_stage_num: int
 ) -> bool:
-	if float(offer.get(&"probability")) <= 0.0:
+	if not bool(offer.get(&"enabled")) or float(offer.get(&"weight")) <= 0.0:
 		return false
 	var normalized_index := maxi(reward_index, 0)
 	var current_wave_num := mini(normalized_index + 1, 4)

@@ -36,7 +36,6 @@ var part_inventory: RepairPartInventory
 var shop_controller: RewardShopController
 var shop_hud: RewardShopHud
 
-var _reward_count := 0
 var _last_delay_coin := 0
 
 
@@ -124,8 +123,9 @@ func _open_shop_after_win() -> void:
 		coin_field.board_coin_this_wave,
 		_last_delay_coin
 	)
-	if shop_controller.open_shop(wave_manager.current_wave_index, _reward_count):
-		_reward_count += 1
+	if shop_controller.open_shop(
+		wave_manager.current_wave_index, wave_manager.current_wave_index
+	):
 		_append_event("REWARD · 코인 %d · 공/부품을 고르세요" % coin_wallet.balance)
 
 

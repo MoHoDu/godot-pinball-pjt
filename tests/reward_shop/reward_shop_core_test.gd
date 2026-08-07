@@ -18,7 +18,7 @@ func _run() -> void:
 	_test_catalog_data()
 	_test_ball_generation()
 	_test_part_generation()
-	_test_weighted_probability()
+	_test_weighted_selection()
 	_test_affordability_guard()
 	await _test_purchase_flow()
 	_finish()
@@ -142,13 +142,13 @@ func _test_part_generation() -> void:
 		_expect(has_partner, "보상 2 이후에는 연결형 부품이 최소 1장 있어야 한다.")
 
 
-func _test_weighted_probability() -> void:
+func _test_weighted_selection() -> void:
 	var low := RewardBallOffer.new()
 	low.ball_id = &"low_weight"
-	low.probability = 1.0
+	low.weight = 1.0
 	var high := RewardBallOffer.new()
 	high.ball_id = &"high_weight"
-	high.probability = 9.0
+	high.weight = 9.0
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 20260807
 	var low_count := 0
@@ -160,7 +160,7 @@ func _test_weighted_probability() -> void:
 		else:
 			low_count += 1
 	_expect(high_count > low_count * 5,
-		"9:1 probability weights must strongly favor the high-weight reward.")
+		"9:1 weights must strongly favor the high-weight reward.")
 
 
 func _test_affordability_guard() -> void:
@@ -287,7 +287,9 @@ func _test_purchase_flow() -> void:
 
 	# 다음 보상: 해금한 공은 후보에서 빠지고, 부품은 다시 살 수 있다.
 	wallet.reset(24)
-	_expect(shop.open_shop(1, 1), "다음 보상 화면이 열려야 한다.")
+	_expect(shop.open_shop(1, 99), "다음 보상 화면이 열려야 한다.")
+	_expect(shop._reward_index == 1,
+		"보상 문맥은 누적 횟수 힌트가 아니라 실제 웨이브 인덱스를 사용해야 한다.")
 	for offer in shop.ball_offers:
 		_expect(
 			offer.ball_id != bought_ball_id,

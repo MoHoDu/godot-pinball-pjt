@@ -14,11 +14,19 @@ const DATABASES := [
 		&"name": "reward_balls",
 		&"gid": "0",
 		&"file_name": "reward_balls.csv",
+		&"category": StageRewardRepository.CATEGORY_BALL,
 	},
 	{
 		&"name": "reward_parts",
 		&"gid": "1737279134",
 		&"file_name": "reward_parts.csv",
+		&"category": StageRewardRepository.CATEGORY_PART,
+	},
+	{
+		&"name": "reward_weight_overrides",
+		&"gid": "2000000001",
+		&"file_name": "reward_weight_overrides.csv",
+		&"category": &"override",
 	},
 ]
 
@@ -110,12 +118,19 @@ func _validate_download(database: Dictionary, csv_text: String) -> Dictionary:
 		return {&"ok": false, &"error": "임시 CSV 파일을 만들 수 없습니다."}
 	temp_file.store_string(csv_text)
 	temp_file.close()
-	var result := StageRewardRepository.parse_csv_file(temp_path)
+	var category: StringName = database[&"category"]
+	var result := StageRewardRepository.parse_override_csv_file(temp_path) \
+		if category == &"override" \
+		else StageRewardRepository.parse_reward_csv_file(temp_path, category)
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(temp_path))
 	return result
 
 
 func _finish_downloads() -> void:
+	var set_validation := _validate_download_set()
+	if not bool(set_validation.get(&"ok", false)):
+		_fail(String(set_validation.get(&"error", "DB 세트 검증 실패")))
+		return
 	var target_dir := "res://Resources/stage/%s" % _stage_id
 	var mkdir_error := DirAccess.make_dir_recursive_absolute(
 		ProjectSettings.globalize_path(target_dir)
@@ -153,6 +168,37 @@ func _finish_downloads() -> void:
 		true,
 		"Google Sheets의 최신 보상 DB를 %s에 저장했습니다." % target_dir
 	)
+
+
+func _validate_download_set() -> Dictionary:
+	var temp_dir := "user://stage_database_sync/set"
+	var absolute_dir := ProjectSettings.globalize_path(temp_dir)
+	DirAccess.make_dir_recursive_absolute(absolute_dir)
+	var paths: Dictionary = {}
+	for database: Dictionary in DATABASES:
+		var file_name: String = database[&"file_name"]
+		var path := "%s/%s" % [temp_dir, file_name]
+		var file := FileAccess.open(path, FileAccess.WRITE)
+		if file == null:
+			_cleanup_validation_set(paths)
+			return {&"ok": false, &"error": "DB 세트 검증 파일을 만들 수 없습니다."}
+		file.store_string(String(_downloaded.get(file_name, "")))
+		file.close()
+		paths[file_name] = path
+	var result := StageRewardRepository.validate_database_files(
+		String(paths["reward_balls.csv"]),
+		String(paths["reward_parts.csv"]),
+		String(paths["reward_weight_overrides.csv"])
+	)
+	_cleanup_validation_set(paths)
+	return result
+
+
+func _cleanup_validation_set(paths: Dictionary) -> void:
+	for path: String in paths.values():
+		var absolute_path := ProjectSettings.globalize_path(path)
+		if FileAccess.file_exists(absolute_path):
+			DirAccess.remove_absolute(absolute_path)
 
 
 func _promote_transaction(prepared: Array[Dictionary]) -> bool:

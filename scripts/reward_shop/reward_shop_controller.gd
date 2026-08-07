@@ -95,18 +95,21 @@ func bind(wallet: CoinWallet, part_inventory: RepairPartInventory) -> bool:
 	return true
 
 
-## 보상 화면을 엽니다. reward_index는 0부터(보상 1 = 0)입니다.
-func open_shop(wave_id: int, reward_index: int) -> bool:
+## 보상 화면을 엽니다. 실제 웨이브 인덱스는 wave_id를 기준으로 계산합니다.
+## 두 번째 인자는 기존 호출부 호환을 위해 유지하며 보상 문맥 계산에는 사용하지 않습니다.
+func open_shop(wave_id: int, _reward_index_hint: int = 0) -> bool:
 	if _is_open or catalog == null or _wallet == null:
 		return false
 	var stage_num := StageRewardRepository.stage_num_from_id(stage_id)
 	if stage_num < 1:
 		push_error("Reward shop stage_id must use stage_<number>: %s" % stage_id)
 		return false
+	var actual_reward_index := maxi(wave_id, 0)
 	_apply_stage_database()
+	_apply_stage_context(stage_num, mini(actual_reward_index + 1, 4))
 	_is_open = true
 	_wave_id = wave_id
-	_reward_index = maxi(reward_index, 0)
+	_reward_index = actual_reward_index
 	_ball_purchase_used = false
 	_part_purchase_used = false
 
@@ -236,6 +239,15 @@ func _apply_stage_database() -> void:
 	if repository == null:
 		return
 	_stage_database_applied = repository.apply_to_catalog(stage_id, catalog)
+
+
+func _apply_stage_context(stage_num: int, wave_num: int) -> void:
+	var repository := get_node_or_null(
+		"/root/StageDataRepository"
+	) as StageRewardRepository
+	if repository == null or not _stage_database_applied:
+		return
+	repository.apply_context_weights(stage_id, catalog, stage_num, wave_num)
 
 
 func _offer_ball_ids() -> Array[StringName]:

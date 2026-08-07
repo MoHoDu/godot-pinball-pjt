@@ -23,7 +23,8 @@ enum PerformanceGroup {
 @export var performance_group := PerformanceGroup.MID
 @export_range(1, 999, 1) var first_stage_num := 1
 @export_range(1, 4, 1) var first_wave_num := 1
-@export_range(0.0, 1000.0, 0.01) var probability := 1.0
+@export_range(0.0, 1000.0, 0.01) var weight := 1.0
+@export var enabled := true
 
 ## 카드에 장점과 대가를 같은 비중으로 표시합니다(7-3. 함정 카드가 아니다).
 @export_multiline var merit_text := ""
@@ -36,4 +37,5 @@ func is_valid() -> bool:
 		and first_stage_num >= 1 \
 		and first_wave_num >= 1 \
 		and first_wave_num <= 4 \
-		and probability >= 0.0
+		and weight >= 0.0 \
+		and enabled

@@ -1,6 +1,6 @@
-reward_id,first_stage_num,first_wave_num,probability,price
-clockwork,1,1,1,13
-rubber,1,1,1,14
-gel,1,1,1,11
-lead,1,1,1,9
-hollow_bell,1,1,1,9
+reward_id,display_name,performance_group,first_stage_num,first_wave_num,weight,price,enabled
+clockwork,정속 태엽눈,GOOD,1,1,1,13,TRUE
+rubber,고무막 유리눈,GOOD,1,1,1,14,TRUE
+gel,완충 젤 유리눈,MID,1,1,1,11,TRUE
+lead,납심 유리눈,HARDCORE,1,1,1,9,TRUE
+hollow_bell,속빈 방울눈,HARDCORE,1,1,1,9,TRUE
