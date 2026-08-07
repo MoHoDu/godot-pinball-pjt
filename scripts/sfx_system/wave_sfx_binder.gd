@@ -27,6 +27,7 @@ const BODY_ENTERED_SIGNAL: StringName = &"body_entered"
 # Tier 3·4 시그널. 전부 기존 스크립트에 이미 있는 것들입니다.
 const LAUNCH_SIGNAL: StringName = &"ball_launched"
 const DRAIN_SIGNAL: StringName = &"ball_drained"
+const BALL_SELECTED_SIGNAL: StringName = &"ball_selection_confirmed"
 const COMBO_CHANGED_SIGNAL: StringName = &"combo_changed"
 const COMBO_TIER_SIGNAL: StringName = &"combo_tier_changed"
 const COMBO_FINISHED_SIGNAL: StringName = &"combo_finished"
@@ -254,6 +255,7 @@ func _bind_emitters(node: Node) -> void:
 	for entry: Array in [
 		[LAUNCH_SIGNAL, _on_ball_launched],
 		[DRAIN_SIGNAL, _on_ball_drained],
+		[BALL_SELECTED_SIGNAL, _on_ball_selected],
 		[COMBO_CHANGED_SIGNAL, _on_combo_changed],
 		[COMBO_TIER_SIGNAL, _on_combo_tier_changed],
 		[COMBO_FINISHED_SIGNAL, _on_combo_finished],
@@ -507,6 +509,17 @@ func _on_ball_drained(_ball: Node, _remaining: int) -> void:
 	var controller := _controller_for_source(self)
 	if controller != null:
 		controller.play(ball_flow_rules.drain_cue, 0.0)
+
+
+## 웨이브 시작 시 쓸 공을 골랐을 때.
+func _on_ball_selected(_definition: Resource, _remaining: int) -> void:
+	if ball_flow_rules == null or ball_flow_rules.select_cue == null:
+		return
+
+	# 공이 아직 없을 수 있으니 바인더에 답니다.
+	var controller := _controller_for_source(self)
+	if controller != null:
+		controller.play(ball_flow_rules.select_cue, 0.0)
 
 
 ## 콤보가 오를 때마다. **피치 사다리가 이 소리의 전부입니다.**

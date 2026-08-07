@@ -25,6 +25,10 @@ const DEFAULT_MAX_LAUNCH_SPEED: float = 2000.0
 ## 공을 잃는 순간. 가라앉는 느낌이어야 합니다.
 @export var drain_cue: SfxCue
 
+## 웨이브 시작 시 쓸 공을 고를 때. 조작 확인음이라 짧고 작습니다.
+## `WaveBallFlowController.ball_selection_confirmed` 에 물립니다.
+@export var select_cue: SfxCue
+
 
 @export_group("발사 세기")
 
