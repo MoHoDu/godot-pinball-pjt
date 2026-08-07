@@ -90,6 +90,8 @@
 [ext_resource type="Resource" path="res://settings/sfx/BallFlowSfxRules.tres" id="81_flow"]
 [ext_resource type="Resource" path="res://settings/sfx/BumperSfxRules.tres" id="82_bumper"]
 [ext_resource type="Resource" path="res://settings/sfx/ComboSfxRules.tres" id="83_combo"]
+[ext_resource type="Script" path="res://scripts/sfx_system/bgm_player.gd" id="85_bgm"]
+[ext_resource type="AudioStream" path="res://Resources/sfx/bgm/BGM_Wave_Loop.wav" id="86_bgm_loop"]
 [ext_resource type="PackedScene" path="res://scenes/bumper_system/rebound_wall_bumper.tscn" id="90_rebound_wall"]
 
 [ext_resource type="PackedScene" path="res://Resources/boards/starlight_brooch_placeable.tscn" id="41_brooch_placeable"]
@@ -640,6 +642,11 @@ ball_flow_rules = ExtResource("81_flow")
 bumper_rules = ExtResource("82_bumper")
 combo_rules = ExtResource("83_combo")
 boss_rules = ExtResource("84_boss")
+
+[node name="BgmPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("86_bgm_loop")
+volume_db = -4.0
+script = ExtResource("85_bgm")
 
 [node name="WaveRepairEffects" type="Node" parent="."]
 
