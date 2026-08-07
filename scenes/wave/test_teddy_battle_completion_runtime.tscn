@@ -1,0 +1,65 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/wave/test_teddy_phase2_runtime.tscn" id="1_phase2"]
+[ext_resource type="Script" path="res://scripts/boss_system/debug/teddy_battle_completion_runtime_prototype.gd" id="2_prototype"]
+[ext_resource type="Script" path="res://scripts/boss_system/boss_battle_completion_controller.gd" id="3_completion"]
+[ext_resource type="Resource" path="res://settings/bosses/Stage1BossPhase1Rules.tres" id="4_rules"]
+[ext_resource type="Resource" path="res://settings/bosses/TeddyArmSweepPhase1FirstPattern.tres" id="5_first"]
+[ext_resource type="Resource" path="res://settings/bosses/TeddyArmSweepPhase1RepeatPattern.tres" id="6_repeat"]
+
+[node name="TeddyBattleCompletionRuntime" type="Node2D"]
+
+[node name="Phase2Runtime" parent="." instance=ExtResource("1_phase2")]
+
+[node name="CompletionIntegration" type="Node" parent="." node_paths=PackedStringArray("completion_controller", "health", "phase_transition", "attack_runtime", "scheduler", "coordinator", "selector", "attack_controller", "arm_hit_tracker", "arm_ball_reflector", "counter_window", "start_button", "stop_button", "reset_button", "grace_button", "battle_label", "battle_event_log")]
+script = ExtResource("2_prototype")
+completion_controller = NodePath("BossBattleCompletionController")
+health = NodePath("../Phase2Runtime/Phase1Runtime/BossPrototype/Phase1Damage/BossHealthComponent")
+phase_transition = NodePath("../Phase2Runtime/Phase2Integration/BossPhaseTransitionController")
+phase1_rules = ExtResource("4_rules")
+attack_runtime = NodePath("../Phase2Runtime/Phase1Runtime/BossPrototype/Phase1Attack/Runtime")
+scheduler = NodePath("../Phase2Runtime/Phase1Runtime/BossPrototype/Phase1Attack/Scheduler")
+coordinator = NodePath("../Phase2Runtime/Phase1Runtime/BossPrototype/Phase1Attack/Coordinator")
+selector = NodePath("../Phase2Runtime/Phase1Runtime/BossPrototype/Phase1Attack/PatternSelector")
+attack_controller = NodePath("../Phase2Runtime/Phase1Runtime/BossPrototype/BossAttackController")
+first_pattern = ExtResource("5_first")
+repeat_pattern = ExtResource("6_repeat")
+arm_hit_tracker = NodePath("../Phase2Runtime/Phase1Runtime/BossPrototype/Phase1Damage/BossArmHitBallTracker")
+arm_ball_reflector = NodePath("../Phase2Runtime/Phase1Runtime/BossPrototype/Phase1Damage/BossArmBallReflector")
+counter_window = NodePath("../Phase2Runtime/Phase1Runtime/BossPrototype/Phase1Damage/BossCounterWindow")
+start_button = NodePath("../Phase2Runtime/Phase1Runtime/BossPrototype/DebugCanvas/DebugUI/Panel/VBox/ButtonRow/StartButton")
+stop_button = NodePath("../Phase2Runtime/Phase1Runtime/BossPrototype/DebugCanvas/DebugUI/Panel/VBox/ButtonRow/StopButton")
+reset_button = NodePath("../Phase2Runtime/Phase1Runtime/BossPrototype/DebugCanvas/DebugUI/Panel/VBox/ButtonRow/ResetButton")
+grace_button = NodePath("../Phase2Runtime/Phase1Runtime/BossPrototype/DebugCanvas/DebugUI/Panel/VBox/ButtonRow/NewBallGraceButton")
+battle_label = NodePath("../BattleDebugCanvas/Panel/VBox/BattleLabel")
+battle_event_log = NodePath("../BattleDebugCanvas/Panel/VBox/EventLog")
+
+[node name="BossBattleCompletionController" type="Node" parent="CompletionIntegration"]
+script = ExtResource("3_completion")
+
+[node name="BattleDebugCanvas" type="CanvasLayer" parent="."]
+layer = 102
+
+[node name="Panel" type="PanelContainer" parent="BattleDebugCanvas"]
+offset_left = 1580.0
+offset_top = 320.0
+offset_right = 1900.0
+offset_bottom = 580.0
+
+[node name="VBox" type="VBoxContainer" parent="BattleDebugCanvas/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="BattleDebugCanvas/Panel/VBox"]
+layout_mode = 2
+text = "Teddy Battle Completion"
+
+[node name="BattleLabel" type="Label" parent="BattleDebugCanvas/Panel/VBox"]
+layout_mode = 2
+text = "Battle: ACTIVE"
+
+[node name="EventLog" type="RichTextLabel" parent="BattleDebugCanvas/Panel/VBox"]
+custom_minimum_size = Vector2(300, 160)
+layout_mode = 2
+scroll_active = true
+text = "Waiting for battle completion setup..."
