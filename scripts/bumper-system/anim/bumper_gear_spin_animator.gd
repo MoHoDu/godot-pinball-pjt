@@ -13,7 +13,10 @@ extends BumperArtAnimator
 ## **돌리는 것은 바깥 이빨 링뿐이다.** 이빨은 동심이라 반지름으로 깨끗이 갈린다
 ## (0.88 부터 이빨 사이 틈이 생기는 것을 실측했다).
 ##
-## 안쪽 얼굴 레이어에는 작은 기어 두 개·허브·리벳·홈이 전부 들어가고 돌지 않는다.
+## 안쪽 금색 링은 **반대 방향**으로 돈다. 동심이라 반지름으로 갈렸고, 아이보리
+## 기어에 가려 안 그려진 각도는 상하 대칭 복사로 메웠다.
+##
+## 나머지 얼굴 레이어에는 작은 기어 두 개·허브·리벳·홈이 들어가고 돌지 않는다.
 ## 허브는 수축·팽창, 리벳은 점등이라 회전에서 빼야 하고(11쪽), 작은 기어는
 ## 한 장에 붙어 있어 같이 돌리면 **공전해 버린다**(2026-08-07 지적).
 ##
@@ -25,6 +28,11 @@ extends BumperArtAnimator
 
 
 const WHEEL_SPRITE := ^"_ArtSpriteWheel"
+## 안쪽 금색 링. 이빨 링과 **반대 방향**으로 돈다.
+## 맞물린 기어처럼 보이게 하는 장치다 (2026-08-07 지시).
+const RING_SPRITE := ^"_ArtSpriteRing"
+## 안쪽 링은 지름이 작아 같은 각속도면 더 빨라 보인다. 조금 덜 돌린다.
+const RING_RATIO: float = -0.75
 
 ## 한 번 감길 때 도는 각도. **단계와 무관하게 항상 같다.**
 ## 기획서 11쪽은 1·2단계를 짧게, 3단계만 한 바퀴로 나눴지만
@@ -47,6 +55,7 @@ const SPIN_SNAP: float = 0.004
 
 
 var _wheel: Sprite2D = null
+var _ring: Sprite2D = null
 var _runtime: Node = null
 var _stage := 0
 var _target_angle := 0.0
@@ -60,6 +69,7 @@ func bind_to_bumper(bumper: Bumper) -> void:
 		return
 
 	_wheel = bumper.get_node_or_null(WHEEL_SPRITE) as Sprite2D
+	_ring = bumper.get_node_or_null(RING_SPRITE) as Sprite2D
 
 	# 수리 부품 런타임이 붙어 있으면 단계를 그쪽에서 읽는다.
 	var runtime := bumper.get_node_or_null(^"RepairPartRuntime")
@@ -113,6 +123,10 @@ func get_stage() -> int:
 	return _stage
 
 
+func get_ring_angle() -> float:
+	return _angle * RING_RATIO
+
+
 func get_wheel_angle() -> float:
 	return _angle
 
@@ -142,3 +156,5 @@ func _process(delta: float) -> void:
 	if absf(_target_angle - _angle) < SPIN_SNAP:
 		_angle = _target_angle
 	_wheel.rotation = _angle
+	if _ring != null:
+		_ring.rotation = _angle * RING_RATIO
