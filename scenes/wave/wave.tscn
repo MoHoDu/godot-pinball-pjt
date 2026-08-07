@@ -86,9 +86,8 @@
 
 [ext_resource type="Script" path="res://scripts/sfx_system/wave_sfx_binder_strict.gd" id="42_sfx_binder"]
 
-[ext_resource type="Resource" path="res://settings/sfx/WallSfxRules.tres" id="43_wall_sfx"]
 
-[ext_resource type="Resource" path="res://settings/sfx/BallFlowSfxRules.tres" id="45_flow_sfx"]
+[ext_resource type="Resource" path="res://settings/sfx/FlipperSfxRules.tres" id="44_flipper_sfx"]
 
 [ext_resource type="PackedScene" path="res://Resources/boards/starlight_brooch_placeable.tscn" id="41_brooch_placeable"]
 
@@ -587,5 +586,4 @@ script = ExtResource("41_sfx_director")
 
 [node name="_WaveSfxBinder" type="Node" parent="."]
 script = ExtResource("42_sfx_binder")
-wall_rules = ExtResource("43_wall_sfx")
-ball_flow_rules = ExtResource("45_flow_sfx")
+flipper_rules = ExtResource("44_flipper_sfx")

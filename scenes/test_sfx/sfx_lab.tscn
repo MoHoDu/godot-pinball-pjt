@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3]
+[gd_scene load_steps=16 format=3]
 
 ; ★ 사운드 연구실.
 ;
@@ -16,11 +16,7 @@
 [ext_resource type="Script" path="res://scripts/combo_system/combo_collision_bridge.gd" id="4_bridge"]
 [ext_resource type="Script" path="res://scripts/sfx_system/sfx_director.gd" id="5_director"]
 [ext_resource type="Script" path="res://scripts/sfx_system/wave_sfx_binder.gd" id="6_binder"]
-[ext_resource type="Resource" path="res://settings/sfx/WallSfxRules.tres" id="7_wall"]
 [ext_resource type="Resource" path="res://settings/sfx/FlipperSfxRules.tres" id="8_flipper"]
-[ext_resource type="Resource" path="res://settings/sfx/BallFlowSfxRules.tres" id="90_flow"]
-[ext_resource type="Resource" path="res://settings/sfx/ComboSfxRules.tres" id="91_combo"]
-[ext_resource type="Resource" path="res://settings/sfx/BumperSfxRules.tres" id="92_bumper"]
 [ext_resource type="Script" path="res://tests/sfx_system/sfx_debug_hud.gd" id="9_hud"]
 [ext_resource type="Script" path="res://scripts/flipper_system/flipper_selector.gd" id="10_selector"]
 [ext_resource type="Script" path="res://scripts/flipper_system/flipper_controller.gd" id="11_controller"]
@@ -41,11 +37,7 @@ bounce = 0.98
 script = ExtResource("1_lab")
 ball_path = NodePath("PinballBall")
 director_path = NodePath("SfxDirector")
-wall_rules = ExtResource("7_wall")
 flipper_rules = ExtResource("8_flipper")
-ball_flow_rules = ExtResource("90_flow")
-combo_rules = ExtResource("91_combo")
-bumper_rules = ExtResource("92_bumper")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(0.62, 0.62)
@@ -116,6 +108,18 @@ flipper_length = 500.0
 position = Vector2(480, 0)
 flipper_length = 500.0
 
+[node name="TopController" type="Node2D" parent="FlipperSelector"]
+position = Vector2(0, -240)
+script = ExtResource("11_controller")
+
+[node name="LeftFlipper" parent="FlipperSelector/TopController" instance=ExtResource("12_left")]
+position = Vector2(-480, 0)
+flipper_length = 500.0
+
+[node name="RightFlipper" parent="FlipperSelector/TopController" instance=ExtResource("13_right")]
+position = Vector2(480, 0)
+flipper_length = 500.0
+
 [node name="PinballBall" parent="." instance=ExtResource("2_ball")]
 ball_diameter = 44.0
 
@@ -132,14 +136,9 @@ script = ExtResource("5_director")
 
 [node name="_WaveSfxBinder" type="Node" parent="."]
 script = ExtResource("6_binder")
-wall_rules = ExtResource("7_wall")
 flipper_rules = ExtResource("8_flipper")
-ball_flow_rules = ExtResource("90_flow")
-combo_rules = ExtResource("91_combo")
-bumper_rules = ExtResource("92_bumper")
 
 [node name="_SfxDebugHud" type="CanvasLayer" parent="."]
 script = ExtResource("9_hud")
 director_path = NodePath("../SfxDirector")
 lab_path = NodePath("..")
-wall_rules = ExtResource("7_wall")
