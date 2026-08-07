@@ -216,11 +216,41 @@ func _test_stage_coin_wallet_continuity() -> void:
 	var first_coin_field := manager.active_scene.get_node(
 		^"CoinSystem"
 	) as CoinFieldController
+	var first_roster := manager.active_scene.get_node(
+		^"HUD/BumperRosterHud"
+	) as BumperRosterHud
+	var first_ball_hud := manager.active_scene.get_node(
+		^"HUD/BallSelectionHud"
+	) as SelectBallSelectionHud
+	var first_wallet_label := manager.active_scene.get_node(
+		^"HUD/WaveHud/DesignSpace/CoinWalletHud/Margin/Row/BalanceLabel"
+	) as Label
+	_expect(
+		first_roster.visible and first_roster.position.y <= 20.0,
+		"범퍼 가이드는 배치 단계에만 보드 위쪽 안전 영역에 표시되어야 한다."
+	)
+	_expect(
+		first_ball_hud != null
+			and first_ball_hud.get_node_or_null(^"Center/Panel") != null
+			and first_ball_hud.get_node_or_null(^"Panel") == null,
+		"Stage 01은 레거시 공 설명 대신 최신 공 선택 UI를 사용해야 한다."
+	)
 	_expect(first_wave_manager.advance_stage_phase(), "첫 웨이브 플레이 단계에 진입해야 한다.")
 	await process_frame
+	_expect(not first_roster.visible, "배치가 끝나면 범퍼 가이드를 숨겨야 한다.")
 	_expect(
 		first_coin_field.remaining_pickup_count() == 12,
 		"스테이지 웨이브에도 코인 12개가 생성되어야 한다."
+	)
+	_expect(
+		first_coin_field.layout == null
+			and first_coin_field.get_spawn_points().size() == 12,
+		"Stage 01 코인은 좌표 배열이 아니라 2D 에디터 마커로 배치되어야 한다."
+	)
+	_expect(
+		first_coin_field.validate_authored_placement().is_empty(),
+		"확대된 Stage 01 코인은 벽·범퍼·소켓·금지 영역과 겹치지 않아야 한다: %s"
+		% [first_coin_field.validate_authored_placement()]
 	)
 	var test_ball := Node2D.new()
 	test_ball.add_to_group(&"pinball_balls")
@@ -232,7 +262,8 @@ func _test_stage_coin_wallet_continuity() -> void:
 	await process_frame
 	_expect(
 		manager.current_coin_balance == 2
-			and first_coin_field.board_coin_this_wave == 2,
+			and first_coin_field.board_coin_this_wave == 2
+			and first_wallet_label.text == "× 2",
 		"웨이브 코인 획득은 스테이지 공용 지갑에 즉시 반영되어야 한다."
 	)
 	test_ball.queue_free()
@@ -250,10 +281,14 @@ func _test_stage_coin_wallet_continuity() -> void:
 	await _wait_for_transition()
 
 	var second_session := _get_active_coin_session(manager)
+	var second_wallet_label := manager.active_scene.get_node(
+		^"HUD/WaveHud/DesignSpace/CoinWalletHud/Margin/Row/BalanceLabel"
+	) as Label
 	_expect(
 		second_session != null
 			and second_session.wallet == manager.coin_wallet
-			and second_session.wallet.balance == 7,
+			and second_session.wallet.balance == 7
+			and second_wallet_label.text == "× 7",
 		"보상 뒤 다음 웨이브도 같은 누적 지갑을 사용해야 한다."
 	)
 	manager.coin_wallet.add(5)
@@ -357,6 +392,9 @@ func _test_stage_01_scene_configuration() -> void:
 	for index in mini(manager.wave_scenes.size(), expected_scores.size()):
 		var wave := manager.wave_scenes[index].instantiate()
 		var settings := wave.get(&"wave_stage_settings") as ComboStageSettings
+		var selection_hud := wave.get_node(
+			^"HUD/BallSelectionHud"
+		) as SelectBallSelectionHud
 		_expect(
 			settings != null
 				and settings.wave_target_scores.size() == 1
@@ -364,8 +402,67 @@ func _test_stage_01_scene_configuration() -> void:
 			"Stage 01 웨이브 %d는 목표 점수 하나(%d)를 가져야 한다."
 				% [index + 1, expected_scores[index]]
 		)
+		_expect(
+			selection_hud != null,
+			"Stage 01 웨이브 %d는 최신 공 선택 UI를 사용해야 한다."
+				% (index + 1)
+		)
+		_expect_stage_wave_uses_latest_runtime(wave, index)
 		wave.free()
 	stage.free()
+
+
+func _expect_stage_wave_uses_latest_runtime(wave: Node, wave_index: int) -> void:
+	var display_index := wave_index + 1
+	var bumpers := wave.get_node_or_null(^"Bumpers")
+	var all_bumpers_have_art := bumpers != null and bumpers.get_child_count() >= 6
+	if bumpers != null:
+		for bumper: Node in bumpers.get_children():
+			var has_art_sprite := false
+			for bumper_child: Node in bumper.get_children():
+				if bumper_child is Sprite2D \
+						and String(bumper_child.name).begins_with("_ArtSprite"):
+					has_art_sprite = true
+					break
+			if not has_art_sprite:
+				all_bumpers_have_art = false
+				break
+	_expect(
+		wave is WaveRuntimeCoordinator
+			and wave.get_node_or_null(^"WaveBallInventory") is SelectBallInventory
+			and wave.get_node_or_null(^"HUD/BallSelectionHud") is SelectBallSelectionHud,
+		"Stage 01 웨이브 %d는 최신 웨이브 런타임과 공 선택 시스템을 사용해야 한다."
+			% display_index
+	)
+	_expect(
+		all_bumpers_have_art,
+		"Stage 01 웨이브 %d의 모든 고정 범퍼에 최신 그래픽 리소스가 있어야 한다."
+			% display_index
+	)
+	_expect(
+		wave.get_node_or_null(^"SfxDirector") is SfxDirector
+			and wave.get_node_or_null(^"_WaveSfxBinder") is WaveSfxBinderStrict,
+		"Stage 01 웨이브 %d는 최신 SFX 디렉터와 엄격 바인더를 사용해야 한다."
+			% display_index
+	)
+	_expect(
+		wave.get_node_or_null(^"WaveRepairEffects/RepairEffectRouter")
+			is RepairEffectRouter,
+		"Stage 01 웨이브 %d는 최신 수리 부품 효과 라우터를 사용해야 한다."
+			% display_index
+	)
+	var coin_icon := wave.get_node_or_null(
+		^"HUD/WaveHud/DesignSpace/CoinWalletHud/Margin/Row/CoinIcon"
+	) as TextureRect
+	_expect(
+		wave.get_node_or_null(^"CoinSystem") is CoinFieldController
+			and coin_icon != null
+			and coin_icon.texture != null
+			and coin_icon.texture.resource_path
+				== "res://Resources/wave_hud/coin_wallet_icon.png",
+		"Stage 01 웨이브 %d는 최신 코인 필드와 HUD 리소스를 사용해야 한다."
+			% display_index
+	)
 
 
 func _create_manager(

@@ -1,8 +1,7 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=3 format=3]
 
-[ext_resource type="PackedScene" path="res://scenes/wave/levels/wave_01.tscn" id="1_wave"]
+[ext_resource type="PackedScene" path="res://scenes/wave/wave.tscn" id="1_wave"]
 [ext_resource type="Script" path="res://scripts/combo_system/combo_stage_settings.gd" id="2_settings"]
-[ext_resource type="PackedScene" path="res://scenes/stage_system/stage_wave_coin_system.tscn" id="3_coin_system"]
 
 [sub_resource type="Resource" id="StageSettings"]
 script = ExtResource("2_settings")
@@ -12,4 +11,7 @@ wave_target_scores = PackedInt32Array(300)
 [node name="Stage01Wave01" instance=ExtResource("1_wave")]
 wave_stage_settings = SubResource("StageSettings")
 
-[node name="CoinSystem" parent="." instance=ExtResource("3_coin_system")]
+[node name="BumperRosterHud" parent="HUD" index="2"]
+wave_label = "WAVE 01"
+
+[editable path="CoinSystem"]
