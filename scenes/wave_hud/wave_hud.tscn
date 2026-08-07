@@ -1,11 +1,25 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/wave_hud/wave_hud.gd" id="1_script"]
-[ext_resource type="Theme" path="res://Resources/ui/wave_hud_runtime_dark/wave_hud_theme.tres" id="2_theme"]
+[ext_resource type="Theme" path="res://Resources/wave_hud/wave_hud_runtime_dark/wave_hud_theme.tres" id="2_theme"]
 [ext_resource type="PackedScene" path="res://scenes/wave_hud/life_hud.tscn" id="3_life"]
 [ext_resource type="PackedScene" path="res://scenes/wave_hud/score_repair_hud.tscn" id="4_score"]
 [ext_resource type="PackedScene" path="res://scenes/wave_hud/world_combo_hud.tscn" id="5_combo"]
 [ext_resource type="PackedScene" path="res://scenes/wave_hud/settings_button.tscn" id="6_settings"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_stage_phase"]
+bg_color = Color(0.047, 0.055, 0.078, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.545, 0.78, 0.757, 0.85)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+shadow_color = Color(0, 0, 0, 0.55)
+shadow_size = 18
 
 [node name="WaveHud" type="Control"]
 layout_mode = 3
@@ -50,3 +64,58 @@ position = Vector2(850, 258)
 [node name="SettingsButton" parent="DesignSpace" instance=ExtResource("6_settings")]
 unique_name_in_owner = true
 position = Vector2(1820, 24)
+
+[node name="StagePhaseOverlay" type="Control" parent="DesignSpace"]
+unique_name_in_owner = true
+visible = false
+z_index = 100
+layout_mode = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
+mouse_filter = 0
+
+[node name="Dim" type="ColorRect" parent="DesignSpace/StagePhaseOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.012, 0.016, 0.027, 0.76)
+
+[node name="Card" type="PanelContainer" parent="DesignSpace/StagePhaseOverlay"]
+layout_mode = 0
+offset_left = 610.0
+offset_top = 380.0
+offset_right = 1310.0
+offset_bottom = 700.0
+theme_override_styles/panel = SubResource("StyleBox_stage_phase")
+
+[node name="Margin" type="MarginContainer" parent="DesignSpace/StagePhaseOverlay/Card"]
+layout_mode = 2
+theme_override_constants/margin_left = 56
+theme_override_constants/margin_top = 52
+theme_override_constants/margin_right = 56
+theme_override_constants/margin_bottom = 52
+
+[node name="Content" type="VBoxContainer" parent="DesignSpace/StagePhaseOverlay/Card/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 38
+alignment = 1
+
+[node name="StagePhaseTitle" type="Label" parent="DesignSpace/StagePhaseOverlay/Card/Margin/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.91, 0.949, 0.941, 1)
+theme_override_font_sizes/font_size = 38
+text = "수리 부품 배치 단계"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StagePhaseButton" type="Button" parent="DesignSpace/StagePhaseOverlay/Card/Margin/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 76)
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "다음 단계"

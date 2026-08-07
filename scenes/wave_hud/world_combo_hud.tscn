@@ -1,10 +1,10 @@
 [gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/wave_hud/world_combo_hud.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://Resources/ui/wave_hud_runtime_dark/combo/accent_rail.png" id="2_rail"]
-[ext_resource type="Texture2D" path="res://Resources/ui/wave_hud_runtime_dark/combo/anchor_pointer.png" id="3_pointer"]
-[ext_resource type="Texture2D" path="res://Resources/ui/wave_hud_runtime_dark/combo/impact_tick_mint.png" id="4_tick_mint"]
-[ext_resource type="Texture2D" path="res://Resources/ui/wave_hud_runtime_dark/combo/impact_tick_ivory.png" id="5_tick_ivory"]
+[ext_resource type="Texture2D" path="res://Resources/wave_hud/wave_hud_runtime_dark/combo/accent_rail.png" id="2_rail"]
+[ext_resource type="Texture2D" path="res://Resources/wave_hud/wave_hud_runtime_dark/combo/anchor_pointer.png" id="3_pointer"]
+[ext_resource type="Texture2D" path="res://Resources/wave_hud/wave_hud_runtime_dark/combo/impact_tick_mint.png" id="4_tick_mint"]
+[ext_resource type="Texture2D" path="res://Resources/wave_hud/wave_hud_runtime_dark/combo/impact_tick_ivory.png" id="5_tick_ivory"]
 
 [node name="WorldComboHud" type="Control"]
 custom_minimum_size = Vector2(220, 76)

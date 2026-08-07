@@ -1,26 +1,32 @@
 @tool
 class_name ShotLaunchAnchor
-extends Marker2D
+extends Resource
 
 
-@export var input_action: StringName = &"flipper_select_up"
-@export var is_safe_default := false
+## Inspector와 테스트 HUD에서 이 발사 방향을 구분할 이름입니다.
+@export var display_name: String = "발사 방향":
+	set(value):
+		display_name = value
+		emit_changed()
+## 입력이 없거나 선택 시간이 끝났을 때 자동으로 사용할 안전한 기본 방향입니다.
+@export var is_safe_default := false:
+	set(value):
+		is_safe_default = value
+		emit_changed()
+## 범퍼 중심을 기준으로 공을 놓을 위치입니다. 이 좌표의 방향이 실제 발사 방향이 됩니다.
+@export var release_position := Vector2(0.0, -82.0):
+	set(value):
+		release_position = value
+		emit_changed()
 
 
-func _ready() -> void:
-	queue_redraw()
+func get_local_launch_direction() -> Vector2:
+	if release_position.is_zero_approx():
+		return Vector2.UP
+	return release_position.normalized()
 
 
-func _draw() -> void:
-	if not Engine.is_editor_hint():
-		return
-	draw_line(Vector2.ZERO, Vector2(72.0, 0.0), Color(0.5, 0.95, 0.8, 0.8), 3.0)
-	draw_colored_polygon(
-		PackedVector2Array([
-			Vector2(72.0, 0.0),
-			Vector2(58.0, -8.0),
-			Vector2(58.0, 8.0),
-		]),
-		Color(0.5, 0.95, 0.8, 0.8)
-	)
-
+func get_local_release_position(default_distance: float) -> Vector2:
+	if release_position.is_zero_approx():
+		return Vector2.UP * default_distance
+	return release_position

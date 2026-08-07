@@ -213,6 +213,19 @@ func choose_remaining_balls() -> bool:
 	return true
 
 
+func complete_reached_target() -> bool:
+	if not _target_reached \
+			or _clear_was_requested \
+			or _ball_flow == null \
+			or not _ball_flow.finish_wave_immediately():
+		return false
+	_ball_is_active = false
+	_choice_is_pending = false
+	_continue_until_balls_exhausted = false
+	_request_wave_clear()
+	return true
+
+
 func on_wave_retried(retry_ball_flow := true) -> void:
 	if _combo_system != null:
 		_combo_system.call(&"on_wave_retried")
