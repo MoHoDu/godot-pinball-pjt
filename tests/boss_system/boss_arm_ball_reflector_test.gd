@@ -107,6 +107,7 @@ func _test_configuration_and_binding() -> void:
 
 func _test_invalid_targets_are_ignored() -> void:
 	var fixture: Dictionary = await _create_fixture()
+	var reflector: BossArmBallReflector = fixture.reflector
 	var attack: TeddyArmSweepAttack = fixture.attack
 	var ball: Pinball = await _create_ball(Vector2(220.0, 420.0))
 	var non_ball := Node2D.new()
@@ -114,6 +115,10 @@ func _test_invalid_targets_are_ignored() -> void:
 	ball.gravity_scale = 0.0
 	ball.linear_velocity = Vector2(360.0, -120.0)
 	var original_velocity: Vector2 = ball.linear_velocity
+	var reflected_balls: Array[Pinball] = []
+	reflector.ball_reflected.connect(func(reflected_ball: Pinball) -> void:
+		reflected_balls.append(reflected_ball)
+	)
 
 	attack.attack_hit.emit(non_ball)
 	_expect(ball.linear_velocity.is_equal_approx(original_velocity),
@@ -122,6 +127,8 @@ func _test_invalid_targets_are_ignored() -> void:
 	attack.attack_hit.emit(ball)
 	_expect(ball.linear_velocity.is_equal_approx(original_velocity),
 		"A Pinball outside pinball_balls must be ignored.")
+	_expect(reflected_balls.is_empty(),
+		"Invalid reflection targets must not emit ball_reflected.")
 
 	non_ball.queue_free()
 	ball.queue_free()
@@ -259,6 +266,10 @@ func _test_sleeping_ball_and_single_connection() -> void:
 	ball.linear_velocity = Vector2.ZERO
 	await physics_frame
 	ball.sleeping = true
+	var reflected_balls: Array[Pinball] = []
+	reflector.ball_reflected.connect(func(reflected_ball: Pinball) -> void:
+		reflected_balls.append(reflected_ball)
+	)
 	_expect(_count_connections_to(attack, reflector) == 1,
 		"One attack_hit must reach Reflector through one connection.")
 
@@ -277,6 +288,8 @@ func _test_sleeping_ball_and_single_connection() -> void:
 		"A single attack_hit must apply one target-velocity impulse. actual=%s expected=%s" % [
 			ball.linear_velocity, expected_velocity
 		])
+	_expect(reflected_balls.size() == 1 and reflected_balls[0] == ball,
+		"One successful attack_hit must emit ball_reflected once with the same Ball.")
 
 	ball.queue_free()
 	await _destroy_fixture(fixture)

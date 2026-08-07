@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3]
+[gd_scene load_steps=30 format=3]
 
 [ext_resource type="Script" path="res://scripts/boss_system/stage1_teddy_boss_runtime.gd" id="1_runtime"]
 [ext_resource type="Resource" path="res://settings/bosses/Stage1BossPhase1Rules.tres" id="2_phase1_rules"]
@@ -26,6 +26,8 @@
 [ext_resource type="Script" path="res://scripts/boss_system/boss_parry_counter_resolver.gd" id="24_resolver"]
 [ext_resource type="Script" path="res://scripts/boss_system/boss_counter_window.gd" id="25_window"]
 [ext_resource type="Script" path="res://scripts/boss_system/boss_battle_completion_controller.gd" id="26_completion"]
+[ext_resource type="Script" path="res://scripts/boss_system/feedback/teddy_boss_feedback_controller.gd" id="27_feedback"]
+[ext_resource type="PackedScene" path="res://scenes/boss_system/feedback/teddy_boss_feedback_ports.tscn" id="28_feedback_ports"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape_boss_hurtbox"]
 size = Vector2(300, 330)
@@ -141,3 +143,21 @@ position = Vector2(-320, 80)
 
 [node name="CursedCottonSpawnRight" type="Marker2D" parent="."]
 position = Vector2(320, 80)
+
+[node name="Feedback" type="Node" parent="."]
+
+[node name="TeddyBossFeedbackController" type="Node" parent="Feedback" node_paths=PackedStringArray("boss_runtime", "attack_controller", "pattern_1_attack", "pattern_2_attack", "arm_ball_reflector", "damage_applier", "counter_resolver", "counter_window", "phase_transition", "completion_controller", "cotton_parent")]
+script = ExtResource("27_feedback")
+boss_runtime = NodePath("../..")
+attack_controller = NodePath("../../BossAttackController")
+pattern_1_attack = NodePath("../../TeddyArmSweepAttack")
+pattern_2_attack = NodePath("../../TeddyDoubleArmUpSweepAttack")
+arm_ball_reflector = NodePath("../../Components/BossArmBallReflector")
+damage_applier = NodePath("../../Components/BossDamageApplier")
+counter_resolver = NodePath("../../Components/BossParryCounterResolver")
+counter_window = NodePath("../../Components/BossCounterWindow")
+phase_transition = NodePath("../../Components/BossPhaseTransitionController")
+completion_controller = NodePath("../../Components/BossBattleCompletionController")
+cotton_parent = NodePath("../../CottonContainer")
+
+[node name="TeddyBossFeedbackPorts" parent="Feedback" instance=ExtResource("28_feedback_ports")]

@@ -2,6 +2,9 @@ class_name BossArmBallReflector
 extends Node
 
 
+signal ball_reflected(ball: Pinball)
+
+
 var _rules: BossArmBallReflectionRules = null
 var _attack: TeddyArmSweepAttack = null
 
@@ -71,6 +74,7 @@ func _on_attack_hit(target: Node) -> void:
 	ball.sleeping = false
 	if not velocity_change.is_zero_approx():
 		ball.apply_central_impulse(velocity_change * ball.mass)
+		ball_reflected.emit(ball)
 
 
 func _infer_outward_side(ball: Pinball) -> float:
