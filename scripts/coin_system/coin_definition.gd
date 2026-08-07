@@ -8,7 +8,8 @@ extends Resource
 @export var coin_id: StringName = &"basic_coin"
 @export var display_name := "기본 코인"
 @export_range(1, 999, 1) var value := 2
-@export_range(4.0, 64.0, 1.0, "suffix:px") var visual_radius := 14.0
+@export_range(4.0, 64.0, 1.0, "suffix:px") var visual_radius := 32.0
+@export var visual_texture: Texture2D
 @export var fill_color := Color(0.90, 0.72, 0.25)
 @export var rim_color := Color(0.96, 0.93, 0.82)
 

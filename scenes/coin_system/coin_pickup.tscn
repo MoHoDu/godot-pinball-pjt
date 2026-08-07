@@ -4,7 +4,7 @@
 [ext_resource type="Resource" path="res://settings/coin/BasicCoin.tres" id="2_definition"]
 
 [sub_resource type="CircleShape2D" id="CircleShape_coin"]
-radius = 14.0
+radius = 32.0
 
 [node name="CoinPickup" type="Area2D"]
 collision_layer = 0
@@ -15,3 +15,6 @@ definition = ExtResource("2_definition")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape_coin")
+
+[node name="Visual" type="Sprite2D" parent="."]
+texture_filter = 2

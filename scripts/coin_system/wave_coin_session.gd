@@ -52,6 +52,10 @@ func _ready() -> void:
 	assert(wallet != null, "CoinSession requires CoinWallet.")
 	assert(field != null, "CoinSession requires CoinFieldController.")
 	assert(clear_delay != null, "CoinSession requires WaveClearDelayController.")
+	if wallet_label == null:
+		wallet_label = get_node_or_null(
+			^"../../HUD/WaveHud/DesignSpace/CoinWalletHud/Margin/Row/BalanceLabel"
+		) as Label
 	assert(field.bind_wallet(wallet), "Coin field could not bind its wallet.")
 	assert(
 		clear_delay.bind(wave_manager, wallet, field),
@@ -166,7 +170,4 @@ func _reset_last_settlement() -> void:
 func _refresh_wallet_label() -> void:
 	if wallet_label == null:
 		return
-	wallet_label.text = "COIN %d  ·  WAVE +%d" % [
-		wallet.balance if wallet != null else 0,
-		field.board_coin_this_wave if field != null else 0,
-	]
+	wallet_label.text = "× %d" % (wallet.balance if wallet != null else 0)

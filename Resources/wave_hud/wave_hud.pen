@@ -1,5 +1,5 @@
 {
-  "version": "2.15",
+  "version": "2.17",
   "children": [
     {
       "type": "frame",
@@ -577,6 +577,33 @@
             "color": "#00000000",
             "enabled": false
           }
+        },
+        {
+          "type": "frame",
+          "id": "dnK7g",
+          "x": 1500,
+          "y": 26,
+          "name": "Component/HUD Coin Wallet",
+          "reusable": true,
+          "clip": true,
+          "width": 260,
+          "height": 58,
+          "fill": "#0b1e2ce0",
+          "cornerRadius": 12,
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "ae1JZ",
+              "x": 64,
+              "y": 18,
+              "fill": "#f1e8d3",
+              "content": "× 128",
+              "fontFamily": "Inter",
+              "fontSize": 18,
+              "fontWeight": "600"
+            }
+          ]
         }
       ]
     },
@@ -832,8 +859,6 @@
           "y": 36,
           "name": "Current Score Value",
           "fill": "$style/paper-ivory",
-          "stroke": "$style/toy-ink",
-          "strokeWidth": 2,
           "content": "184,000",
           "fontFamily": "$font/display",
           "fontSize": 40,
@@ -1106,8 +1131,6 @@
           "y": 0,
           "name": "Combo Label",
           "fill": "$style/player-mint",
-          "stroke": "$style/toy-ink",
-          "strokeWidth": 3,
           "effect": {
             "type": "shadow",
             "shadowType": "outer",
@@ -1130,8 +1153,6 @@
           "y": 19,
           "name": "Combo Value",
           "fill": "$style/paper-ivory",
-          "stroke": "$style/toy-ink",
-          "strokeWidth": 4,
           "effect": {
             "type": "shadow",
             "shadowType": "outer",

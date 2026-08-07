@@ -88,7 +88,7 @@ func _connect_coin_event_log() -> void:
 		clear_delay.wave_clear_delay_finished.connect(_on_delay_finished)
 
 
-## 코인 HUD가 정식 디자인되기 전까지 쓰는 자리표시자 라벨입니다.
+## 오래된 파생 웨이브에 정식 HUD가 없을 때만 쓰는 호환용 라벨입니다.
 func _build_coin_label() -> void:
 	var hud_root := get_node_or_null("HUD")
 	if hud_root == null:
@@ -96,8 +96,8 @@ func _build_coin_label() -> void:
 		return
 	_coin_label = Label.new()
 	_coin_label.name = "CoinWalletLabel"
-	_coin_label.position = Vector2(24.0, 240.0)
-	_coin_label.add_theme_font_size_override(&"font_size", 30)
+	_coin_label.position = Vector2(1604.0, 24.0)
+	_coin_label.add_theme_font_size_override(&"font_size", 26)
 	_coin_label.add_theme_color_override(
 		&"font_color", Color(0.90, 0.72, 0.25)
 	)
@@ -111,13 +111,9 @@ func _build_coin_label() -> void:
 func _refresh_coin_label() -> void:
 	if _coin_label == null:
 		return
-	var board_coin := 0
-	if coin_field != null:
-		board_coin = coin_field.board_coin_this_wave
-	_coin_label.text = "COIN %d  (이번 웨이브 +%d)" % [
-		coin_wallet.balance if coin_wallet != null else 0,
-		board_coin,
-	]
+	_coin_label.text = "× %d" % (
+		coin_wallet.balance if coin_wallet != null else 0
+	)
 
 
 func _on_wallet_changed(_balance: int, _delta: int) -> void:

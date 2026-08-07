@@ -17,7 +17,7 @@ enum RouteKind {
 	set(value):
 		route_kind = value
 		queue_redraw()
-@export_range(4.0, 64.0, 1.0, "suffix:px") var editor_radius := 14.0:
+@export_range(4.0, 64.0, 1.0, "suffix:px") var editor_radius := 32.0:
 	set(value):
 		editor_radius = value
 		queue_redraw()

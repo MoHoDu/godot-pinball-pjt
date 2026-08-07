@@ -23,8 +23,34 @@ func _run() -> void:
 	var field := scene.get_node(^"CoinSystem") as CoinFieldController
 	var session := scene.get_node(^"CoinSystem/CoinSession") as WaveCoinSession
 	var wallet := scene.get_node(^"CoinSystem/CoinWallet") as CoinWallet
+	var wallet_hud := scene.get_node(
+		^"HUD/WaveHud/DesignSpace/CoinWalletHud"
+	) as PanelContainer
+	var wallet_label := wallet_hud.get_node(
+		^"Margin/Row/BalanceLabel"
+	) as Label if wallet_hud != null else null
+	var wallet_icon := wallet_hud.get_node(
+		^"Margin/Row/CoinIcon"
+	) as TextureRect if wallet_hud != null else null
+	var settings_button := scene.get_node(
+		^"HUD/WaveHud/DesignSpace/SettingsButton"
+	) as Control
 	_expect(field != null and session != null and wallet != null,
 		"최신 wave 씬에 코인 필드·세션·지갑이 있어야 한다.")
+	_expect(
+		wallet_hud != null
+			and wallet_label != null
+			and wallet_label.text == "× 0"
+			and wallet_icon != null
+			and wallet_icon.texture != null
+			and wallet_icon.texture.resource_path
+				== "res://Resources/wave_hud/coin_wallet_icon.png",
+		"우측 상단 코인 HUD는 생성 아이콘과 간결한 × 보유량 표기를 사용해야 한다."
+	)
+	_expect(
+		wallet_hud.position.x + wallet_hud.size.x < settings_button.position.x,
+		"코인 HUD는 우측 상단 설정 버튼과 겹치지 않아야 한다."
+	)
 	_expect(field.validate_authored_placement().is_empty(),
 		"코인 12개는 보드·범퍼·소켓·금지 영역과 겹치지 않아야 한다: %s"
 		% [field.validate_authored_placement()])
@@ -53,6 +79,8 @@ func _run() -> void:
 	await process_frame
 	_expect(wallet.balance == 2 and field.board_coin_this_wave == 2,
 		"플레이어 공이 코인을 트리거하면 2코인이 지갑과 웨이브 합계에 반영돼야 한다.")
+	_expect(wallet_label.text == "× 2",
+		"코인을 획득하면 우측 상단 HUD가 같은 프레임에 갱신되어야 한다.")
 	# 유예 환산분이 지갑에 더해진 뒤 보상 정산은 보드+유예 획득량을 다시 계산한다.
 	wallet.add(3)
 	var clear_delay := scene.get_node(

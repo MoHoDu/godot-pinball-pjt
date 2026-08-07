@@ -5,6 +5,12 @@ extends SceneTree
 
 
 const COIN_PICKUP_SCENE := preload("res://scenes/coin_system/coin_pickup.tscn")
+const COIN_SPAWN_POINT_SCENE := preload(
+	"res://scenes/coin_system/coin_spawn_point.tscn"
+)
+const EMPTY_COIN_SYSTEM_SCENE := preload(
+	"res://scenes/stage_system/stage_wave_coin_system.tscn"
+)
 
 
 var _failures: Array[String] = []
@@ -16,9 +22,28 @@ func _init() -> void:
 
 func _run() -> void:
 	_test_wallet()
+	_test_editor_authoring_scenes()
 	await _test_pickup()
 	await _test_field_controller()
 	_finish()
+
+
+func _test_editor_authoring_scenes() -> void:
+	var point := COIN_SPAWN_POINT_SCENE.instantiate() as CoinSpawnPoint
+	_expect(
+		point != null and is_equal_approx(point.editor_radius * 2.0, 64.0),
+		"에디터 추가용 코인 포인트는 실제 코인 크기를 표시해야 한다."
+	)
+	point.free()
+	var empty_system := EMPTY_COIN_SYSTEM_SCENE.instantiate() as CoinFieldController
+	_expect(
+		empty_system != null
+			and empty_system.layout == null
+			and empty_system.spawn_points_root != null
+			and empty_system.get_spawn_points().is_empty(),
+		"빈 코인 시스템은 에디터에서 포인트를 직접 추가할 수 있어야 한다."
+	)
+	empty_system.free()
 
 
 func _test_wallet() -> void:
@@ -60,6 +85,30 @@ func _test_pickup() -> void:
 	pickup.value = 2
 	holder.add_child(pickup)
 	await process_frame
+	var visual := pickup.get_node_or_null(^"Visual") as Sprite2D
+	_expect(visual != null, "코인 픽업은 확정 아트용 Visual Sprite2D를 가져야 한다.")
+	_expect(
+		visual != null
+			and visual.texture != null
+			and visual.texture.resource_path == "res://Resources/wave_hud/coin_wallet_icon.png",
+		"기본 코인 픽업은 생성된 지갑 코인 아이콘을 사용해야 한다."
+	)
+	_expect(
+		visual != null
+			and visual.texture != null
+			and is_equal_approx(
+				visual.scale.x * maxf(
+					visual.texture.get_size().x,
+					visual.texture.get_size().y
+				),
+				pickup.visual_radius * 2.0
+			),
+		"코인 아트 지름은 픽업 visual_radius에 맞춰져야 한다."
+	)
+	_expect(
+		is_equal_approx(pickup.visual_radius * 2.0, Pinball.DEFAULT_BALL_DIAMETER),
+		"기본 코인 지름은 기본 공 지름과 같아야 한다."
+	)
 
 	var collected_log: Array = []
 	pickup.collected.connect(func(pickup_id: StringName, value: int) -> void:
