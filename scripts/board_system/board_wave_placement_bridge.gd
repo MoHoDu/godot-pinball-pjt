@@ -13,7 +13,9 @@ signal placement_blocked(result: BoardValidationResult)
 @export var wave_hud: CanvasItem
 @export var ball_selection_hud: CanvasItem
 @export var placement_hud: RepairPartPlacementHud
+@export var repair_effect_router: RepairEffectRouter
 @export var commit_action: StringName = &"ui_accept"
+@export var enforce_launch_gate := true
 
 
 var _placement_committed_for_wave := false
@@ -85,6 +87,7 @@ func _on_placement_committed(
 ) -> void:
 	_placement_committed_for_wave = true
 	_bind_committed_bumpers()
+	_bind_committed_repair_effects()
 	placement_ready.emit(wave_id, consumed_counts)
 	if not wave_manager.advance_stage_phase():
 		push_error("WaveManager rejected the committed repair placement phase.")
@@ -98,10 +101,11 @@ func _on_ball_cycle_started(
 	_ball: Pinball,
 	_remaining_balls: int
 ) -> void:
-	assert(
-		_placement_committed_for_wave,
-		"The first ball cannot launch before board placement is committed."
-	)
+	if enforce_launch_gate:
+		assert(
+			_placement_committed_for_wave,
+			"The first ball cannot launch before board placement is committed."
+		)
 	if placement_session.current_state == BoardPlacementSession.State.COMMITTED:
 		placement_session.lock()
 
@@ -125,6 +129,13 @@ func _bind_committed_bumpers() -> void:
 		if bumper.combo_hit_source != null \
 				and combo_system.has_method(&"bind_hit_source"):
 			combo_system.call(&"bind_hit_source", bumper.combo_hit_source)
+
+
+func _bind_committed_repair_effects() -> void:
+	if repair_effect_router == null:
+		return
+	repair_effect_router.rescan_parts()
+	repair_effect_router.on_full_reset()
 
 
 func _set_hud_visibility(is_placement: bool) -> void:

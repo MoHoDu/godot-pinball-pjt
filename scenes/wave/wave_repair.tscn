@@ -58,6 +58,9 @@ script = ExtResource("28_flow_v02")
 script = ExtResource("24_inventory_v02")
 starting_stock = Array[ExtResource("26_stock")]([SubResource("BallStock_base")])
 
+[node name="BoardWavePlacementBridge" parent="."]
+enforce_launch_gate = false
+
 [node name="RepairPartSystem" type="Node2D" parent="."]
 
 [node name="RepairComboAdapter" type="Node" parent="RepairPartSystem"]
