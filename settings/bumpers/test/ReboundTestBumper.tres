@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="BumperSettings" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/bumper-system/bumper_settings.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+bumper_kind_id = &"test_rebound"
+display_name = "리바운드(테스트)"
+bumper_type = 1
+is_repair_part = false
+mechanics_status = 0
+concept_role = "벽 반사 가속"
+base_score = 50
+score_weight = 0.5
+max_durability = 1
+durability_damage_per_hit = 0
+respawn_delay = 0.5
+respawn_telegraph_duration = 0.2
+speed_multiplier = 1.35
+minimum_release_speed = 1000.0
+maximum_response_speed = 1540.0
+collision_diameter = 250.0
+visual_diameter = 250.0
+respawn_safe_margin = 30.0
