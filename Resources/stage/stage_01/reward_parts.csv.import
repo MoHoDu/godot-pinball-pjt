@@ -1,0 +1,10 @@
+[remap]
+
+importer="keep"
+type=""
+
+[deps]
+
+source_file="res://Resources/stage/stage_01/reward_parts.csv"
+
+[params]

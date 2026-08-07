@@ -99,6 +99,25 @@ func select_life(ball_type: StringName) -> bool:
 	return true
 
 
+## 공 종류 보유와 생명 수를 분리한 보상 모드에서 현재 생명 아이콘의 종류만 바꿉니다.
+func set_current_life_type(ball_type: StringName) -> bool:
+	if ball_type.is_empty():
+		return false
+	var slots: Array = _snapshot[&"life_slots"]
+	for index in slots.size():
+		var slot: Dictionary = slots[index]
+		if int(slot.get(&"state", LifeState.UPCOMING)) != LifeState.CURRENT:
+			continue
+		if StringName(slot.get(&"type", &"")) == ball_type:
+			return true
+		slot[&"type"] = ball_type
+		slots[index] = slot
+		_snapshot[&"life_slots"] = slots
+		_publish()
+		return true
+	return false
+
+
 func consume_current_life() -> int:
 	var slots: Array = _snapshot[&"life_slots"]
 	var current_index := -1

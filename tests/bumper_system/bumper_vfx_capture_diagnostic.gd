@@ -8,7 +8,11 @@ extends SceneTree
 ## **--headless 로 돌리면 안 된다.** 헤드리스에는 렌더러가 없어 캡처가 비어 나온다.
 ##
 ## 실행:
-##   godot --path . --script res://tests/bumper_system/bumper_vfx_capture_diagnostic.gd
+##   godot --fixed-fps 60 --path . ##       --script res://tests/bumper_system/bumper_vfx_capture_diagnostic.gd
+##
+## **`--fixed-fps` 를 꼭 붙인다.** 없으면 첫 프레임 델타가 커서(씬 8개를 한꺼번에
+## 올리는 순간 0.2초까지 뛴다) 라벨보다 훨씬 늦게 찍힌다. 수명이 짧은 타격선이
+## 통째로 사라져 "VFX 가 안 나온다" 로 오진하게 된다 (2026-08-07 에 실제로 겪었다).
 ##
 ## 결과: tests/evidence/bumper_vfx/frame_*.png
 

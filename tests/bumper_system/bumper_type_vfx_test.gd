@@ -118,11 +118,24 @@ func _test_shot_capture_and_launch() -> void:
 	if shot_bumper == null:
 		return
 
-	shot_bumper.control_started.emit(shot_bumper, null)
+	# 공이 대포 안으로 들어간 것처럼 보이게 포획 동안 숨긴다 (2026-08-07 지시).
+	var ball := RigidBody2D.new()
+	_root.add_child(ball)
+
+	shot_bumper.control_started.emit(shot_bumper, ball)
 	_expect(_shot.is_capture_active(),
 		"포획이 시작되면 받침대 눌림 표시가 켜져야 한다")
+	_expect(_shot.is_ball_hidden(), "포획 동안 공이 숨어야 한다")
+	_expect(not ball.visible, "포획 동안 공의 visible 이 꺼져야 한다")
+	# 물리는 건드리면 안 된다. 숨기는 것은 순전히 표시만이다.
+	_expect(not ball.freeze, "공을 숨기면서 물리를 얼리면 안 된다")
 
-	shot_bumper.control_ended.emit(shot_bumper, null)
+	# 발사는 **한 번만** 쏜다. 두 번 쏘면 잔상·연기가 두 배로 쌓인다.
+	shot_bumper.control_ended.emit(shot_bumper, ball)
+	_expect(ball.visible, "발사하면 공이 다시 보여야 한다")
+	_expect(not _shot.is_ball_hidden(), "발사 후에는 숨긴 공이 남아 있으면 안 된다")
+	ball.queue_free()
+
 	_expect(not _shot.is_capture_active(),
 		"발사가 끝나면 포획 표시가 꺼져야 한다")
 	_expect(_shot.live_trail_count() == 1,
@@ -147,9 +160,10 @@ func _test_rule_intent() -> void:
 		"파동 끝 반지름이 충돌 반지름의 2배를 넘으면 안 된다 (실제=%s)"
 			% DRUM_VFX.ring_end_ratio)
 
-	# 5-7: 연기는 "제한된" 이어야 한다.
-	_expect(CANNON_VFX.smoke_count <= 4,
-		"대포 연기가 과하면 안 된다 (실제=%d)" % CANNON_VFX.smoke_count)
+	# 5-7 은 "제한된 연기" 를 요구하지만 2026-08-07 형락님이 발사 연기를 더
+	# 확실히 보이게 해 달라고 지시해 완화했다. 화면을 덮지 않는 선만 지킨다.
+	_expect(CANNON_VFX.smoke_count <= 12,
+		"대포 연기가 화면을 덮을 만큼 많으면 안 된다 (실제=%d)" % CANNON_VFX.smoke_count)
 
 
 func _expect(condition: bool, message: String) -> void:

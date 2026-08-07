@@ -3,6 +3,7 @@ extends Node
 
 
 signal inventory_changed(snapshot: Array[Dictionary])
+signal part_count_changed(part_id: StringName, count: int)
 
 
 @export var entries: Array[RepairPartInventoryEntry] = []
@@ -12,6 +13,14 @@ var _owned_counts: Dictionary = {}
 var _session_capacity: Dictionary = {}
 var _reserved_counts: Dictionary = {}
 var _session_active := false
+
+
+var total_count: int:
+	get:
+		var result := 0
+		for kind_id: StringName in _owned_counts:
+			result += int(_owned_counts[kind_id])
+		return result
 
 
 func _ready() -> void:
@@ -110,6 +119,51 @@ func get_available_count(kind_id: StringName) -> int:
 	return maxi(int(_owned_counts.get(kind_id, 0)), 0)
 
 
+func count_of(kind_id: StringName) -> int:
+	return maxi(int(_owned_counts.get(kind_id, 0)), 0)
+
+
+func add(kind_id: StringName, amount: int) -> int:
+	if kind_id == &"" or amount <= 0:
+		return count_of(kind_id)
+	_owned_counts[kind_id] = count_of(kind_id) + amount
+	part_count_changed.emit(kind_id, count_of(kind_id))
+	_emit_changed()
+	return count_of(kind_id)
+
+
+func try_consume(kind_id: StringName, amount: int) -> bool:
+	if amount <= 0 or count_of(kind_id) < amount:
+		return false
+	_owned_counts[kind_id] = count_of(kind_id) - amount
+	if int(_owned_counts[kind_id]) <= 0:
+		_owned_counts.erase(kind_id)
+	part_count_changed.emit(kind_id, count_of(kind_id))
+	_emit_changed()
+	return true
+
+
+func snapshot() -> Dictionary:
+	return _owned_counts.duplicate(true)
+
+
+func restore(counts: Dictionary) -> void:
+	var previous_counts := _owned_counts.duplicate(true)
+	_owned_counts.clear()
+	for kind_variant: Variant in counts:
+		var kind_id := StringName(kind_variant)
+		var count := maxi(int(counts[kind_variant]), 0)
+		if count > 0:
+			_owned_counts[kind_id] = count
+	for kind_variant: Variant in previous_counts:
+		var kind_id := StringName(kind_variant)
+		if not _owned_counts.has(kind_id):
+			part_count_changed.emit(kind_id, 0)
+	for kind_id: StringName in _owned_counts:
+		part_count_changed.emit(kind_id, count_of(kind_id))
+	_emit_changed()
+
+
 func get_reserved_count(kind_id: StringName) -> int:
 	return maxi(int(_reserved_counts.get(kind_id, 0)), 0) \
 		if _session_active else 0
@@ -139,4 +193,3 @@ func get_snapshot() -> Array[Dictionary]:
 
 func _emit_changed() -> void:
 	inventory_changed.emit(get_snapshot())
-

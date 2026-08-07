@@ -66,14 +66,17 @@ func _build_fixture() -> void:
 
 
 func _test_contact_derivation() -> void:
-	var radius := _bumper.get_collision_radius()
-	_expect(radius > 0.0, "범퍼 충돌 반지름이 0보다 커야 한다")
+	# VFX 는 표시 반지름에 붙는다. 충돌 반지름을 쓰면 아트 밑에 깔린다.
+	var radius: float = _bumper.settings.visual_diameter * 0.5
+	_expect(radius > 0.0, "범퍼 표시 반지름이 0보다 커야 한다")
+	_expect(radius > _bumper.get_collision_radius(),
+		"표시 반지름이 충돌 반지름보다 커야 이 검사가 의미가 있다")
 
 	var ball_right := _bumper.global_position + Vector2(500.0, 0.0)
 	var contact := _feedback.contact_point_for(ball_right)
 	var distance := contact.distance_to(_bumper.global_position)
 	_expect(absf(distance - radius) <= EPSILON,
-		"접촉 지점이 충돌 원 위에 있어야 한다 (기대=%s, 실제=%s)" % [radius, distance])
+		"접촉 지점이 표시 원 위에 있어야 한다 (기대=%s, 실제=%s)" % [radius, distance])
 
 	var normal := _feedback.contact_normal_for(ball_right)
 	_expect(normal.is_equal_approx(Vector2.RIGHT),

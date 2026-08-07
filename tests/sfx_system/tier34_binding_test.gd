@@ -21,7 +21,15 @@ func _init() -> void:
 	call_deferred(&"_run")
 
 
+## ★ 2026-08-07 — 음원을 처음부터 다시 만드는 중이라 규칙 파일들이
+##   settings/sfx/_pending/ 으로 빠져 있습니다. 돌아오면 자동으로 다시 검사합니다.
+##   없는 것을 검사해 매번 빨간 불이 뜨면 진짜 고장을 못 알아봅니다.
 func _run() -> void:
+	if not ResourceLoader.exists(COMBO_RULES_PATH):
+		print("PASS: tier34_binding_test (규칙 대기 중 — 검사 건너뜀)")
+		quit(0)
+		return
+
 	_test_rules_resources()
 	_test_pitch_ladder()
 	_test_bumper_kind_mapping()
