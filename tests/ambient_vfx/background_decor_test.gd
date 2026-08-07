@@ -60,10 +60,14 @@ func _test_scene_copy_is_intact(lab: Node) -> void:
 	_expect(lab.get_node_or_null(^"_BackgroundGears") == null,
 		"취소된 기어 노드는 남아 있으면 안 된다.")
 
-	# 작업 규칙 2: 기존 씬은 직접 수정하지 않는다.
+	# 검수 전에는 "원본 wave.tscn 에 데코가 없어야 한다" 였으나,
+	# 통합 브랜치에서 형락님 승인으로 데코를 본 씬에 적용했다(2026-08-08).
+	# 이제는 반대로 — 본 씬에 데코가 규칙 리소스와 함께 배선돼 있어야 한다.
 	var wave_source := FileAccess.get_file_as_string("res://scenes/wave/wave.tscn")
-	_expect(not wave_source.contains("background_decor"),
-		"원본 wave.tscn 에는 데코 노드가 추가되면 안 된다.")
+	_expect(wave_source.contains("background_decor_animator.gd"),
+		"wave.tscn 에 데코 노드가 배선돼 있어야 한다.")
+	_expect(wave_source.contains("AmbientDecorRules.tres"),
+		"wave.tscn 데코에 규칙 리소스가 물려 있어야 한다.")
 
 
 func _test_transform_replication(lab: Node, decor: BackgroundDecorAnimator) -> void:

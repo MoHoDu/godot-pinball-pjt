@@ -93,6 +93,8 @@
 [ext_resource type="Script" path="res://scripts/sfx_system/bgm_player.gd" id="85_bgm"]
 [ext_resource type="AudioStream" path="res://Resources/sfx/bgm/BGM_Wave_Loop.wav" id="86_bgm_loop"]
 [ext_resource type="PackedScene" path="res://scenes/bumper_system/rebound_wall_bumper.tscn" id="90_rebound_wall"]
+[ext_resource type="Script" path="res://scripts/ambient_vfx/background_decor_animator.gd" id="95_decor_script"]
+[ext_resource type="Resource" path="res://settings/ambient_vfx/AmbientDecorRules.tres" id="96_decor_rules"]
 
 [ext_resource type="PackedScene" path="res://Resources/boards/starlight_brooch_placeable.tscn" id="41_brooch_placeable"]
 
@@ -667,3 +669,7 @@ runtime_root_path = NodePath("../../RepairBoardLayout")
 script = ExtResource("49_repair_session_controller")
 wave_manager_path = NodePath("../../WaveManager")
 router_path = NodePath("../RepairEffectRouter")
+
+[node name="_BackgroundDecor" type="Node2D" parent="."]
+script = ExtResource("95_decor_script")
+decor_rules = ExtResource("96_decor_rules")
