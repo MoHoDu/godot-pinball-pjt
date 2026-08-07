@@ -33,7 +33,8 @@ OUT = REPO / "settings" / "sfx" / "FlipperSfxRules.tres"
 #   작동음(-9dB) 옆에서 아예 안 들려 "올라감/내려옴"이 구분되지 않는다.
 #   파일에는 위계를 지켜 굽고, 재생할 때 올린다.
 CUES = [
-    # ★ 복귀음은 뺐다 (2026-08-07). 파일이 없으면 여기 남아 있어도 무시된다.
+    ("SFX_Flipper_Return", "return_cue", "flipper_return",
+     "플리퍼 복귀 — 제자리로 내려앉는다. Space 를 놓을 때", 0, 2, 0.04, 6.0),
     ("SFX_Flipper_Select", "select_cue", "flipper_select",
      "플리퍼 선택 — 방향키로 조작할 그룹을 바꾼다. 공과 무관", 0, 2, 0.04, 0.0),
     ("SFX_Flipper_Activate", "activate_cue", "flipper_activate",
