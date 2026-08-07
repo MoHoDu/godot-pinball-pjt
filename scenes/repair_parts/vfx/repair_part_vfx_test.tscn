@@ -1,0 +1,9 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/bumper_test.tscn" id="1_base"]
+[ext_resource type="PackedScene" path="res://scenes/repair_parts/vfx/starlight_brooch_vfx.tscn" id="2_brooch"]
+[ext_resource type="PackedScene" path="res://scenes/repair_parts/vfx/golden_gears_vfx.tscn" id="3_gears"]
+[ext_resource type="PackedScene" path="res://scenes/repair_parts/vfx/forgotten_star_bell_vfx.tscn" id="4_bell"]
+
+[node name="BumperTest" instance=ExtResource("1_base")]
+bumper_scenes = Array[PackedScene]([ExtResource("2_brooch"), ExtResource("3_gears"), ExtResource("4_bell")])

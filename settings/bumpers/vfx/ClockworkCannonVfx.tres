@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="BumperShotVfxRules" format=3]
+
+[ext_resource type="Script" path="res://scripts/bumper-system/vfx/bumper_shot_vfx_rules.gd" id="1_rules"]
+
+[resource]
+script = ExtResource("1_rules")
+tick_count = 1
+tick_length_ratio = 0.12
+tick_width = 2.5
+tick_spread_degrees = 26.0
+tick_lifetime = 0.08
+tick_color = Color(0.9, 0.86, 0.76, 0.55)
+chip_count = 0
+chip_radius_ratio = 0.06
+chip_travel_ratio = 0.3
+chip_lifetime = 0.2
+chip_color = Color(0.74, 0.6, 0.3, 0.85)
+debris_count = 6
+debris_lifetime = 0.6
+telegraph_amplitude_ratio = 0.035
+telegraph_hz = 5.0
+telegraph_color = Color(0.6, 0.5, 0.34, 0.5)
+path_length_ratio = 1.15
+selected_path_width = 4.0
+unselected_path_width = 2.0
+unselected_path_alpha = 0.22
+selected_path_color = Color(0.96, 0.86, 0.52, 0.85)
+capture_press_ratio = 0.1
+trail_lifetime = 0.22
+smoke_count = 3
+smoke_color = Color(0.72, 0.7, 0.66, 0.45)

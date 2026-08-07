@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+
+; SFX 검수 시 사용하던 호환 경로입니다.
+; 승인된 SfxDirector 와 엄격한 바인더는 이제 wave.tscn 본체가 소유합니다.
+
+[ext_resource type="PackedScene" uid="uid://6fbf244c58gg" path="res://scenes/wave/wave.tscn" id="1_wave"]
+
+[node name="Wave" instance=ExtResource("1_wave")]

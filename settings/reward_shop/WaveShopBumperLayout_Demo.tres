@@ -1,0 +1,53 @@
+[gd_resource type="Resource" script_class="BumperStageSettings" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/bumper-system/bumper_stage_settings.gd" id="1_stage"]
+[ext_resource type="Script" path="res://scripts/bumper-system/bumper_wave_loadout.gd" id="2_wave"]
+
+[sub_resource type="Resource" id="Wave1"]
+script = ExtResource("2_wave")
+wave_id = &"wave_01"
+board_shape = 0
+total_count_range = Vector2i(4, 9)
+normal_count_range = Vector2i(0, 6)
+bounce_count_range = Vector2i(0, 3)
+shot_count_range = Vector2i(0, 2)
+maximum_cotton_count = 1
+maximum_toy_drum_count = 1
+
+[sub_resource type="Resource" id="Wave2"]
+script = ExtResource("2_wave")
+wave_id = &"wave_02"
+board_shape = 0
+total_count_range = Vector2i(4, 9)
+normal_count_range = Vector2i(0, 6)
+bounce_count_range = Vector2i(0, 3)
+shot_count_range = Vector2i(0, 2)
+maximum_cotton_count = 1
+maximum_toy_drum_count = 1
+
+[sub_resource type="Resource" id="Wave3"]
+script = ExtResource("2_wave")
+wave_id = &"wave_03"
+board_shape = 0
+total_count_range = Vector2i(4, 9)
+normal_count_range = Vector2i(0, 6)
+bounce_count_range = Vector2i(0, 3)
+shot_count_range = Vector2i(0, 2)
+maximum_cotton_count = 1
+maximum_toy_drum_count = 1
+
+[sub_resource type="Resource" id="BossWave"]
+script = ExtResource("2_wave")
+wave_id = &"boss_wave"
+board_shape = 0
+total_count_range = Vector2i(4, 9)
+normal_count_range = Vector2i(0, 6)
+bounce_count_range = Vector2i(0, 3)
+shot_count_range = Vector2i(0, 2)
+maximum_cotton_count = 1
+maximum_toy_drum_count = 1
+
+[resource]
+script = ExtResource("1_stage")
+stage_id = &"stage_01_shop_demo"
+waves = Array[Resource]([SubResource("Wave1"), SubResource("Wave2"), SubResource("Wave3"), SubResource("BossWave")])

@@ -26,6 +26,7 @@ func _run() -> void:
 	await process_frame
 
 	_test_standalone_scene_source()
+	_test_repair_content_configuration(wave)
 	_test_scene_structure(wave)
 	_test_korean_selection_hud(wave)
 	_test_bumper_loadout(wave)
@@ -84,6 +85,43 @@ func _test_standalone_scene_source() -> void:
 	_expect(scene_source.contains(
 		"res://scripts/board_system/board_wave_placement_bridge.gd"
 	), "Wave scene must bridge repair placement to the active WaveManager.")
+	_expect(scene_source.contains(
+		"res://scripts/repair_parts/runtime/repair_effect_router.gd"
+	), "Wave scene must route the latest repair-part effects.")
+
+
+func _test_repair_content_configuration(wave: WaveRuntimeCoordinator) -> void:
+	var inventory := wave.get_node("RepairPartInventory") as RepairPartInventory
+	var part_ids: Array[StringName] = []
+	for item: Dictionary in inventory.get_snapshot():
+		part_ids.append(StringName(item[&"kind_id"]))
+	_expect(part_ids.size() == 3,
+		"Wave repair inventory must expose the three v0.3 part families.")
+	_expect(&"starlight_brooch" in part_ids \
+		and &"golden_gears" in part_ids \
+		and &"forgotten_star_bell" in part_ids,
+		"Wave repair inventory must contain brooch, gears, and bell.")
+	_expect(&"crescent_needle" not in part_ids,
+		"Crescent Needle must not remain in the v0.3 repair inventory.")
+
+	var placement_controller := wave.get_node(
+		"RepairPartPlacementController"
+	) as RepairPartPlacementController
+	_expect(placement_controller.place_kind_at_socket(
+		&"starlight_brooch", &"middle_02"
+	), "Wave placement must accept the latest Starlight Brooch scene.")
+	var layout := wave.get_node("RepairBoardLayout") as BoardLayout
+	var session := layout.get_node("PlacementSession") as BoardPlacementSession
+	var placeable := session.find_placeable_at_socket(&"middle_02")
+	var bumper := placeable.get_bumper() if placeable != null else null
+	var runtime := bumper.get_node_or_null(^"RepairPartRuntime") \
+		as RepairPartRuntime if bumper != null else null
+	_expect(runtime != null,
+		"Placed Wave parts must include the v0.3 RepairPartRuntime.")
+	_expect(bumper != null and bumper.get_node_or_null(^"_ArtSprite") != null,
+		"Placed Wave parts must include their latest production art.")
+	_expect(bumper != null and bumper.combo_hit_source is RepairPartHitSource,
+		"Placed Wave parts must use the v0.3 contact gate.")
 
 
 func _test_scene_structure(wave: WaveRuntimeCoordinator) -> void:
@@ -117,6 +155,18 @@ func _test_scene_structure(wave: WaveRuntimeCoordinator) -> void:
 		"Repair placement must exclusively own the HUD before confirmation.")
 	_expect(placement_bridge.commit_placement(),
 		"Wave integration must advance only through a valid placement commit.")
+	var placed := session.find_placeable_at_socket(&"middle_02")
+	var placed_bumper := placed.get_bumper() if placed != null else null
+	var placed_runtime := placed_bumper.get_node_or_null(^"RepairPartRuntime") \
+		as RepairPartRuntime if placed_bumper != null else null
+	var repair_router := wave.get_node(
+		"WaveRepairEffects/RepairEffectRouter"
+	) as RepairEffectRouter
+	_expect(placement_bridge.repair_effect_router == repair_router,
+		"Wave placement bridge must target the live repair-effect router.")
+	_expect(placed_runtime != null \
+		and repair_router.get_effect_for(placed_runtime) != null,
+		"Committed Wave parts must register their v0.3 gameplay effect.")
 	_expect(wave.wave_manager.current_state == WaveManager.State.SELECTING_BALL,
 		"Placement confirmation must advance into the implemented selection flow.")
 	_expect(wave.wave_manager.current_stage_phase \
@@ -207,8 +257,8 @@ func _test_bumper_loadout(wave: WaveRuntimeCoordinator) -> void:
 	if wave_cannon != null:
 		_expect(wave_cannon.get_launch_anchors().size() == 7,
 			"Wave clockwork cannon must expose all seven authored directions.")
-		_expect(is_equal_approx(wave_cannon.get_selection_duration(), 0.8),
-			"Wave clockwork cannon must keep the confirmed 0.8 second selection.")
+		_expect(is_equal_approx(wave_cannon.get_selection_duration(), 2.0),
+			"Wave clockwork cannon must keep the confirmed 2.0 second selection.")
 		_expect(is_equal_approx(wave_cannon.get_launch_speed(), 1300.0),
 			"Wave clockwork cannon must keep its authored launch speed.")
 
@@ -233,7 +283,15 @@ func _test_low_speed_wave_balls_release_from_flipper(
 	wave.add_child(ball)
 	ball.freeze = true
 	# 첨부 이미지처럼 우측 하단 플리퍼 끝의 둥근 면에 저속으로 붙은 위치입니다.
-	ball.global_position = flipper.global_position + Vector2(-220.0, 60.0)
+	#
+	# 원래는 전역 오프셋 (-220, 60) 을 그대로 더했습니다. 그때 플리퍼는 회전 0 이라
+	# 전역과 로컬이 같았기 때문입니다. wave01 보드를 들여오면서 플리퍼가 ±40도로
+	# 눕고 길이도 328 -> 360 이 되어, 같은 전역 오프셋은 플리퍼 바깥 허공을 짚습니다.
+	#
+	# 그래서 **플리퍼 로컬 좌표**로 잡습니다. 날은 로컬 -X 로 뻗어 끝이 x=-245,
+	# 윗면이 y=-18 근처입니다. (-200, -50) 은 끝의 둥근 면 바로 위로,
+	# 실측에서 10 물리프레임 뒤 속도 8 안팎으로 안착합니다.
+	ball.global_position = flipper.to_global(Vector2(-200.0, -50.0))
 	ball.linear_velocity = Vector2.ZERO
 	await physics_frame
 	ball.freeze = false

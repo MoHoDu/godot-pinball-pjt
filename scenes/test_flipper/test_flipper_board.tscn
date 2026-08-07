@@ -11,7 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://dsjw1kfs6d0xv" path="res://Resources/Art/board/octagonal_dark_wood_board.png" id="9_board_texture"]
 [ext_resource type="PackedScene" path="res://Resources/Art/walls/cursed_toy_frame_v1/wall_visual_820x40_cursed_toy_v1.tscn" id="10_wall_visual"]
 [ext_resource type="Texture2D" uid="uid://cccmtg74eywpf" path="res://Resources/Art/backgrounds/cursed_circus_outside_background.png" id="11_outside_background"]
-[ext_resource type="Script" path="res://scripts/ball_base_system/pinball_launcher.gd" id="12_launcher"]
+[ext_resource type="Script" uid="uid://c1n1lurdkbtkj" path="res://scripts/ball_base_system/pinball_launcher.gd" id="12_launcher"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape_diagonal"]
 size = Vector2(819.329, 24)
@@ -44,7 +44,7 @@ script = ExtResource("1_board")
 [node name="OutsideBackground" type="Sprite2D" parent="." unique_id=1723056906]
 modulate = Color(0.82, 0.82, 0.82, 1)
 z_index = -20
-scale = Vector2(1.3397129, 1.3390011)
+scale = Vector2(1.3397129, 1.339001)
 texture = ExtResource("11_outside_background")
 
 [node name="BoardBackground" type="Sprite2D" parent="." unique_id=2016125082]
@@ -73,7 +73,7 @@ polygon = PackedVector2Array(1096, -22, 1120, -22, 1120, 22, 1096, 22)
 
 [node name="Walls" type="Node2D" parent="." unique_id=262200944]
 
-[node name="TopRightDiagonal" type="StaticBody2D" parent="Walls" groups=["combo_walls"] unique_id=1286810749]
+[node name="TopRightDiagonal" type="StaticBody2D" parent="Walls" unique_id=1286810749 groups=["combo_walls"]]
 position = Vector2(735, -490)
 rotation = 0.348772
 
@@ -83,7 +83,7 @@ shape = SubResource("RectangleShape_diagonal")
 
 [node name="Visual" parent="Walls/TopRightDiagonal" unique_id=1986772914 instance=ExtResource("10_wall_visual")]
 
-[node name="BottomRightDiagonal" type="StaticBody2D" parent="Walls" groups=["combo_walls"] unique_id=10598488]
+[node name="BottomRightDiagonal" type="StaticBody2D" parent="Walls" unique_id=10598488 groups=["combo_walls"]]
 position = Vector2(735, 490)
 rotation = 2.7928207
 
@@ -93,7 +93,7 @@ shape = SubResource("RectangleShape_diagonal")
 
 [node name="Visual" parent="Walls/BottomRightDiagonal" unique_id=1280937662 instance=ExtResource("10_wall_visual")]
 
-[node name="BottomLeftDiagonal" type="StaticBody2D" parent="Walls" groups=["combo_walls"] unique_id=2088105206]
+[node name="BottomLeftDiagonal" type="StaticBody2D" parent="Walls" unique_id=2088105206 groups=["combo_walls"]]
 position = Vector2(-735, 490)
 rotation = -2.7928207
 
@@ -103,7 +103,7 @@ shape = SubResource("RectangleShape_diagonal")
 
 [node name="Visual" parent="Walls/BottomLeftDiagonal" unique_id=24145458 instance=ExtResource("10_wall_visual")]
 
-[node name="TopLeftDiagonal" type="StaticBody2D" parent="Walls" groups=["combo_walls"] unique_id=1475565543]
+[node name="TopLeftDiagonal" type="StaticBody2D" parent="Walls" unique_id=1475565543 groups=["combo_walls"]]
 position = Vector2(-735, -490)
 rotation = -0.348772
 

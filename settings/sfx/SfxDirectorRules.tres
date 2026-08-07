@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="SfxDirectorRules" load_steps=2 format=3]
+
+; 목소리 16개. 예약 합계 7, 유동 9.
+;
+; 배열 순서는 SfxPriority.ORDER 와 같습니다:
+;   [AMBIENT, WALL, IMPACT, FLIPPER, BOSS, PARRY]
+;
+; 예약  [0, 0, 2, 2, 1, 2]  — ★ 벽이 0인 것이 설계의 핵심. 항상 빌려 쓰고 항상 먼저 뺏긴다
+; 하드캡 [2, 4, 5, 4, 2, 3]  — ★ 벽의 4가 기획서 p.62 "최대 동시 재생 4개"의 구현
+
+[ext_resource type="Script" path="res://scripts/sfx_system/sfx_director_rules.gd" id="1_rules"]
+
+[resource]
+script = ExtResource("1_rules")
+voice_count = 16
+bus = &"SFX"
+reserved_voices = PackedInt32Array(0, 0, 2, 2, 1, 2)
+hard_caps = PackedInt32Array(2, 4, 5, 4, 2, 3)
+steal_fade_time = 0.008
