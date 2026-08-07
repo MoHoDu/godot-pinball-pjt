@@ -45,14 +45,14 @@ func _run() -> void:
 func _test_configured_resource(rules: BossBallDamageWeightRules) -> void:
 	_expect(rules.validate().is_empty(),
 		"The configured rules Resource must validate without errors.")
-	_expect(is_equal_approx(rules.light_multiplier, 0.80),
-		"Light multiplier must be 0.80.")
+	_expect(is_equal_approx(rules.light_multiplier, 0.90),
+		"Light multiplier must be 0.90.")
 	_expect(is_equal_approx(rules.normal_multiplier, 1.00),
 		"Normal multiplier must be 1.00.")
-	_expect(is_equal_approx(rules.heavy_multiplier, 1.25),
-		"Heavy multiplier must be 1.25.")
-	_expect(is_equal_approx(rules.super_heavy_multiplier, 1.50),
-		"Super Heavy multiplier must be 1.50.")
+	_expect(is_equal_approx(rules.heavy_multiplier, 1.15),
+		"Heavy multiplier must be 1.15.")
+	_expect(is_equal_approx(rules.super_heavy_multiplier, 1.30),
+		"Super Heavy multiplier must be 1.30.")
 
 	_expect(rules.light_ball_ids == [&"light"],
 		"Only the current light ball ID must be registered as Light.")
@@ -83,12 +83,12 @@ func _test_configured_resource(rules: BossBallDamageWeightRules) -> void:
 		== BossBallDamageWeightRules.WeightClass.HEAVY,
 		"The heavy ID must resolve to the Heavy class."
 	)
-	_expect(is_equal_approx(rules.get_damage_multiplier(&"light"), 0.80),
-		"The light ID must resolve multiplier 0.80.")
+	_expect(is_equal_approx(rules.get_damage_multiplier(&"light"), 0.90),
+		"The light ID must resolve multiplier 0.90.")
 	_expect(is_equal_approx(rules.get_damage_multiplier(&"normal"), 1.00),
 		"The normal ID must resolve multiplier 1.00.")
-	_expect(is_equal_approx(rules.get_damage_multiplier(&"heavy"), 1.25),
-		"The heavy ID must resolve multiplier 1.25.")
+	_expect(is_equal_approx(rules.get_damage_multiplier(&"heavy"), 1.15),
+		"The heavy ID must resolve multiplier 1.15.")
 
 
 func _test_unknown_id_contract(rules: BossBallDamageWeightRules) -> void:
@@ -116,8 +116,8 @@ func _test_future_super_heavy_profile() -> void:
 	)
 	_expect(is_equal_approx(
 		rules.get_damage_multiplier(&"future_super_heavy"),
-		1.50
-	), "A future Super Heavy ID must resolve multiplier 1.50.")
+		1.30
+	), "A future Super Heavy ID must resolve multiplier 1.30.")
 
 
 func _test_empty_id_validation() -> void:

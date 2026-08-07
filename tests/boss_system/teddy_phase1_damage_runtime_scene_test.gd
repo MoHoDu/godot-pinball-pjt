@@ -129,13 +129,13 @@ func _run() -> void:
 		combo
 	)
 	_test_first_hit_damage(
-		wave, damage_prototype, &"light", 320, ball_flow, hurtbox, health, combo
+		wave, damage_prototype, &"light", 360, ball_flow, hurtbox, health, combo
 	)
 	_test_first_hit_damage(
 		wave, damage_prototype, &"normal", 400, ball_flow, hurtbox, health, combo
 	)
 	_test_first_hit_damage(
-		wave, damage_prototype, &"heavy", 500, ball_flow, hurtbox, health, combo
+		wave, damage_prototype, &"heavy", 460, ball_flow, hurtbox, health, combo
 	)
 	_test_contact_lifecycle(
 		wave,
@@ -279,12 +279,12 @@ func _check_initial_ui(prototype: TeddyPhase1DamageRuntimePrototype) -> void:
 func _check_weight_rules(weight_rules: BossBallDamageWeightRules) -> void:
 	if weight_rules == null:
 		return
-	_expect(is_equal_approx(weight_rules.get_damage_multiplier(&"light"), 0.80),
-		"Light damage profile must resolve to 0.80.")
+	_expect(is_equal_approx(weight_rules.get_damage_multiplier(&"light"), 0.90),
+		"Light damage profile must resolve to 0.90.")
 	_expect(is_equal_approx(weight_rules.get_damage_multiplier(&"normal"), 1.00),
 		"Normal damage profile must resolve to 1.00.")
-	_expect(is_equal_approx(weight_rules.get_damage_multiplier(&"heavy"), 1.25),
-		"Heavy damage profile must resolve to 1.25.")
+	_expect(is_equal_approx(weight_rules.get_damage_multiplier(&"heavy"), 1.15),
+		"Heavy damage profile must resolve to 1.15.")
 	_expect(not weight_rules.has_profile(&"unknown"),
 		"Unknown ball IDs must not have a damage profile.")
 

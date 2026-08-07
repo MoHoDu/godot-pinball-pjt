@@ -349,9 +349,9 @@ func _test_weight_profiles(
 	ball_flow: WaveBallFlowController
 ) -> void:
 	for profile: Array in [
-		[&"light", 320],
+		[&"light", 360],
 		[&"normal", 400],
-		[&"heavy", 500],
+		[&"heavy", 460],
 	]:
 		window.reset()
 		combo.reset_wave()

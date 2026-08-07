@@ -351,10 +351,10 @@ func _test_counter_forwarding() -> void:
 
 func _test_weight_tier_damage_values() -> void:
 	var expected_damage_by_weight: Dictionary = {
-		0.80: 320,
+		0.90: 360,
 		1.00: 400,
-		1.25: 500,
-		1.50: 600,
+		1.15: 460,
+		1.30: 520,
 	}
 	for weight: float in expected_damage_by_weight:
 		var fixture: Dictionary = _create_fixture(true)

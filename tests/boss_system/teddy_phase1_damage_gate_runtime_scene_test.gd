@@ -286,12 +286,12 @@ func _gate_allows(
 
 
 func _test_weight_rules(weight_rules: BossBallDamageWeightRules) -> void:
-	_expect(is_equal_approx(weight_rules.get_damage_multiplier(&"light"), 0.80),
-		"Light profile must remain 0.80.")
+	_expect(is_equal_approx(weight_rules.get_damage_multiplier(&"light"), 0.90),
+		"Light profile must be 0.90.")
 	_expect(is_equal_approx(weight_rules.get_damage_multiplier(&"normal"), 1.00),
 		"Normal profile must remain 1.00.")
-	_expect(is_equal_approx(weight_rules.get_damage_multiplier(&"heavy"), 1.25),
-		"Heavy profile must remain 1.25.")
+	_expect(is_equal_approx(weight_rules.get_damage_multiplier(&"heavy"), 1.15),
+		"Heavy profile must be 1.15.")
 
 
 func _test_weight_damage_profiles(
@@ -302,9 +302,9 @@ func _test_weight_damage_profiles(
 	combo: ComboSystem
 ) -> void:
 	for profile: Array in [
-		[&"light", 320],
+		[&"light", 360],
 		[&"normal", 400],
-		[&"heavy", 500],
+		[&"heavy", 460],
 	]:
 		_reset_damage_state(health, combo)
 		var ball_id: StringName = StringName(profile[0])

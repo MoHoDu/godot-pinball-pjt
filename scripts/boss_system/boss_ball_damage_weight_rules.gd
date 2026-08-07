@@ -13,10 +13,10 @@ enum WeightClass {
 const INVALID_WEIGHT_CLASS: int = -1
 
 
-@export var light_multiplier: float = 0.80
+@export var light_multiplier: float = 0.90
 @export var normal_multiplier: float = 1.00
-@export var heavy_multiplier: float = 1.25
-@export var super_heavy_multiplier: float = 1.50
+@export var heavy_multiplier: float = 1.15
+@export var super_heavy_multiplier: float = 1.30
 
 @export var light_ball_ids: Array[StringName] = [&"light"]
 @export var normal_ball_ids: Array[StringName] = [&"normal"]
