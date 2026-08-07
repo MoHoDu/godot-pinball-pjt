@@ -62,6 +62,8 @@ func _process(_delta: float) -> void:
 			lines.append("  ★ B  벽 3단 자동 시연 (저→중→고 이어서)")
 			lines.append("  1 2 3  벽 저·중·고속     7 벽 8연타")
 			lines.append("  Z 발사 약   X 발사 강   C 낙하   V 공 선택")
+			lines.append("  F1~F5 범퍼 솜·북·용수철·단추·대포 (낮은 순)")
+			lines.append("  F6 대포 발사   F8 리스폰 예고   F9 대포 조준")
 		else:
 			lines.append("[ 플리퍼 연구실 ]")
 			lines.append("  1 2 3  벽 저·중·고속     4 5 6  타격·강타격·패링")

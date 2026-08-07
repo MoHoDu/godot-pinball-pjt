@@ -217,14 +217,14 @@ func _test_scene_wiring() -> void:
 	_expect(int(counts[&"flippers"]) >= 8,
 		"★ 플리퍼 8개(4그룹×좌우)를 전부 찾아야 한다. (%d)" % int(counts[&"flippers"]))
 
-	# ★ "승인된 것만 씬에 물린다"는 정책은 그대로다. 승인 목록만 바뀌었다.
-	#   2026-08-07 현재 플리퍼 5종과 벽 3종이 검수를 통과했다.
-	#   공 흐름·콤보·범퍼는 음원을 처음부터 다시 만드는 중이라
-	#   규칙 자체가 settings/sfx/_pending/ 에 있다.
-	_expect(binder.wall_rules != null and binder.flipper_rules != null,
-		"승인된 벽·플리퍼 규칙이 씬에 물려 있어야 한다.")
-	_expect(binder.combo_rules == null and binder.bumper_rules == null,
-		"아직 만들지 않은 콤보·범퍼 규칙이 물려 있으면 안 된다.")
+	# ★ "승인된 것만 씬에 물린다"는 정책은 그대로다. 승인 목록만 바뀐다.
+	#   2026-08-07 현재 플리퍼 5종 · 벽 3종 · 공 흐름 3종 · 범퍼 8종이 통과했다.
+	#   콤보·웨이브만 아직 만들지 않아 규칙이 settings/sfx/_pending/ 에 있다.
+	_expect(binder.wall_rules != null and binder.flipper_rules != null
+			and binder.ball_flow_rules != null and binder.bumper_rules != null,
+		"승인된 벽·플리퍼·흐름·범퍼 규칙이 씬에 물려 있어야 한다.")
+	_expect(binder.combo_rules == null,
+		"아직 만들지 않은 콤보 규칙이 물려 있으면 안 된다.")
 
 	# ★ FlipperSelector 에는 시그널이 없어 폴링으로 붙는다.
 	#   못 찾으면 선택음이 통째로 안 나고, 검수 항목

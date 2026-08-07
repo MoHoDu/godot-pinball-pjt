@@ -19,6 +19,10 @@ extends "res://tests/sfx_system/sfx_lab.gd"
 ##   C    공 낙하음
 ##   V    공 선택음
 ##
+##   F1~F5  범퍼 재질 5종 (솜 → 북 → 용수철 → 단추 → 대포)
+##          ★ 낮은 것부터 높은 것 순이다. 이어서 누르면 서로 갈리는지 바로 안다.
+##   F6 대포 발사 · F8 리스폰 예고 · F9 대포 조준 (파괴음은 뺐다)
+##
 ##   물려받은 것: 1~3 벽 구간 · 7 벽 8연타 · Enter 발사 · [ ] 속도 ·
 ##                , . 각도 · R 리셋 · G 중력 · 0 정지 · Space 플리퍼
 
@@ -47,6 +51,24 @@ func _unhandled_input(event: InputEvent) -> void:
 			_play_raw(_flow(&"drain_cue"), 0.0, "공 낙하")
 		KEY_V:
 			_play_raw(_ball_select_cue(), 0.0, "공 선택")
+
+		# ── 범퍼 5종. ★ 이어서 눌러 서로 갈리는지 본다 ──
+		KEY_F1:
+			_play_bumper(&"stage01_cotton", "솜 — 푹")
+		KEY_F2:
+			_play_bumper(&"stage01_toy_drum", "장난감 북 — 통")
+		KEY_F3:
+			_play_bumper(&"stage01_spring_doll", "용수철 인형 — 끽팡")
+		KEY_F4:
+			_play_bumper(&"stage01_button", "단추 — 딱")
+		KEY_F5:
+			_play_bumper(&"stage01_clockwork_cannon", "태엽 대포 — 철컥")
+		KEY_F6:
+			_play_raw(_bumper(&"cannon_fire_cue"), 0.0, "대포 발사 — 팡")
+		KEY_F8:
+			_play_raw(_bumper(&"respawn_telegraph_cue"), 0.0, "리스폰 예고")
+		KEY_F9:
+			_play_raw(_bumper(&"cannon_aim_cue"), 0.0, "대포 조준 — 태엽 한 칸")
 		_:
 			super(event)
 			return
@@ -70,7 +92,19 @@ func _demo_wall_tiers() -> void:
 	_status = "벽 3단 시연 끝 — 같은 벽의 세기 차이로 들렸는가"
 
 
-## 공 선택음은 아직 규칙에 자리가 없습니다. 생기면 여기만 고칩니다.
+func _bumper(field: StringName) -> SfxCue:
+	return bumper_rules.get(field) if bumper_rules != null else null
+
+
+func _play_bumper(kind_id: StringName, label: String) -> void:
+	if bumper_rules == null:
+		_status = "%s — 범퍼 규칙이 없다" % label
+		return
+
+	_play_raw(bumper_rules.get_material_cue(kind_id), 700.0, label)
+
+
+## 공 선택음은 규칙에 자리를 새로 만들었습니다.
 func _ball_select_cue() -> SfxCue:
 	if ball_flow_rules == null:
 		return null
