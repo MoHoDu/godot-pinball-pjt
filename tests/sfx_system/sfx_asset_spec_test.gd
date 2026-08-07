@@ -145,8 +145,15 @@ func _test_import_settings() -> void:
 		var file_name := path.get_file()
 		_expect(text.contains("compress/mode=0"),
 			"%s 는 무손실 PCM 이어야 한다. 기본값 QOA 는 손실 압축이다." % file_name)
-		_expect(text.contains("edit/loop_mode=0"),
-			"%s 는 루프가 꺼져 있어야 한다." % file_name)
+
+		# ★ BGM 만 예외다 — 배경 루프는 루프가 **켜져 있어야** 한다 (Forward=2).
+		#   나머지 효과음이 루프면 끝없이 울리는 사고가 된다.
+		if path.contains("/bgm/"):
+			_expect(text.contains("edit/loop_mode=2"),
+				"%s 는 배경 루프라 Forward 루프여야 한다." % file_name)
+		else:
+			_expect(text.contains("edit/loop_mode=0"),
+				"%s 는 루프가 꺼져 있어야 한다." % file_name)
 		_expect(text.contains("edit/normalize=false"),
 			"%s 는 정규화가 꺼져 있어야 한다. 켜지면 구워둔 dB 관계가 깨진다." % file_name)
 
