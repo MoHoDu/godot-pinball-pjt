@@ -150,10 +150,24 @@ func _on_stage_phase_changed(
 	_previous_phase: WaveManager.StagePhase,
 	current_phase: WaveManager.StagePhase
 ) -> void:
-	if current_phase == WaveManager.StagePhase.REWARD:
+	if current_phase == WaveManager.StagePhase.WAVE_RESULT \
+			and wave_manager.current_state == WaveManager.State.WON:
+		# _finish_won()의 같은 시그널 체인에서 wave_won 코인 정산이 끝난 뒤
+		# 보상 화면을 열어야 하므로 다음 프레임으로 넘깁니다.
+		call_deferred(&"_advance_won_result_to_reward")
+	elif current_phase == WaveManager.StagePhase.REWARD:
 		_open_reward_shop()
 	elif shop_controller != null and shop_controller.is_open:
 		shop_controller.close_shop()
+
+
+func _advance_won_result_to_reward() -> void:
+	if wave_manager.current_state != WaveManager.State.WON \
+			or wave_manager.current_stage_phase \
+			!= WaveManager.StagePhase.WAVE_RESULT:
+		return
+	if not wave_manager.advance_stage_phase():
+		push_error("Reward bridge could not advance a won result to rewards.")
 
 
 func _sync_current_phase() -> void:

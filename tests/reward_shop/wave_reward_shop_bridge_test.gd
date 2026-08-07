@@ -72,13 +72,9 @@ func _run() -> void:
 		"The clear delay must settle into a normal wave victory.")
 	_expect(bridge.wallet.balance == 5,
 		"Only score-based reward coins should be paid, capped at five.")
-
-	_expect(manager.advance_stage_phase(),
-		"Wave result must advance into the reward phase.")
-	await process_frame
 	_expect(manager.current_stage_phase == WaveManager.StagePhase.REWARD \
 		and bridge.shop_controller.is_open and bridge.shop_hud.visible,
-		"Victory must open the reward shop in the main Wave scene.")
+		"Victory must automatically open the reward shop in the main Wave scene.")
 	_expect(bridge.shop_controller.ball_offers.size() == 3 \
 		and bridge.shop_controller.part_offers.size() == 3,
 		"The reward screen must expose three ball and three v0.3 part cards.")

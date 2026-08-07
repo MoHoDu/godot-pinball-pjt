@@ -637,17 +637,17 @@ func _test_bumper_runtime_integration(wave: WaveRuntimeCoordinator) -> void:
 	await process_frame
 	await process_frame
 	_expect(wave.wave_manager.current_stage_phase \
-		== WaveManager.StagePhase.WAVE_RESULT,
-		"Draining during the clear delay must finish the wave.")
+		== WaveManager.StagePhase.REWARD,
+		"Draining during the clear delay must automatically open rewards.")
 	_expect(int(wave.get(&"_active_shot_controls")) == 0,
 		"Clear-delay settlement must release aggregate Shot bumper control.")
 	_expect(not wave.flipper_selector.input_enabled,
 		"Flipper input must stay disabled on the wave-result phase.")
 
-	_expect(wave.wave_manager.advance_stage_phase(),
-		"A successful result must advance to the reward phase.")
-	_expect(wave.wave_manager.advance_stage_phase(),
-		"The reward placeholder must advance to the next repair phase.")
+	_expect(reward_bridge.shop_controller.is_open,
+		"Automatic reward entry must open the real shop controller.")
+	reward_bridge.shop_hud.proceed_requested.emit()
+	await process_frame
 	var next_session := wave.get_node(
 		"RepairBoardLayout/PlacementSession"
 	) as BoardPlacementSession
