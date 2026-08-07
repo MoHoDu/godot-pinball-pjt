@@ -42,6 +42,7 @@ const TIER_SPEEDS: Array[float] = [200.0, 700.0, 1600.0]
 @export var ball_flow_rules: BallFlowSfxRules
 @export var combo_rules: ComboSfxRules
 @export var bumper_rules: BumperSfxRules
+@export var boss_rules: BossSfxRules
 
 var _ball: RigidBody2D
 var _director: SfxDirector
@@ -162,6 +163,24 @@ func _unhandled_input(event: InputEvent) -> void:
 		KEY_P:
 			_play_raw(_combo(&"target_reached_cue"), 0.0, "목표 점수 도달")
 
+		# ── 보스 (H J K L N / ; 9) — 기획서 11장 순서대로 ──
+		KEY_H:
+			_play_raw(_boss(&"telegraph_cue"), 0.0, "보스 팔 예고 — 실 끼익")
+		KEY_J:
+			_play_raw(_boss(&"arm_swing_cue"), 0.0, "보스 팔 공격 — 휙 + 턱")
+		KEY_K:
+			_play_raw(_boss(&"hit_cue"), 0.0, "보스 피격 — 팡")
+		KEY_L:
+			_play_raw(_boss(&"roar_cue"), 0.0, "보스 포효 — 뒤틀린 오르골")
+		KEY_N:
+			_play_raw(_boss(&"cotton_telegraph_cue"), 0.0, "솜뭉치 예고 — 저주 점멸")
+		KEY_SLASH:
+			_play_raw(_boss(&"cotton_spawn_cue"), 0.0, "솜뭉치 생성 — 스르륵 + 푹")
+		KEY_SEMICOLON:
+			_play_raw(_boss(&"defeated_cue"), 0.0, "보스 처치 — 저주 정화")
+		KEY_9:
+			_play_raw(_boss(&"heartbeat_cue"), 0.0, "보스 환경 — 하트 핵 박동")
+
 		# ── Tier 4 범퍼 5종 (Z X C V B) ──
 		KEY_Z:
 			_play_bumper(&"stage01_button", "단추 범퍼")
@@ -175,8 +194,6 @@ func _unhandled_input(event: InputEvent) -> void:
 			_play_bumper(&"stage01_clockwork_cannon", "태엽 대포 몸통")
 
 		# ── Tier 4 기능 악센트 (N M P) ──
-		KEY_N:
-			_play_raw(_bumper(&"destroy_cue"), 0.0, "범퍼 파괴")
 		KEY_M:
 			_play_raw(_bumper(&"respawn_telegraph_cue"), 0.0, "범퍼 리스폰 예고")
 		KEY_P:
@@ -221,6 +238,10 @@ func _play_flipper(cue: SfxCue, label: String) -> void:
 ## 규칙이 안 물려 있어도 죽지 않게 감싸 꺼냅니다.
 func _flow(field: StringName) -> SfxCue:
 	return ball_flow_rules.get(field) if ball_flow_rules != null else null
+
+
+func _boss(field: StringName) -> SfxCue:
+	return boss_rules.get(field) if boss_rules != null else null
 
 
 func _combo(field: StringName) -> SfxCue:

@@ -104,6 +104,7 @@
 [ext_resource type="Script" path="res://scripts/repair_parts/runtime/repair_effect_router.gd" id="48_repair_effect_router"]
 
 [ext_resource type="Script" path="res://scripts/repair_parts/runtime/repair_session_controller.gd" id="49_repair_session_controller"]
+[ext_resource type="Resource" path="res://settings/sfx/BossSfxRules.tres" id="84_boss"]
 
 [sub_resource type="Resource" id="StageSettings_wave"]
 script = ExtResource("3_combo_stage")
@@ -592,6 +593,7 @@ wall_rules = ExtResource("80_wall")
 ball_flow_rules = ExtResource("81_flow")
 bumper_rules = ExtResource("82_bumper")
 combo_rules = ExtResource("83_combo")
+boss_rules = ExtResource("84_boss")
 
 [node name="WaveRepairEffects" type="Node" parent="."]
 
