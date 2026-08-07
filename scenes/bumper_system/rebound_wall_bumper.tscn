@@ -1,0 +1,35 @@
+[gd_scene load_steps=4 format=3]
+
+; 대각 벽 밀착용 삼각 리바운드 범퍼.
+; rebound_test_bumper.tscn 의 형태를 정식화했다 — 원본 씬은 손대지 않는다.
+; 밑변(240)이 로컬 X축, 꼭짓점(+Y 80)이 보드 안쪽을 향하도록 벽 회전에 맞춰 배치한다.
+; 색은 벽 최종 리소스의 톤다운 아이보리 프레임에 맞춘다.
+
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/bumper_base.tscn" id="1"]
+[ext_resource type="Resource" path="res://settings/bumpers/stage_01/ReboundWallBumper.tres" id="2"]
+
+[sub_resource type="ConvexPolygonShape2D" id="ReboundTriangle"]
+points = PackedVector2Array(-120, 0, 120, 0, 0, 80)
+
+[node name="ReboundWallBumper" instance=ExtResource("1")]
+bumper_id = &"rebound_wall"
+settings = ExtResource("2")
+
+[node name="CollisionShape2D" parent="." index="0"]
+shape = SubResource("ReboundTriangle")
+
+[node name="Visual" parent="." index="4"]
+visible = false
+
+[node name="_ReboundShape" type="Polygon2D" parent="."]
+z_index = 2
+color = Color(0.847, 0.808, 0.733, 1)
+polygon = PackedVector2Array(-120, 0, 120, 0, 0, 80)
+
+[node name="_ReboundEdge" type="Line2D" parent="."]
+z_index = 3
+points = PackedVector2Array(-120, 0, 120, 0, 0, 80, -120, 0)
+width = 5.0
+default_color = Color(0.427, 0.376, 0.306, 1)
+joint_mode = 2
+closed = true

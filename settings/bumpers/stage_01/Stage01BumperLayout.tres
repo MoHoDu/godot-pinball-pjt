@@ -6,8 +6,9 @@
 [sub_resource type="Resource" id="Wave1"]
 script = ExtResource("2_wave")
 wave_id = &"wave_01"
-total_count_range = Vector2i(4, 6)
-normal_count_range = Vector2i(4, 6)
+total_count_range = Vector2i(6, 7)
+normal_count_range = Vector2i(2, 3)
+bounce_count_range = Vector2i(4, 4)
 maximum_toy_drum_count = 0
 
 [sub_resource type="Resource" id="Wave2"]

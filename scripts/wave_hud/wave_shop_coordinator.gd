@@ -19,6 +19,7 @@ const DEFAULT_SHOP_CATALOG := preload(
 @export_category("Wave Shop")
 
 @export var shop_catalog: RewardShopCatalog = DEFAULT_SHOP_CATALOG
+@export var shop_stage_id: StringName = &"stage_01"
 
 ## 0이면 매번 다르게 뽑습니다.
 @export var shop_random_seed := 0
@@ -31,11 +32,10 @@ const DEFAULT_SHOP_CATALOG := preload(
 @export var debug_fill_coin_amount := 999
 
 
-var part_inventory: RewardPartInventory
+var part_inventory: RepairPartInventory
 var shop_controller: RewardShopController
 var shop_hud: RewardShopHud
 
-var _reward_count := 0
 var _last_delay_coin := 0
 
 
@@ -64,13 +64,16 @@ func _build_reward_system() -> void:
 
 
 func _build_shop_system() -> void:
-	part_inventory = RewardPartInventory.new()
-	part_inventory.name = "RewardPartInventory"
-	add_child(part_inventory)
+	part_inventory = get_node_or_null(^"RepairPartInventory") as RepairPartInventory
+	if part_inventory == null:
+		part_inventory = RewardShopPartInventory.new()
+		part_inventory.name = "RepairPartInventory"
+		add_child(part_inventory)
 
 	shop_controller = RewardShopController.new()
 	shop_controller.name = "RewardShopController"
 	shop_controller.catalog = shop_catalog
+	shop_controller.stage_id = shop_stage_id
 	shop_controller.random_seed = shop_random_seed
 	add_child(shop_controller)
 	var bound := shop_controller.bind(coin_wallet, part_inventory)
@@ -120,8 +123,9 @@ func _open_shop_after_win() -> void:
 		coin_field.board_coin_this_wave,
 		_last_delay_coin
 	)
-	if shop_controller.open_shop(wave_manager.current_wave_index, _reward_count):
-		_reward_count += 1
+	if shop_controller.open_shop(
+		wave_manager.current_wave_index, wave_manager.current_wave_index
+	):
 		_append_event("REWARD · 코인 %d · 공/부품을 고르세요" % coin_wallet.balance)
 
 

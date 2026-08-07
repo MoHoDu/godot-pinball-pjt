@@ -20,9 +20,13 @@ config/icon="res://Resources/ui/icon.svg"
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 
+[autoload]
+
+StageDataRepository="*res://scripts/stage_manage/stage_reward_repository.gd"
+
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/bumper_direction_editor/plugin.cfg")
+enabled=PackedStringArray("res://addons/bumper_direction_editor/plugin.cfg", "res://addons/stage_database_sync/plugin.cfg")
 
 [input]
 

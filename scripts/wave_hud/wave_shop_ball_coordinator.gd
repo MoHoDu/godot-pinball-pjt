@@ -45,7 +45,20 @@ func _build_stage_ball_inventory() -> void:
 
 
 func _on_ball_unlocked(ball_id: StringName) -> void:
-	stage_ball_inventory.unlock(ball_id)
+	if not stage_ball_inventory.unlock(ball_id):
+		return
+	var reusable_inventory := wave_ball_inventory as SelectBallInventory
+	if reusable_inventory == null or not reusable_inventory.reusable_owned_balls:
+		return
+	var mapped := ball_scene_map.make_definition(ball_id) \
+		if ball_scene_map != null else null
+	if mapped == null:
+		return
+	var definition := SelectBallDefinition.new()
+	definition.ball_id = mapped.ball_id
+	definition.display_name = mapped.display_name
+	definition.ball_scene = mapped.ball_scene
+	reusable_inventory.add_owned_definition(definition)
 
 
 func _on_unlocked_changed(unlocked_ids: Array[StringName]) -> void:
@@ -59,7 +72,9 @@ func _on_unlocked_changed(unlocked_ids: Array[StringName]) -> void:
 func _on_shop_proceed() -> void:
 	if not shop_controller.is_open:
 		return
-	wave_ball_inventory.starting_stock = stage_ball_inventory.build_stock()
+	var reusable_inventory := wave_ball_inventory as SelectBallInventory
+	if reusable_inventory == null or not reusable_inventory.reusable_owned_balls:
+		wave_ball_inventory.starting_stock = stage_ball_inventory.build_stock()
 	super()
 
 
@@ -69,7 +84,11 @@ func _open_shop_after_win() -> void:
 	var next_wave_index := wave_manager.current_wave_index + 1
 	if not _has_wave(next_wave_index):
 		stage_ball_inventory.reset_to_base()
-		wave_ball_inventory.starting_stock = stage_ball_inventory.build_stock()
+		var reusable_inventory := wave_ball_inventory as SelectBallInventory
+		if reusable_inventory != null and reusable_inventory.reusable_owned_balls:
+			reusable_inventory.reset_owned_to_starting_stock()
+		else:
+			wave_ball_inventory.starting_stock = stage_ball_inventory.build_stock()
 
 
 func _names_of(ball_ids: Array[StringName]) -> Array[String]:

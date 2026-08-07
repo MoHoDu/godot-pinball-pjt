@@ -26,7 +26,7 @@ func _run() -> void:
 	await process_frame
 
 	var wave_manager: WaveManager = scene.wave_manager
-	var inventory: RewardPartInventory = scene.part_inventory
+	var inventory: RepairPartInventory = scene.part_inventory
 	var placement: RepairPlacementController = scene.placement_controller
 	var base_bridge := scene.get_node(
 		^"BoardWavePlacementBridge"

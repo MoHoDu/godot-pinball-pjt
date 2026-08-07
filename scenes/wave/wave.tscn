@@ -38,7 +38,7 @@
 
 [ext_resource type="Script" uid="uid://cudkgw71kx8vj" path="res://scripts/combo_system/combo_wave_controller.gd" id="18_combo_wave"]
 
-[ext_resource type="Script" uid="uid://cm3baeo6imaxa" path="res://scripts/ball_base_system/wave_manager.gd" id="19_manager"]
+[ext_resource type="Script" uid="uid://m0u8ehpn0uri" path="res://scripts/reward_shop/reward_wave_manager.gd" id="19_manager"]
 
 [ext_resource type="Script" path="res://scripts/select_ball/select_ball_definition.gd" id="20_definition"]
 
@@ -90,6 +90,7 @@
 [ext_resource type="Resource" path="res://settings/sfx/BallFlowSfxRules.tres" id="81_flow"]
 [ext_resource type="Resource" path="res://settings/sfx/BumperSfxRules.tres" id="82_bumper"]
 [ext_resource type="Resource" path="res://settings/sfx/ComboSfxRules.tres" id="83_combo"]
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/rebound_wall_bumper.tscn" id="90_rebound_wall"]
 
 [ext_resource type="PackedScene" path="res://Resources/boards/starlight_brooch_placeable.tscn" id="41_brooch_placeable"]
 
@@ -105,6 +106,8 @@
 
 [ext_resource type="Script" path="res://scripts/repair_parts/runtime/repair_session_controller.gd" id="49_repair_session_controller"]
 [ext_resource type="Resource" path="res://settings/sfx/BossSfxRules.tres" id="84_boss"]
+
+[ext_resource type="Script" uid="uid://fn00hc0gpbf4" path="res://scripts/reward_shop/wave_reward_shop_bridge.gd" id="50_reward_bridge"]
 
 [sub_resource type="Resource" id="StageSettings_wave"]
 script = ExtResource("3_combo_stage")
@@ -139,7 +142,7 @@ feature_summary = "균형 잡힌 무게와 탄성으로 안정적인 궤적을 �
 [sub_resource type="Resource" id="BallStock_normal"]
 script = ExtResource("21_stock")
 definition = SubResource("BallDefinition_normal")
-count = 1
+count = 3
 
 [sub_resource type="Resource" id="BallDefinition_heavy"]
 script = ExtResource("20_definition")
@@ -157,7 +160,7 @@ count = 1
 script = ExtResource("36_repair_entry")
 settings = ExtResource("37_brooch_settings")
 placeable_scene = ExtResource("41_brooch_placeable")
-starting_count = 1
+starting_count = 0
 one_line_feature = "완성한다 · 6초 귀환"
 placeholder_icon = "✦"
 
@@ -165,7 +168,7 @@ placeholder_icon = "✦"
 script = ExtResource("36_repair_entry")
 settings = ExtResource("38_gears_settings")
 placeable_scene = ExtResource("42_gears_placeable")
-starting_count = 2
+starting_count = 0
 one_line_feature = "구동한다 · 연속 반응"
 placeholder_icon = "⚙"
 
@@ -173,7 +176,7 @@ placeholder_icon = "⚙"
 script = ExtResource("36_repair_entry")
 settings = ExtResource("40_bell_settings")
 placeable_scene = ExtResource("44_bell_placeable")
-starting_count = 1
+starting_count = 0
 one_line_feature = "울린다 · 반응 전달"
 placeholder_icon = "✧"
 
@@ -196,6 +199,17 @@ resource_local_to_scene = true
 size = Vector2(2600, 160)
 
 [sub_resource type="RectangleShape2D" id="w01_RectangleShape_drain_vertical"]
+resource_local_to_scene = true
+size = Vector2(160, 1600)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bin77"]
+size = Vector2(819.329, 24)
+
+[sub_resource type="RectangleShape2D" id="geo_RectangleShape_drain_horizontal"]
+resource_local_to_scene = true
+size = Vector2(2600, 160)
+
+[sub_resource type="RectangleShape2D" id="geo_RectangleShape_drain_vertical"]
 resource_local_to_scene = true
 size = Vector2(160, 1600)
 
@@ -242,282 +256,302 @@ scale = Vector2(77.17831, 36.03523)
 shape = SubResource("w01_RectangleShape2D_ftx8i")
 debug_color = Color(0.94972855, 0.16442639, 0.39801326, 0.41960785)
 
-[node name="PinballLauncher" type="Node2D" parent="." unique_id=537150401]
-position = Vector2(0, 400)
+[node name="PinballLauncher" type="Node2D" parent="."]
+position = Vector2(0, 372)
 rotation = -1.5707964
 script = ExtResource("13_launcher")
 minimum_launch_angle_degrees = -45.0
 maximum_launch_angle_degrees = 45.0
 
-[node name="LauncherMarker" type="Polygon2D" parent="PinballLauncher" unique_id=1013247396]
+[node name="LauncherMarker" type="Polygon2D" parent="PinballLauncher"]
 z_index = -1
 color = Color(0.25, 0.85, 0.43, 0.25)
 polygon = PackedVector2Array(-42, -42, 42, -42, 42, 42, -42, 42)
 
-[node name="BallDrainArea" type="Area2D" parent="." unique_id=1325901213]
+[node name="BallDrainArea" type="Area2D" parent="."]
 visible = false
 collision_layer = 0
 
-[node name="TopDrain" type="CollisionShape2D" parent="BallDrainArea" unique_id=1225379419]
+[node name="TopDrain" type="CollisionShape2D" parent="BallDrainArea"]
 position = Vector2(0, -800)
-shape = SubResource("w01_RectangleShape_drain_horizontal")
+shape = SubResource("geo_RectangleShape_drain_horizontal")
 
-[node name="BottomDrain" type="CollisionShape2D" parent="BallDrainArea" unique_id=1475624790]
+[node name="BottomDrain" type="CollisionShape2D" parent="BallDrainArea"]
 position = Vector2(0, 800)
-shape = SubResource("w01_RectangleShape_drain_horizontal")
+shape = SubResource("geo_RectangleShape_drain_horizontal")
 
-[node name="LeftDrain" type="CollisionShape2D" parent="BallDrainArea" unique_id=163146477]
+[node name="LeftDrain" type="CollisionShape2D" parent="BallDrainArea"]
 position = Vector2(-1280, 0)
-shape = SubResource("w01_RectangleShape_drain_vertical")
+shape = SubResource("geo_RectangleShape_drain_vertical")
 
-[node name="RightDrain" type="CollisionShape2D" parent="BallDrainArea" unique_id=1163546781]
+[node name="RightDrain" type="CollisionShape2D" parent="BallDrainArea"]
 position = Vector2(1280, 0)
-shape = SubResource("w01_RectangleShape_drain_vertical")
+shape = SubResource("geo_RectangleShape_drain_vertical")
 
-[node name="Walls" type="Node2D" parent="." unique_id=1054457750]
+[node name="Walls" type="Node2D" parent="."]
 
-[node name="Top" type="Node2D" parent="Walls" unique_id=1397097050]
+[node name="Top" type="Node2D" parent="Walls"]
 
-[node name="TopRightDiagonal" type="StaticBody2D" parent="Walls/Top" unique_id=816351727 groups=["combo_walls"]]
-position = Vector2(661, -431)
+[node name="TopRightDiagonal" type="StaticBody2D" parent="Walls/Top" groups=["combo_walls"]]
+position = Vector2(632, -402)
 rotation = 0.34877196
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/TopRightDiagonal" unique_id=1115751119]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/TopRightDiagonal"]
 position = Vector2(0, 12)
-shape = SubResource("w01_RectangleShape2D_bin77")
+shape = SubResource("RectangleShape2D_bin77")
 
-[node name="Visual" parent="Walls/Top/TopRightDiagonal" unique_id=603172277 instance=ExtResource("8_wall_visual")]
+[node name="Visual" parent="Walls/Top/TopRightDiagonal" instance=ExtResource("8_wall_visual")]
 
-[node name="TopLeftDiagonal" type="StaticBody2D" parent="Walls/Top" unique_id=1697113537 groups=["combo_walls"]]
-position = Vector2(-661.0001, -431)
+[node name="TopLeftDiagonal" type="StaticBody2D" parent="Walls/Top" groups=["combo_walls"]]
+position = Vector2(-633.0001, -402)
 rotation = -0.348772
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/TopLeftDiagonal" unique_id=1508027846]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/TopLeftDiagonal"]
 position = Vector2(0, 12)
-shape = SubResource("w01_RectangleShape2D_bin77")
+shape = SubResource("RectangleShape2D_bin77")
 
-[node name="Visual" parent="Walls/Top/TopLeftDiagonal" unique_id=1361613651 instance=ExtResource("8_wall_visual")]
+[node name="Visual" parent="Walls/Top/TopLeftDiagonal" instance=ExtResource("8_wall_visual")]
 position = Vector2(6.6, 2.4)
 
-[node name="TopRigthVertical" type="StaticBody2D" parent="Walls/Top" unique_id=2109036029 groups=["combo_walls"]]
-position = Vector2(358, -694)
+[node name="TopRigthVertical" type="StaticBody2D" parent="Walls/Top" groups=["combo_walls"]]
+position = Vector2(329, -665)
 rotation = 2.0943952
 scale = Vector2(0.28, 1.042)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/TopRigthVertical" unique_id=28034098]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/TopRigthVertical"]
 position = Vector2(0, 12)
-shape = SubResource("w01_RectangleShape2D_bin77")
+shape = SubResource("RectangleShape2D_bin77")
 
-[node name="Visual" parent="Walls/Top/TopRigthVertical" unique_id=411608391 instance=ExtResource("8_wall_visual")]
+[node name="Visual" parent="Walls/Top/TopRigthVertical" instance=ExtResource("8_wall_visual")]
 
-[node name="TopLeftVertical" type="StaticBody2D" parent="Walls/Top" unique_id=1669184563 groups=["combo_walls"]]
-position = Vector2(-358, -702)
+[node name="TopLeftVertical" type="StaticBody2D" parent="Walls/Top" groups=["combo_walls"]]
+position = Vector2(-330, -673)
 rotation = -2.0943952
 scale = Vector2(0.255, 1.042)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/TopLeftVertical" unique_id=1649389301]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/TopLeftVertical"]
 position = Vector2(0, 12)
-shape = SubResource("w01_RectangleShape2D_bin77")
+shape = SubResource("RectangleShape2D_bin77")
 
-[node name="Visual" parent="Walls/Top/TopLeftVertical" unique_id=1795478035 instance=ExtResource("8_wall_visual")]
+[node name="Visual" parent="Walls/Top/TopLeftVertical" instance=ExtResource("8_wall_visual")]
 position = Vector2(0.00025431183, -7.278369e-13)
 
-[node name="TopLeftSide" type="StaticBody2D" parent="Walls/Top" unique_id=864212274 groups=["combo_walls"]]
-position = Vector2(-1214.0001, -342.00006)
+[node name="TopLeftSide" type="StaticBody2D" parent="Walls/Top" groups=["combo_walls"]]
+position = Vector2(-1186, -313.00006)
 rotation = 0.20943952
 scale = Vector2(0.5, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/TopLeftSide" unique_id=1463605444]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/TopLeftSide"]
 position = Vector2(0, 12)
-shape = SubResource("w01_RectangleShape2D_bin77")
+shape = SubResource("RectangleShape2D_bin77")
 
-[node name="Visual" parent="Walls/Top/TopLeftSide" unique_id=1131883148 instance=ExtResource("8_wall_visual")]
+[node name="Visual" parent="Walls/Top/TopLeftSide" instance=ExtResource("8_wall_visual")]
 position = Vector2(0.00025431183, -7.278369e-13)
 
-[node name="TopRightSide" type="StaticBody2D" parent="Walls/Top" unique_id=863916641 groups=["combo_walls"]]
-position = Vector2(-1214, 356.99997)
+[node name="TopRightSide" type="StaticBody2D" parent="Walls/Top" groups=["combo_walls"]]
+position = Vector2(-1185.9999, 329)
 rotation = 2.8797934
 scale = Vector2(0.5, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/TopRightSide" unique_id=1457188442]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/TopRightSide"]
 position = Vector2(0, 12)
-shape = SubResource("w01_RectangleShape2D_bin77")
+shape = SubResource("RectangleShape2D_bin77")
 
-[node name="Visual" parent="Walls/Top/TopRightSide" unique_id=2020278547 instance=ExtResource("8_wall_visual")]
+[node name="Visual" parent="Walls/Top/TopRightSide" instance=ExtResource("8_wall_visual")]
 position = Vector2(0.00025431183, -7.278369e-13)
 
-[node name="Bottom" type="Node2D" parent="Walls" unique_id=1848326491]
+[node name="Bottom" type="Node2D" parent="Walls"]
 
-[node name="BottomRightDiagonal" type="StaticBody2D" parent="Walls/Bottom" unique_id=512452783 groups=["combo_walls"]]
-position = Vector2(654, 441)
+[node name="BottomRightDiagonal" type="StaticBody2D" parent="Walls/Bottom" groups=["combo_walls"]]
+position = Vector2(625, 413)
 rotation = 2.7928207
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom/BottomRightDiagonal" unique_id=1197987137]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom/BottomRightDiagonal"]
 position = Vector2(0, 12)
-shape = SubResource("w01_RectangleShape2D_bin77")
+shape = SubResource("RectangleShape2D_bin77")
 
-[node name="Visual" parent="Walls/Bottom/BottomRightDiagonal" unique_id=1570794061 instance=ExtResource("8_wall_visual")]
+[node name="Visual" parent="Walls/Bottom/BottomRightDiagonal" instance=ExtResource("8_wall_visual")]
 
-[node name="BottomLeftDiagonal" type="StaticBody2D" parent="Walls/Bottom" unique_id=1641593198 groups=["combo_walls"]]
-position = Vector2(-654.0001, 441)
+[node name="BottomLeftDiagonal" type="StaticBody2D" parent="Walls/Bottom" groups=["combo_walls"]]
+position = Vector2(-626.0001, 413)
 rotation = -2.7928207
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom/BottomLeftDiagonal" unique_id=1143503514]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom/BottomLeftDiagonal"]
 position = Vector2(0, 12)
-shape = SubResource("w01_RectangleShape2D_bin77")
+shape = SubResource("RectangleShape2D_bin77")
 
-[node name="Visual" parent="Walls/Bottom/BottomLeftDiagonal" unique_id=2062036226 instance=ExtResource("8_wall_visual")]
+[node name="Visual" parent="Walls/Bottom/BottomLeftDiagonal" instance=ExtResource("8_wall_visual")]
 position = Vector2(-6.6, 2.4)
 
-[node name="BottomRightVertical" type="StaticBody2D" parent="Walls/Bottom" unique_id=87521949 groups=["combo_walls"]]
-position = Vector2(342, 693)
+[node name="BottomRightVertical" type="StaticBody2D" parent="Walls/Bottom" groups=["combo_walls"]]
+position = Vector2(313, 665)
 rotation = 1.0471976
 scale = Vector2(0.25, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom/BottomRightVertical" unique_id=181781103]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom/BottomRightVertical"]
 position = Vector2(0, 12)
-shape = SubResource("w01_RectangleShape2D_bin77")
+shape = SubResource("RectangleShape2D_bin77")
 
-[node name="Visual" parent="Walls/Bottom/BottomRightVertical" unique_id=488983619 instance=ExtResource("8_wall_visual")]
+[node name="Visual" parent="Walls/Bottom/BottomRightVertical" instance=ExtResource("8_wall_visual")]
 
-[node name="BottomLeftVertical" type="StaticBody2D" parent="Walls/Bottom" unique_id=1905014300 groups=["combo_walls"]]
-position = Vector2(-342, 693)
+[node name="BottomLeftVertical" type="StaticBody2D" parent="Walls/Bottom" groups=["combo_walls"]]
+position = Vector2(-314, 665)
 rotation = -1.0471976
 scale = Vector2(0.25, 1.042)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom/BottomLeftVertical" unique_id=1765764491]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom/BottomLeftVertical"]
 position = Vector2(0, 12)
-shape = SubResource("w01_RectangleShape2D_bin77")
+shape = SubResource("RectangleShape2D_bin77")
 
-[node name="Visual" parent="Walls/Bottom/BottomLeftVertical" unique_id=1850387066 instance=ExtResource("8_wall_visual")]
+[node name="Visual" parent="Walls/Bottom/BottomLeftVertical" instance=ExtResource("8_wall_visual")]
 position = Vector2(-24.999502, 0)
 
-[node name="BottomLeftSide" type="StaticBody2D" parent="Walls/Bottom" unique_id=886827620 groups=["combo_walls"]]
-position = Vector2(1214, -334.00006)
+[node name="BottomLeftSide" type="StaticBody2D" parent="Walls/Bottom" groups=["combo_walls"]]
+position = Vector2(1185, -305.00006)
 rotation = -0.20943952
 scale = Vector2(0.5, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom/BottomLeftSide" unique_id=383227778]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom/BottomLeftSide"]
 position = Vector2(0, 12)
-shape = SubResource("w01_RectangleShape2D_bin77")
+shape = SubResource("RectangleShape2D_bin77")
 
-[node name="Visual" parent="Walls/Bottom/BottomLeftSide" unique_id=1773372326 instance=ExtResource("8_wall_visual")]
+[node name="Visual" parent="Walls/Bottom/BottomLeftSide" instance=ExtResource("8_wall_visual")]
 position = Vector2(3.326577, -7.8251457)
 
-[node name="BottomRightSide" type="StaticBody2D" parent="Walls/Bottom" unique_id=1620610219 groups=["combo_walls"]]
-position = Vector2(1198, 357.00003)
+[node name="BottomRightSide" type="StaticBody2D" parent="Walls/Bottom" groups=["combo_walls"]]
+position = Vector2(1169, 329.00003)
 rotation = 3.408628
 scale = Vector2(0.5, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom/BottomRightSide" unique_id=905984687]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom/BottomRightSide"]
 position = Vector2(0, 12)
-shape = SubResource("w01_RectangleShape2D_bin77")
+shape = SubResource("RectangleShape2D_bin77")
 
-[node name="Visual" parent="Walls/Bottom/BottomRightSide" unique_id=1609936294 instance=ExtResource("8_wall_visual")]
+[node name="Visual" parent="Walls/Bottom/BottomRightSide" instance=ExtResource("8_wall_visual")]
 position = Vector2(0.00025431183, -7.278369e-13)
 
-[node name="FlipperSelector" type="Node2D" parent="." unique_id=1339977092]
+[node name="FlipperSelector" type="Node2D" parent="."]
 script = ExtResource("9_flipper_selector")
 
-[node name="BottomController" type="Node2D" parent="FlipperSelector" unique_id=620399436]
-position = Vector2(0, 501)
+[node name="BottomController" type="Node2D" parent="FlipperSelector"]
+position = Vector2(0, 473)
 script = ExtResource("10_flipper_controller")
 
-[node name="LeftFlipper" parent="FlipperSelector/BottomController" unique_id=1915782774 instance=ExtResource("11_left_flipper")]
-position = Vector2(-286.99988, 98)
+[node name="LeftFlipper" parent="FlipperSelector/BottomController" instance=ExtResource("11_left_flipper")]
+position = Vector2(-258.99988, 98)
+rotation = 0.43633232
 flipper_length = 360.0
-rotation = 0.6981317
-initial_angle_degrees = 40.0
+initial_angle_degrees = 25.0
 maximum_angle_degrees = -80.0
 
-[node name="RightFlipper" parent="FlipperSelector/BottomController" unique_id=2137998633 instance=ExtResource("12_right_flipper")]
-position = Vector2(287, 98)
+[node name="RightFlipper" parent="FlipperSelector/BottomController" instance=ExtResource("12_right_flipper")]
+position = Vector2(258, 98)
+rotation = -0.43633232
 flipper_length = 360.0
-rotation = -0.6981317
-initial_angle_degrees = -40.0
+initial_angle_degrees = -25.0
 maximum_angle_degrees = 80.0
 
-[node name="TopController" type="Node2D" parent="FlipperSelector" unique_id=52918414]
-position = Vector2(0, -582)
+[node name="TopController" type="Node2D" parent="FlipperSelector"]
+position = Vector2(0, -553)
 rotation = 3.1415927
 script = ExtResource("10_flipper_controller")
 
-[node name="LeftFlipper" parent="FlipperSelector/TopController" unique_id=1022724147 instance=ExtResource("11_left_flipper")]
-position = Vector2(-287, 0)
+[node name="LeftFlipper" parent="FlipperSelector/TopController" instance=ExtResource("11_left_flipper")]
+position = Vector2(-258, 0)
+rotation = 0.43633232
 flipper_length = 360.0
-rotation = 0.6981317
-initial_angle_degrees = 40.0
+initial_angle_degrees = 25.0
 maximum_angle_degrees = -80.0
 
-[node name="RightFlipper" parent="FlipperSelector/TopController" unique_id=560543059 instance=ExtResource("12_right_flipper")]
-position = Vector2(285.99988, 0)
+[node name="RightFlipper" parent="FlipperSelector/TopController" instance=ExtResource("12_right_flipper")]
+position = Vector2(257.99988, 0)
+rotation = -0.43633232
 flipper_length = 360.0
-rotation = -0.6981317
-initial_angle_degrees = -40.0
+initial_angle_degrees = -25.0
 maximum_angle_degrees = 80.0
 
-[node name="LeftController" type="Node2D" parent="FlipperSelector" unique_id=778351050]
-position = Vector2(-1046, 0)
+[node name="LeftController" type="Node2D" parent="FlipperSelector"]
+position = Vector2(-1017.9999, 0)
 rotation = 1.5707964
 script = ExtResource("10_flipper_controller")
 
-[node name="LeftFlipper" parent="FlipperSelector/LeftController" unique_id=1480574411 instance=ExtResource("11_left_flipper")]
-position = Vector2(-287, -24)
+[node name="LeftFlipper" parent="FlipperSelector/LeftController" instance=ExtResource("11_left_flipper")]
+position = Vector2(-257.99994, -24)
+rotation = 0.43633232
 flipper_length = 360.0
-rotation = 0.6981317
-initial_angle_degrees = 40.0
+initial_angle_degrees = 25.0
 maximum_angle_degrees = -80.0
 
-[node name="RightFlipper" parent="FlipperSelector/LeftController" unique_id=2091025610 instance=ExtResource("12_right_flipper")]
-position = Vector2(287, -24)
+[node name="RightFlipper" parent="FlipperSelector/LeftController" instance=ExtResource("12_right_flipper")]
+position = Vector2(259, -24)
+rotation = -0.43633232
 flipper_length = 360.0
-rotation = -0.6981317
-initial_angle_degrees = -40.0
+initial_angle_degrees = -25.0
 maximum_angle_degrees = 80.0
 
-[node name="RightController" type="Node2D" parent="FlipperSelector" unique_id=1365978519]
-position = Vector2(998, 0)
+[node name="RightController" type="Node2D" parent="FlipperSelector"]
+position = Vector2(969, 0)
 rotation = -1.5707964
 script = ExtResource("10_flipper_controller")
 
-[node name="LeftFlipper" parent="FlipperSelector/RightController" unique_id=1051254799 instance=ExtResource("11_left_flipper")]
-position = Vector2(-286, 24)
+[node name="LeftFlipper" parent="FlipperSelector/RightController" instance=ExtResource("11_left_flipper")]
+position = Vector2(-258, 24)
+rotation = 0.43633232
 flipper_length = 360.0
-rotation = 0.6981317
-initial_angle_degrees = 40.0
+initial_angle_degrees = 25.0
 maximum_angle_degrees = -80.0
 
-[node name="RightFlipper" parent="FlipperSelector/RightController" unique_id=991188738 instance=ExtResource("12_right_flipper")]
-position = Vector2(287, 24)
+[node name="RightFlipper" parent="FlipperSelector/RightController" instance=ExtResource("12_right_flipper")]
+position = Vector2(258, 24)
+rotation = -0.43633232
 flipper_length = 360.0
-rotation = -0.6981317
-initial_angle_degrees = -40.0
+initial_angle_degrees = -25.0
 maximum_angle_degrees = 80.0
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1316343289]
 position = Vector2(0, 1)
 zoom = Vector2(0.43, 0.43)
 
+[node name="TriangleTopLeft" parent="Walls" instance=ExtResource("90_rebound_wall")]
+position = Vector2(-624.46, -378.51)
+rotation = 2.7928207
+bumper_id = &"rebound_wall_top_left"
+
+[node name="TriangleTopRight" parent="Walls" instance=ExtResource("90_rebound_wall")]
+position = Vector2(623.46, -378.51)
+rotation = -2.7928207
+bumper_id = &"rebound_wall_top_right"
+
+[node name="TriangleBottomLeft" parent="Walls" instance=ExtResource("90_rebound_wall")]
+position = Vector2(-617.46, 389.51)
+rotation = 0.348772
+bumper_id = &"rebound_wall_bottom_left"
+
+[node name="TriangleBottomRight" parent="Walls" instance=ExtResource("90_rebound_wall")]
+position = Vector2(616.46, 389.51)
+rotation = -0.348772
+bumper_id = &"rebound_wall_bottom_right"
+
 [node name="Bumpers" type="Node2D" parent="." unique_id=1144402446]
 
 [node name="BumperCenter" parent="Bumpers" unique_id=1184156493 instance=ExtResource("26_button_bumper")]
-position = Vector2(0, -270)
+position = Vector2(0, -288)
 
 [node name="BumperUpperLeft" parent="Bumpers" unique_id=2016466414 instance=ExtResource("27_cotton_bumper")]
-position = Vector2(-420, -190)
+position = Vector2(-432, -144)
 
 [node name="BumperUpperRight" parent="Bumpers" unique_id=976731568 instance=ExtResource("26_button_bumper")]
-position = Vector2(420, -190)
+position = Vector2(432, -144)
 bumper_id = &"button_bumper_right"
 
 [node name="BumperLowerLeft" parent="Bumpers" unique_id=1155343190 instance=ExtResource("28_spring_bumper")]
-position = Vector2(-460, 210)
+position = Vector2(-432, 144)
 
 [node name="BumperLowerRight" parent="Bumpers" unique_id=1847381481 instance=ExtResource("29_drum_bumper")]
-position = Vector2(460, 210)
+position = Vector2(432, 144)
 
 [node name="BumperCannon" parent="Bumpers" unique_id=1628015170 instance=ExtResource("30_cannon_bumper")]
-position = Vector2(0, 190)
+position = Vector2(0, 144)
 response_strategy = SubResource("Resource_jkexw")
 
 [node name="RepairBoardLayout" parent="." instance=ExtResource("31_repair_layout")]
@@ -531,7 +565,9 @@ configured_combo_system = NodePath("../ComboSystem")
 
 [node name="WaveBallInventory" type="Node" parent="." unique_id=150677151]
 script = ExtResource("16_inventory")
-starting_stock = Array[ExtResource("21_stock")]([SubResource("BallStock_light"), SubResource("BallStock_normal"), SubResource("BallStock_heavy")])
+starting_stock = Array[ExtResource("21_stock")]([SubResource("BallStock_normal")])
+reusable_owned_balls = true
+launches_per_wave = 3
 
 [node name="WaveBallFlowController" type="Node" parent="." unique_id=1559637729 node_paths=PackedStringArray("configured_inventory", "configured_launcher")]
 script = ExtResource("17_flow")
@@ -582,6 +618,16 @@ placement_session = NodePath("../RepairBoardLayout/PlacementSession")
 inventory = NodePath("../RepairPartInventory")
 placement_hud = NodePath("../RepairPlacementHUD/RepairPartPlacementHud")
 wave_bridge = NodePath("../BoardWavePlacementBridge")
+
+[node name="WaveRewardShopBridge" type="Node" parent="." node_paths=PackedStringArray("wave_manager", "combo_system", "ball_inventory", "part_inventory", "placement_session", "wave_hud", "ball_selection_hud")]
+script = ExtResource("50_reward_bridge")
+wave_manager = NodePath("../WaveManager")
+combo_system = NodePath("../ComboSystem")
+ball_inventory = NodePath("../WaveBallInventory")
+part_inventory = NodePath("../RepairPartInventory")
+placement_session = NodePath("../RepairBoardLayout/PlacementSession")
+wave_hud = NodePath("../HUD/WaveHud")
+ball_selection_hud = NodePath("../HUD/BallSelectionHud")
 
 [node name="SfxDirector" type="Node" parent="."]
 script = ExtResource("41_sfx_director")

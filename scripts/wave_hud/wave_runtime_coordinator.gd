@@ -338,6 +338,10 @@ func _on_inventory_selection(
 ) -> void:
 	if _selection_committed or definition == null:
 		return
+	var select_inventory := wave_ball_inventory as SelectBallInventory
+	if select_inventory != null and select_inventory.reusable_owned_balls:
+		hud_state.set_current_life_type(definition.ball_id)
+		return
 	hud_state.select_life(definition.ball_id)
 
 

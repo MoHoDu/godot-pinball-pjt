@@ -117,9 +117,8 @@ func _draw() -> void:
 		)
 		var color := bounce_rules.ring_color
 		color.a *= 1.0 - t
-		draw_arc(
-			Vector2.ZERO, ring_radius, 0.0, TAU, 56, color,
-			bounce_rules.ring_width * (1.0 - 0.55 * t), true
+		draw_glow_arc(
+			ring_radius, color, bounce_rules.ring_width * (1.0 - 0.55 * t)
 		)
 
 	for item in _bursts:
@@ -131,4 +130,6 @@ func _draw() -> void:
 		var length: float = float(item["length"])
 		var start: Vector2 = origin + item["dir"] * length * (0.10 + 0.35 * t)
 		var end: Vector2 = origin + item["dir"] * length * (0.45 + 0.55 * t)
-		draw_line(start, end, color, bounce_rules.tick_width * (1.0 - 0.3 * t), true)
+		draw_glow_line(
+			start, end, color, bounce_rules.tick_width * (1.0 - 0.3 * t)
+		)

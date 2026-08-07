@@ -29,7 +29,8 @@ const DEFAULT_UNSELECTED_ALPHA: float = 0.22
 const DEFAULT_TRAIL_LIFETIME: float = 0.22
 
 const MIN_SMOKE_COUNT: int = 0
-const MAX_SMOKE_COUNT: int = 6
+## 발사 연기를 뭉게뭉게 보이게 하려면 퍼프가 여러 개 필요하다 (2026-08-07).
+const MAX_SMOKE_COUNT: int = 12
 const DEFAULT_SMOKE_COUNT: int = 3
 
 const MIN_CAPTURE_PRESS: float = 0.0
@@ -98,6 +99,16 @@ var trail_lifetime: float = DEFAULT_TRAIL_LIFETIME:
 var smoke_count: int = DEFAULT_SMOKE_COUNT:
 	set(value):
 		smoke_count = clampi(value, MIN_SMOKE_COUNT, MAX_SMOKE_COUNT)
+		emit_changed()
+
+## 연기 퍼프 하나의 크기입니다. 표시 반지름 비율입니다.
+##
+## 예전에는 `chip_radius_ratio` 를 빌려 썼는데 조각은 원래 작아야 하는 값이라
+## 연기가 9px 짜리 점으로 나왔습니다 (2026-08-07). 따로 뗐습니다.
+@export_range(0.05, 0.60, 0.01)
+var smoke_radius_ratio: float = 0.26:
+	set(value):
+		smoke_radius_ratio = clampf(value, 0.05, 0.60)
 		emit_changed()
 
 @export var smoke_color := Color(0.72, 0.70, 0.66, 0.45):
