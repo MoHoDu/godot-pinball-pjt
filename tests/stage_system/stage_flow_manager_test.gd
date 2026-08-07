@@ -35,6 +35,7 @@ func _run() -> void:
 	await _test_nested_legacy_signal_with_arguments()
 	await _test_duplicate_completion_is_ignored()
 	await _test_restart_cancels_pending_transition()
+	await _test_stage_coin_wallet_continuity()
 	_test_stage_01_scene_configuration()
 	_test_existing_wave_scene_contracts()
 	_test_configuration_validation()
@@ -194,6 +195,119 @@ func _test_restart_cancels_pending_transition() -> void:
 		"재시작 전의 지연 전환이 새 스테이지를 보상 단계로 넘기면 안 된다."
 	)
 	await _destroy_manager(manager)
+
+
+func _test_stage_coin_wallet_continuity() -> void:
+	var stage := STAGE_01_SCENE.instantiate()
+	root.add_child(stage)
+	await _wait_for_transition()
+	var manager := stage.get_node(^"StageFlowManager") as StageFlowManager
+	_expect(manager.coin_wallet != null, "StageFlowManager는 공용 코인 지갑을 가져야 한다.")
+	_expect(manager.current_coin_balance == 0, "새 스테이지의 코인은 0으로 시작해야 한다.")
+
+	var first_session := _get_active_coin_session(manager)
+	_expect(
+		first_session != null
+			and first_session.wallet == manager.coin_wallet
+			and not first_session.manages_stage_wallet_lifecycle,
+		"첫 웨이브는 스테이지 공용 지갑을 사용해야 한다."
+	)
+	var first_wave_manager := manager.active_scene.get_node(^"WaveManager") as WaveManager
+	var first_coin_field := manager.active_scene.get_node(
+		^"CoinSystem"
+	) as CoinFieldController
+	_expect(first_wave_manager.advance_stage_phase(), "첫 웨이브 플레이 단계에 진입해야 한다.")
+	await process_frame
+	_expect(
+		first_coin_field.remaining_pickup_count() == 12,
+		"스테이지 웨이브에도 코인 12개가 생성되어야 한다."
+	)
+	var test_ball := Node2D.new()
+	test_ball.add_to_group(&"pinball_balls")
+	root.add_child(test_ball)
+	for child: Node in first_coin_field.get_children():
+		if child is CoinPickup:
+			(child as CoinPickup)._on_body_entered(test_ball)
+			break
+	await process_frame
+	_expect(
+		manager.current_coin_balance == 2
+			and first_coin_field.board_coin_this_wave == 2,
+		"웨이브 코인 획득은 스테이지 공용 지갑에 즉시 반영되어야 한다."
+	)
+	test_ball.queue_free()
+	manager.coin_wallet.add(5)
+	_complete_active_wave(manager, 300)
+	await _wait_for_transition()
+	var first_reward := manager.active_scene as StageRewardPlaceholder
+	_expect(
+		manager.current_coin_balance == 7
+			and first_reward != null
+			and first_reward.description_label.text.contains("보유 코인: 7"),
+		"웨이브 획득 코인은 보상 페이지까지 유지되고 표시되어야 한다."
+	)
+	first_reward.continue_stage()
+	await _wait_for_transition()
+
+	var second_session := _get_active_coin_session(manager)
+	_expect(
+		second_session != null
+			and second_session.wallet == manager.coin_wallet
+			and second_session.wallet.balance == 7,
+		"보상 뒤 다음 웨이브도 같은 누적 지갑을 사용해야 한다."
+	)
+	manager.coin_wallet.add(5)
+	_complete_active_wave(manager, 500)
+	await _wait_for_transition()
+	var second_reward := manager.active_scene as StageRewardPlaceholder
+	_expect(
+		manager.current_coin_balance == 12
+			and second_reward.description_label.text.contains("보유 코인: 12"),
+		"두 번째 웨이브 코인은 기존 잔액에 누적되어야 한다."
+	)
+	second_reward.continue_stage()
+	await _wait_for_transition()
+
+	var third_session := _get_active_coin_session(manager)
+	_expect(
+		third_session != null and third_session.wallet.balance == 12,
+		"마지막 웨이브 진입 전까지 누적 코인을 유지해야 한다."
+	)
+	var third_wave_manager := manager.active_scene.get_node(^"WaveManager") as WaveManager
+	third_wave_manager.wave_lost.emit(0, 1000)
+	_expect(manager.current_coin_balance == 0, "게임 오버는 스테이지 공용 지갑도 초기화해야 한다.")
+	manager.coin_wallet.add(9)
+	_complete_active_wave(manager, 1000)
+	await _wait_for_transition()
+	var final_reward := manager.active_scene as StageRewardPlaceholder
+	_expect(
+		final_reward != null
+			and final_reward.description_label.text.contains("보유 코인: 9"),
+		"마지막 웨이브 보상에서도 현재 코인을 확인할 수 있어야 한다."
+	)
+	final_reward.continue_stage()
+	await _wait_for_transition()
+	_expect(
+		manager.current_phase == StageFlowManager.Phase.COMPLETE
+			and manager.current_coin_balance == 0,
+		"스테이지 완료 시 공용 코인 지갑을 초기화해야 한다."
+	)
+
+	stage.queue_free()
+	await process_frame
+
+
+func _get_active_coin_session(manager: StageFlowManager) -> WaveCoinSession:
+	if manager.active_scene == null:
+		return null
+	return manager.active_scene.get_node_or_null(
+		^"CoinSystem/CoinSession"
+	) as WaveCoinSession
+
+
+func _complete_active_wave(manager: StageFlowManager, target_score: int) -> void:
+	var wave_manager := manager.active_scene.get_node(^"WaveManager") as WaveManager
+	wave_manager.wave_won.emit(target_score, target_score)
 
 
 func _test_configuration_validation() -> void:
