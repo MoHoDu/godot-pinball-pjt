@@ -99,6 +99,10 @@ func bind(wallet: CoinWallet, part_inventory: RepairPartInventory) -> bool:
 func open_shop(wave_id: int, reward_index: int) -> bool:
 	if _is_open or catalog == null or _wallet == null:
 		return false
+	var stage_num := StageRewardRepository.stage_num_from_id(stage_id)
+	if stage_num < 1:
+		push_error("Reward shop stage_id must use stage_<number>: %s" % stage_id)
+		return false
 	_apply_stage_database()
 	_is_open = true
 	_wave_id = wave_id
@@ -107,10 +111,10 @@ func open_shop(wave_id: int, reward_index: int) -> bool:
 	_part_purchase_used = false
 
 	_ball_offers = RewardOfferGenerator.generate_ball_offers(
-		catalog, _unlocked_ball_ids, _reward_index, _rng
+		catalog, _unlocked_ball_ids, _reward_index, _rng, stage_num
 	)
 	_part_offers = RewardOfferGenerator.generate_part_offers(
-		catalog, _reward_index, _rng, _owned_part_kinds()
+		catalog, _reward_index, _rng, _owned_part_kinds(), stage_num
 	)
 	var affordable := RewardOfferGenerator.ensure_affordable_pair(
 		_ball_offers,
@@ -118,7 +122,8 @@ func open_shop(wave_id: int, reward_index: int) -> bool:
 		catalog,
 		_unlocked_ball_ids,
 		_wallet.balance,
-		_reward_index
+		_reward_index,
+		stage_num
 	)
 
 	shop_opened.emit(_wave_id)

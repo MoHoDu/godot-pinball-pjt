@@ -14,7 +14,8 @@ extends Resource
 ## 구매 시 인벤토리에 더해지는 수량입니다. x2 · 12코인처럼 한 줄로 표시합니다.
 @export_range(1, 9, 1) var bundle_count := 1
 @export var price := 9
-@export var first_wave_id: StringName = &"wave_01"
+@export_range(1, 999, 1) var first_stage_num := 1
+@export_range(1, 4, 1) var first_wave_num := 1
 @export_range(0.0, 1000.0, 0.01) var probability := 1.0
 
 ## 대표 동사(5-3). 완성한다 / 감고 터뜨린다 / 잇는다 / 늦게 울린다.
@@ -39,5 +40,7 @@ func is_valid() -> bool:
 	return part_id != &"" \
 		and price > 0 \
 		and bundle_count > 0 \
-		and first_wave_id != &"" \
+		and first_stage_num >= 1 \
+		and first_wave_num >= 1 \
+		and first_wave_num <= 4 \
 		and probability >= 0.0

@@ -1,5 +1,5 @@
-reward_id,first_wave_id,probability,price
-starlight_brooch,wave_01,1.00,11
-golden_gears,wave_01,1.00,12
-crescent_needle,wave_01,1.00,10
-forgotten_star_bell,wave_01,1.00,9
+reward_id,first_stage_num,first_wave_num,probability,price
+starlight_brooch,1,1,1,11
+golden_gears,1,1,1,12
+crescent_needle,1,1,1,10
+forgotten_star_bell,1,1,1,9

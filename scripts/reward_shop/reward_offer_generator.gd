@@ -23,7 +23,8 @@ static func generate_ball_offers(
 	catalog: RewardShopCatalog,
 	unlocked_ids: Array[StringName],
 	reward_index: int,
-	rng: RandomNumberGenerator
+	rng: RandomNumberGenerator,
+	current_stage_num: int = 1
 ) -> Array[RewardBallOffer]:
 	var pool: Array[RewardBallOffer] = []
 	for offer in catalog.ball_offers:
@@ -31,7 +32,7 @@ static func generate_ball_offers(
 			continue
 		if unlocked_ids.has(offer.ball_id):
 			continue
-		if not _is_available_for_reward(offer, reward_index):
+		if not _is_available_for_reward(offer, reward_index, current_stage_num):
 			continue
 		pool.append(offer)
 
@@ -66,13 +67,16 @@ static func generate_part_offers(
 	catalog: RewardShopCatalog,
 	reward_index: int,
 	rng: RandomNumberGenerator,
-	owned_part_ids: Array[StringName] = []
+	owned_part_ids: Array[StringName] = [],
+	current_stage_num: int = 1
 ) -> Array[RepairPartOffer]:
 	var pool: Array[RepairPartOffer] = []
 	for offer in catalog.part_offers:
 		if offer != null \
 				and offer.is_valid() \
-				and _is_available_for_reward(offer, reward_index):
+				and _is_available_for_reward(
+					offer, reward_index, current_stage_num
+				):
 			pool.append(offer)
 	if pool.size() <= 3:
 		return pool
@@ -135,7 +139,8 @@ static func ensure_affordable_pair(
 	catalog: RewardShopCatalog,
 	unlocked_ids: Array[StringName],
 	wallet_balance: int,
-	reward_index: int = 0
+	reward_index: int = 0,
+	current_stage_num: int = 1
 ) -> bool:
 	if wallet_balance < AFFORDABLE_GUARD_MIN_WALLET:
 		return has_affordable_pair(ball_offers, part_offers, wallet_balance)
@@ -144,7 +149,7 @@ static func ensure_affordable_pair(
 
 	# 최저가 공으로 교체를 시도합니다.
 	var cheapest_ball := _cheapest_ball_not_shown(
-		catalog, unlocked_ids, ball_offers, reward_index
+		catalog, unlocked_ids, ball_offers, reward_index, current_stage_num
 	)
 	if cheapest_ball != null and not ball_offers.is_empty():
 		var expensive_index := _most_expensive_ball_index(ball_offers)
@@ -155,7 +160,7 @@ static func ensure_affordable_pair(
 
 	# 그래도 안 되면 최저가 부품으로 교체를 시도합니다.
 	var cheapest_part := _cheapest_part_not_shown(
-		catalog, part_offers, reward_index
+		catalog, part_offers, reward_index, current_stage_num
 	)
 	if cheapest_part != null and not part_offers.is_empty():
 		var expensive_part_index := _most_expensive_part_index(part_offers)
@@ -248,16 +253,20 @@ static func _pick_weighted(
 	return picked
 
 
-static func _is_available_for_reward(offer: Resource, reward_index: int) -> bool:
+static func _is_available_for_reward(
+	offer: Resource,
+	reward_index: int,
+	current_stage_num: int
+) -> bool:
 	if float(offer.get(&"probability")) <= 0.0:
 		return false
 	var normalized_index := maxi(reward_index, 0)
-	var current_wave_id := &"boss_wave" \
-		if normalized_index >= BOSS_REWARD_INDEX \
-		else StringName("wave_%02d" % (normalized_index + 1))
-	return StageRewardRepository.is_available_in_wave(
-		StringName(offer.get(&"first_wave_id")),
-		current_wave_id
+	var current_wave_num := mini(normalized_index + 1, 4)
+	return StageRewardRepository.is_available_at(
+		int(offer.get(&"first_stage_num")),
+		int(offer.get(&"first_wave_num")),
+		current_stage_num,
+		current_wave_num
 	)
 
 
@@ -287,14 +296,17 @@ static func _cheapest_ball_not_shown(
 	catalog: RewardShopCatalog,
 	unlocked_ids: Array[StringName],
 	shown: Array[RewardBallOffer],
-	reward_index: int
+	reward_index: int,
+	current_stage_num: int
 ) -> RewardBallOffer:
 	var cheapest: RewardBallOffer = null
 	for offer in catalog.ball_offers:
 		if offer == null \
 				or unlocked_ids.has(offer.ball_id) \
 				or shown.has(offer) \
-				or not _is_available_for_reward(offer, reward_index):
+				or not _is_available_for_reward(
+					offer, reward_index, current_stage_num
+				):
 			continue
 		if cheapest == null or offer.price < cheapest.price:
 			cheapest = offer
@@ -304,13 +316,16 @@ static func _cheapest_ball_not_shown(
 static func _cheapest_part_not_shown(
 	catalog: RewardShopCatalog,
 	shown: Array[RepairPartOffer],
-	reward_index: int
+	reward_index: int,
+	current_stage_num: int
 ) -> RepairPartOffer:
 	var cheapest: RepairPartOffer = null
 	for offer in catalog.part_offers:
 		if offer == null \
 				or shown.has(offer) \
-				or not _is_available_for_reward(offer, reward_index):
+				or not _is_available_for_reward(
+					offer, reward_index, current_stage_num
+				):
 			continue
 		if cheapest == null or offer.price < cheapest.price:
 			cheapest = offer

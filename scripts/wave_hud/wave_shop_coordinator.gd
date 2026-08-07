@@ -19,6 +19,7 @@ const DEFAULT_SHOP_CATALOG := preload(
 @export_category("Wave Shop")
 
 @export var shop_catalog: RewardShopCatalog = DEFAULT_SHOP_CATALOG
+@export var shop_stage_id: StringName = &"stage_01"
 
 ## 0이면 매번 다르게 뽑습니다.
 @export var shop_random_seed := 0
@@ -73,6 +74,7 @@ func _build_shop_system() -> void:
 	shop_controller = RewardShopController.new()
 	shop_controller.name = "RewardShopController"
 	shop_controller.catalog = shop_catalog
+	shop_controller.stage_id = shop_stage_id
 	shop_controller.random_seed = shop_random_seed
 	add_child(shop_controller)
 	var bound := shop_controller.bind(coin_wallet, part_inventory)

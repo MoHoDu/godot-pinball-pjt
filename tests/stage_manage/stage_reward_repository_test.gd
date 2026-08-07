@@ -20,10 +20,10 @@ func _run() -> void:
 		"Repository must load stage_01 CSV files on first tree entry.")
 
 	var balls := repository.get_rewards(
-		&"stage_01", StageRewardRepository.CATEGORY_BALL, &"wave_01"
+		&"stage_01", StageRewardRepository.CATEGORY_BALL, 1, 1
 	)
 	var parts := repository.get_rewards(
-		&"stage_01", StageRewardRepository.CATEGORY_PART, &"wave_01"
+		&"stage_01", StageRewardRepository.CATEGORY_PART, 1, 1
 	)
 	_expect(balls.size() == 5, "Stage 01 must load five reward balls.")
 	_expect(parts.size() == 4, "Stage 01 must load four repair-part rewards.")
@@ -35,32 +35,53 @@ func _run() -> void:
 		"Clockwork price must come from reward_balls.csv.")
 	_expect(is_equal_approx(float(clockwork.get(&"probability", 0.0)), 1.0),
 		"Clockwork probability must come from reward_balls.csv.")
-	_expect(not StageRewardRepository.is_available_in_wave(&"wave_02", &"wave_01") \
-		and StageRewardRepository.is_available_in_wave(&"wave_02", &"wave_02") \
-		and StageRewardRepository.is_available_in_wave(&"wave_02", &"boss_wave"),
-		"First-wave filtering must preserve chronological availability.")
+	_expect(int(clockwork.get(&"first_stage_num", 0)) == 1 \
+		and int(clockwork.get(&"first_wave_num", 0)) == 1,
+		"Clockwork first stage and wave must come from reward_balls.csv.")
+	_expect(not StageRewardRepository.is_available_at(1, 2, 1, 1) \
+		and StageRewardRepository.is_available_at(1, 2, 1, 2) \
+		and StageRewardRepository.is_available_at(1, 4, 2, 1),
+		"Stage and wave filtering must preserve chronological availability.")
+	_expect(StageRewardRepository.stage_num_from_id(&"stage_01") == 1 \
+		and StageRewardRepository.stage_num_from_id(&"stage_12_bonus") == 12 \
+		and StageRewardRepository.stage_num_from_id(&"invalid") == -1,
+		"Stage folder IDs must resolve to their one-based numeric stage.")
 	var invalid_path := "user://stage_reward_invalid_wave.csv"
 	var invalid_file := FileAccess.open(invalid_path, FileAccess.WRITE)
 	invalid_file.store_string(
-		"reward_id,first_wave_id,probability,price\ninvalid,wave_04,1.0,9\n"
+		"reward_id,first_stage_num,first_wave_num,probability,price\n" \
+			+ "invalid,0,1,1.0,9\n"
 	)
 	invalid_file.close()
 	var invalid_result := StageRewardRepository.parse_csv_file(invalid_path)
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(invalid_path))
 	_expect(not bool(invalid_result.get(&"ok", true)),
-		"Unsupported first_wave_id values must fail CSV validation.")
+		"Stage and wave values below one must fail CSV validation.")
+	var invalid_late_path := "user://stage_reward_invalid_late_wave.csv"
+	var invalid_late_file := FileAccess.open(invalid_late_path, FileAccess.WRITE)
+	invalid_late_file.store_string(
+		"reward_id,first_stage_num,first_wave_num,probability,price\n" \
+			+ "invalid,1,5,1.0,9\n"
+	)
+	invalid_late_file.close()
+	var invalid_late_result := StageRewardRepository.parse_csv_file(invalid_late_path)
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(invalid_late_path))
+	_expect(not bool(invalid_late_result.get(&"ok", true)),
+		"Wave values above the four-wave stage must fail CSV validation.")
 
 	var catalog := (CATALOG as RewardShopCatalog).duplicate(true) as RewardShopCatalog
 	var clockwork_offer := _find_ball(catalog, &"clockwork")
 	clockwork_offer.price = 999
-	clockwork_offer.first_wave_id = &"wave_03"
+	clockwork_offer.first_stage_num = 3
+	clockwork_offer.first_wave_num = 3
 	clockwork_offer.probability = 0.25
 	_expect(repository.apply_to_catalog(&"stage_01", catalog),
 		"Repository must apply loaded values to the reward catalog.")
 	_expect(clockwork_offer.price == 13 \
-		and clockwork_offer.first_wave_id == &"wave_01" \
+		and clockwork_offer.first_stage_num == 1 \
+		and clockwork_offer.first_wave_num == 1 \
 		and is_equal_approx(clockwork_offer.probability, 1.0),
-		"Catalog price, first wave, and probability must be overwritten by CSV.")
+		"Catalog price, first stage/wave, and probability must be overwritten by CSV.")
 	var extra_offer := RewardBallOffer.new()
 	extra_offer.ball_id = &"not_in_stage_csv"
 	extra_offer.display_name = "CSV에서 제거된 공"
@@ -70,7 +91,8 @@ func _run() -> void:
 		and not _ball_ids(catalog.ball_offers).has(&"not_in_stage_csv"),
 		"Catalog definitions omitted from CSV must be removed from the active list.")
 
-	clockwork_offer.first_wave_id = &"wave_03"
+	clockwork_offer.first_stage_num = 1
+	clockwork_offer.first_wave_num = 3
 	var generated := RewardOfferGenerator.generate_ball_offers(
 		catalog,
 		[],
@@ -80,10 +102,31 @@ func _run() -> void:
 	_expect(not _ball_ids(generated).has(&"clockwork"),
 		"Offers must exclude rewards before their first appearance wave.")
 
-	clockwork_offer.first_wave_id = &"boss_wave"
+	clockwork_offer.first_stage_num = 2
+	clockwork_offer.first_wave_num = 1
 	for offer: RewardBallOffer in catalog.ball_offers:
 		if offer != clockwork_offer:
 			offer.probability = 0.0
+	var before_stage := RewardOfferGenerator.generate_ball_offers(
+		catalog,
+		[],
+		0,
+		RandomNumberGenerator.new(),
+		1
+	)
+	var at_stage := RewardOfferGenerator.generate_ball_offers(
+		catalog,
+		[],
+		0,
+		RandomNumberGenerator.new(),
+		2
+	)
+	_expect(not _ball_ids(before_stage).has(&"clockwork") \
+		and _ball_ids(at_stage).has(&"clockwork"),
+		"Offers must first appear at their configured stage and wave.")
+
+	clockwork_offer.first_stage_num = 1
+	clockwork_offer.first_wave_num = 3
 	var before_boss := RewardOfferGenerator.generate_ball_offers(
 		catalog,
 		[],
@@ -98,9 +141,9 @@ func _run() -> void:
 	)
 	_expect(not _ball_ids(before_boss).has(&"clockwork") \
 		and _ball_ids(at_boss).has(&"clockwork"),
-		"Boss-only rewards must first appear in the pre-boss reward.")
+		"Pre-boss rewards must first appear after clearing normal wave three.")
 
-	clockwork_offer.first_wave_id = &"wave_01"
+	clockwork_offer.first_wave_num = 1
 	clockwork_offer.probability = 0.0
 	var disabled := RewardOfferGenerator.generate_ball_offers(
 		catalog,

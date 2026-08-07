@@ -1,6 +1,6 @@
-reward_id,first_wave_id,probability,price
-clockwork,wave_01,1.00,13
-rubber,wave_01,1.00,14
-gel,wave_01,1.00,11
-lead,wave_01,1.00,9
-hollow_bell,wave_01,1.00,9
+reward_id,first_stage_num,first_wave_num,probability,price
+clockwork,1,1,1,13
+rubber,1,1,1,14
+gel,1,1,1,11
+lead,1,1,1,9
+hollow_bell,1,1,1,9

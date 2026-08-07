@@ -18,6 +18,7 @@ func _run() -> void:
 	_test_catalog_data()
 	_test_ball_generation()
 	_test_part_generation()
+	_test_weighted_probability()
 	_test_affordability_guard()
 	await _test_purchase_flow()
 	_finish()
@@ -139,6 +140,27 @@ func _test_part_generation() -> void:
 			if offer.needs_partner:
 				has_partner = true
 		_expect(has_partner, "보상 2 이후에는 연결형 부품이 최소 1장 있어야 한다.")
+
+
+func _test_weighted_probability() -> void:
+	var low := RewardBallOffer.new()
+	low.ball_id = &"low_weight"
+	low.probability = 1.0
+	var high := RewardBallOffer.new()
+	high.ball_id = &"high_weight"
+	high.probability = 9.0
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 20260807
+	var low_count := 0
+	var high_count := 0
+	for _draw in 2000:
+		var picked := RewardOfferGenerator._pick_weighted([low, high], 1, rng)
+		if not picked.is_empty() and picked[0] == high:
+			high_count += 1
+		else:
+			low_count += 1
+	_expect(high_count > low_count * 5,
+		"9:1 probability weights must strongly favor the high-weight reward.")
 
 
 func _test_affordability_guard() -> void:

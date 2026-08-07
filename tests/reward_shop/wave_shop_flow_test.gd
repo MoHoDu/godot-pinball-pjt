@@ -32,6 +32,11 @@ func _run() -> void:
 	var wave_manager: WaveManager = scene.wave_manager
 
 	_expect(scene.shop_controller != null, "상점 컨트롤러가 붙어야 한다.")
+	_expect(scene.shop_controller.stage_id == scene.shop_stage_id \
+		and StageRewardRepository.stage_num_from_id(
+			scene.shop_controller.stage_id
+		) == 1,
+		"상점 컨트롤러는 현재 스테이지 DB ID와 번호를 사용해야 한다.")
 	_expect(scene.shop_hud != null, "상점 HUD가 붙어야 한다.")
 	_expect(
 		scene.reward_controller == null,

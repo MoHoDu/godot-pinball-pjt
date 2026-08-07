@@ -11,15 +11,10 @@ const CATEGORY_BALL: StringName = &"ball"
 const CATEGORY_PART: StringName = &"part"
 const REQUIRED_HEADERS := [
 	"reward_id",
-	"first_wave_id",
+	"first_stage_num",
+	"first_wave_num",
 	"probability",
 	"price",
-]
-const VALID_FIRST_WAVE_IDS := [
-	&"wave_01",
-	&"wave_02",
-	&"wave_03",
-	&"boss_wave",
 ]
 
 
@@ -74,7 +69,8 @@ func get_reward(
 func get_rewards(
 	stage_id: StringName,
 	category: StringName,
-	wave_id: StringName = &""
+	current_stage_num: int = -1,
+	current_wave_num: int = -1
 ) -> Array[Dictionary]:
 	if not is_stage_loaded(stage_id) and not load_stage(stage_id):
 		return []
@@ -83,8 +79,12 @@ func get_rewards(
 	var result: Array[Dictionary] = []
 	for reward_id: StringName in records:
 		var record := (records[reward_id] as Dictionary).duplicate(true)
-		if wave_id != &"" and not is_available_in_wave(
-			StringName(record[&"first_wave_id"]), wave_id
+		if current_stage_num >= 1 and current_wave_num >= 1 \
+				and not is_available_at(
+			int(record[&"first_stage_num"]),
+			int(record[&"first_wave_num"]),
+			current_stage_num,
+			current_wave_num
 		):
 			continue
 		result.append(record)
@@ -172,27 +172,39 @@ static func parse_csv_file(path: String) -> Dictionary:
 				&"error": "%s:%d 열 개수가 올바르지 않습니다." % [path, row_number],
 			}
 		var reward_id_text := row[0].strip_edges()
-		var first_wave_text := row[1].strip_edges()
-		var probability_text := row[2].strip_edges()
-		var price_text := row[3].strip_edges()
-		if reward_id_text.is_empty() or first_wave_text.is_empty():
+		var first_stage_text := row[1].strip_edges()
+		var first_wave_text := row[2].strip_edges()
+		var probability_text := row[3].strip_edges()
+		var price_text := row[4].strip_edges()
+		if reward_id_text.is_empty() \
+				or first_stage_text.is_empty() \
+				or first_wave_text.is_empty():
 			return {
 				&"ok": false,
-				&"error": "%s:%d id 또는 최초 웨이브가 비어 있습니다." % [path, row_number],
+				&"error": "%s:%d id 또는 최초 등장 위치가 비어 있습니다." \
+					% [path, row_number],
 			}
-		if not VALID_FIRST_WAVE_IDS.has(StringName(first_wave_text)):
+		if not first_stage_text.is_valid_int() or not first_wave_text.is_valid_int():
 			return {
 				&"ok": false,
-				&"error": "%s:%d 지원하지 않는 first_wave_id입니다: %s" \
-					% [path, row_number, first_wave_text],
+				&"error": "%s:%d 최초 스테이지와 웨이브는 정수여야 합니다." \
+					% [path, row_number],
 			}
 		if not probability_text.is_valid_float() or not price_text.is_valid_int():
 			return {
 				&"ok": false,
 				&"error": "%s:%d 확률 또는 가격 형식이 올바르지 않습니다." % [path, row_number],
 			}
+		var first_stage_num := first_stage_text.to_int()
+		var first_wave_num := first_wave_text.to_int()
 		var probability := probability_text.to_float()
 		var price := price_text.to_int()
+		if first_stage_num < 1 or first_wave_num < 1 or first_wave_num > 4:
+			return {
+				&"ok": false,
+				&"error": "%s:%d 최초 스테이지는 1 이상, 웨이브는 1~4여야 합니다." \
+					% [path, row_number],
+			}
 		if probability < 0.0 or price <= 0:
 			return {
 				&"ok": false,
@@ -206,20 +218,41 @@ static func parse_csv_file(path: String) -> Dictionary:
 			}
 		records[reward_id] = {
 			&"reward_id": reward_id,
-			&"first_wave_id": StringName(first_wave_text),
+			&"first_stage_num": first_stage_num,
+			&"first_wave_num": first_wave_num,
 			&"probability": probability,
 			&"price": price,
 		}
 	return {&"ok": true, &"records": records}
 
 
-static func is_available_in_wave(
-	first_wave_id: StringName,
-	current_wave_id: StringName
+static func is_available_at(
+	first_stage_num: int,
+	first_wave_num: int,
+	current_stage_num: int,
+	current_wave_num: int
 ) -> bool:
-	var first_order := _wave_order(first_wave_id)
-	var current_order := _wave_order(current_wave_id)
-	return first_order >= 0 and current_order >= first_order
+	if first_stage_num < 1 or first_wave_num < 1 or first_wave_num > 4 \
+			or current_stage_num < 1 or current_wave_num < 1 \
+			or current_wave_num > 4:
+		return false
+	return current_stage_num > first_stage_num \
+		or (current_stage_num == first_stage_num \
+			and current_wave_num >= first_wave_num)
+
+
+static func stage_num_from_id(stage_id: StringName) -> int:
+	var text := String(stage_id).strip_edges().to_lower()
+	if not text.begins_with("stage_"):
+		return -1
+	var suffix := text.trim_prefix("stage_")
+	var delimiter := suffix.find("_")
+	if delimiter >= 0:
+		suffix = suffix.left(delimiter)
+	if not suffix.is_valid_int():
+		return -1
+	var stage_num := suffix.to_int()
+	return stage_num if stage_num >= 1 else -1
 
 
 static func _headers_match(headers: PackedStringArray) -> bool:
@@ -231,22 +264,13 @@ static func _headers_match(headers: PackedStringArray) -> bool:
 	return true
 
 
-static func _wave_order(wave_id: StringName) -> int:
-	var text := String(wave_id).strip_edges().to_lower()
-	if text == "boss_wave":
-		return 999
-	if not text.begins_with("wave_"):
-		return -1
-	var suffix := text.trim_prefix("wave_")
-	return suffix.to_int() if suffix.is_valid_int() else -1
-
-
 static func _database_path(stage_id: String, file_name: String) -> String:
 	return "res://Resources/stage/%s/%s" % [stage_id, file_name]
 
 
 static func _apply_record(offer: Resource, record: Dictionary) -> void:
-	offer.set(&"first_wave_id", record[&"first_wave_id"])
+	offer.set(&"first_stage_num", record[&"first_stage_num"])
+	offer.set(&"first_wave_num", record[&"first_wave_num"])
 	offer.set(&"probability", record[&"probability"])
 	offer.set(&"price", record[&"price"])
 
