@@ -71,7 +71,9 @@ func _run() -> void:
 	var packed_ball := load(BALL_SCENE_PATH) as PackedScene
 	var ball := packed_ball.instantiate() as Pinball
 	wave.add_child(ball)
-	ball.freeze = true
+	ball.gravity_scale = 0.0
+	ball.linear_damp_mode = RigidBody2D.DAMP_MODE_REPLACE
+	ball.linear_damp = 0.0
 	ball.global_position = Vector2(5000.0, 5000.0)
 	ball.linear_velocity = Vector2.ZERO
 	await physics_frame

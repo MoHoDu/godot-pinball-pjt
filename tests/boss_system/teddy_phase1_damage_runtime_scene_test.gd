@@ -369,7 +369,6 @@ func _test_unknown_profile_is_ignored(
 		"An unknown ball profile must not increase Combo.")
 	_deactivate_ball(ball_flow)
 	_free_ball(ball)
-	definition.free()
 
 
 func _test_first_hit_damage(

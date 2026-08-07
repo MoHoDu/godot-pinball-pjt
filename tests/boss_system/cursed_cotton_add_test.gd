@@ -25,6 +25,7 @@ func _run() -> void:
 	_test_configure_preserves_valid_rules()
 	await _test_scene_and_invalid_targets()
 	await _test_valid_hit_reflects_once_and_clears()
+	await _test_sleeping_ball_is_woken()
 	await _test_center_fallback_is_deterministic()
 	_test_responsibility_boundaries()
 	_finish()
@@ -107,11 +108,16 @@ func _test_valid_hit_reflects_once_and_clears() -> void:
 	root.add_child(cotton)
 	cotton.global_position = Vector2.ZERO
 	var ball: Pinball = NormalBallScene.instantiate() as Pinball
+	ball.global_position = Vector2(1000.0, 1000.0)
 	root.add_child(ball)
-	ball.global_position = Vector2(100.0, 0.0)
-	ball.linear_velocity = Vector2(0.0, 1000.0)
-	ball.sleeping = true
 	await process_frame
+	await physics_frame
+	ball.gravity_scale = 0.0
+	ball.linear_damp_mode = RigidBody2D.DAMP_MODE_REPLACE
+	ball.linear_damp = 0.0
+	ball.linear_velocity = Vector2(0.0, 1000.0)
+	await physics_frame
+	ball.global_position = Vector2(100.0, 0.0)
 
 	var initial_speed: float = ball.linear_velocity.length()
 	var expected_velocity: Vector2 = ball.get_limited_velocity(
@@ -133,12 +139,15 @@ func _test_valid_hit_reflects_once_and_clears() -> void:
 		"Duplicate body_entered events must emit one Cotton hit only.")
 	_expect(ball.linear_velocity.is_equal_approx(velocity_after_first_hit),
 		"Duplicate overlap must not apply a second impulse.")
-	_expect(not ball.sleeping, "A valid Cotton hit must wake a sleeping Ball.")
+	_expect(not ball.sleeping, "A valid Cotton hit must leave the Ball awake.")
+	await physics_frame
 	await physics_frame
 	_expect(ball.linear_velocity.x > 0.0,
 		"The Ball must move outward from the Cotton center.")
 	_expect(ball.linear_velocity.distance_to(expected_velocity) <= VELOCITY_EPSILON,
-		"The reflected speed must apply speed_retention and Pinball limits.")
+		"The reflected speed must apply speed_retention and Pinball limits. actual=%s expected=%s" % [
+			ball.linear_velocity, expected_velocity
+		])
 	_expect(_respects_pinball_speed_contract(ball),
 		"The final velocity must satisfy Pinball.get_limited_velocity().")
 	await process_frame
@@ -156,17 +165,46 @@ func _test_center_fallback_is_deterministic() -> void:
 	root.add_child(cotton)
 	cotton.global_position = Vector2(250.0, 100.0)
 	var ball: Pinball = NormalBallScene.instantiate() as Pinball
+	ball.global_position = Vector2(1000.0, 1000.0)
 	root.add_child(ball)
-	ball.global_position = cotton.global_position
-	ball.linear_velocity = Vector2(600.0, 0.0)
 	await process_frame
+	await physics_frame
+	ball.gravity_scale = 0.0
+	ball.linear_damp_mode = RigidBody2D.DAMP_MODE_REPLACE
+	ball.linear_damp = 0.0
+	ball.linear_velocity = Vector2(600.0, 0.0)
+	await physics_frame
+	ball.global_position = cotton.global_position
 	cotton.body_entered.emit(ball)
+	await physics_frame
 	await physics_frame
 	_expect(ball.linear_velocity.x < 0.0 \
 		and is_zero_approx(ball.linear_velocity.y),
 		"Coincident centers must deterministically use opposite Ball velocity.")
 	_expect(_respects_pinball_speed_contract(ball),
 		"The center fallback must still use the Pinball speed contract.")
+	ball.queue_free()
+	await process_frame
+
+
+func _test_sleeping_ball_is_woken() -> void:
+	var cotton: CursedCottonAdd = CottonScene.instantiate() as CursedCottonAdd
+	root.add_child(cotton)
+	var ball: Pinball = NormalBallScene.instantiate() as Pinball
+	ball.global_position = Vector2(1000.0, 1000.0)
+	root.add_child(ball)
+	await process_frame
+	await physics_frame
+	ball.gravity_scale = 0.0
+	ball.linear_velocity = Vector2.ZERO
+	await physics_frame
+	ball.global_position = Vector2(100.0, 0.0)
+	ball.sleeping = true
+
+	cotton.body_entered.emit(ball)
+	_expect(not ball.sleeping, "A valid Cotton hit must wake a sleeping Ball.")
+
+	await process_frame
 	ball.queue_free()
 	await process_frame
 

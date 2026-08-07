@@ -283,6 +283,7 @@ func _test_pattern_2_counter_flow(
 	_expect(tracker.is_ball_tracked(ball),
 		"Pattern 2 attack_hit must track the same Ball.")
 	await physics_frame
+	await physics_frame
 	_expect(ball.linear_velocity.x < 0.0 and ball.linear_velocity.y > 0.0,
 		"Pattern 2 must reuse the below-outward reflection.")
 	_emit_perfect(flipper, ball)

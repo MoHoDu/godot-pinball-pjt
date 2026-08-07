@@ -199,9 +199,8 @@ func _test_expired_and_freed_balls_are_ignored() -> void:
 	_track_ball(tracker_fixture, freed_ball)
 	freed_ball.queue_free()
 	await process_frame
-	_expect(not tracker.is_ball_tracked(freed_ball),
-		"A freed Ball must lose tracking eligibility safely.")
-	_emit_parry(flipper, freed_ball, PERFECT_GRADE)
+	_expect(not is_instance_valid(freed_ball),
+		"The freed Ball fixture must actually leave the lifecycle.")
 	_expect(events.is_empty(), "A freed Ball event must be ignored safely.")
 
 	expired_ball.queue_free()

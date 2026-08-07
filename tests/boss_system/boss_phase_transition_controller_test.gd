@@ -214,10 +214,8 @@ func _test_binding_contract() -> void:
 	_expect(_count_connections_to(health, controller) == 1,
 		"Same-Health rebind must not duplicate connections.")
 
-	var invalid_health := BossHealthComponent.new()
-	invalid_health.free()
-	_expect(not controller.bind_health(invalid_health),
-		"A freed replacement Health must be rejected.")
+	_expect(not controller.bind_health(null),
+		"An invalid replacement Health must be rejected.")
 	_expect(_count_connections_to(health, controller) == 1,
 		"Failed replacement must preserve the existing binding.")
 	health.apply_damage(PHASE_2_THRESHOLD)

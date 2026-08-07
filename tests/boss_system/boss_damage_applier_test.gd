@@ -77,18 +77,22 @@ func _test_freed_instance_bind_rejection() -> void:
 	root.add_child(live_health)
 	root.add_child(applier)
 	freed_adapter.bind_combo_system(combo_system)
+	_expect(applier.bind(freed_adapter, live_health),
+		"The live adapter fixture must bind before lifecycle loss.")
 	freed_adapter.free()
-	_expect(not applier.bind(freed_adapter, live_health),
-		"A freed adapter instance must be rejected.")
+	_expect(not applier.is_bound(),
+		"A freed adapter instance must invalidate the binding safely.")
 
 	var live_adapter: BossComboDamageAdapter = BossComboDamageAdapter.new()
 	var freed_health: BossHealthComponent = BossHealthComponent.new()
 	root.add_child(live_adapter)
 	root.add_child(freed_health)
 	live_adapter.bind_combo_system(combo_system)
+	_expect(applier.bind(live_adapter, freed_health),
+		"The live Health fixture must bind before lifecycle loss.")
 	freed_health.free()
-	_expect(not applier.bind(live_adapter, freed_health),
-		"A freed health instance must be rejected.")
+	_expect(not applier.is_bound(),
+		"A freed Health instance must invalidate the binding safely.")
 	_free_nodes([applier, live_adapter, live_health, combo_system])
 
 

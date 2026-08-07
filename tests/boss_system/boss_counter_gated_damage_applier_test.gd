@@ -413,8 +413,9 @@ func _destroy_fixture(fixture: Dictionary) -> void:
 		&"adapter",
 		&"combo",
 	]:
-		var node: Node = fixture.get(key) as Node
-		if is_instance_valid(node):
+		var value: Variant = fixture.get(key)
+		if is_instance_valid(value):
+			var node: Node = value as Node
 			if node.is_inside_tree():
 				node.queue_free()
 			else:

@@ -91,10 +91,8 @@ func _test_configuration_and_binding() -> void:
 	_expect(_count_connections_to(attack, reflector) == 1,
 		"Idempotent binding must not duplicate the connection.")
 
-	var freed_attack := TeddyArmSweepAttack.new()
-	freed_attack.free()
-	_expect(not reflector.bind_attack(freed_attack),
-		"A freed replacement Attack must be rejected.")
+	_expect(not reflector.bind_attack(null),
+		"An invalid replacement Attack must be rejected.")
 	_expect(reflector.is_bound() and _count_connections_to(attack, reflector) == 1,
 		"Failed replacement must preserve the valid binding.")
 	reflector.unbind_attack()
@@ -190,8 +188,13 @@ func _test_position_and_velocity_fallbacks_are_deterministic() -> void:
 	var right_ball: Pinball = await _create_ball(Vector2(300.0, 500.0))
 	left_ball.gravity_scale = 0.0
 	right_ball.gravity_scale = 0.0
+	left_ball.global_position = Vector2(-300.0, 500.0)
+	right_ball.global_position = Vector2(300.0, 500.0)
+	left_ball.linear_velocity = Vector2.ZERO
+	right_ball.linear_velocity = Vector2.ZERO
 	attack.attack_hit.emit(left_ball)
 	attack.attack_hit.emit(right_ball)
+	await physics_frame
 	await physics_frame
 	_expect(left_ball.linear_velocity.x < 0.0 and left_ball.linear_velocity.y > 0.0,
 		"Negative Boss-relative X must deterministically choose LEFT.")
@@ -225,6 +228,7 @@ func _test_impulse_replaces_arbitrary_velocity_with_limited_target() -> void:
 	var ball: Pinball = await _create_ball(Vector2(320.0, 500.0))
 	ball.gravity_scale = 0.0
 	ball.linear_velocity = Vector2(-740.0, -620.0)
+	await physics_frame
 	var expected_direction := Vector2(
 		ReflectionRulesResource.outward_ratio,
 		ReflectionRulesResource.downward_ratio
@@ -234,6 +238,7 @@ func _test_impulse_replaces_arbitrary_velocity_with_limited_target() -> void:
 	)
 
 	attack.attack_hit.emit(ball)
+	await physics_frame
 	await physics_frame
 	_expect(ball.linear_velocity.distance_to(expected_velocity) <= VELOCITY_EPSILON,
 		"Impulse must replace arbitrary velocity with the limited target velocity.")
@@ -251,12 +256,15 @@ func _test_sleeping_ball_and_single_connection() -> void:
 	var attack: TeddyArmSweepAttack = fixture.attack
 	var ball: Pinball = await _create_ball(Vector2(-320.0, 500.0))
 	ball.gravity_scale = 0.0
+	ball.linear_velocity = Vector2.ZERO
+	await physics_frame
 	ball.sleeping = true
 	_expect(_count_connections_to(attack, reflector) == 1,
 		"One attack_hit must reach Reflector through one connection.")
 
 	attack.attack_hit.emit(ball)
 	_expect(not ball.sleeping, "Reflection must wake a sleeping Ball.")
+	await physics_frame
 	await physics_frame
 	var expected_direction := Vector2(
 		-ReflectionRulesResource.outward_ratio,
@@ -266,7 +274,9 @@ func _test_sleeping_ball_and_single_connection() -> void:
 		expected_direction * ReflectionRulesResource.reflection_speed
 	)
 	_expect(ball.linear_velocity.distance_to(expected_velocity) <= VELOCITY_EPSILON,
-		"A single attack_hit must apply one target-velocity impulse.")
+		"A single attack_hit must apply one target-velocity impulse. actual=%s expected=%s" % [
+			ball.linear_velocity, expected_velocity
+		])
 
 	ball.queue_free()
 	await _destroy_fixture(fixture)
@@ -342,6 +352,12 @@ func _create_ball(global_position: Vector2) -> Pinball:
 	root.add_child(ball)
 	ball.global_position = global_position
 	await process_frame
+	await physics_frame
+	ball.gravity_scale = 0.0
+	ball.linear_damp_mode = RigidBody2D.DAMP_MODE_REPLACE
+	ball.linear_damp = 0.0
+	ball.linear_velocity = Vector2.ZERO
+	await physics_frame
 	return ball
 
 

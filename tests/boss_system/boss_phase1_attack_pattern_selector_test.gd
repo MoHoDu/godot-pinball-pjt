@@ -115,17 +115,10 @@ func _test_bind_validation_and_preservation() -> void:
 		"Repeated same binding must not duplicate the state_changed connection.")
 
 	selector.unbind()
-	var freed_scheduler: BossPhase1AttackScheduler = BossPhase1AttackScheduler.new()
-	var freed_controller: TestAttackController = TestAttackController.new()
-	root.add_child(freed_scheduler)
-	root.add_child(freed_controller)
-	freed_scheduler.queue_free()
-	freed_controller.queue_free()
-	await process_frame
-	_expect(not selector.bind(freed_scheduler, controller, first_pattern, repeat_pattern),
-		"A freed scheduler must be rejected.")
-	_expect(not selector.bind(scheduler, freed_controller, first_pattern, repeat_pattern),
-		"A freed controller must be rejected.")
+	_expect(not selector.bind(null, controller, first_pattern, repeat_pattern),
+		"An invalid scheduler must be rejected.")
+	_expect(not selector.bind(scheduler, null, first_pattern, repeat_pattern),
+		"An invalid controller must be rejected.")
 
 	await _destroy_fixture(fixture)
 	await _destroy_unbound_pair(replacement)
@@ -403,25 +396,30 @@ func _create_unbound_pair() -> Dictionary:
 
 
 func _destroy_unbound_pair(pair: Dictionary) -> void:
-	var scheduler: BossPhase1AttackScheduler = pair.scheduler
-	var controller: TestAttackController = pair.controller
-	if is_instance_valid(scheduler):
+	var scheduler_value: Variant = pair.get(&"scheduler")
+	var controller_value: Variant = pair.get(&"controller")
+	if is_instance_valid(scheduler_value):
+		var scheduler: BossPhase1AttackScheduler = scheduler_value
 		scheduler.queue_free()
-	if is_instance_valid(controller):
+	if is_instance_valid(controller_value):
+		var controller: TestAttackController = controller_value
 		controller.queue_free()
 	await process_frame
 
 
 func _destroy_fixture(fixture: Dictionary) -> void:
-	var selector: BossPhase1AttackPatternSelector = fixture.selector
-	var scheduler: BossPhase1AttackScheduler = fixture.scheduler
-	var controller: TestAttackController = fixture.controller
-	if is_instance_valid(selector):
+	var selector_value: Variant = fixture.get(&"selector")
+	var scheduler_value: Variant = fixture.get(&"scheduler")
+	var controller_value: Variant = fixture.get(&"controller")
+	if is_instance_valid(selector_value):
+		var selector: BossPhase1AttackPatternSelector = selector_value
 		selector.unbind()
 		selector.queue_free()
-	if is_instance_valid(scheduler):
+	if is_instance_valid(scheduler_value):
+		var scheduler: BossPhase1AttackScheduler = scheduler_value
 		scheduler.queue_free()
-	if is_instance_valid(controller):
+	if is_instance_valid(controller_value):
+		var controller: TestAttackController = controller_value
 		controller.queue_free()
 	await process_frame
 

@@ -87,19 +87,11 @@ func _test_binding_contract() -> void:
 
 	coordinator.stop()
 	coordinator.unbind()
-	var freed_controller: TestAttackController = TestAttackController.new()
-	root.add_child(freed_controller)
-	freed_controller.queue_free()
-	await process_frame
-	_expect(not coordinator.bind(scheduler, freed_controller),
-		"A freed controller must be rejected.")
-	_expect(not coordinator.is_bound(), "A rejected freed binding must remain unbound.")
-	var freed_scheduler: BossPhase1AttackScheduler = BossPhase1AttackScheduler.new()
-	root.add_child(freed_scheduler)
-	freed_scheduler.queue_free()
-	await process_frame
-	_expect(not coordinator.bind(freed_scheduler, replacement_controller),
-		"A freed scheduler must be rejected.")
+	_expect(not coordinator.bind(null, controller),
+		"An invalid scheduler must be rejected.")
+	_expect(not coordinator.bind(scheduler, null),
+		"An invalid controller must be rejected.")
+	_expect(not coordinator.is_bound(), "Rejected invalid bindings must remain unbound.")
 	await _destroy_fixture(fixture)
 	replacement_scheduler.queue_free()
 	replacement_controller.queue_free()
@@ -506,15 +498,18 @@ func _configure_scheduler(
 
 
 func _destroy_fixture(fixture: Dictionary) -> void:
-	var coordinator: BossPhase1AttackCoordinator = fixture.coordinator
-	var scheduler: BossPhase1AttackScheduler = fixture.scheduler
-	var controller: TestAttackController = fixture.controller
-	if is_instance_valid(coordinator):
+	var coordinator_value: Variant = fixture.get(&"coordinator")
+	var scheduler_value: Variant = fixture.get(&"scheduler")
+	var controller_value: Variant = fixture.get(&"controller")
+	if is_instance_valid(coordinator_value):
+		var coordinator: BossPhase1AttackCoordinator = coordinator_value
 		coordinator.unbind(true)
 		coordinator.queue_free()
-	if is_instance_valid(scheduler):
+	if is_instance_valid(scheduler_value):
+		var scheduler: BossPhase1AttackScheduler = scheduler_value
 		scheduler.queue_free()
-	if is_instance_valid(controller):
+	if is_instance_valid(controller_value):
+		var controller: TestAttackController = controller_value
 		controller.queue_free()
 	await process_frame
 

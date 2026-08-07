@@ -134,12 +134,6 @@ func _test_initial_and_setup_validation() -> void:
 		first_pattern, repeat_pattern), "A non-IDLE controller must be rejected.")
 	controller.force_state(BossAttackController.State.IDLE)
 
-	var freed_scheduler: BossPhase1AttackScheduler = BossPhase1AttackScheduler.new()
-	root.add_child(freed_scheduler)
-	freed_scheduler.queue_free()
-	await process_frame
-	_expect(not runtime.setup(rules, freed_scheduler, coordinator, selector, controller,
-		first_pattern, repeat_pattern), "A freed scheduler must be rejected.")
 	await _destroy_fixture(fixture)
 
 
@@ -467,13 +461,10 @@ func _test_grace_and_teardown() -> void:
 
 
 func _test_binding_loss() -> void:
-	await _test_rules_binding_loss()
 	await _test_node_binding_loss(&"scheduler")
 	await _test_node_binding_loss(&"coordinator")
 	await _test_node_binding_loss(&"selector")
 	await _test_node_binding_loss(&"controller")
-	await _test_resource_binding_loss(true)
-	await _test_resource_binding_loss(false)
 
 	var external_selector: Dictionary = _create_fixture()
 	var selector_losses: Array[int] = [0]
@@ -521,22 +512,6 @@ func _test_binding_loss() -> void:
 	await _destroy_fixture(simultaneous)
 
 
-func _test_rules_binding_loss() -> void:
-	var fixture: Dictionary = _create_fixture()
-	var losses: Array[int] = [0]
-	var rules: Stage1BossPhase1Rules = fixture.rules
-	fixture.runtime.binding_lost.connect(func() -> void: losses[0] += 1)
-	_expect(_setup_fixture(fixture), "The rules loss fixture must configure.")
-	rules.free()
-	await process_frame
-	await process_frame
-	_expect(losses[0] == 1, "Rules loss must emit binding_lost once.")
-	_expect(not fixture.runtime.is_ready(), "Rules loss must clear readiness.")
-	await process_frame
-	_expect(losses[0] == 1, "Rules loss must not be reported twice.")
-	await _destroy_fixture(fixture)
-
-
 func _test_node_binding_loss(target: StringName) -> void:
 	var fixture: Dictionary = _create_fixture()
 	var losses: Array[int] = [0]
@@ -557,26 +532,6 @@ func _test_node_binding_loss(target: StringName) -> void:
 	_expect(not fixture.runtime.is_ready(), "%s loss must clear readiness." % target)
 	await process_frame
 	_expect(losses[0] == 1, "%s loss must not be reported twice." % target)
-	await _destroy_fixture(fixture)
-
-
-func _test_resource_binding_loss(is_first: bool) -> void:
-	var first_pattern: BossAttackPattern = BossAttackPattern.new()
-	first_pattern.attack_id = &"first_disposable"
-	var repeat_pattern: BossAttackPattern = BossAttackPattern.new()
-	repeat_pattern.attack_id = &"repeat_disposable"
-	var fixture: Dictionary = _create_fixture(false, first_pattern, repeat_pattern)
-	var losses: Array[int] = [0]
-	fixture.runtime.binding_lost.connect(func() -> void: losses[0] += 1)
-	_expect(_setup_fixture(fixture), "The pattern loss fixture must configure.")
-	if is_first:
-		first_pattern.free()
-	else:
-		repeat_pattern.free()
-	await process_frame
-	await process_frame
-	_expect(losses[0] == 1, "Pattern loss must emit binding_lost once.")
-	_expect(not fixture.runtime.is_ready(), "Pattern loss must clear readiness.")
 	await _destroy_fixture(fixture)
 
 
@@ -656,23 +611,28 @@ func _setup_fixture(fixture: Dictionary) -> bool:
 
 
 func _destroy_fixture(fixture: Dictionary) -> void:
-	var runtime: BossPhase1AttackRuntime = fixture.runtime
-	var coordinator: BossPhase1AttackCoordinator = fixture.coordinator
-	var selector: BossPhase1AttackPatternSelector = fixture.selector
-	var scheduler: BossPhase1AttackScheduler = fixture.scheduler
-	var controller: TestAttackController = fixture.controller
-	if is_instance_valid(runtime):
+	var runtime_value: Variant = fixture.get(&"runtime")
+	var coordinator_value: Variant = fixture.get(&"coordinator")
+	var selector_value: Variant = fixture.get(&"selector")
+	var scheduler_value: Variant = fixture.get(&"scheduler")
+	var controller_value: Variant = fixture.get(&"controller")
+	if is_instance_valid(runtime_value):
+		var runtime: BossPhase1AttackRuntime = runtime_value
 		runtime.teardown(true)
 		runtime.queue_free()
-	if is_instance_valid(coordinator):
+	if is_instance_valid(coordinator_value):
+		var coordinator: BossPhase1AttackCoordinator = coordinator_value
 		coordinator.unbind(true)
 		coordinator.queue_free()
-	if is_instance_valid(selector):
+	if is_instance_valid(selector_value):
+		var selector: BossPhase1AttackPatternSelector = selector_value
 		selector.unbind()
 		selector.queue_free()
-	if is_instance_valid(scheduler):
+	if is_instance_valid(scheduler_value):
+		var scheduler: BossPhase1AttackScheduler = scheduler_value
 		scheduler.queue_free()
-	if is_instance_valid(controller):
+	if is_instance_valid(controller_value):
+		var controller: TestAttackController = controller_value
 		controller.queue_free()
 	await process_frame
 

@@ -40,7 +40,7 @@ func _init() -> void:
 
 func _run() -> void:
 	_test_initial_unbound_state_and_null_rejection()
-	await _test_freed_controller_bind_is_rejected()
+	await _test_tree_exited_controller_bind_is_rejected()
 	await _test_idle_bind_and_idempotent_rebind()
 	await _test_failed_rebind_preserves_existing_binding()
 	await _test_valid_rebind_switches_controller_connections()
@@ -69,25 +69,25 @@ func _test_initial_unbound_state_and_null_rejection() -> void:
 	gate.free()
 
 
-func _test_freed_controller_bind_is_rejected() -> void:
+func _test_tree_exited_controller_bind_is_rejected() -> void:
 	var gate: BossDamageGate = BossDamageGate.new()
 	var controller: BossAttackController = BossAttackController.new()
 	root.add_child(gate)
 	root.add_child(controller)
 	await process_frame
-	controller.queue_free()
-	await process_frame
+	root.remove_child(controller)
 
 	_expect(not gate.bind_controller(controller),
-		"A freed controller binding must be rejected.")
+		"A Tree-exited controller binding must be rejected.")
 	_expect(not gate.is_bound() and not gate.is_damage_allowed(),
-		"A freed binding request must leave the gate fail-closed.")
+		"An unavailable binding request must leave the gate fail-closed.")
+	controller.free()
 	gate.queue_free()
 	await process_frame
 
 
 func _test_idle_bind_and_idempotent_rebind() -> void:
-	var fixture: Dictionary = await _create_fixture()
+	var fixture: Dictionary = await _create_fixture(false)
 	var gate: BossDamageGate = fixture.gate
 	var controller: BossAttackController = fixture.controller
 	var invulnerability_events: Array[bool] = []
@@ -122,15 +122,15 @@ func _test_failed_rebind_preserves_existing_binding() -> void:
 	await process_frame
 	_expect(gate.bind_controller(controller),
 		"The original controller must bind before failed-rebind checks.")
-	invalid_controller.queue_free()
-	await process_frame
+	root.remove_child(invalid_controller)
 
 	_expect(not gate.bind_controller(invalid_controller),
-		"A rebind to a freed controller must fail.")
+		"A rebind to a Tree-exited controller must fail.")
 	_expect(gate.is_bound() and gate.is_damage_allowed(),
 		"A failed rebind must preserve the original IDLE binding.")
 	_expect(controller.state_changed.get_connections().size() == 1,
 		"A failed rebind must preserve the original signal connection.")
+	invalid_controller.free()
 
 	_expect(controller.start_attack(),
 		"The preserved controller must still start an attack.")
@@ -420,12 +420,14 @@ func _create_fixture(bind_gate: bool = true) -> Dictionary:
 
 func _destroy_fixture(fixture: Dictionary) -> void:
 	for key: StringName in [&"gate", &"controller", &"attack"]:
-		var node: Node = fixture.get(key) as Node
-		if is_instance_valid(node):
-			if node.is_inside_tree():
-				node.queue_free()
-			else:
-				node.free()
+		var value: Variant = fixture.get(key)
+		if not is_instance_valid(value):
+			continue
+		var node: Node = value as Node
+		if node.is_inside_tree():
+			node.queue_free()
+		else:
+			node.free()
 	await process_frame
 
 

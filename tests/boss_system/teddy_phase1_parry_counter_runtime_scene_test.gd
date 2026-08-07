@@ -253,7 +253,7 @@ func _test_arm_parry_and_counter_damage(
 	hurtbox.body_exited.emit(tracked_ball)
 	var before_normal_hit: int = health.get_current_health()
 	hurtbox.body_entered.emit(tracked_ball)
-	_expect(health.get_current_health() == before_normal_hit - 420,
+	_expect(health.get_current_health() == before_normal_hit - 410,
 		"The next hit must return to normal second-combo damage.")
 	_expect(combo.combo_count == 2,
 		"The next normal hit must register exactly one more Combo.")

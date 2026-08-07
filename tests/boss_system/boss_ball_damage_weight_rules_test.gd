@@ -118,7 +118,6 @@ func _test_future_super_heavy_profile() -> void:
 		rules.get_damage_multiplier(&"future_super_heavy"),
 		1.50
 	), "A future Super Heavy ID must resolve multiplier 1.50.")
-	rules.free()
 
 
 func _test_empty_id_validation() -> void:
@@ -127,7 +126,6 @@ func _test_empty_id_validation() -> void:
 	var errors: PackedStringArray = rules.validate()
 	_expect(_contains_error(errors, "light_ball_ids"),
 		"An empty ball ID must produce a validation error.")
-	rules.free()
 
 
 func _test_duplicate_within_class_validation() -> void:
@@ -140,7 +138,6 @@ func _test_duplicate_within_class_validation() -> void:
 		"An internally duplicated ID must not resolve as a valid profile.")
 	_expect(is_equal_approx(rules.get_damage_multiplier(&"normal"), 0.0),
 		"An internally duplicated ID must return multiplier 0.0.")
-	rules.free()
 
 
 func _test_duplicate_across_classes_validation() -> void:
@@ -158,7 +155,6 @@ func _test_duplicate_across_classes_validation() -> void:
 	)
 	_expect(is_equal_approx(rules.get_damage_multiplier(&"normal"), 0.0),
 		"A cross-class duplicate must return multiplier 0.0.")
-	rules.free()
 
 
 func _test_invalid_multiplier_validation() -> void:
@@ -180,7 +176,6 @@ func _test_invalid_multiplier_validation() -> void:
 		var affected_id: StringName = _id_for_multiplier(property_name)
 		_expect(is_equal_approx(rules.get_damage_multiplier(affected_id), 0.0),
 			"An invalid multiplier must be blocked by the lookup API.")
-		rules.free()
 
 
 func _test_multiple_validation_errors_are_collected() -> void:
@@ -206,7 +201,6 @@ func _test_multiple_validation_errors_are_collected() -> void:
 		"Multiple-error validation must include the cross-class duplicate error.")
 	_expect(_snapshot(rules) == before,
 		"Multiple-error validation must not mutate the Resource.")
-	rules.free()
 
 
 func _test_lookup_does_not_mutate(rules: BossBallDamageWeightRules) -> void:

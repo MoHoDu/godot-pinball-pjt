@@ -271,14 +271,26 @@ func _test_existing_ball_damage_counter_and_phase(
 		"The next Phase 2 request must select Pattern 2.")
 	_expect(controller.attack == pattern_2,
 		"Controller must own only the selected Pattern 2 Attack.")
+	_expect(boss.arm_ball_reflector.is_bound(),
+		"Production Arm Reflector must remain bound to Pattern 2.")
 	await controller.active_started
+	ball.freeze = false
+	ball.gravity_scale = 0.0
 	ball.linear_velocity = Vector2(120.0, -180.0)
+	await physics_frame
 	var velocity_before_pattern_2: Vector2 = ball.linear_velocity
 	pattern_2.attack_hit.emit(ball)
+	await physics_frame
+	await physics_frame
 	_expect(tracker.is_ball_tracked(ball),
 		"Pattern 2 attack_hit must bind to the existing Ball Tracker.")
 	_expect(ball.linear_velocity != velocity_before_pattern_2,
-		"Pattern 2 attack_hit must use the existing Arm Reflector.")
+		"Pattern 2 attack_hit must use the existing Arm Reflector. before=%s after=%s" % [
+			velocity_before_pattern_2,
+			"%s freeze=%s sleeping=%s mass=%s" % [
+				ball.linear_velocity, ball.freeze, ball.sleeping, ball.mass
+			]
+		])
 	flipper.parry_resolved.emit(
 		ball,
 		FlipperParryEvaluator.Grade.PERFECT,

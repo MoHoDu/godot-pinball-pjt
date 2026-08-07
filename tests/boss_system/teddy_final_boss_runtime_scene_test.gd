@@ -238,6 +238,7 @@ func _test_one_cotton_hit_is_independent(
 	hit_cotton.body_entered.emit(ball)
 	hit_cotton.body_entered.emit(ball)
 	await physics_frame
+	await physics_frame
 	await process_frame
 	_expect(ball.linear_velocity.x > 0.0,
 		"Cotton A must reflect the Ball outward.")
@@ -291,6 +292,7 @@ func _test_phase_2_attack_counter_and_gate(
 	pattern_2.prepare_attack()
 	pattern_2.begin_active(0.0)
 	pattern_2.left_hit_area.body_entered.emit(ball)
+	await physics_frame
 	await physics_frame
 	_expect(tracker.is_ball_tracked(ball) \
 		and ball.linear_velocity.x < 0.0 \

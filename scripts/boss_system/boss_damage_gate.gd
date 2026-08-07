@@ -15,7 +15,9 @@ func _init() -> void:
 
 
 func bind_controller(controller: BossAttackController) -> bool:
-	if controller == null or not _is_controller_runtime_valid(controller):
+	if controller == null \
+			or not is_instance_valid(controller) \
+			or not controller.is_inside_tree():
 		return false
 
 	if _controller == controller:
@@ -40,7 +42,7 @@ func unbind_controller() -> void:
 
 
 func is_bound() -> bool:
-	return _is_controller_runtime_valid(_controller)
+	return is_instance_valid(_controller) and _controller.is_inside_tree()
 
 
 func is_damage_allowed() -> bool:
@@ -54,7 +56,7 @@ func is_invulnerable() -> bool:
 
 
 func _process(_delta: float) -> void:
-	if not _is_controller_runtime_valid(_controller):
+	if not is_instance_valid(_controller) or not _controller.is_inside_tree():
 		_handle_controller_loss()
 
 
@@ -65,7 +67,8 @@ func _on_controller_state_changed(
 ) -> void:
 	if source_controller != _controller:
 		return
-	if not _is_controller_runtime_valid(source_controller):
+	if not is_instance_valid(source_controller) \
+			or not source_controller.is_inside_tree():
 		_handle_controller_loss()
 		return
 	_set_invulnerable(current_state == BossAttackController.State.ACTIVE)
@@ -111,7 +114,3 @@ func _handle_controller_loss() -> void:
 	_controller = null
 	set_process(false)
 	_set_invulnerable(true)
-
-
-func _is_controller_runtime_valid(controller: BossAttackController) -> bool:
-	return is_instance_valid(controller) and controller.is_inside_tree()

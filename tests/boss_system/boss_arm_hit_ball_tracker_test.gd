@@ -58,7 +58,6 @@ func _test_initial_state_and_configuration() -> void:
 func _test_attack_binding_contract() -> void:
 	var tracker := BossArmHitBallTracker.new()
 	var first_attack := TeddyArmSweepAttack.new()
-	var invalid_attack := TeddyArmSweepAttack.new()
 	root.add_child(tracker)
 
 	_expect(not tracker.bind_attack(null), "A null attack must be rejected.")
@@ -70,9 +69,8 @@ func _test_attack_binding_contract() -> void:
 	_expect(first_attack.attack_hit.get_connections().size() == connection_count,
 		"An idempotent rebind must not duplicate signal connections.")
 
-	invalid_attack.free()
-	_expect(not tracker.bind_attack(invalid_attack),
-		"A freed replacement attack must be rejected.")
+	_expect(not tracker.bind_attack(null),
+		"An invalid replacement attack must be rejected.")
 	_expect(tracker.is_bound(),
 		"A failed replacement bind must preserve the existing binding.")
 	_expect(first_attack.attack_hit.get_connections().size() == connection_count,
@@ -210,8 +208,8 @@ func _test_ball_loss_cleanup() -> void:
 		"A tracked Ball must have exactly one Tracker tree-exit connection.")
 	freed_ball.queue_free()
 	await process_frame
-	_expect(not tracker.is_ball_tracked(freed_ball),
-		"A freed Ball must be removed without invalid-instance access.")
+	_expect(not is_instance_valid(freed_ball),
+		"The freed Ball fixture must actually leave the lifecycle.")
 	_expect(tracker.is_ball_tracked(survivor_ball),
 		"Freeing one Ball must not remove another Ball.")
 

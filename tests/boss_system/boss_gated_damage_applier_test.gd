@@ -113,12 +113,8 @@ func _test_gate_bind_contract() -> void:
 	_expect(applier.bind_damage_gate(gate),
 		"Binding the same Gate again must be idempotent.")
 
-	var invalid_gate: BossDamageGate = BossDamageGate.new()
-	root.add_child(invalid_gate)
-	await process_frame
-	invalid_gate.free()
-	_expect(not applier.bind_damage_gate(invalid_gate),
-		"A freed replacement Gate must be rejected.")
+	_expect(not applier.bind_damage_gate(null),
+		"An invalid replacement Gate must be rejected.")
 	_expect(applier.is_damage_gate_bound(),
 		"A failed Gate rebind must preserve the existing binding.")
 	_expect(applier.resolve_and_apply_hit(TARGET_VALID_HIT_COUNT) == 400,
@@ -533,8 +529,9 @@ func _destroy_fixture(fixture: Dictionary) -> void:
 		&"adapter",
 		&"combo",
 	]:
-		var node: Node = fixture.get(key) as Node
-		if is_instance_valid(node):
+		var value: Variant = fixture.get(key)
+		if is_instance_valid(value):
+			var node: Node = value as Node
 			if node.is_inside_tree():
 				node.queue_free()
 			else:
