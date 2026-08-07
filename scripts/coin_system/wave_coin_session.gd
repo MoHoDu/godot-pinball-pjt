@@ -22,11 +22,29 @@ signal wave_coin_settled(
 @export var clear_delay: WaveClearDelayController
 @export var wallet_label: Label
 
+## 단독 웨이브 씬에서는 이 세션이 스테이지 시작·완료 시 지갑을 초기화합니다.
+## 외부 StageFlowManager가 지갑을 소유할 때는 false로 주입되어 웨이브 씬 교체
+## 사이에도 같은 잔액을 유지합니다. 게임 오버 초기화는 이 값과 무관하게 적용됩니다.
+@export var manages_stage_wallet_lifecycle := true
+
 
 var last_board_coin := 0
 var last_clear_delay_coin := 0
 var last_wave_coin_earned := 0
 var _respawn_after_game_over := false
+
+
+## 외부 스테이지 흐름이 소유한 지갑과 현재 웨이브 런타임을 트리 진입 전에 주입합니다.
+func bind_stage_runtime(
+	stage_wallet: CoinWallet,
+	stage_wave_manager: WaveManager
+) -> bool:
+	if stage_wallet == null or stage_wave_manager == null or is_inside_tree():
+		return false
+	wallet = stage_wallet
+	wave_manager = stage_wave_manager
+	manages_stage_wallet_lifecycle = false
+	return true
 
 
 func _ready() -> void:
@@ -53,7 +71,8 @@ func _ready() -> void:
 
 
 func _on_stage_entered(_stage_id: StringName, _wave_index: int) -> void:
-	wallet.reset(0)
+	if manages_stage_wallet_lifecycle:
+		wallet.reset(0)
 	field.reset_wave()
 	_respawn_after_game_over = false
 	_reset_last_settlement()
@@ -103,7 +122,8 @@ func _on_stage_phase_changed(
 
 
 func _on_stage_completed(_stage_id: StringName) -> void:
-	wallet.reset(0)
+	if manages_stage_wallet_lifecycle:
+		wallet.reset(0)
 	field.reset_wave()
 	_respawn_after_game_over = false
 	_reset_last_settlement()

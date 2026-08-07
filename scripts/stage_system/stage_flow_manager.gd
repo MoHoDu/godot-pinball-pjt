@@ -66,6 +66,12 @@ const DEFAULT_REWARD_COMPLETION_SIGNALS: Array[StringName] = [
 ## 각 일반 웨이브를 클리어한 뒤 표시할 보상 페이지입니다.
 @export var reward_scene: PackedScene = DEFAULT_REWARD_SCENE
 
+@export_category("Stage Coin")
+
+## 웨이브 씬 교체 사이에 유지할 스테이지 공용 코인 지갑입니다.
+## 비어 있으면 코인 시스템 연결 없이 기존 스테이지 흐름만 실행합니다.
+@export var coin_wallet: CoinWallet
+
 @export_category("Runtime")
 
 ## 현재 웨이브·보상·보스 씬을 자식으로 붙일 컨테이너입니다.
@@ -120,6 +126,10 @@ var active_scene: Node:
 	get:
 		return _active_scene
 
+var current_coin_balance: int:
+	get:
+		return coin_wallet.balance if coin_wallet != null else 0
+
 
 func _ready() -> void:
 	if Engine.is_editor_hint():
@@ -143,6 +153,7 @@ func start_stage() -> bool:
 
 	_clear_active_scene()
 	_run_generation += 1
+	_reset_stage_coin_wallet()
 	_wave_index = 0
 	_boss_index = -1
 	_transition_pending = false
@@ -154,6 +165,7 @@ func stop_stage() -> void:
 	_run_generation += 1
 	_transition_pending = false
 	_clear_active_scene()
+	_reset_stage_coin_wallet()
 	_wave_index = -1
 	_boss_index = -1
 	_set_phase(Phase.IDLE)
@@ -254,6 +266,7 @@ func _show_scene(
 		return false
 
 	_active_scene = instance
+	_prepare_stage_coin_integration(_active_scene)
 	_completion_source = binding.source as Node
 	_completion_signal = binding.signal_name as StringName
 	_completion_callable = _completion_handler_for(
@@ -354,8 +367,38 @@ func _advance_after_completion(
 
 func _complete_stage() -> void:
 	_clear_active_scene()
+	_reset_stage_coin_wallet()
 	_set_phase(Phase.COMPLETE)
 	stage_completed.emit()
+
+
+func _prepare_stage_coin_integration(instance: Node) -> void:
+	if coin_wallet == null:
+		return
+	if instance.has_method(&"bind_coin_wallet"):
+		instance.call(&"bind_coin_wallet", coin_wallet)
+
+	var stage_wave_manager := instance.find_child(
+		"WaveManager", true, false
+	) as WaveManager
+	var candidates: Array[Node] = [instance]
+	var cursor := 0
+	while cursor < candidates.size():
+		var current := candidates[cursor]
+		cursor += 1
+		if current.has_method(&"bind_stage_runtime"):
+			current.call(
+				&"bind_stage_runtime",
+				coin_wallet,
+				stage_wave_manager
+			)
+		for child in current.get_children():
+			candidates.append(child)
+
+
+func _reset_stage_coin_wallet() -> void:
+	if coin_wallet != null:
+		coin_wallet.reset(0)
 
 
 func _get_reward_destination_text() -> String:

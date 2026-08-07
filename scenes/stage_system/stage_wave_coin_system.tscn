@@ -1,0 +1,43 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/coin_system/coin_field_controller.gd" id="1_coin_field"]
+[ext_resource type="Script" path="res://scripts/coin_system/coin_wallet.gd" id="2_coin_wallet"]
+[ext_resource type="Script" path="res://scripts/coin_system/wave_clear_delay_controller.gd" id="3_clear_delay"]
+[ext_resource type="Script" path="res://scripts/coin_system/wave_coin_session.gd" id="4_coin_session"]
+[ext_resource type="Resource" path="res://settings/coin/BasicCoin.tres" id="5_coin_definition"]
+[ext_resource type="Resource" path="res://settings/coin/CoinSpawnLayout_Stage01.tres" id="6_coin_layout"]
+
+[node name="CoinSystem" type="Node2D" node_paths=PackedStringArray("board_layout", "bumpers_root")]
+z_index = 3
+script = ExtResource("1_coin_field")
+layout = ExtResource("6_coin_layout")
+coin_definition = ExtResource("5_coin_definition")
+board_layout = NodePath("../RepairBoardLayout")
+bumpers_root = NodePath("../Bumpers")
+
+[node name="CoinWallet" type="Node" parent="."]
+script = ExtResource("2_coin_wallet")
+
+[node name="WaveClearDelayController" type="Node" parent="."]
+script = ExtResource("3_clear_delay")
+
+[node name="CoinSession" type="Node" parent="." node_paths=PackedStringArray("wave_manager", "wallet", "field", "clear_delay", "wallet_label")]
+script = ExtResource("4_coin_session")
+wave_manager = NodePath("../../WaveManager")
+wallet = NodePath("../CoinWallet")
+field = NodePath("..")
+clear_delay = NodePath("../WaveClearDelayController")
+wallet_label = NodePath("../CoinHud/CoinWalletLabel")
+
+[node name="CoinHud" type="CanvasLayer" parent="."]
+
+[node name="CoinWalletLabel" type="Label" parent="CoinHud"]
+offset_left = 24.0
+offset_top = 240.0
+offset_right = 470.0
+offset_bottom = 284.0
+theme_override_colors/font_color = Color(0.9, 0.72, 0.25, 1)
+theme_override_colors/font_outline_color = Color(0.05, 0.06, 0.08, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 30
+text = "COIN 0  ·  WAVE +0"
