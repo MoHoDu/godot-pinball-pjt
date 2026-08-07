@@ -10,6 +10,7 @@ extends SceneTree
 ##   이 테스트는 정확히 그 조건(코드 인스턴스화 = current_scene 이 null)에서
 ##   배선이 되는지 봅니다. 옛 방식이면 여기서 0을 찾고 실패합니다.
 
+const SCENE_PATH := "res://scenes/wave/wave_sfx.tscn"
 const WALL_RULES_PATH := "res://settings/sfx/WallSfxRules.tres"
 const FLIPPER_RULES_PATH := "res://settings/sfx/FlipperSfxRules.tres"
 
@@ -21,11 +22,11 @@ func _init() -> void:
 
 
 func _run() -> void:
-	# ★ 머지(dev/repair_parts_v3) 이후 wave.tscn 이 SFX 노드를 직접 갖습니다.
-	#   "원본은 그대로여야 한다"는 단정과 wave_sfx.tscn 상속 검사는
-	#   그 통합으로 대체됐습니다. 지금 의미가 있는 것은 연구실 배선입니다.
 	_test_rules_resources()
+	await _test_scene_wiring()
+	await _test_sound_test_scene()
 	await _test_sfx_lab_scene()
+	await _test_main_scene_wiring()
 	_finish()
 
 
@@ -47,12 +48,6 @@ func _test_sfx_lab_scene() -> void:
 	await physics_frame
 	await physics_frame
 
-	# ★ 코드로 인스턴스화하면 current_scene 이 이 씬이 아니다.
-	#   과거에 바인더가 current_scene 으로 대상을 찾다가 **에러 없이 조용히**
-	#   아무것도 못 찾은 적이 있다. 이 조건에서 배선이 되는지가 핵심이다.
-	_expect(current_scene != scene,
-		"이 테스트는 current_scene 이 아닌 상태를 재현해야 의미가 있다.")
-
 	# ★ NodePath 익스포트가 비어 있지 않은가 — 이게 비면 모든 키가 안 먹는다
 	_expect(not (scene.ball_path as NodePath).is_empty(),
 		"연구실의 ball_path 가 비어 있다. 공을 못 찾으면 발사·리셋·중력이 전부 안 된다.")
@@ -64,9 +59,8 @@ func _test_sfx_lab_scene() -> void:
 	_expect(scene.get_node_or_null(scene.director_path) is SfxDirector,
 		"director_path 가 SfxDirector 를 가리켜야 한다.")
 
-	# 벽 규칙은 음원과 함께 대기 중입니다. 지금 필수인 것은 플리퍼뿐입니다.
-	_expect(scene.flipper_rules != null,
-		"연구실에 플리퍼 규칙이 물려 있어야 한다. 없으면 키가 전부 먹통이다.")
+	_expect(scene.wall_rules != null and scene.flipper_rules != null,
+		"연구실에 규칙 리소스가 물려 있어야 한다.")
 
 	var flippers := 0
 	for node in get_nodes_in_group(&"combo_flippers"):
@@ -83,7 +77,7 @@ func _test_sfx_lab_scene() -> void:
 
 	# 직접 재생 키가 실제로 소리를 내는가 (음원 없으면 여기서 걸린다)
 	var director := scene.get_node_or_null(scene.director_path) as SfxDirector
-	if director != null and scene.wall_rules != null and scene.wall_rules.hit_cue != null:
+	if director != null and scene.wall_rules != null:
 		var result := director.request(
 			scene.wall_rules.hit_cue, SfxPlayContext.new(1, 700.0)
 		)
@@ -144,8 +138,8 @@ func _test_sound_test_scene() -> void:
 
 
 func _test_rules_resources() -> void:
-	# 벽 음원은 아직 다시 만들지 않았습니다. 규칙이 돌아오면 자동으로 검사합니다.
-	var wall := load(WALL_RULES_PATH) as WallSfxRules if ResourceLoader.exists(WALL_RULES_PATH) else null
+	var wall := load(WALL_RULES_PATH) as WallSfxRules
+	_expect(wall != null, "WallSfxRules.tres 를 불러올 수 있어야 한다.")
 
 	if wall != null and wall.hit_cue != null:
 		_expect(wall.hit_cue.selection_mode == SfxCue.SelectionMode.SPEED_TIER,
@@ -167,29 +161,104 @@ func _test_rules_resources() -> void:
 	if flipper == null:
 		return
 
-	# ★ 지금은 선택·작동 둘만 채택돼 있습니다. 나머지는 만들어지는 대로 붙습니다.
+	_expect(flipper.hit_cue != null, "플리퍼 타격 큐는 필수다 (기획서 MUST).")
 	_expect(flipper.select_cue != null and flipper.activate_cue != null,
 		"선택음과 작동음이 둘 다 있어야 한다.")
 	_expect(flipper.select_cue.cue_id != flipper.activate_cue.cue_id,
 		"선택음과 작동음은 분명히 달라야 한다 (p.20, p.5 검수).")
+	_expect(flipper.parry_perfect_cue != null
+			and flipper.parry_perfect_cue.priority == SfxPriority.PARRY,
+		"정확한 패링은 PARRY 우선순위여야 한다.")
+
+	# 타격보다 패링이 우선순위가 높아야 한다
+	_expect(flipper.parry_perfect_cue.priority > flipper.hit_cue.priority,
+		"패링이 플리퍼 타격보다 우선해야 한다 (기획서 우선순위).")
+
+	# 속도로 일반/강한 타격이 갈리는가
+	var normal := flipper.get_hit_cue(flipper.strong_hit_speed_threshold - 100.0)
+	var strong := flipper.get_hit_cue(flipper.strong_hit_speed_threshold + 100.0)
+	_expect(normal != strong, "속도 임계값을 넘으면 강한 타격으로 갈려야 한다.")
 
 
+## ★ 핵심 회귀 — 코드 인스턴스화 상태에서 배선되는가
+func _test_scene_wiring() -> void:
+	var packed := load(SCENE_PATH) as PackedScene
+	_expect(packed != null, "wave_sfx.tscn 을 불러올 수 있어야 한다.")
+
+	if packed == null:
+		return
+
+	var scene := packed.instantiate()
+	root.add_child(scene)
+	await physics_frame
+	await physics_frame
+
+	# 이 경로에서는 current_scene 이 이 씬이 아니다.
+	_expect(current_scene != scene,
+		"이 테스트는 current_scene 이 아닌 상태를 재현해야 의미가 있다.")
+
+	var director := scene.get_node_or_null(^"SfxDirector") as SfxDirector
+	var binder := scene.get_node_or_null(^"_WaveSfxBinder") as WaveSfxBinder
+
+	_expect(director != null, "호환 씬에 SfxDirector 가 있어야 한다.")
+	_expect(binder != null, "호환 씬에 _WaveSfxBinder 가 있어야 한다.")
+
+	if binder == null:
+		scene.queue_free()
+		return
+
+	_expect(binder.get_director() == director,
+		"바인더가 형제 SfxDirector 를 찾아야 한다.")
+
+	var counts := binder.get_bound_source_counts()
+	_expect(int(counts[&"bridges"]) >= 1,
+		"★ ComboCollisionBridge 를 찾아야 한다. 못 찾으면 벽·플리퍼 충돌음이 통째로 안 난다. (%d)"
+			% int(counts[&"bridges"]))
+	_expect(int(counts[&"flippers"]) >= 8,
+		"★ 플리퍼 8개(4그룹×좌우)를 전부 찾아야 한다. (%d)" % int(counts[&"flippers"]))
+
+	# ★ "승인된 것만 씬에 물린다"는 정책은 그대로다. 승인 목록만 바뀌었다.
+	#   2026-08-07 현재 플리퍼 5종과 벽 3종이 검수를 통과했다.
+	#   공 흐름·콤보·범퍼는 음원을 처음부터 다시 만드는 중이라
+	#   규칙 자체가 settings/sfx/_pending/ 에 있다.
+	_expect(binder.wall_rules != null and binder.flipper_rules != null,
+		"승인된 벽·플리퍼 규칙이 씬에 물려 있어야 한다.")
+	_expect(binder.combo_rules == null and binder.bumper_rules == null,
+		"아직 만들지 않은 콤보·범퍼 규칙이 물려 있으면 안 된다.")
+
+	# ★ FlipperSelector 에는 시그널이 없어 폴링으로 붙는다.
+	#   못 찾으면 선택음이 통째로 안 나고, 검수 항목
+	#   "선택음·작동음·패링 성공음이 서로 다른가"(p.5)를 볼 수 없다.
+	_expect(binder.has_selector(),
+		"FlipperSelector 를 찾아야 선택음이 난다.")
+
+	# 목소리 풀이 실제로 만들어졌는지
+	if director != null:
+		_expect(director.get_active_voice_count() == 0,
+			"시작 시점에는 울리는 목소리가 없어야 한다.")
+
+	scene.queue_free()
+	await physics_frame
 
 
-
-## 상속 씬만 쓰고 원본은 건드리지 않았는지
-func _test_original_scene_untouched() -> void:
+## 승인된 SFX가 실제 메인 웨이브에 병합되었는지
+func _test_main_scene_wiring() -> void:
 	var original := load("res://scenes/wave/wave.tscn") as PackedScene
-	_expect(original != null, "원본 wave.tscn 을 불러올 수 있어야 한다.")
+	_expect(original != null, "메인 wave.tscn 을 불러올 수 있어야 한다.")
 
 	if original == null:
 		return
 
 	var scene := original.instantiate()
-	_expect(scene.get_node_or_null(^"SfxDirector") == null,
-		"원본 wave.tscn 은 승인 전까지 그대로여야 한다 (씬 복제 규칙).")
-	_expect(scene.get_node_or_null(^"_WaveSfxBinder") == null,
-		"원본에 바인더가 들어가면 안 된다.")
+	var director := scene.get_node_or_null(^"SfxDirector") as SfxDirector
+	var binder := scene.get_node_or_null(^"_WaveSfxBinder") as WaveSfxBinder
+	_expect(director != null,
+		"메인 wave.tscn 에 승인된 SfxDirector가 있어야 한다.")
+	_expect(binder is WaveSfxBinderStrict,
+		"메인 wave.tscn 은 인자 수를 검증하는 엄격한 바인더를 사용해야 한다.")
+	_expect(binder != null and binder.wall_rules != null \
+		and binder.flipper_rules != null,
+		"메인 wave.tscn 에 승인된 벽·플리퍼 규칙이 연결되어야 한다.")
 	scene.free()
 
 
