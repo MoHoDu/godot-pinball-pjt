@@ -121,7 +121,7 @@ func _run() -> void:
 		health,
 		combo
 	)
-	_test_unknown_profile_is_ignored(
+	_test_ball_identity_does_not_control_damage(
 		wave,
 		ball_flow,
 		hurtbox,
@@ -136,6 +136,9 @@ func _run() -> void:
 	)
 	_test_first_hit_damage(
 		wave, damage_prototype, &"heavy", 460, ball_flow, hurtbox, health, combo
+	)
+	await _test_runtime_mass_change_updates_damage(
+		wave, ball_flow, hurtbox, health, combo
 	)
 	_test_contact_lifecycle(
 		wave,
@@ -279,14 +282,14 @@ func _check_initial_ui(prototype: TeddyPhase1DamageRuntimePrototype) -> void:
 func _check_weight_rules(weight_rules: BossBallDamageWeightRules) -> void:
 	if weight_rules == null:
 		return
-	_expect(is_equal_approx(weight_rules.get_damage_multiplier(&"light"), 0.90),
+	_expect(is_equal_approx(weight_rules.get_damage_multiplier(0.5), 0.90),
 		"Light damage profile must resolve to 0.90.")
-	_expect(is_equal_approx(weight_rules.get_damage_multiplier(&"normal"), 1.00),
+	_expect(is_equal_approx(weight_rules.get_damage_multiplier(2.0), 1.00),
 		"Normal damage profile must resolve to 1.00.")
-	_expect(is_equal_approx(weight_rules.get_damage_multiplier(&"heavy"), 1.15),
+	_expect(is_equal_approx(weight_rules.get_damage_multiplier(8.0), 1.15),
 		"Heavy damage profile must resolve to 1.15.")
-	_expect(not weight_rules.has_profile(&"unknown"),
-		"Unknown ball IDs must not have a damage profile.")
+	_expect(not weight_rules.has_profile(0.0),
+		"Non-positive mass must not have a damage profile.")
 
 
 func _check_attack_runtime_preserved(
@@ -349,7 +352,7 @@ func _test_non_active_pinball_is_ignored(
 	_free_ball(other_ball)
 
 
-func _test_unknown_profile_is_ignored(
+func _test_ball_identity_does_not_control_damage(
 	wave: Node2D,
 	ball_flow: WaveBallFlowController,
 	hurtbox: Area2D,
@@ -363,10 +366,10 @@ func _test_unknown_profile_is_ignored(
 	wave.add_child(ball)
 	_activate_profile(ball_flow, definition, ball)
 	hurtbox.body_entered.emit(ball)
-	_expect(health.get_current_health() == 12000,
-		"An unknown ball profile must not damage the Boss.")
-	_expect(combo.combo_count == 0,
-		"An unknown ball profile must not increase Combo.")
+	_expect(health.get_current_health() == 11600,
+		"An unknown ball ID with Normal mass must deal Normal damage.")
+	_expect(combo.combo_count == 1,
+		"Ball identity must not block a valid mass-based Boss hit.")
 	_deactivate_ball(ball_flow)
 	_free_ball(ball)
 
@@ -399,8 +402,44 @@ func _test_first_hit_damage(
 		"Last Damage: Calculated %d / Applied %d"
 		% [expected_damage, expected_damage]
 	), "Damage UI must show calculated and applied damage.")
-	_expect(prototype.damage_event_log.text.contains("Ball: %s" % ball_id),
-		"Damage Event Log must identify the active ball ID.")
+	_expect(prototype.damage_event_log.text.contains("Mass: %.2f" % ball.mass),
+		"Damage Event Log must identify the active ball mass.")
+	_deactivate_ball(ball_flow)
+	_free_ball(ball)
+
+
+func _test_runtime_mass_change_updates_damage(
+	wave: Node2D,
+	ball_flow: WaveBallFlowController,
+	hurtbox: Area2D,
+	health: BossHealthComponent,
+	combo: ComboSystem
+) -> void:
+	_reset_damage_state(health, combo)
+	var definition: BallDefinition = _find_definition(ball_flow, &"normal")
+	var ball: Pinball = _create_ball(wave, definition)
+	if definition == null or ball == null or ball.stats == null:
+		_expect(false, "Mass-change test ball and Stats must instantiate.")
+		_free_ball(ball)
+		return
+
+	ball.stats = ball.stats.duplicate(true) as PinballStats
+	_activate_profile(ball_flow, definition, ball)
+	hurtbox.body_entered.emit(ball)
+	_expect(health.get_current_health() == 11600,
+		"The original mass 2.0 ball must deal Normal damage.")
+	hurtbox.body_exited.emit(ball)
+	_reset_damage_state(health, combo)
+
+	ball.stats.mass = 8.0
+	await process_frame
+	_expect(is_equal_approx(ball.mass, 8.0),
+		"Changing PinballStats.mass must refresh the effective Pinball mass.")
+	hurtbox.body_entered.emit(ball)
+	_expect(health.get_current_health() == 11540,
+		"The same ball ID changed to mass 8.0 must deal Heavy damage.")
+	_expect(combo.combo_count == 1,
+		"The changed physical mass must still produce one valid hit.")
 	_deactivate_ball(ball_flow)
 	_free_ball(ball)
 
