@@ -20,6 +20,7 @@ const DISPLAY_FONT := preload(
 const BODY_FONT_SOURCE := preload(
 	"res://Resources/ui/fonts/noto_sans_kr/NotoSansKR-wght.ttf"
 )
+const COIN_TEXTURE: Texture2D = preload("res://Resources/Art/coin/coin.png")
 
 const BALL_ROW_TITLE := "공 보상"
 const PART_ROW_TITLE := "수리 부품"
@@ -905,6 +906,7 @@ func _make_price_panel(price: int) -> PanelContainer:
 	panel.add_child(row)
 
 	var coin := RewardCoinIcon.new()
+	coin.name = "PriceCoinIcon"
 	coin.custom_minimum_size = Vector2(_d(24.0), _d(24.0))
 	row.add_child(coin)
 	row.add_child(_make_label(str(price), _di(15), COLOR_INK, true))
@@ -1386,27 +1388,13 @@ class RewardHandoffBurst:
 
 
 class RewardCoinIcon:
-	extends Control
+	extends TextureRect
 
 	func _ready() -> void:
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
-		resized.connect(queue_redraw)
-		queue_redraw()
-
-	func _draw() -> void:
-		var diameter := minf(size.x, size.y)
-		if diameter <= 0.0:
-			return
-		var center := size * 0.5
-		var radius := diameter * 0.44
-		draw_circle(center + Vector2(0.0, diameter * 0.035), radius, COLOR_INK)
-		draw_circle(center, radius, COLOR_GOLD)
-		draw_arc(center, radius, 0.0, TAU, 32, COLOR_CREAM_LIGHT, maxf(1.0, diameter * 0.07), true)
-		var star := PackedVector2Array()
-		for index in 10:
-			var point_radius := radius * (0.48 if index % 2 == 0 else 0.22)
-			star.append(Vector2.from_angle(-PI * 0.5 + index * PI / 5.0) * point_radius + center)
-		draw_colored_polygon(star, COLOR_GOLD_DARK)
+		texture = COIN_TEXTURE
+		expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 
 
 class RewardPartIcon:

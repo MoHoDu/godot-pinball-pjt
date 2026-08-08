@@ -1,12 +1,16 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/wave/wave.tscn" id="1_wave"]
 [ext_resource type="PackedScene" path="res://scenes/boss_system/stage1_teddy_boss_runtime.tscn" id="2_boss"]
 [ext_resource type="Script" path="res://scripts/boss_system/stage1_teddy_boss_wave_bridge.gd" id="3_bridge"]
+[ext_resource type="AudioStream" path="res://Resources/sfx/bgm/BGM_Boss_Loop.wav" id="4_boss_bgm"]
 
 [node name="Stage1TeddyBossWave" instance=ExtResource("1_wave")]
 
 [node name="Stage1TeddyBossRuntime" parent="." instance=ExtResource("2_boss")]
+
+[node name="BgmPlayer" parent="." index="34"]
+stream = ExtResource("4_boss_bgm")
 
 [node name="Stage1TeddyBossWaveBridge" type="Node" parent="." node_paths=PackedStringArray("boss_runtime", "wave_manager", "combo_system", "ball_flow", "wave_hud", "hud_state", "bottom_left_flipper", "bottom_right_flipper", "top_left_flipper", "top_right_flipper", "left_left_flipper", "left_right_flipper", "right_left_flipper", "right_right_flipper")]
 script = ExtResource("3_bridge")

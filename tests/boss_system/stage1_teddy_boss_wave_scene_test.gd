@@ -95,6 +95,11 @@ func _run() -> void:
 	_expect(manager.current_stage_phase == WaveManager.StagePhase.BOSS,
 		"Three normal Waves must lead to BOSS.")
 	_expect(boss.is_battle_active(), "Entering BOSS must start Teddy Runtime.")
+	_expect(
+		not boss.pattern_1_attack.visible
+			and not boss.pattern_2_attack.visible,
+		"Production Boss must keep legacy attack placeholders hidden."
+	)
 	_expect(manager.is_boss_ball_cycle_active(),
 		"Entering BOSS must start the managed Boss Ball cycle.")
 	_expect(manager.current_stage_phase == WaveManager.StagePhase.BOSS,

@@ -5,6 +5,9 @@ extends Node2D
 const HUD_DESIGN_SIZE := Vector2(1920.0, 1080.0)
 const COTTON_KIND_ID: StringName = &"stage01_cotton"
 const TOY_DRUM_KIND_ID: StringName = &"stage01_toy_drum"
+const SETTINGS_POPUP_SCENE := preload(
+	"res://scenes/settings/settings_popup.tscn"
+)
 
 
 @export_category("Wave Configuration")
@@ -43,6 +46,9 @@ var _selection_committed := false
 var _camera_viewport_size := Vector2.ZERO
 var _drain_pending := false
 var _active_shot_controls := 0
+var _settings_layer: CanvasLayer
+var _settings_popup: Variant
+var _paused_before_settings := false
 
 
 func _ready() -> void:
@@ -50,7 +56,8 @@ func _ready() -> void:
 	_bind_bumper_runtime()
 	_bind_wave_runtime()
 	wave_hud.bind_state_source(hud_state)
-	wave_hud.settings_requested.connect(_toggle_pause)
+	_setup_settings_popup()
+	wave_hud.settings_requested.connect(_on_settings_requested)
 	wave_hud.advance_stage_phase_requested.connect(_on_advance_stage_phase_requested)
 	get_viewport().size_changed.connect(_on_viewport_size_changed)
 	_connect_hud_state_inputs()
@@ -87,6 +94,11 @@ func _process(_delta: float) -> void:
 func _unhandled_input(_event: InputEvent) -> void:
 	if get_tree().paused:
 		return
+
+
+func _exit_tree() -> void:
+	if is_instance_valid(_settings_popup) and _settings_popup.visible:
+		get_tree().paused = _paused_before_settings
 
 
 func reset_combo_test() -> void:
@@ -477,10 +489,36 @@ func _on_viewport_size_changed() -> void:
 	_fit_board_camera(true)
 
 
-func _toggle_pause() -> void:
-	var next_paused := not get_tree().paused
-	get_tree().paused = next_paused
-	hud_state.set_paused(next_paused)
+func _setup_settings_popup() -> void:
+	_settings_layer = CanvasLayer.new()
+	_settings_layer.name = "SettingsOverlay"
+	_settings_layer.layer = 100
+	_settings_layer.process_mode = Node.PROCESS_MODE_ALWAYS
+	add_child(_settings_layer)
+
+	_settings_popup = SETTINGS_POPUP_SCENE.instantiate()
+	_settings_layer.add_child(_settings_popup)
+	_settings_popup.close_requested.connect(_on_settings_closed)
+	_settings_popup.game_exit_requested.connect(_on_game_exit_requested)
+
+
+func _on_settings_requested() -> void:
+	if _settings_popup.visible:
+		_settings_popup.close_immediately()
+		return
+	_paused_before_settings = get_tree().paused
+	get_tree().paused = true
+	hud_state.set_paused(true)
+	_settings_popup.open_popup()
+
+
+func _on_settings_closed() -> void:
+	get_tree().paused = _paused_before_settings
+	hud_state.set_paused(_paused_before_settings)
+
+
+func _on_game_exit_requested() -> void:
+	get_tree().quit()
 
 
 func _is_count_in_range(value: int, range_value: Vector2i) -> bool:

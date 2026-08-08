@@ -33,29 +33,43 @@
 [node name="Audio" type="Node" parent="."]
 
 [node name="BattleStart" type="AudioStreamPlayer" parent="Audio"]
+bus = &"SFX"
 
 [node name="TelegraphPattern1" type="AudioStreamPlayer" parent="Audio"]
+bus = &"SFX"
 
 [node name="TelegraphPattern2" type="AudioStreamPlayer" parent="Audio"]
+bus = &"SFX"
 
 [node name="ArmSwing" type="AudioStreamPlayer" parent="Audio"]
+bus = &"SFX"
 
 [node name="ArmImpact" type="AudioStreamPlayer" parent="Audio"]
+bus = &"SFX"
 
 [node name="ArmReflection" type="AudioStreamPlayer" parent="Audio"]
+bus = &"SFX"
 
 [node name="BossNormalHit" type="AudioStreamPlayer" parent="Audio"]
+bus = &"SFX"
 
 [node name="BossCounterHit" type="AudioStreamPlayer" parent="Audio"]
+bus = &"SFX"
 
 [node name="CounterEarned" type="AudioStreamPlayer" parent="Audio"]
+bus = &"SFX"
 
 [node name="CounterExpired" type="AudioStreamPlayer" parent="Audio"]
+bus = &"SFX"
 
 [node name="Phase2Transition" type="AudioStreamPlayer" parent="Audio"]
+bus = &"SFX"
 
 [node name="CottonSpawn" type="AudioStreamPlayer" parent="Audio"]
+bus = &"SFX"
 
 [node name="CottonHit" type="AudioStreamPlayer" parent="Audio"]
+bus = &"SFX"
 
 [node name="BossDefeat" type="AudioStreamPlayer" parent="Audio"]
+bus = &"SFX"

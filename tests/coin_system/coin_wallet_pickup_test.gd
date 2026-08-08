@@ -90,8 +90,8 @@ func _test_pickup() -> void:
 	_expect(
 		visual != null
 			and visual.texture != null
-			and visual.texture.resource_path == "res://Resources/wave_hud/coin_wallet_icon.png",
-		"기본 코인 픽업은 생성된 지갑 코인 아이콘을 사용해야 한다."
+			and visual.texture.resource_path == "res://Resources/Art/coin/coin.png",
+		"기본 코인 픽업은 pre-main 태엽 토큰 아트를 사용해야 한다."
 	)
 	_expect(
 		visual != null

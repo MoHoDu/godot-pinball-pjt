@@ -62,6 +62,12 @@ func _run() -> void:
 	var feedback_ports := boss.get_node_or_null(
 		"Feedback/TeddyBossFeedbackPorts"
 	)
+	var presentation := boss.get_node_or_null(
+		"Feedback/TeddyBossPresentationBridge"
+	) as TeddyBossPresentationBridge
+	var art_rig := boss.get_node_or_null("Presentation/Rig") as BossArtRig
+	var boss_vfx := boss.get_node_or_null("Presentation/Vfx") as BossVfxLayer
+	var bgm := scene.get_node_or_null("BgmPlayer") as AudioStreamPlayer
 
 	_expect(manager.current_stage_phase == WaveManager.StagePhase.BOSS,
 		"Boss scene must start directly in BOSS.")
@@ -90,6 +96,23 @@ func _run() -> void:
 		"Boss scene must expose the production Feedback Controller.")
 	_expect(feedback_ports != null,
 		"Boss scene must expose Feedback Ports.")
+	_expect(presentation != null and presentation.is_ready(),
+		"Boss scene must bridge runtime feedback into presentation.")
+	if presentation != null:
+		_expect(feedback.arm_ball_reflected.is_connected(Callable(
+			presentation, &"_on_arm_ball_reflected"
+		)), "Impact VFX must use the post-reflection Ball direction.")
+	_expect(art_rig != null and boss_vfx != null,
+		"Boss scene must include production art and VFX.")
+	_expect(
+		not boss.pattern_1_attack.visible
+			and not boss.pattern_2_attack.visible,
+		"Production Boss scene must hide legacy placeholder attack visuals."
+	)
+	_expect(bgm != null and bgm.stream != null and bgm.stream.resource_path
+			== "res://Resources/sfx/bgm/BGM_Boss_Loop.wav",
+		"Boss scene must override the wave ambience with the Boss BGM.")
+	await _test_production_presentation_feedback(scene, feedback, art_rig)
 	_test_no_duplicate_gameplay_systems(scene, boss)
 
 	_expect(flow.confirm_selection(),
@@ -125,6 +148,48 @@ func _run() -> void:
 	scene.queue_free()
 	await process_frame
 	_finish()
+
+
+func _test_production_presentation_feedback(
+	scene: WaveRuntimeCoordinator,
+	feedback: TeddyBossFeedbackController,
+	rig: BossArtRig
+) -> void:
+	var binder := scene.get_node_or_null("_WaveSfxBinder") as WaveSfxBinder
+	var played: Array[StringName] = []
+	_expect(binder != null and binder.boss_rules != null,
+		"Production Boss scene must keep Boss SFX rules.")
+	if binder == null:
+		return
+	binder.get_director().cue_played.connect(func(
+		cue_id: StringName,
+		_pitch: float,
+		_volume: float,
+		_speed: float
+	) -> void:
+		played.append(cue_id)
+	)
+
+	feedback.attack_telegraph_started.emit(1)
+	await process_frame
+	_expect(rig.get_state() == &"telegraph",
+		"Telegraph feedback must drive the production art rig.")
+	_expect(&"boss_telegraph" in played,
+		"Telegraph feedback must play the Boss telegraph SFX.")
+
+	feedback.attack_active_started.emit(1)
+	await process_frame
+	_expect(rig.get_state() == &"attack",
+		"Active attack feedback must drive the production art rig.")
+	_expect(&"boss_arm_swing" in played,
+		"Active attack feedback must play the Boss arm SFX.")
+
+	feedback.boss_hit_feedback.emit(10, true)
+	await process_frame
+	_expect(rig.get_expression() == &"hit_strong",
+		"Counter hit feedback must drive the strong hit presentation.")
+	_expect(&"boss_hit" in played,
+		"Boss hit feedback must play the production hit SFX.")
 
 
 func _test_no_duplicate_gameplay_systems(

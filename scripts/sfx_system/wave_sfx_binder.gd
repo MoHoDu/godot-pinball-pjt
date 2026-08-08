@@ -37,6 +37,22 @@ const COMBO_TIER_SIGNAL: StringName = &"combo_tier_changed"
 const COMBO_FINISHED_SIGNAL: StringName = &"combo_finished"
 const TARGET_REACHED_SIGNAL: StringName = &"target_score_reached"
 const BALLS_EXHAUSTED_SIGNAL: StringName = &"wave_balls_exhausted"
+
+# 보스 시그널. 앞의 둘만 지금 코드에 실재하고(combo_boss_target.gd:6,14),
+# 나머지는 기획서 15장의 필수 이벤트 목록이다. 이름으로 찾아 잇기 때문에
+# 보스 구현이 들어오는 순간 코드 수정 없이 울리기 시작한다.
+const BOSS_HIT_SIGNAL: StringName = &"boss_hit"
+const BOSS_DEFEATED_SIGNAL: StringName = &"defeated"
+const BOSS_TELEGRAPH_SIGNAL: StringName = &"boss_arm_telegraph_started"
+const BOSS_ARM_ATTACK_SIGNAL: StringName = &"boss_arm_attack_started"
+const BOSS_ROAR_SIGNAL: StringName = &"boss_darkness_started"
+const BOSS_COTTON_SIGNAL: StringName = &"boss_cotton_spawned"
+const BOSS_FEEDBACK_TELEGRAPH_SIGNAL: StringName = &"attack_telegraph_started"
+const BOSS_FEEDBACK_ACTIVE_SIGNAL: StringName = &"attack_active_started"
+const BOSS_FEEDBACK_HIT_SIGNAL: StringName = &"boss_hit_feedback"
+const BOSS_FEEDBACK_PHASE_2_SIGNAL: StringName = &"phase_2_feedback"
+const BOSS_FEEDBACK_COTTON_SIGNAL: StringName = &"cotton_spawn_feedback"
+const BOSS_FEEDBACK_DEFEATED_SIGNAL: StringName = &"boss_defeated_feedback"
 const BUMPER_RESPONSE_SIGNAL: StringName = &"response_resolved"
 const BUMPER_STATE_SIGNAL: StringName = &"state_changed"
 const SHOT_CONTROL_STARTED_SIGNAL: StringName = &"control_started"
@@ -93,6 +109,7 @@ var _bound_emitters: Array[Node] = []
 @export var ball_flow_rules: BallFlowSfxRules
 @export var combo_rules: ComboSfxRules
 @export var bumper_rules: BumperSfxRules
+@export var boss_rules: BossSfxRules
 
 
 func _ready() -> void:
@@ -277,6 +294,14 @@ func _bind_bumper(node: Node) -> void:
 ##   조용히 무음이 됩니다. **시그널 이름으로 찾습니다** — 시그널이 있으면
 ##   그것이 우리가 원하는 노드입니다.
 func _bind_emitters(node: Node) -> void:
+	_bind_emitter_node(node)
+
+	for child in node.get_children():
+		_bind_emitters(child)
+
+
+## 한 노드의 흐름·콤보·보스 시그널을 잇습니다.
+func _bind_emitter_node(node: Node) -> void:
 	var connected := false
 
 	for entry: Array in [
@@ -288,15 +313,29 @@ func _bind_emitters(node: Node) -> void:
 		[COMBO_FINISHED_SIGNAL, _on_combo_finished],
 		[TARGET_REACHED_SIGNAL, _on_target_score_reached],
 		[BALLS_EXHAUSTED_SIGNAL, _on_wave_balls_exhausted],
+		[BOSS_HIT_SIGNAL, _on_boss_hit],
+		[BOSS_TELEGRAPH_SIGNAL, _on_boss_simple.bind(&"telegraph_cue")],
+		[BOSS_ARM_ATTACK_SIGNAL, _on_boss_simple.bind(&"arm_swing_cue")],
+		[BOSS_ROAR_SIGNAL, _on_boss_simple.bind(&"roar_cue")],
+		[BOSS_COTTON_SIGNAL, _on_boss_simple.bind(&"cotton_spawn_cue")],
+		[BOSS_FEEDBACK_TELEGRAPH_SIGNAL,
+			_on_boss_feedback_pattern.bind(&"telegraph_cue")],
+		[BOSS_FEEDBACK_ACTIVE_SIGNAL,
+			_on_boss_feedback_pattern.bind(&"arm_swing_cue")],
+		[BOSS_FEEDBACK_HIT_SIGNAL, _on_boss_feedback_hit],
+		[BOSS_FEEDBACK_PHASE_2_SIGNAL, _on_boss_simple.bind(&"roar_cue")],
+		[BOSS_FEEDBACK_COTTON_SIGNAL,
+			_on_boss_simple.bind(&"cotton_spawn_cue")],
+		[BOSS_FEEDBACK_DEFEATED_SIGNAL,
+			_on_boss_simple.bind(&"defeated_cue")],
 	]:
 		if _connect_once(node, entry[0], entry[1]):
 			connected = true
 
+	_bind_boss_defeated(node)
+
 	if connected:
 		_bound_emitters.append(node)
-
-	for child in node.get_children():
-		_bind_emitters(child)
 
 
 ## 시그널이 있으면 한 번만 잇습니다. 이미 이어져 있으면 아무것도 하지 않습니다.
@@ -364,6 +403,10 @@ func _bind_late(node: Node) -> void:
 		_bind_bumper(node)
 	elif node.is_in_group(BALL_GROUP):
 		_bind_ball(node)
+
+	# ★ 보스도 스테이지 전환으로 늦게 생성된다. 시그널이 있으면 잇는다.
+	#   `node_added` 는 노드마다 한 번씩 오므로 재귀할 필요가 없다.
+	_bind_emitter_node(node)
 
 
 ## 벽은 브릿지가 맡습니다. 여기서는 플리퍼 접촉만 봅니다.
@@ -699,6 +742,62 @@ func _on_bumper_state_changed(_previous: int, current: int, _bumper: Node) -> vo
 			if tree == null:
 				return
 			await tree.physics_frame
+
+	var controller := _controller_for_source(self)
+	if controller != null:
+		controller.play(cue, 0.0)
+
+
+## 보스 피격 — 유효 타격마다. 콤보가 높을수록 이미 큐의 연타 감쇠가 다듬는다.
+func _on_boss_hit(_contact_id: int, _calculated: int, _applied: int,
+		_health: int, _combo: int) -> void:
+	if boss_rules == null or boss_rules.hit_cue == null:
+		return
+
+	var controller := _controller_for_source(self)
+	if controller != null:
+		controller.play(boss_rules.hit_cue, 0.0)
+
+
+## ★ 처치는 `defeated`(인자 없음)라 별도 배선이 필요하다.
+##   시그널 이름이 흔해서 emitter 목록에 넣으면 엉뚱한 노드에 붙을 수 있다.
+##   보스 클래스일 때만 잇는다.
+func _bind_boss_defeated(node: Node) -> void:
+	if node is ComboBossTarget:
+		_connect_once(node, BOSS_DEFEATED_SIGNAL, _on_boss_defeated)
+
+
+func _on_boss_defeated() -> void:
+	if boss_rules == null or boss_rules.defeated_cue == null:
+		return
+
+	var controller := _controller_for_source(self)
+	if controller != null:
+		controller.play(boss_rules.defeated_cue, 0.0)
+
+
+## 최신 보스 런타임의 피드백 포트는 패턴 번호를 함께 보냅니다.
+func _on_boss_feedback_pattern(_pattern_id: int, field: StringName) -> void:
+	_on_boss_simple(field)
+
+
+func _on_boss_feedback_hit(_damage: int, _was_counter: bool) -> void:
+	if boss_rules == null or boss_rules.hit_cue == null:
+		return
+	var controller := _controller_for_source(self)
+	if controller != null:
+		controller.play(boss_rules.hit_cue, 0.0)
+
+
+## 예고·팔·포효·솜은 전부 "그 순간을 알리는 단발"이라 형태가 같다.
+## 이벤트 인자는 보스 구현마다 다를 수 있어 받지 않는다.
+func _on_boss_simple(field: StringName) -> void:
+	if boss_rules == null:
+		return
+
+	var cue: SfxCue = boss_rules.get(field)
+	if cue == null:
+		return
 
 	var controller := _controller_for_source(self)
 	if controller != null:

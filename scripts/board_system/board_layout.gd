@@ -139,7 +139,10 @@ func validate_and_report() -> bool:
 func validate_and_save() -> bool:
 	if not Engine.is_editor_hint() or not validate_and_report():
 		return false
-	var save_result := EditorInterface.save_scene()
+	if not Engine.has_singleton(&"EditorInterface"):
+		return false
+	var editor_interface: Object = Engine.get_singleton(&"EditorInterface")
+	var save_result: int = int(editor_interface.call(&"save_scene"))
 	if save_result != OK:
 		push_error("Board layout passed validation but the editor could not save the scene.")
 		return false

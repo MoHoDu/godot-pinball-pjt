@@ -29,7 +29,6 @@
 [ext_resource type="PackedScene" path="res://scenes/bumper_system/cotton_bumper.tscn" id="32_cotton_bumper"]
 [ext_resource type="Resource" path="res://settings/bumpers/stage_01_compact/ButtonBumperCompact.tres" id="37_button_compact"]
 [ext_resource type="Resource" path="res://settings/bumpers/stage_01_compact/CottonBumperCompact.tres" id="38_cotton_compact"]
-[ext_resource type="PackedScene" path="res://scenes/wave_hud/bumper_roster_hud.tscn" id="42_roster_hud"]
 [ext_resource type="PackedScene" path="res://Resources/boards/levels/wave_01_repair_layout.tscn" id="43_repair_layout"]
 [ext_resource type="PackedScene" path="res://Resources/boards/repair_part_placement_hud.tscn" id="44_repair_hud"]
 [ext_resource type="Script" uid="uid://blldm50le1340" path="res://scripts/board_system/board_wave_placement_bridge.gd" id="45_repair_bridge"]
@@ -253,9 +252,6 @@ visible = false
 [node name="BallSelectionHud" parent="HUD" unique_id=1865861035 instance=ExtResource("29_acmd4")]
 
 [node name="WaveHud" parent="HUD" unique_id=205794630 instance=ExtResource("30_ljfd2")]
-
-[node name="BumperRosterHud" parent="HUD" unique_id=39415548 instance=ExtResource("42_roster_hud")]
-wave_label = "WAVE 01"
 
 [node name="Walls" type="Node2D" parent="." unique_id=1054457750]
 
