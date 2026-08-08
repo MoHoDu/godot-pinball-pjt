@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://tests/stage_system/fixtures/stage_failure_fixture.gd" id="1_fixture"]
+
+[node name="StageFailureFixture" type="Node"]
+script = ExtResource("1_fixture")

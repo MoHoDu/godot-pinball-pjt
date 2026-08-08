@@ -94,6 +94,17 @@ const DEFAULT_BOSS_FAILURE_SIGNALS: Array[StringName] = [
 ## 비어 있으면 코인 시스템 연결 없이 기존 스테이지 흐름만 실행합니다.
 @export var coin_wallet: CoinWallet
 
+## 스테이지 시작·재시작 시 지급할 코인입니다.
+@export_range(0, 999999, 1) var initial_coin_balance := 0
+
+@export_category("Stage Exit Scenes")
+
+## 웨이브 또는 보스 패배 후 이동할 씬입니다. 비어 있으면 현재처럼 스테이지를 재시작합니다.
+@export var defeat_destination_scene: PackedScene
+
+## 모든 웨이브와 보스를 클리어한 뒤 이동할 씬입니다. 비어 있으면 COMPLETE 상태에 머뭅니다.
+@export var clear_destination_scene: PackedScene
+
 @export_category("Runtime")
 
 ## 현재 웨이브·보상·보스 씬을 자식으로 붙일 컨테이너입니다.
@@ -414,6 +425,9 @@ func _rollback_after_failure(run_generation: int) -> void:
 			or not _transition_pending:
 		return
 	_transition_pending = false
+	if defeat_destination_scene != null:
+		_transition_to_destination(defeat_destination_scene)
+		return
 	restart_stage()
 
 
@@ -454,6 +468,8 @@ func _complete_stage() -> void:
 	_reset_stage_reward_progression()
 	_set_phase(Phase.COMPLETE)
 	stage_completed.emit()
+	if clear_destination_scene != null:
+		call_deferred(&"_transition_to_destination", clear_destination_scene)
 
 
 func _prepare_stage_coin_integration(instance: Node) -> void:
@@ -578,7 +594,18 @@ func _reset_stage_reward_progression() -> void:
 
 func _reset_stage_coin_wallet() -> void:
 	if coin_wallet != null:
-		coin_wallet.reset(0)
+		coin_wallet.reset(initial_coin_balance)
+
+
+func _transition_to_destination(destination: PackedScene) -> void:
+	if destination == null or get_tree() == null:
+		return
+	var error := get_tree().change_scene_to_packed(destination)
+	if error != OK:
+		_fail_configuration(
+			"Configured stage destination scene could not be opened: %s"
+			% destination.resource_path
+		)
 
 
 func _get_reward_destination_text() -> String:
