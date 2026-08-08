@@ -29,6 +29,7 @@ func _run() -> void:
 	await _test_reserved_share_is_protected()
 	await _test_steal_picks_lowest_then_oldest()
 	await _test_cue_own_limit()
+	await _test_settings_bus_routing()
 	_finish()
 
 
@@ -259,6 +260,26 @@ func _test_cue_own_limit() -> void:
 
 
 # ── 헬퍼 ────────────────────────────────────────────────────
+
+func _test_settings_bus_routing() -> void:
+	var cases := {
+		&"ball_launch": &"SFXBall",
+		&"bumper_button": &"SFXBumper",
+		&"flipper_hit": &"SFXFlipper",
+		&"wall_hit": &"SFXWall",
+		&"combo_rise": &"SFX",
+	}
+
+	for cue_id: StringName in cases:
+		var director := await _make_director()
+		var cue := _make_cue(cue_id, SfxPriority.IMPACT, 0.1)
+		var result := director.request(cue, SfxPlayContext.new(1, 500.0))
+		_expect(result.is_played(), "%s 큐가 재생되어야 한다." % cue_id)
+		_expect(director.get_voice_bus(result.voice_index) == cases[cue_id],
+			"%s 큐는 %s 버스로 출력되어야 한다. (현재 %s)"
+				% [cue_id, cases[cue_id], director.get_voice_bus(result.voice_index)])
+		_free_director(director)
+
 
 ## 시간을 주입한 디렉터를 만듭니다. 프레임을 기다리지 않고 결정적으로 돕니다.
 func _make_director() -> SfxDirector:

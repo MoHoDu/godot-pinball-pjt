@@ -18,6 +18,7 @@ config/icon="res://Resources/ui/icon.svg"
 [autoload]
 
 StageDataRepository="*res://scripts/stage_manage/stage_reward_repository.gd"
+GameSettings="*res://scripts/settings/game_settings_service.gd"
 
 [display]
 
