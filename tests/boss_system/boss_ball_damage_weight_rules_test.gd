@@ -7,6 +7,9 @@ const RulesScript = preload(
 const RULES_RESOURCE_PATH: String = (
 	"res://settings/bosses/BossBallDamageWeightRules.tres"
 )
+const REWARD_BALL_SCENE_MAP_PATH: String = (
+	"res://settings/reward_shop/RewardBallSceneMap_Stage01.tres"
+)
 
 
 var _failures: Array[String] = []
@@ -29,6 +32,7 @@ func _run() -> void:
 		loaded_resource as BossBallDamageWeightRules
 	)
 	_test_configured_resource(rules)
+	_test_reward_ball_profiles(rules)
 	_test_unknown_id_contract(rules)
 	_test_future_super_heavy_profile()
 	_test_empty_id_validation()
@@ -54,12 +58,16 @@ func _test_configured_resource(rules: BossBallDamageWeightRules) -> void:
 	_expect(is_equal_approx(rules.super_heavy_multiplier, 1.30),
 		"Super Heavy multiplier must be 1.30.")
 
-	_expect(rules.light_ball_ids == [&"light"],
-		"Only the current light ball ID must be registered as Light.")
-	_expect(rules.normal_ball_ids == [&"normal"],
-		"Only the current normal ball ID must be registered as Normal.")
-	_expect(rules.heavy_ball_ids == [&"heavy"],
-		"Only the current heavy ball ID must be registered as Heavy.")
+	_expect(rules.light_ball_ids == [&"light", &"hollow_bell"],
+		"Light profiles must include the matching reward ball ID.")
+	_expect(
+		rules.normal_ball_ids == [
+			&"normal", &"clockwork", &"rubber", &"gel",
+		],
+		"Normal profiles must include normal-mass reward ball IDs."
+	)
+	_expect(rules.heavy_ball_ids == [&"heavy", &"lead"],
+		"Heavy profiles must include the matching reward ball ID.")
 	_expect(rules.super_heavy_ball_ids.is_empty(),
 		"Super Heavy IDs must remain empty until a real definition exists.")
 	_expect(rules.validate().is_empty(),
@@ -89,6 +97,41 @@ func _test_configured_resource(rules: BossBallDamageWeightRules) -> void:
 		"The normal ID must resolve multiplier 1.00.")
 	_expect(is_equal_approx(rules.get_damage_multiplier(&"heavy"), 1.15),
 		"The heavy ID must resolve multiplier 1.15.")
+
+
+func _test_reward_ball_profiles(rules: BossBallDamageWeightRules) -> void:
+	var reward_map := ResourceLoader.load(
+		REWARD_BALL_SCENE_MAP_PATH
+	) as RewardBallSceneMap
+	_expect(reward_map != null, "The Stage 1 reward ball map must load.")
+	if reward_map == null:
+		return
+
+	for ball_id: StringName in reward_map.scenes:
+		_expect(
+			rules.has_profile(ball_id),
+			"Every Stage 1 reward ball must have a Boss damage profile: %s"
+				% ball_id
+		)
+		_expect(
+			rules.get_damage_multiplier(ball_id) > 0.0,
+			"Every Stage 1 reward ball must deal positive Boss damage: %s"
+				% ball_id
+		)
+
+	var expected_profiles: Dictionary[StringName, int] = {
+		&"clockwork": BossBallDamageWeightRules.WeightClass.NORMAL,
+		&"rubber": BossBallDamageWeightRules.WeightClass.NORMAL,
+		&"gel": BossBallDamageWeightRules.WeightClass.NORMAL,
+		&"lead": BossBallDamageWeightRules.WeightClass.HEAVY,
+		&"hollow_bell": BossBallDamageWeightRules.WeightClass.LIGHT,
+	}
+	for ball_id: StringName in expected_profiles:
+		_expect(
+			rules.get_weight_class(ball_id) == expected_profiles[ball_id],
+			"Reward ball %s must use its matching physical weight profile."
+				% ball_id
+		)
 
 
 func _test_unknown_id_contract(rules: BossBallDamageWeightRules) -> void:

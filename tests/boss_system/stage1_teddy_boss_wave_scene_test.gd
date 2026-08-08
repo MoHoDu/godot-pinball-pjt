@@ -10,6 +10,9 @@ const ComboSystemScript: Script = preload(
 const WaveHudScript: Script = preload(
 	"res://scripts/wave_hud/wave_hud.gd"
 )
+const RewardBallSceneMapResource: RewardBallSceneMap = preload(
+	"res://settings/reward_shop/RewardBallSceneMap_Stage01.tres"
+)
 
 
 var _failures: Array[String] = []
@@ -233,8 +236,23 @@ func _test_existing_ball_damage_counter_and_phase(
 		ball_flow.current_state == WaveBallFlowController.State.SELECTING,
 		"Boss Ball cycle must reuse existing Ball selection."
 	)
+	var inventory := ball_flow.inventory as SelectBallInventory
+	var reward_definition := RewardBallSceneMapResource.make_definition(
+		&"clockwork"
+	)
+	_expect(inventory != null and inventory.reusable_owned_balls,
+		"Boss Ball cycle must use the reusable owned-ball inventory.")
+	_expect(
+		inventory != null
+			and inventory.add_owned_definition(reward_definition),
+		"An unlocked Stage 1 reward ball must join the Boss inventory."
+	)
+	_expect(
+		inventory != null and inventory.select_ball(&"clockwork"),
+		"The unlocked reward ball must be selectable for the Boss fight."
+	)
 	_expect(ball_flow.confirm_selection(),
-		"Boss Ball cycle must prepare an existing inventory Ball.")
+		"Boss Ball cycle must prepare the selected reward Ball.")
 	var ball: Pinball = ball_flow.active_ball
 	var launcher := wave.get_node("PinballLauncher") as PinballLauncher
 	_expect(is_instance_valid(ball),
@@ -259,8 +277,9 @@ func _test_existing_ball_damage_counter_and_phase(
 		int(damaged_snapshot[&"boss_current_health"])
 			== health.get_current_health()
 			and int(damaged_snapshot[&"boss_last_damage"]) == damage_dealt
-			and score_hud.get_repair_ratio() > 0.0,
-		"A valid Boss hit must update HP, last damage, and progress immediately."
+			and score_hud.get_repair_ratio() > 0.0
+			and (score_hud.get_node(^"%TargetScore") as Label).text != "—",
+		"A reward Ball hit must update HP, LAST HIT, and progress immediately."
 	)
 	hurtbox.body_exited.emit(ball)
 
