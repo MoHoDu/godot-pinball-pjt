@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3]
+[gd_scene load_steps=41 format=3]
 
 [ext_resource type="Script" path="res://scripts/boss_system/stage1_teddy_boss_runtime.gd" id="1_runtime"]
 [ext_resource type="Resource" path="res://settings/bosses/Stage1BossPhase1Rules.tres" id="2_phase1_rules"]
@@ -28,6 +28,17 @@
 [ext_resource type="Script" path="res://scripts/boss_system/boss_battle_completion_controller.gd" id="26_completion"]
 [ext_resource type="Script" path="res://scripts/boss_system/feedback/teddy_boss_feedback_controller.gd" id="27_feedback"]
 [ext_resource type="PackedScene" path="res://scenes/boss_system/feedback/teddy_boss_feedback_ports.tscn" id="28_feedback_ports"]
+[ext_resource type="Script" path="res://scripts/boss_system/feedback/teddy_boss_presentation_bridge.gd" id="29_presentation_bridge"]
+[ext_resource type="Script" path="res://scripts/boss_system/anim/boss_art_rig.gd" id="30_art_rig"]
+[ext_resource type="Script" path="res://scripts/boss_system/vfx/boss_vfx_layer.gd" id="31_vfx"]
+[ext_resource type="Resource" path="res://settings/bosses/vfx/TeddyBossVfx.tres" id="32_vfx_rules"]
+[ext_resource type="Texture2D" path="res://Resources/Art/boss/boss_body.png" id="33_body"]
+[ext_resource type="Texture2D" path="res://Resources/Art/boss/boss_body_under.png" id="34_body_under"]
+[ext_resource type="Texture2D" path="res://Resources/Art/boss/boss_arm_left.png" id="35_arm_left"]
+[ext_resource type="Texture2D" path="res://Resources/Art/boss/boss_arm_right.png" id="36_arm_right"]
+[ext_resource type="Texture2D" path="res://Resources/Art/boss/boss_heart.png" id="37_heart"]
+[ext_resource type="Texture2D" path="res://Resources/Art/boss/boss_eye_left.png" id="38_eye_left"]
+[ext_resource type="Texture2D" path="res://Resources/Art/boss/boss_eye_right.png" id="39_eye_right"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape_boss_hurtbox"]
 size = Vector2(300, 330)
@@ -144,6 +155,25 @@ position = Vector2(-320, 80)
 [node name="CursedCottonSpawnRight" type="Marker2D" parent="."]
 position = Vector2(320, 80)
 
+[node name="Presentation" type="Node2D" parent="."]
+
+[node name="Vfx" type="Node2D" parent="Presentation"]
+position = Vector2(0, -335)
+script = ExtResource("31_vfx")
+rules = ExtResource("32_vfx_rules")
+rig_path = NodePath("../Rig")
+
+[node name="Rig" type="Node2D" parent="Presentation"]
+position = Vector2(0, -335)
+script = ExtResource("30_art_rig")
+body_texture = ExtResource("33_body")
+body_under_texture = ExtResource("34_body_under")
+arm_texture_left = ExtResource("35_arm_left")
+arm_texture_right = ExtResource("36_arm_right")
+heart_texture = ExtResource("37_heart")
+eye_texture_left = ExtResource("38_eye_left")
+eye_texture_right = ExtResource("39_eye_right")
+
 [node name="Feedback" type="Node" parent="."]
 
 [node name="TeddyBossFeedbackController" type="Node" parent="Feedback" node_paths=PackedStringArray("boss_runtime", "attack_controller", "pattern_1_attack", "pattern_2_attack", "arm_ball_reflector", "damage_applier", "counter_resolver", "counter_window", "phase_transition", "completion_controller", "cotton_parent")]
@@ -161,3 +191,9 @@ completion_controller = NodePath("../../Components/BossBattleCompletionControlle
 cotton_parent = NodePath("../../CottonContainer")
 
 [node name="TeddyBossFeedbackPorts" parent="Feedback" instance=ExtResource("28_feedback_ports")]
+
+[node name="TeddyBossPresentationBridge" type="Node" parent="Feedback" node_paths=PackedStringArray("feedback", "rig", "vfx")]
+script = ExtResource("29_presentation_bridge")
+feedback = NodePath("../TeddyBossFeedbackController")
+rig = NodePath("../../Presentation/Rig")
+vfx = NodePath("../../Presentation/Vfx")

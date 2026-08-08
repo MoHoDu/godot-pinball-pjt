@@ -223,8 +223,9 @@ func _test_scene_wiring() -> void:
 	_expect(binder.wall_rules != null and binder.flipper_rules != null
 			and binder.ball_flow_rules != null and binder.bumper_rules != null,
 		"승인된 벽·플리퍼·흐름·범퍼 규칙이 씬에 물려 있어야 한다.")
-	_expect(binder.combo_rules == null,
-		"아직 만들지 않은 콤보 규칙이 물려 있으면 안 된다.")
+	# 그룹 3 반입(2026-08-07) 후로는 콤보 규칙까지 물려 있어야 완성이다.
+	_expect(binder.combo_rules != null,
+		"콤보 규칙이 안 물렸다. 콤보·웨이브 소리가 통째로 안 난다.")
 
 	# ★ FlipperSelector 에는 시그널이 없어 폴링으로 붙는다.
 	#   못 찾으면 선택음이 통째로 안 나고, 검수 항목

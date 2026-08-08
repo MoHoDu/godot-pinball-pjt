@@ -493,6 +493,11 @@ func _draw_glow_disc(
 func _draw_sparkle(
 	center: Vector2, radius: float, angle: float, color: Color
 ) -> void:
+	# 수명 곡선(sin)이 0 에 닿는 생성·소멸 프레임에는 여덟 꼭짓점이 한 점으로
+	# 붕괴해 삼각분할이 실패한다("Invalid polygon data"). 화면에 보이지도 않는
+	# 크기이므로 그리지 않는다.
+	if radius < 0.5:
+		return
 	var long_axis := radius
 	var short_axis := radius * 0.16
 	var points := PackedVector2Array()

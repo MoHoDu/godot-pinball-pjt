@@ -89,7 +89,12 @@
 [ext_resource type="Resource" path="res://settings/sfx/WallSfxRules.tres" id="80_wall"]
 [ext_resource type="Resource" path="res://settings/sfx/BallFlowSfxRules.tres" id="81_flow"]
 [ext_resource type="Resource" path="res://settings/sfx/BumperSfxRules.tres" id="82_bumper"]
+[ext_resource type="Resource" path="res://settings/sfx/ComboSfxRules.tres" id="83_combo"]
+[ext_resource type="Script" path="res://scripts/sfx_system/bgm_player.gd" id="85_bgm"]
+[ext_resource type="AudioStream" path="res://Resources/sfx/bgm/BGM_Wave_Loop.wav" id="86_bgm_loop"]
 [ext_resource type="PackedScene" path="res://scenes/bumper_system/rebound_wall_bumper.tscn" id="90_rebound_wall"]
+[ext_resource type="Script" path="res://scripts/ambient_vfx/background_decor_animator.gd" id="95_decor_script"]
+[ext_resource type="Resource" path="res://settings/ambient_vfx/AmbientDecorRules.tres" id="96_decor_rules"]
 
 [ext_resource type="PackedScene" path="res://Resources/boards/starlight_brooch_placeable.tscn" id="41_brooch_placeable"]
 
@@ -104,6 +109,7 @@
 [ext_resource type="Script" path="res://scripts/repair_parts/runtime/repair_effect_router.gd" id="48_repair_effect_router"]
 
 [ext_resource type="Script" path="res://scripts/repair_parts/runtime/repair_session_controller.gd" id="49_repair_session_controller"]
+[ext_resource type="Resource" path="res://settings/sfx/BossSfxRules.tres" id="84_boss"]
 
 [ext_resource type="Script" uid="uid://fn00hc0gpbf4" path="res://scripts/reward_shop/wave_reward_shop_bridge.gd" id="50_reward_bridge"]
 [ext_resource type="Resource" path="res://settings/coin/BasicCoin.tres" id="51_coin_definition"]
@@ -735,6 +741,13 @@ flipper_rules = ExtResource("44_flipper_sfx")
 wall_rules = ExtResource("80_wall")
 ball_flow_rules = ExtResource("81_flow")
 bumper_rules = ExtResource("82_bumper")
+combo_rules = ExtResource("83_combo")
+boss_rules = ExtResource("84_boss")
+
+[node name="BgmPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("86_bgm_loop")
+volume_db = -4.0
+script = ExtResource("85_bgm")
 
 [node name="WaveRepairEffects" type="Node" parent="."]
 
@@ -755,3 +768,7 @@ runtime_root_path = NodePath("../../RepairBoardLayout")
 script = ExtResource("49_repair_session_controller")
 wave_manager_path = NodePath("../../WaveManager")
 router_path = NodePath("../RepairEffectRouter")
+
+[node name="_BackgroundDecor" type="Node2D" parent="."]
+script = ExtResource("95_decor_script")
+decor_rules = ExtResource("96_decor_rules")

@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="AmbientDecorRules" format=3]
+
+[ext_resource type="Script" path="res://scripts/ambient_vfx/ambient_decor_rules.gd" id="1_decor"]
+
+[resource]
+script = ExtResource("1_decor")
+star_max_alpha = 0.65
+star_period_min_s = 3.0
+star_period_max_s = 7.0
+star_sharpness = 3.0
+star_spin_enabled = true
+star_spin_period_min_s = 24.0
+star_spin_period_max_s = 48.0
+clouds_enabled = false
+cloud_scale_amp = 0.018
+cloud_period_s = 16.0
+rays_enabled = false
+ray_count = 8
+ray_period_s = 36.0
+ray_max_alpha = 0.15
+ray_sharpness = 2.0
+ray_color = Color(0.83, 0.78, 0.62, 1)
+star_positions = PackedVector2Array(1406, 125, 1370, 857, 495, 66, 1330, 140, 1590, 665, 434, 866, 183, 152, 205, 775, 1580, 296, 125, 712, 62, 546, 1638, 560, 154, 827, 1528, 98)
+cloud_origins = PackedVector2Array(0, 0, 1300, 0, 0, 620, 1280, 580)
+cloud_sizes = PackedVector2Array(360, 320, 372, 300, 400, 321, 392, 361)
+cloud_pivots = PackedStringArray("tl", "tr", "bl", "br")
+cloud_textures = PackedStringArray("res://Resources/Art/backgrounds/ambient_decor/Cloud_TL.png", "res://Resources/Art/backgrounds/ambient_decor/Cloud_TR.png", "res://Resources/Art/backgrounds/ambient_decor/Cloud_BL.png", "res://Resources/Art/backgrounds/ambient_decor/Cloud_BR.png")
