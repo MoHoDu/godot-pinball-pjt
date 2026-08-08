@@ -46,8 +46,6 @@ func collect_flipper_controllers() -> void:
 		if child is FlipperController:
 			controllers.append(child as FlipperController)
 
-	print("찾은 컨트롤러 수: ", controllers.size())
-
 
 ## 방향 기준으로 입력 버튼과 컨트롤러를 매핑합니다.
 func map_direction_actions() -> void:

@@ -73,6 +73,11 @@ func _prepare_wave_ball_inventory(instance: Node) -> void:
 	if wave_inventory != null:
 		wave_inventory.reusable_owned_balls = true
 		wave_inventory.launches_per_wave = launches_per_wave
+		# 씬에 직렬화된 레거시 starting_stock이 Inspector 초기 공 목록에
+		# 다시 병합되지 않도록 현재 스테이지 재고를 런타임 기준값으로 맞춥니다.
+		# 예: 초기 공을 light에서 gel로 바꿔도 light가 네 번째 공으로 남지 않습니다.
+		if stage_ball_inventory != null:
+			wave_inventory.starting_stock = stage_ball_inventory.build_stock()
 	super(instance)
 
 
