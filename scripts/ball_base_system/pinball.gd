@@ -26,6 +26,7 @@ const DEFAULT_COLLISION_LIMIT_SETTLING_FRAMES := 2
 var _minimum_speed_suppressed_by_gravity: bool = false
 var _temporary_maximum_speed := INF
 var _temporary_speed_limit_until_physics_frame := -1
+var _temporary_speed_limit_enforcement_queued := false
 var _stats: PinballStats = PinballStats.new()
 var _physics_rules: PinballPhysicsRules = DEFAULT_PHYSICS_RULES
 
@@ -319,6 +320,20 @@ func enforce_active_temporary_speed_limit() -> void:
 	)
 
 
+## 플리퍼 임펄스 뒤 기본 충돌 해석이 속도를 다시 더할 수 있으므로,
+## 물리 스텝이 끝난 시점에 같은 상한을 한 번 더 적용합니다.
+func _queue_active_temporary_speed_limit_enforcement() -> void:
+	if _temporary_speed_limit_enforcement_queued:
+		return
+	_temporary_speed_limit_enforcement_queued = true
+	call_deferred(&"_enforce_active_temporary_speed_limit_deferred")
+
+
+func _enforce_active_temporary_speed_limit_deferred() -> void:
+	_temporary_speed_limit_enforcement_queued = false
+	enforce_active_temporary_speed_limit()
+
+
 ## 중력을 거슬러 상승하는 동안에는 최소 속력 보정을 억제합니다.
 ## 공이 정점을 지나 중력으로 최소 속력을 회복하면 일반 제한으로 복귀합니다.
 func _get_physics_limited_velocity(
@@ -438,6 +453,8 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 		state.total_gravity,
 		temporary_maximum
 	)
+	if not is_inf(temporary_maximum):
+		_queue_active_temporary_speed_limit_enforcement()
 
 func _apply_impact(
 	state: PhysicsDirectBodyState2D,
