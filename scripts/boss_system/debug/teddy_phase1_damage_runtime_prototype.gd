@@ -34,9 +34,7 @@ const PHASE_THRESHOLD_EVENT: String = "PHASE 2 THRESHOLD REACHED"
 
 
 var _is_setup: bool = false
-var _pending_ball_id: StringName = &""
 var _active_ball: Pinball = null
-var _active_ball_id: StringName = &""
 var _active_contact_ids: Dictionary[int, bool] = {}
 var _event_messages: Array[String] = []
 var _total_boss_hits: int = 0
@@ -58,9 +56,7 @@ func _exit_tree() -> void:
 func teardown() -> void:
 	_disconnect_runtime_signals()
 	_active_contact_ids.clear()
-	_pending_ball_id = &""
 	_active_ball = null
-	_active_ball_id = &""
 	_is_setup = false
 
 	if damage_applier != null and is_instance_valid(damage_applier):
@@ -86,9 +82,7 @@ func _setup() -> bool:
 
 	_connect_runtime_signals()
 	_active_contact_ids.clear()
-	_pending_ball_id = &""
 	_active_ball = null
-	_active_ball_id = &""
 	_total_boss_hits = 0
 	_last_calculated_damage = 0
 	_last_applied_damage = 0
@@ -125,10 +119,6 @@ func _validate_references() -> bool:
 
 
 func _connect_runtime_signals() -> void:
-	if not ball_flow.ball_selection_confirmed.is_connected(
-		_on_ball_selection_confirmed
-	):
-		ball_flow.ball_selection_confirmed.connect(_on_ball_selection_confirmed)
 	if not ball_flow.active_ball_changed.is_connected(_on_active_ball_changed):
 		ball_flow.active_ball_changed.connect(_on_active_ball_changed)
 	if not boss_hurtbox.body_entered.is_connected(_on_boss_hurtbox_body_entered):
@@ -141,12 +131,6 @@ func _connect_runtime_signals() -> void:
 
 func _disconnect_runtime_signals() -> void:
 	if ball_flow != null and is_instance_valid(ball_flow):
-		if ball_flow.ball_selection_confirmed.is_connected(
-			_on_ball_selection_confirmed
-		):
-			ball_flow.ball_selection_confirmed.disconnect(
-				_on_ball_selection_confirmed
-			)
 		if ball_flow.active_ball_changed.is_connected(_on_active_ball_changed):
 			ball_flow.active_ball_changed.disconnect(_on_active_ball_changed)
 	if boss_hurtbox != null and is_instance_valid(boss_hurtbox):
@@ -159,18 +143,9 @@ func _disconnect_runtime_signals() -> void:
 			damage_applier.boss_hit_resolved.disconnect(_on_boss_hit_resolved)
 
 
-func _on_ball_selection_confirmed(
-	definition: BallDefinition,
-	_remaining_balls: int
-) -> void:
-	_pending_ball_id = definition.ball_id if definition != null else &""
-
-
 func _on_active_ball_changed(ball: Pinball) -> void:
 	_active_contact_ids.clear()
 	_active_ball = ball if ball != null and is_instance_valid(ball) else null
-	_active_ball_id = _pending_ball_id if _active_ball != null else &""
-	_pending_ball_id = &""
 	_update_current_ball_profile()
 
 
@@ -186,14 +161,9 @@ func _on_boss_hurtbox_body_entered(body: Node2D) -> void:
 		return
 	_active_contact_ids[contact_id] = true
 
-	if _active_ball_id.is_empty() or not weight_rules.has_profile(_active_ball_id):
-		_append_event("UNKNOWN PROFILE: %s" % _display_ball_id(_active_ball_id))
-		_update_current_ball_profile()
-		return
-
-	var multiplier: float = weight_rules.get_damage_multiplier(_active_ball_id)
+	var multiplier: float = weight_rules.get_damage_multiplier(ball.mass)
 	if multiplier <= 0.0:
-		_append_event("UNKNOWN PROFILE: %s" % _display_ball_id(_active_ball_id))
+		_append_event("INVALID BALL MASS: %.2f" % ball.mass)
 		_update_current_ball_profile()
 		return
 
@@ -222,11 +192,12 @@ func _on_boss_hit_resolved(
 	_last_applied_damage = applied_damage
 	_total_boss_hits += 1
 
-	var weight_class: int = weight_rules.get_weight_class(_active_ball_id)
+	var ball_mass: float = _get_active_ball_mass()
+	var weight_class: int = weight_rules.get_weight_class(ball_mass)
 	var weight_name: String = _weight_class_name(weight_class)
-	var multiplier: float = weight_rules.get_damage_multiplier(_active_ball_id)
+	var multiplier: float = weight_rules.get_damage_multiplier(ball_mass)
 	_append_event("BOSS HIT")
-	_append_event("Ball: %s" % _display_ball_id(_active_ball_id))
+	_append_event("Mass: %.2f" % ball_mass)
 	_append_event("Weight: %s" % weight_name)
 	_append_event("Multiplier: %.2f" % multiplier)
 	_append_event("Damage: %d" % calculated_damage)
@@ -275,12 +246,12 @@ func _update_current_ball_profile() -> void:
 	var weight_name: String = "None"
 	var multiplier: float = 0.0
 	if _active_ball != null and is_instance_valid(_active_ball):
-		var weight_class: int = weight_rules.get_weight_class(_active_ball_id)
+		var weight_class: int = weight_rules.get_weight_class(_active_ball.mass)
 		if weight_class == BossBallDamageWeightRules.INVALID_WEIGHT_CLASS:
 			weight_name = "UNKNOWN"
 		else:
 			weight_name = _weight_class_name(weight_class)
-			multiplier = weight_rules.get_damage_multiplier(_active_ball_id)
+			multiplier = weight_rules.get_damage_multiplier(_active_ball.mass)
 
 	if is_instance_valid(current_ball_weight_label):
 		current_ball_weight_label.text = (
@@ -295,8 +266,8 @@ func _update_current_ball_profile() -> void:
 
 
 func _append_profile_event(weight_name: String, multiplier: float) -> void:
-	_append_event("BALL PROFILE: %s / %s / %.2f" % [
-		_display_ball_id(_active_ball_id),
+	_append_event("BALL PROFILE: %.2f / %s / %.2f" % [
+		_get_active_ball_mass(),
 		weight_name,
 		multiplier,
 	])
@@ -309,8 +280,9 @@ func _weight_class_name(weight_class: int) -> String:
 	return str(BossBallDamageWeightRules.WeightClass.keys()[weight_class])
 
 
-func _display_ball_id(ball_id: StringName) -> String:
-	return "<empty>" if ball_id.is_empty() else String(ball_id)
+func _get_active_ball_mass() -> float:
+	return _active_ball.mass \
+		if _active_ball != null and is_instance_valid(_active_ball) else 0.0
 
 
 func _append_event(message: String) -> void:

@@ -892,10 +892,23 @@ func resolve_body_motion_sweep(
 			resolved_velocity *= float(
 				state_rules.get(&"return_reflection_multiplier")
 			)
+		var impact_maximum_speed := get_parry_maximum_speed(
+			FlipperParryEvaluatorClass.Grade.NONE
+		)
+		resolved_velocity = apply_parry_maximum_speed(
+			resolved_velocity,
+			FlipperParryEvaluatorClass.Grade.NONE
+		)
 		var velocity_change := resolved_velocity - ball.linear_velocity
 		if velocity_change.is_zero_approx():
 			continue
 		_collision_guard.call(&"mark_resolved", ball)
+		if ball.has_method(&"request_temporary_maximum_speed"):
+			ball.call(
+				&"request_temporary_maximum_speed",
+				impact_maximum_speed,
+				2
+			)
 		ball.sleeping = false
 		ball.apply_central_impulse(velocity_change * ball.mass)
 		resolved_count += 1

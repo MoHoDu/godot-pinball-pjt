@@ -18,44 +18,30 @@ const INVALID_WEIGHT_CLASS: int = -1
 @export var heavy_multiplier: float = 1.15
 @export var super_heavy_multiplier: float = 1.30
 
-@export var light_ball_ids: Array[StringName] = [&"light"]
-@export var normal_ball_ids: Array[StringName] = [&"normal"]
-@export var heavy_ball_ids: Array[StringName] = [&"heavy"]
-@export var super_heavy_ball_ids: Array[StringName] = []
+@export_category("Mass Thresholds")
+@export var normal_minimum_mass: float = 1.0
+@export var heavy_minimum_mass: float = 4.0
+@export var super_heavy_minimum_mass: float = 16.0
 
 
-func has_profile(ball_id: StringName) -> bool:
-	return get_weight_class(ball_id) != INVALID_WEIGHT_CLASS
+func has_profile(ball_mass: float) -> bool:
+	return get_weight_class(ball_mass) != INVALID_WEIGHT_CLASS
 
 
-func get_weight_class(ball_id: StringName) -> int:
-	if ball_id.is_empty():
+func get_weight_class(ball_mass: float) -> int:
+	if not is_finite(ball_mass) or ball_mass <= 0.0:
 		return INVALID_WEIGHT_CLASS
-
-	var matched_class: int = INVALID_WEIGHT_CLASS
-	var match_count: int = 0
-	for registered_id: StringName in light_ball_ids:
-		if registered_id == ball_id:
-			matched_class = WeightClass.LIGHT
-			match_count += 1
-	for registered_id: StringName in normal_ball_ids:
-		if registered_id == ball_id:
-			matched_class = WeightClass.NORMAL
-			match_count += 1
-	for registered_id: StringName in heavy_ball_ids:
-		if registered_id == ball_id:
-			matched_class = WeightClass.HEAVY
-			match_count += 1
-	for registered_id: StringName in super_heavy_ball_ids:
-		if registered_id == ball_id:
-			matched_class = WeightClass.SUPER_HEAVY
-			match_count += 1
-
-	return matched_class if match_count == 1 else INVALID_WEIGHT_CLASS
+	if ball_mass < normal_minimum_mass:
+		return WeightClass.LIGHT
+	if ball_mass < heavy_minimum_mass:
+		return WeightClass.NORMAL
+	if ball_mass < super_heavy_minimum_mass:
+		return WeightClass.HEAVY
+	return WeightClass.SUPER_HEAVY
 
 
-func get_damage_multiplier(ball_id: StringName) -> float:
-	var weight_class: int = get_weight_class(ball_id)
+func get_damage_multiplier(ball_mass: float) -> float:
+	var weight_class: int = get_weight_class(ball_mass)
 	var multiplier: float = 0.0
 	match weight_class:
 		WeightClass.LIGHT:
@@ -82,44 +68,33 @@ func validate() -> PackedStringArray:
 		&"super_heavy_multiplier",
 		super_heavy_multiplier
 	)
-
-	var classes_by_id: Dictionary = {}
-	_validate_ball_ids(
+	_validate_mass_threshold(
 		errors,
-		&"light_ball_ids",
-		WeightClass.LIGHT,
-		light_ball_ids,
-		classes_by_id
+		&"normal_minimum_mass",
+		normal_minimum_mass
 	)
-	_validate_ball_ids(
+	_validate_mass_threshold(
 		errors,
-		&"normal_ball_ids",
-		WeightClass.NORMAL,
-		normal_ball_ids,
-		classes_by_id
+		&"heavy_minimum_mass",
+		heavy_minimum_mass
 	)
-	_validate_ball_ids(
+	_validate_mass_threshold(
 		errors,
-		&"heavy_ball_ids",
-		WeightClass.HEAVY,
-		heavy_ball_ids,
-		classes_by_id
+		&"super_heavy_minimum_mass",
+		super_heavy_minimum_mass
 	)
-	_validate_ball_ids(
-		errors,
-		&"super_heavy_ball_ids",
-		WeightClass.SUPER_HEAVY,
-		super_heavy_ball_ids,
-		classes_by_id
-	)
-
-	for registered_id: StringName in classes_by_id:
-		var registered_classes: Array = classes_by_id[registered_id]
-		if registered_classes.size() > 1:
-			errors.append(
-				"ball_id '%s' must not be registered in multiple weight classes."
-				% registered_id
-			)
+	if is_finite(normal_minimum_mass) \
+			and is_finite(heavy_minimum_mass) \
+			and normal_minimum_mass >= heavy_minimum_mass:
+		errors.append(
+			"normal_minimum_mass must be less than heavy_minimum_mass."
+		)
+	if is_finite(heavy_minimum_mass) \
+			and is_finite(super_heavy_minimum_mass) \
+			and heavy_minimum_mass >= super_heavy_minimum_mass:
+		errors.append(
+			"heavy_minimum_mass must be less than super_heavy_minimum_mass."
+		)
 	return errors
 
 
@@ -132,28 +107,10 @@ func _validate_multiplier(
 		errors.append("%s must be finite and greater than 0.0." % property_name)
 
 
-func _validate_ball_ids(
+func _validate_mass_threshold(
 	errors: PackedStringArray,
 	property_name: StringName,
-	weight_class: WeightClass,
-	ball_ids: Array[StringName],
-	classes_by_id: Dictionary
+	value: float
 ) -> void:
-	var ids_in_class: Dictionary[StringName, bool] = {}
-	for index: int in ball_ids.size():
-		var ball_id: StringName = ball_ids[index]
-		if ball_id.is_empty():
-			errors.append("%s[%d] must not be empty." % [property_name, index])
-			continue
-		if ids_in_class.has(ball_id):
-			errors.append(
-				"ball_id '%s' must not be duplicated in %s."
-				% [ball_id, property_name]
-			)
-			continue
-
-		ids_in_class[ball_id] = true
-		if not classes_by_id.has(ball_id):
-			classes_by_id[ball_id] = []
-		var registered_classes: Array = classes_by_id[ball_id]
-		registered_classes.append(int(weight_class))
+	if not is_finite(value) or value <= 0.0:
+		errors.append("%s must be finite and greater than 0.0." % property_name)
