@@ -268,6 +268,7 @@ func _test_settings_bus_routing() -> void:
 		&"flipper_hit": &"SFXFlipper",
 		&"wall_hit": &"SFXWall",
 		&"combo_rise": &"SFX",
+		&"boss_hit": &"SFX",
 	}
 
 	for cue_id: StringName in cases:

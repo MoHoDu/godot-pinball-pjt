@@ -14,7 +14,12 @@ extends AudioStreamPlayer
 ##   배경음이 공 충돌·패링을 덮는 순간 검수 기준 위반입니다.
 
 
+const BGM_BUS: StringName = &"BGM"
+
+
 func _ready() -> void:
+	# 인스턴스가 어느 씬에 배치되더라도 설정의 BGM 슬라이더를 우회하지 않습니다.
+	bus = BGM_BUS
 	if Engine.is_editor_hint():
 		return
 
@@ -33,5 +38,8 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 	if volume_db > 0.0:
 		warnings.append("BGM 을 키우면 공·패링 소리를 덮습니다 (가이드 15장).")
+
+	if bus != BGM_BUS:
+		warnings.append("BgmPlayer 는 설정 시스템의 BGM 버스를 사용해야 합니다.")
 
 	return warnings

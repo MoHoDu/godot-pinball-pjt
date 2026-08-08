@@ -743,6 +743,7 @@ boss_rules = ExtResource("84_boss")
 [node name="BgmPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("86_bgm_loop")
 volume_db = -4.0
+bus = &"BGM"
 script = ExtResource("85_bgm")
 
 [node name="WaveRepairEffects" type="Node" parent="."]

@@ -34,6 +34,7 @@ func _run() -> void:
 		if bgm != null:
 			_expect(bgm.stream != null, "스트림이 물려 있다")
 			_expect(bgm.playing, "시작하면 바로 흐른다")
+			_expect(bgm.bus == &"BGM", "웨이브 BGM이 설정의 BGM 버스를 사용한다")
 			_expect(bgm.volume_db <= 0.0, "BGM 이 SFX 위로 올라가지 않는다 (가이드 15장)")
 		scene.queue_free()
 		await process_frame
@@ -49,6 +50,8 @@ func _run() -> void:
 		var boss_bgm := boss_scene.get_node_or_null(^"BgmPlayer") as AudioStreamPlayer
 		_expect(boss_bgm != null and boss_bgm.playing,
 			"프로덕션 보스 씬에서 보스 루프가 흐른다")
+		_expect(boss_bgm != null and boss_bgm.bus == &"BGM",
+			"프로덕션 보스 루프가 설정의 BGM 버스를 사용한다")
 		_expect(boss_bgm != null and boss_bgm.stream != null
 			and boss_bgm.stream.resource_path
 				== "res://Resources/sfx/bgm/BGM_Boss_Loop.wav",
