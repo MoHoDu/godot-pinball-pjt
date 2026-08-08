@@ -59,9 +59,12 @@ var _phase_2_schedule_pending: bool = false
 var _phase_2_schedule_active: bool = false
 var _next_phase_2_pattern: int = 1
 var _current_pattern: int = 1
+var _clear_sequence_running: bool = false
+var _base_modulate: Color = Color.WHITE
 
 
 func _ready() -> void:
+	_base_modulate = modulate
 	visible = false
 	if is_instance_valid(boss_hurtbox):
 		boss_hurtbox.set_deferred(&"monitoring", false)
@@ -111,6 +114,8 @@ func start_battle() -> bool:
 	if not _bind_selected_attack(pattern_1_attack):
 		return false
 	_battle_active = true
+	_clear_sequence_running = false
+	modulate = _base_modulate
 	visible = true
 	boss_hurtbox.set_deferred(&"monitoring", true)
 	if not attack_runtime.start():
@@ -122,6 +127,10 @@ func start_battle() -> bool:
 
 
 func stop_battle() -> void:
+	_stop_battle_runtime(true)
+
+
+func _stop_battle_runtime(hide_visual: bool) -> void:
 	_battle_active = false
 	if is_instance_valid(boss_hurtbox):
 		boss_hurtbox.set_deferred(&"monitoring", false)
@@ -139,7 +148,8 @@ func stop_battle() -> void:
 		counter_window.reset()
 	_remove_all_cottons()
 	_active_contact_ids.clear()
-	visible = false
+	if hide_visual:
+		visible = false
 
 
 func reset_battle() -> bool:
@@ -610,7 +620,39 @@ func _prune_invalid_cottons() -> void:
 
 
 func _on_completion_reported() -> void:
-	if not _battle_active:
+	if not _battle_active or _clear_sequence_running:
 		return
-	stop_battle()
+	_clear_sequence_running = true
+	_stop_battle_runtime(false)
+	var clear_tween: Tween = create_tween()
+	clear_tween.tween_interval(0.15)
+	for flash_index: int in 3:
+		clear_tween.tween_property(
+			self, ^"modulate", Color(1.0, 0.9, 0.55, 1.0), 0.15
+		)
+		clear_tween.tween_property(self, ^"modulate", _base_modulate, 0.15)
+	clear_tween.tween_property(self, ^"modulate:a", 0.0, 0.8)
+	await clear_tween.finished
+	var clear_label: Label = _create_stage_clear_label()
+	var label_tween: Tween = create_tween()
+	label_tween.tween_property(clear_label, ^"modulate:a", 1.0, 0.2)
+	label_tween.tween_interval(1.2)
+	await label_tween.finished
 	battle_completed.emit()
+
+
+func _create_stage_clear_label() -> Label:
+	var canvas: CanvasLayer = CanvasLayer.new()
+	canvas.layer = 100
+	add_child(canvas)
+	var center: CenterContainer = CenterContainer.new()
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	canvas.add_child(center)
+	var label: Label = Label.new()
+	label.text = "STAGE 1 CLEAR"
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override(&"font_size", 72)
+	label.add_theme_color_override(&"font_color", Color(1.0, 0.9, 0.55))
+	label.modulate.a = 0.0
+	center.add_child(label)
+	return label
