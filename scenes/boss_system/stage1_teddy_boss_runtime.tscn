@@ -46,6 +46,7 @@ size = Vector2(300, 330)
 [node name="Stage1TeddyBossRuntime" type="Node2D" node_paths=PackedStringArray("boss_hurtbox", "health", "damage_adapter", "damage_applier", "damage_gate", "attack_controller", "attack_runtime", "scheduler", "coordinator", "selector", "pattern_1_attack", "pattern_2_attack", "phase_transition", "arm_hit_tracker", "arm_ball_reflector", "counter_resolver", "counter_window", "completion_controller", "cotton_parent", "cotton_spawn_left", "cotton_spawn_right")]
 visible = false
 script = ExtResource("1_runtime")
+show_attack_placeholder_visuals = false
 phase1_rules = ExtResource("2_phase1_rules")
 phase2_rules = ExtResource("3_phase2_rules")
 weight_rules = ExtResource("4_weight_rules")

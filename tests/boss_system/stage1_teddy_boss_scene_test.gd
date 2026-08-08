@@ -104,6 +104,11 @@ func _run() -> void:
 		)), "Impact VFX must use the post-reflection Ball direction.")
 	_expect(art_rig != null and boss_vfx != null,
 		"Boss scene must include production art and VFX.")
+	_expect(
+		not boss.pattern_1_attack.visible
+			and not boss.pattern_2_attack.visible,
+		"Production Boss scene must hide legacy placeholder attack visuals."
+	)
 	_expect(bgm != null and bgm.stream != null and bgm.stream.resource_path
 			== "res://Resources/sfx/bgm/BGM_Boss_Loop.wav",
 		"Boss scene must override the wave ambience with the Boss BGM.")
