@@ -5,6 +5,10 @@ extends Node
 signal snapshot_changed(snapshot: Dictionary)
 
 
+const SCORE_MODE_WAVE: StringName = &"wave"
+const SCORE_MODE_BOSS: StringName = &"boss"
+
+
 enum LifeState {
 	UPCOMING,
 	CURRENT,
@@ -16,6 +20,10 @@ var _snapshot: Dictionary = {
 	&"life_slots": [],
 	&"current_score": 0,
 	&"target_score": 0,
+	&"score_display_mode": SCORE_MODE_WAVE,
+	&"boss_current_health": 0,
+	&"boss_max_health": 0,
+	&"boss_last_damage": 0,
 	&"active_combo": 0,
 	&"max_combo": 0,
 	&"combo_visible": false,
@@ -178,6 +186,41 @@ func set_score(current_score: int, target_score: int) -> void:
 		return
 	_snapshot[&"current_score"] = safe_current
 	_snapshot[&"target_score"] = safe_target
+	_publish()
+
+
+func set_boss_health(
+	current_health: int,
+	max_health: int,
+	last_damage: int = -1
+) -> void:
+	var safe_max := maxi(max_health, 0)
+	var safe_current := clampi(current_health, 0, safe_max) \
+		if safe_max > 0 else 0
+	var safe_damage := maxi(last_damage, 0) \
+		if last_damage >= 0 else int(_snapshot[&"boss_last_damage"])
+	if StringName(_snapshot[&"score_display_mode"]) == SCORE_MODE_BOSS \
+			and int(_snapshot[&"boss_current_health"]) == safe_current \
+			and int(_snapshot[&"boss_max_health"]) == safe_max \
+			and int(_snapshot[&"boss_last_damage"]) == safe_damage:
+		return
+	_snapshot[&"score_display_mode"] = SCORE_MODE_BOSS
+	_snapshot[&"boss_current_health"] = safe_current
+	_snapshot[&"boss_max_health"] = safe_max
+	_snapshot[&"boss_last_damage"] = safe_damage
+	_publish()
+
+
+func clear_boss_health() -> void:
+	if StringName(_snapshot[&"score_display_mode"]) == SCORE_MODE_WAVE \
+			and int(_snapshot[&"boss_current_health"]) == 0 \
+			and int(_snapshot[&"boss_max_health"]) == 0 \
+			and int(_snapshot[&"boss_last_damage"]) == 0:
+		return
+	_snapshot[&"score_display_mode"] = SCORE_MODE_WAVE
+	_snapshot[&"boss_current_health"] = 0
+	_snapshot[&"boss_max_health"] = 0
+	_snapshot[&"boss_last_damage"] = 0
 	_publish()
 
 

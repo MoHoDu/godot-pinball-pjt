@@ -7,11 +7,6 @@ const BossScene: PackedScene = preload(
 const ComboSystemScript: Script = preload(
 	"res://scripts/combo_system/combo_system.gd"
 )
-const FlipperScript: Script = preload(
-	"res://scripts/flipper_system/flipper.gd"
-)
-
-
 var _failures: Array[String] = []
 
 
@@ -202,7 +197,7 @@ func _test_no_duplicate_gameplay_systems(
 		"Boss scene must contain exactly one BallFlow.")
 	_expect(_count_script(scene, ComboSystemScript) == 1,
 		"Boss scene must contain exactly one ComboSystem.")
-	_expect(_count_script(scene, FlipperScript) == 8,
+	_expect(_count_flippers(scene) == 8,
 		"Boss scene must reuse exactly eight Flippers.")
 	_expect(_count_wave_managers(boss) == 0,
 		"Boss Runtime must not duplicate WaveManager.")
@@ -210,7 +205,7 @@ func _test_no_duplicate_gameplay_systems(
 		"Boss Runtime must not duplicate BallFlow.")
 	_expect(_count_script(boss, ComboSystemScript) == 0,
 		"Boss Runtime must not duplicate ComboSystem.")
-	_expect(_count_script(boss, FlipperScript) == 0,
+	_expect(_count_flippers(boss) == 0,
 		"Boss Runtime must not duplicate Flippers.")
 
 
@@ -218,6 +213,13 @@ func _count_script(node: Node, target_script: Script) -> int:
 	var count: int = 1 if node.get_script() == target_script else 0
 	for child: Node in node.get_children():
 		count += _count_script(child, target_script)
+	return count
+
+
+func _count_flippers(node: Node) -> int:
+	var count: int = 1 if node is PinballFlipper else 0
+	for child: Node in node.get_children():
+		count += _count_flippers(child)
 	return count
 
 

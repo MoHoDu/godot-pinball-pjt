@@ -7,9 +7,6 @@ const ProductionWaveScene: PackedScene = preload(
 const ComboSystemScript: Script = preload(
 	"res://scripts/combo_system/combo_system.gd"
 )
-const FlipperScript: Script = preload(
-	"res://scripts/flipper_system/flipper.gd"
-)
 const WaveHudScript: Script = preload(
 	"res://scripts/wave_hud/wave_hud.gd"
 )
@@ -133,7 +130,7 @@ func _test_no_duplicate_wave_systems(
 		"Production Wave must contain exactly one WaveManager.")
 	_expect(_count_ball_flows(wave) == 1,
 		"Production Wave must contain exactly one BallFlow.")
-	_expect(_count_script(wave, FlipperScript) == 8,
+	_expect(_count_flippers(wave) == 8,
 		"Production Wave must reuse exactly eight Flippers.")
 	_expect(_count_script(boss, ComboSystemScript) == 0,
 		"Boss-only Runtime must not contain ComboSystem.")
@@ -141,7 +138,7 @@ func _test_no_duplicate_wave_systems(
 		"Boss-only Runtime must not contain WaveManager.")
 	_expect(_count_ball_flows(boss) == 0,
 		"Boss-only Runtime must not contain BallFlow.")
-	_expect(_count_script(boss, FlipperScript) == 0,
+	_expect(_count_flippers(boss) == 0,
 		"Boss-only Runtime must not create Flippers.")
 	_expect(_count_script(boss, WaveHudScript) == 0,
 		"Boss-only Runtime must not contain production or Debug HUD.")
@@ -199,6 +196,21 @@ func _test_existing_ball_damage_counter_and_phase(
 ) -> void:
 	var health := boss.get_node("Components/BossHealthComponent") \
 		as BossHealthComponent
+	var hud_state := wave.get_node("WaveHudStateSource") as WaveHudStateSource
+	var score_hud := wave.get_node(
+		"HUD/WaveHud/DesignSpace/ScoreRepairHud"
+	) as WaveScoreRepairHud
+	var initial_boss_snapshot := hud_state.get_snapshot()
+	_expect(
+		StringName(initial_boss_snapshot[&"score_display_mode"])
+			== WaveHudStateSource.SCORE_MODE_BOSS
+			and int(initial_boss_snapshot[&"boss_current_health"])
+				== health.get_current_health()
+			and int(initial_boss_snapshot[&"boss_max_health"])
+				== health.get_max_health()
+			and is_equal_approx(score_hud.get_repair_ratio(), 0.0),
+		"Entering BOSS must replace the Wave score with a full-health Boss HUD."
+	)
 	var transition := boss.get_node("Components/BossPhaseTransitionController") \
 		as BossPhaseTransitionController
 	var tracker := boss.get_node("Components/BossArmHitBallTracker") \
@@ -241,6 +253,15 @@ func _test_existing_ball_damage_counter_and_phase(
 	hurtbox.body_entered.emit(ball)
 	_expect(health.get_current_health() < hp_before,
 		"Boss Hurtbox must apply damage through the existing ComboSystem.")
+	var damage_dealt := hp_before - health.get_current_health()
+	var damaged_snapshot := hud_state.get_snapshot()
+	_expect(
+		int(damaged_snapshot[&"boss_current_health"])
+			== health.get_current_health()
+			and int(damaged_snapshot[&"boss_last_damage"]) == damage_dealt
+			and score_hud.get_repair_ratio() > 0.0,
+		"A valid Boss hit must update HP, last damage, and progress immediately."
+	)
 	hurtbox.body_exited.emit(ball)
 
 	attack.attack_hit.emit(ball)
@@ -380,6 +401,13 @@ func _count_wave_managers(node: Node) -> int:
 	var count: int = 1 if node is WaveManager else 0
 	for child: Node in node.get_children():
 		count += _count_wave_managers(child)
+	return count
+
+
+func _count_flippers(node: Node) -> int:
+	var count: int = 1 if node is PinballFlipper else 0
+	for child: Node in node.get_children():
+		count += _count_flippers(child)
 	return count
 
 

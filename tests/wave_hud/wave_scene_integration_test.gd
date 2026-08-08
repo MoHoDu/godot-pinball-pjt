@@ -317,8 +317,10 @@ func _test_low_speed_wave_balls_release_from_flipper(
 		await physics_frame
 
 	var stuck_position := ball.global_position
-	_expect(ball.linear_velocity.length() < 80.0,
-		"Wave regression ball must settle at low speed before activation. " \
+	_expect(
+		ball.linear_velocity.length()
+			< PinballFlipperLowSpeedRelease.LOW_SPEED_RELEASE_THRESHOLD,
+		"Wave regression ball must remain inside the idle low-speed release range. " \
 		+ "(velocity=%s)" % ball.linear_velocity)
 	var activated := flipper.request_activation(
 		PinballFlipper.issue_activation_token()

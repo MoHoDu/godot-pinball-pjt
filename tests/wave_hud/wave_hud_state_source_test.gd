@@ -112,6 +112,24 @@ func _run() -> void:
 	source.set_score(300000, 250000)
 	_expect(is_equal_approx(score.get_repair_ratio(), 1.0),
 		"Repair gauge must clamp scores above target to full.")
+	source.set_boss_health(9000, 12000, 750)
+	_expect(is_equal_approx(score.get_repair_ratio(), 0.25),
+		"Boss gauge must show defeated health ratio instead of Wave score.")
+	_expect(
+		(score.get_node("CurrentLabel") as Label).text == "BOSS HP"
+			and (score.get_node("CurrentScore") as Label).text == "9,000 / 12,000"
+			and (score.get_node("TargetLabel") as Label).text == "LAST HIT"
+			and (score.get_node("TargetScore") as Label).text == "-750"
+			and (score.get_node("RepairLabel") as Label).text == "DEFEAT 25.0%",
+		"Boss mode must show HP, last damage, and defeat progress."
+	)
+	source.set_score(999999, 1)
+	_expect(is_equal_approx(score.get_repair_ratio(), 0.25),
+		"Wave score updates must not overwrite the active Boss health display.")
+	source.clear_boss_health()
+	_expect(is_equal_approx(score.get_repair_ratio(), 1.0) \
+		and (score.get_node("CurrentLabel") as Label).text == "CURRENT SCORE",
+		"Leaving Boss mode must restore the regular Wave score display.")
 
 	source.configure_lives([
 		&"normal", &"cat_eye", &"industrial_steel", &"normal", &"cat_eye"
