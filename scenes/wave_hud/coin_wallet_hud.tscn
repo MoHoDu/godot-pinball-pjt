@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3]
 
-[ext_resource type="Texture2D" path="res://Resources/wave_hud/coin_wallet_icon.png" id="1_coin_icon"]
+[ext_resource type="Texture2D" path="res://Resources/Art/coin/coin.png" id="1_coin_icon"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBox_coin_wallet"]
 bg_color = Color(0.0431373, 0.117647, 0.172549, 0.9)

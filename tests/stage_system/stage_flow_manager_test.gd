@@ -587,8 +587,8 @@ func _expect_stage_wave_uses_latest_runtime(wave: Node, wave_index: int) -> void
 			and coin_icon != null
 			and coin_icon.texture != null
 			and coin_icon.texture.resource_path
-				== "res://Resources/wave_hud/coin_wallet_icon.png",
-		"Stage 01 웨이브 %d는 최신 코인 필드와 HUD 리소스를 사용해야 한다."
+				== "res://Resources/Art/coin/coin.png",
+		"Stage 01 웨이브 %d는 pre-main 코인 아트를 필드와 HUD에 함께 사용해야 한다."
 			% display_index
 	)
 
