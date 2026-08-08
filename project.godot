@@ -23,7 +23,7 @@ GameSettings="*res://scripts/settings/game_settings_service.gd"
 [display]
 
 window/stretch/mode="canvas_items"
-window/stretch/aspect="expand"
+window/stretch/aspect="keep"
 
 [editor_plugins]
 

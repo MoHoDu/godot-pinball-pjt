@@ -1,0 +1,134 @@
+[gd_resource type="Resource" script_class="BossSfxRules" load_steps=19 format=3]
+
+; 보스(눈 잃은 테디베어) SFX 규칙.
+;
+; 우선순위는 가이드 13장: 공·패링 > 보스 피격 > 공격 위험음 > 환경음.
+; 그래서 피격이 IMPACT(20), 예고·포효가 WALL(10), 심장이 AMBIENT(0)다.
+; 패링(50)보다 높은 것은 하나도 없다 — 배경이 조작 피드백을 덮으면 안 된다.
+
+[ext_resource type="Script" path="res://scripts/sfx_system/rules/boss_sfx_rules.gd" id="1_rules"]
+[ext_resource type="Script" path="res://scripts/sfx_system/sfx_cue.gd" id="2_cue"]
+[ext_resource type="AudioStream" path="res://Resources/sfx/boss/SFX_Boss_Telegraph.wav" id="3_tel"]
+[ext_resource type="AudioStream" path="res://Resources/sfx/boss/SFX_Boss_ArmSwing.wav" id="4_swing"]
+[ext_resource type="AudioStream" path="res://Resources/sfx/boss/SFX_Boss_Hit.wav" id="5_hit"]
+[ext_resource type="AudioStream" path="res://Resources/sfx/boss/SFX_Boss_Roar.wav" id="6_roar"]
+[ext_resource type="AudioStream" path="res://Resources/sfx/boss/SFX_Boss_CottonTelegraph.wav" id="7_blink"]
+[ext_resource type="AudioStream" path="res://Resources/sfx/boss/SFX_Boss_CottonSpawn.wav" id="8_spawn"]
+[ext_resource type="AudioStream" path="res://Resources/sfx/boss/SFX_Boss_Defeated.wav" id="9_defeat"]
+[ext_resource type="AudioStream" path="res://Resources/sfx/boss/SFX_Boss_Heartbeat.wav" id="10_heart"]
+
+[sub_resource type="Resource" id="SfxCue_tel"]
+script = ExtResource("2_cue")
+cue_id = &"boss_telegraph"
+role = "팔 공격 예고 — 실이 당겨지는 끼익. 공격을 멈추라는 신호"
+streams = Array[AudioStream]([ExtResource("3_tel")])
+selection_mode = 0
+priority = 10
+maximum_concurrent = 1
+speed_volume_range = Vector2(0, 0)
+pitch_jitter = 0.04
+minimum_repeat_interval = 0.30
+repeat_attenuation_db = 0.0
+
+[sub_resource type="Resource" id="SfxCue_swing"]
+script = ExtResource("2_cue")
+cue_id = &"boss_arm_swing"
+role = "팔 공격 — 천 휙 + 몸체 턱. 금속음 금지(기획서 11-3)"
+streams = Array[AudioStream]([ExtResource("4_swing")])
+selection_mode = 0
+priority = 20
+maximum_concurrent = 1
+speed_volume_range = Vector2(0, 0)
+pitch_jitter = 0.05
+minimum_repeat_interval = 0.25
+repeat_attenuation_db = 0.0
+
+[sub_resource type="Resource" id="SfxCue_hit"]
+script = ExtResource("2_cue")
+cue_id = &"boss_hit"
+role = "보스 피격 — 팡, 푹/툭. 쾅 금지(가이드 16장)"
+streams = Array[AudioStream]([ExtResource("5_hit")])
+selection_mode = 0
+priority = 20
+maximum_concurrent = 2
+speed_volume_range = Vector2(0, 0)
+pitch_jitter = 0.05
+minimum_repeat_interval = 0.06
+repeat_attenuation_db = -3.0
+repeat_attenuation_floor_db = -9.0
+
+[sub_resource type="Resource" id="SfxCue_roar"]
+script = ExtResource("2_cue")
+cue_id = &"boss_roar"
+role = "포효 — 뒤틀린 오르골 + 찢어지는 숨. 곰 울음 샘플 금지(가이드 15장)"
+streams = Array[AudioStream]([ExtResource("6_roar")])
+selection_mode = 0
+priority = 10
+maximum_concurrent = 1
+speed_volume_range = Vector2(0, 0)
+pitch_jitter = 0.0
+minimum_repeat_interval = 1.00
+repeat_attenuation_db = 0.0
+
+[sub_resource type="Resource" id="SfxCue_blink"]
+script = ExtResource("2_cue")
+cue_id = &"boss_cotton_telegraph"
+role = "솜뭉치 생성 예고 — 짧은 저주 점멸음"
+streams = Array[AudioStream]([ExtResource("7_blink")])
+selection_mode = 0
+priority = 10
+maximum_concurrent = 2
+speed_volume_range = Vector2(0, 0)
+pitch_jitter = 0.05
+minimum_repeat_interval = 0.15
+repeat_attenuation_db = 0.0
+
+[sub_resource type="Resource" id="SfxCue_spawn"]
+script = ExtResource("2_cue")
+cue_id = &"boss_cotton_spawn"
+role = "솜뭉치 생성 — 실 스르륵 + 솜 푹"
+streams = Array[AudioStream]([ExtResource("8_spawn")])
+selection_mode = 0
+priority = 10
+maximum_concurrent = 2
+speed_volume_range = Vector2(0, 0)
+pitch_jitter = 0.06
+minimum_repeat_interval = 0.12
+repeat_attenuation_db = -3.0
+
+[sub_resource type="Resource" id="SfxCue_defeat"]
+script = ExtResource("2_cue")
+cue_id = &"boss_defeated"
+role = "처치 — 봉제선 풀림, 유리 공명, 오르골 종. 저주가 정화되는 장면"
+streams = Array[AudioStream]([ExtResource("9_defeat")])
+selection_mode = 0
+priority = 40
+maximum_concurrent = 1
+speed_volume_range = Vector2(0, 0)
+pitch_jitter = 0.0
+minimum_repeat_interval = 2.00
+repeat_attenuation_db = 0.0
+
+[sub_resource type="Resource" id="SfxCue_heart"]
+script = ExtResource("2_cue")
+cue_id = &"boss_heartbeat"
+role = "환경 — 하트 핵 박동. 우선순위 최하, 언제든 뺏긴다"
+streams = Array[AudioStream]([ExtResource("10_heart")])
+selection_mode = 0
+priority = 0
+maximum_concurrent = 1
+speed_volume_range = Vector2(0, 0)
+pitch_jitter = 0.0
+minimum_repeat_interval = 0.50
+repeat_attenuation_db = 0.0
+
+[resource]
+script = ExtResource("1_rules")
+telegraph_cue = SubResource("SfxCue_tel")
+arm_swing_cue = SubResource("SfxCue_swing")
+hit_cue = SubResource("SfxCue_hit")
+roar_cue = SubResource("SfxCue_roar")
+cotton_telegraph_cue = SubResource("SfxCue_blink")
+cotton_spawn_cue = SubResource("SfxCue_spawn")
+defeated_cue = SubResource("SfxCue_defeat")
+heartbeat_cue = SubResource("SfxCue_heart")

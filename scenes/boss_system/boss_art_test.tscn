@@ -1,7 +1,9 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/boss_system/anim/boss_art_rig.gd" id="1_rig"]
 [ext_resource type="Script" path="res://scripts/boss_system/anim/boss_art_test_controller.gd" id="2_ctrl"]
+[ext_resource type="Script" path="res://scripts/boss_system/vfx/boss_vfx_layer.gd" id="11_vfx"]
+[ext_resource type="Resource" path="res://settings/bosses/vfx/TeddyBossVfx.tres" id="12_vfx_rules"]
 [ext_resource type="Texture2D" path="res://Resources/Art/boss/boss_body.png" id="3_body"]
 [ext_resource type="Texture2D" path="res://Resources/Art/boss/boss_body_under.png" id="10_under"]
 [ext_resource type="Texture2D" path="res://Resources/Art/boss/boss_arm_left.png" id="4_arm_l"]
@@ -17,6 +19,12 @@ script = ExtResource("2_ctrl")
 offset_right = 1152.0
 offset_bottom = 648.0
 color = Color(0.101961, 0.117647, 0.152941, 1)
+
+[node name="Vfx" type="Node2D" parent="."]
+position = Vector2(576, 326)
+script = ExtResource("11_vfx")
+rules = ExtResource("12_vfx_rules")
+rig_path = NodePath("../Rig")
 
 [node name="Rig" type="Node2D" parent="."]
 position = Vector2(576, 326)

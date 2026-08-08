@@ -35,6 +35,9 @@ signal battle_completed
 @export var counter_window: BossCounterWindow = null
 @export var completion_controller: BossBattleCompletionController = null
 
+@export_category("Presentation")
+@export var show_attack_placeholder_visuals: bool = true
+
 @export_category("Cursed Cotton")
 @export var cotton_parent: Node2D = null
 @export var cotton_spawn_left: Marker2D = null
@@ -532,8 +535,10 @@ func _bind_selected_attack(attack: TeddyArmSweepAttack) -> bool:
 	if not arm_ball_reflector.bind_attack(attack):
 		return false
 	attack_controller.attack = attack
-	pattern_1_attack.visible = attack == pattern_1_attack
-	pattern_2_attack.visible = attack == pattern_2_attack
+	pattern_1_attack.visible = show_attack_placeholder_visuals \
+		and attack == pattern_1_attack
+	pattern_2_attack.visible = show_attack_placeholder_visuals \
+		and attack == pattern_2_attack
 	_current_pattern = 1 if attack == pattern_1_attack else 2
 	return true
 
