@@ -8,7 +8,7 @@ const STAGE_SETTINGS_PATH := "res://scripts/combo_system/combo_stage_settings.gd
 const WAVE_CONTROLLER_PATH := "res://scripts/combo_system/combo_wave_controller.gd"
 const BOSS_SETTINGS_PATH := "res://scripts/combo_system/combo_boss_settings.gd"
 const BOSS_TARGET_PATH := "res://scripts/combo_system/combo_boss_target.gd"
-const HUD_SCENE_PATH := "res://scenes/combo_system/combo_hud.tscn"
+const HUD_SCENE_PATH := "res://Resources/Prefabs/ui/combo/combo_hud.tscn"
 const EPSILON := 0.001
 
 

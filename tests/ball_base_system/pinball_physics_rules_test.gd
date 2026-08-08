@@ -1,6 +1,6 @@
 extends SceneTree
 
-const BALL_SCENE_PATH := "res://Resources/balls/base/base_ball.tscn"
+const BALL_SCENE_PATH := "res://Resources/Prefabs/balls/base/base_ball.tscn"
 const RULES_SCRIPT_PATH := "res://scripts/ball_base_system/pinball_physics_rules.gd"
 const RULES_RESOURCE_PATH := "res://settings/balls/PinballPhysicsRules.tres"
 const EPSILON := 0.001

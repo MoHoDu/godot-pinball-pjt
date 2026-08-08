@@ -1,0 +1,41 @@
+[gd_resource type="Resource" script_class="BumperStageSettings" format=3 uid="uid://ddjoemy63s2u3"]
+
+[ext_resource type="Script" uid="uid://b478txmiugopb" path="res://scripts/bumper-system/bumper_stage_settings.gd" id="1_stage"]
+[ext_resource type="Script" uid="uid://pa77c4vcvxgm" path="res://scripts/bumper-system/bumper_wave_loadout.gd" id="2_wave"]
+
+[sub_resource type="Resource" id="Wave1"]
+script = ExtResource("2_wave")
+wave_id = &"wave_01"
+total_count_range = Vector2i(4, 9)
+normal_count_range = Vector2i(0, 6)
+bounce_count_range = Vector2i(0, 3)
+shot_count_range = Vector2i(0, 2)
+
+[sub_resource type="Resource" id="Wave2"]
+script = ExtResource("2_wave")
+wave_id = &"wave_02"
+total_count_range = Vector2i(4, 9)
+normal_count_range = Vector2i(0, 6)
+bounce_count_range = Vector2i(0, 3)
+shot_count_range = Vector2i(0, 2)
+
+[sub_resource type="Resource" id="Wave3"]
+script = ExtResource("2_wave")
+wave_id = &"wave_03"
+total_count_range = Vector2i(4, 9)
+normal_count_range = Vector2i(0, 6)
+bounce_count_range = Vector2i(0, 3)
+shot_count_range = Vector2i(0, 2)
+
+[sub_resource type="Resource" id="BossWave"]
+script = ExtResource("2_wave")
+wave_id = &"boss_wave"
+total_count_range = Vector2i(4, 9)
+normal_count_range = Vector2i(0, 6)
+bounce_count_range = Vector2i(0, 3)
+shot_count_range = Vector2i(0, 2)
+
+[resource]
+script = ExtResource("1_stage")
+stage_id = &"stage_01_shop_demo"
+waves = Array[Resource]([SubResource("Wave1"), SubResource("Wave2"), SubResource("Wave3"), SubResource("BossWave")])

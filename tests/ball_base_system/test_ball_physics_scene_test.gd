@@ -1,6 +1,6 @@
 extends SceneTree
 
-const SCENE_PATH := "res://scenes/test_ball/test_ball_physics.tscn"
+const SCENE_PATH := "res://scenes/tests/balls/test_ball_physics.tscn"
 const CONTROLLER_SCRIPT := "res://tests/ball_base_system/test_ball_physics.gd"
 
 var _failures: Array[String] = []
@@ -45,7 +45,9 @@ func _test_number_keys_switch_type() -> void:
 	_expect(root_node.get_selected_index() == 0, "시작 시 1번 공이 선택되어야 한다.")
 	_expect(root_node.get_focus_ball() != null, "집중 모드에는 공이 하나 떠 있어야 한다.")
 
-	var first := root_node.get_focus_ball()
+	# root_node 가 Node2D 로 잡혀 있어 get_focus_ball() 반환이 Variant 로 보인다.
+	# := 추론은 여기서 실패하므로 타입을 명시한다.
+	var first: Pinball = root_node.get_focus_ball()
 	root_node.select_ball_type(6)
 	await physics_frame
 	await physics_frame
@@ -158,7 +160,8 @@ func _test_reset_returns_to_spawn() -> void:
 	if root_node == null:
 		return
 
-	var ball := root_node.get_focus_ball()
+	# 위 48행과 같은 이유로 타입을 명시한다.
+	var ball: Pinball = root_node.get_focus_ball()
 	ball.global_position = Vector2(400.0, 400.0)
 	ball.linear_velocity = Vector2(600.0, 200.0)
 	await physics_frame

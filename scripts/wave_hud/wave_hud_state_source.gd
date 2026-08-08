@@ -5,6 +5,10 @@ extends Node
 signal snapshot_changed(snapshot: Dictionary)
 
 
+const SCORE_MODE_WAVE: StringName = &"wave"
+const SCORE_MODE_BOSS: StringName = &"boss"
+
+
 enum LifeState {
 	UPCOMING,
 	CURRENT,
@@ -16,6 +20,10 @@ var _snapshot: Dictionary = {
 	&"life_slots": [],
 	&"current_score": 0,
 	&"target_score": 0,
+	&"score_display_mode": SCORE_MODE_WAVE,
+	&"boss_current_health": 0,
+	&"boss_max_health": 0,
+	&"boss_last_damage": 0,
 	&"active_combo": 0,
 	&"max_combo": 0,
 	&"combo_visible": false,
@@ -23,6 +31,9 @@ var _snapshot: Dictionary = {
 	&"combo_anchor_visible": false,
 	&"wave_index": 0,
 	&"paused": false,
+	&"stage_phase_title": "",
+	&"stage_phase_button": "다음 단계",
+	&"stage_phase_placeholder_visible": false,
 }
 var _batch_depth := 0
 var _publish_pending := false
@@ -96,6 +107,25 @@ func select_life(ball_type: StringName) -> bool:
 	return true
 
 
+## 공 종류 보유와 생명 수를 분리한 보상 모드에서 현재 생명 아이콘의 종류만 바꿉니다.
+func set_current_life_type(ball_type: StringName) -> bool:
+	if ball_type.is_empty():
+		return false
+	var slots: Array = _snapshot[&"life_slots"]
+	for index in slots.size():
+		var slot: Dictionary = slots[index]
+		if int(slot.get(&"state", LifeState.UPCOMING)) != LifeState.CURRENT:
+			continue
+		if StringName(slot.get(&"type", &"")) == ball_type:
+			return true
+		slot[&"type"] = ball_type
+		slots[index] = slot
+		_snapshot[&"life_slots"] = slots
+		_publish()
+		return true
+	return false
+
+
 func consume_current_life() -> int:
 	var slots: Array = _snapshot[&"life_slots"]
 	var current_index := -1
@@ -159,6 +189,41 @@ func set_score(current_score: int, target_score: int) -> void:
 	_publish()
 
 
+func set_boss_health(
+	current_health: int,
+	max_health: int,
+	last_damage: int = -1
+) -> void:
+	var safe_max := maxi(max_health, 0)
+	var safe_current := clampi(current_health, 0, safe_max) \
+		if safe_max > 0 else 0
+	var safe_damage := maxi(last_damage, 0) \
+		if last_damage >= 0 else int(_snapshot[&"boss_last_damage"])
+	if StringName(_snapshot[&"score_display_mode"]) == SCORE_MODE_BOSS \
+			and int(_snapshot[&"boss_current_health"]) == safe_current \
+			and int(_snapshot[&"boss_max_health"]) == safe_max \
+			and int(_snapshot[&"boss_last_damage"]) == safe_damage:
+		return
+	_snapshot[&"score_display_mode"] = SCORE_MODE_BOSS
+	_snapshot[&"boss_current_health"] = safe_current
+	_snapshot[&"boss_max_health"] = safe_max
+	_snapshot[&"boss_last_damage"] = safe_damage
+	_publish()
+
+
+func clear_boss_health() -> void:
+	if StringName(_snapshot[&"score_display_mode"]) == SCORE_MODE_WAVE \
+			and int(_snapshot[&"boss_current_health"]) == 0 \
+			and int(_snapshot[&"boss_max_health"]) == 0 \
+			and int(_snapshot[&"boss_last_damage"]) == 0:
+		return
+	_snapshot[&"score_display_mode"] = SCORE_MODE_WAVE
+	_snapshot[&"boss_current_health"] = 0
+	_snapshot[&"boss_max_health"] = 0
+	_snapshot[&"boss_last_damage"] = 0
+	_publish()
+
+
 func observe_combo(combo_count: int) -> void:
 	var safe_combo := maxi(combo_count, 0)
 	# ComboSystem clears its active counters before it emits score_changed and
@@ -198,6 +263,17 @@ func set_wave_index(wave_index: int) -> void:
 	if int(_snapshot[&"wave_index"]) == safe_index:
 		return
 	_snapshot[&"wave_index"] = safe_index
+	_publish()
+
+
+func set_stage_phase(title: String, button_text: String, is_visible: bool) -> void:
+	if String(_snapshot[&"stage_phase_title"]) == title \
+			and String(_snapshot[&"stage_phase_button"]) == button_text \
+			and bool(_snapshot[&"stage_phase_placeholder_visible"]) == is_visible:
+		return
+	_snapshot[&"stage_phase_title"] = title
+	_snapshot[&"stage_phase_button"] = button_text
+	_snapshot[&"stage_phase_placeholder_visible"] = is_visible
 	_publish()
 
 

@@ -1,0 +1,65 @@
+[gd_scene format=3 uid="uid://bhh5qyc3llygr"]
+
+[ext_resource type="Script" uid="uid://dkphuydwnd8tu" path="res://scripts/ball_base_system/pinball.gd" id="1_83qyv"]
+[ext_resource type="Script" uid="uid://ce2wax7g2gio8" path="res://scripts/ball_base_system/pinball_stats.gd" id="2_stats"]
+[ext_resource type="Texture2D" uid="uid://wo4d8jk6rdo0" path="res://Resources/Art/balls/glass_eye_ball.png" id="3_m0qcu"]
+[ext_resource type="Script" uid="uid://cskrbwj7osci4" path="res://scripts/ball_base_system/vfx/ball_gaze_visual.gd" id="4_gaze"]
+[ext_resource type="Resource" path="res://settings/balls/BallGazeRules.tres" id="4_xculw"]
+[ext_resource type="Script" uid="uid://b32w6k3bjogo3" path="res://scripts/ball_base_system/vfx/ball_glow_outline.gd" id="5_glow"]
+[ext_resource type="Script" uid="uid://d1b28r7q4ub7e" path="res://scripts/ball_base_system/vfx/ball_trail.gd" id="6_trail"]
+[ext_resource type="Resource" path="res://settings/balls/BallGlowOutlineRules.tres" id="7_wdhqp"]
+[ext_resource type="Resource" path="res://settings/balls/BallTrailRules.tres" id="9_gh6lf"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_83qyv"]
+resource_local_to_scene = true
+bounce = 0.8
+
+[sub_resource type="Resource" id="Resource_ball_stats"]
+resource_local_to_scene = true
+script = ExtResource("2_stats")
+mass = 1.0
+elasticity = 0.8
+gravity_scale = 1.0
+initial_speed = 700.0
+minimum_speed = 200.0
+maximum_speed = 2000.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_udrbm"]
+resource_local_to_scene = true
+radius = 28.8
+
+[node name="PinballBall" type="RigidBody2D" unique_id=1730574864]
+physics_material_override = SubResource("PhysicsMaterial_83qyv")
+continuous_cd = 2
+contact_monitor = true
+max_contacts_reported = 8
+script = ExtResource("1_83qyv")
+stats = SubResource("Resource_ball_stats")
+collision_radius_ratio = 0.9
+
+[node name="Visual" type="Node2D" parent="." unique_id=1870657790]
+top_level = true
+z_index = 6
+script = ExtResource("4_gaze")
+gaze_rules = ExtResource("4_xculw")
+
+[node name="Sprite2D" type="Sprite2D" parent="Visual" unique_id=1614424068]
+scale = Vector2(0.0625, 0.0625)
+texture = ExtResource("3_m0qcu")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=383084480]
+shape = SubResource("CircleShape2D_udrbm")
+
+[node name="_GlowOutline" type="Node2D" parent="." unique_id=1108423771]
+top_level = true
+z_index = 10
+z_as_relative = false
+script = ExtResource("5_glow")
+outline_rules = ExtResource("7_wdhqp")
+
+[node name="_Trail" type="Node2D" parent="." unique_id=1108423772]
+top_level = true
+z_index = 5
+z_as_relative = false
+script = ExtResource("6_trail")
+trail_rules = ExtResource("9_gh6lf")

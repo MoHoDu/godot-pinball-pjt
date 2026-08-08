@@ -1,6 +1,6 @@
 extends SceneTree
 
-const BALL_SCENE_PATH := "res://Resources/balls/base/base_ball.tscn"
+const BALL_SCENE_PATH := "res://Resources/Prefabs/balls/base/base_ball.tscn"
 const RULES_PATH := "res://settings/balls/BallTrailRules.tres"
 const SHADER_PATH := "res://Resources/shaders/ball_trail.gdshader"
 const FLOAT_EPSILON := 0.001

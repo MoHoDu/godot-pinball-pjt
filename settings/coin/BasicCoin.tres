@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="CoinDefinition" format=3 uid="uid://baf7a6ia12obq"]
+
+[ext_resource type="Script" uid="uid://d3j3fn6k7h57g" path="res://scripts/coin_system/coin_definition.gd" id="1_definition"]
+[ext_resource type="Texture2D" uid="uid://cylpod1yyiv24" path="res://Resources/Art/coin/coin.png" id="2_coin_icon"]
+
+[resource]
+script = ExtResource("1_definition")
+visual_texture = ExtResource("2_coin_icon")

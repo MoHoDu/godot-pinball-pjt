@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="Stage1BossPhase1Rules" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/boss_system/stage1_boss_phase1_rules.gd" id="1_rules"]
+
+[resource]
+script = ExtResource("1_rules")
+boss_max_hp = 12000
+phase2_hp_ratio = 0.5
+target_valid_hit_count = 30
+target_battle_time_sec = 150.0
+first_attack_delay_sec = 3.0
+new_ball_grace_sec = 2.5
+phase1_attack_delay_min_sec = 3.5
+phase1_attack_delay_max_sec = 4.5
+boss_launch_duration_sec = 2.5
+counter_ready_duration_sec = 3.0
+parry_counter_multiplier = 1.35

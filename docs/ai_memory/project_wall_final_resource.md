@@ -110,7 +110,7 @@ body_tile_edge_match=True
 
 이 씬은 다음 벽 씬을 `ExtResource("10_wall_visual")`로 참조한다.
 
-`res://Resources/Art/walls/cursed_toy_frame_v1/wall_visual_820x40_cursed_toy_v1.tscn`
+`res://Resources/Prefabs/walls/visuals/wall_visual_820x40_cursed_toy_v1.tscn`
 
 적용 노드:
 

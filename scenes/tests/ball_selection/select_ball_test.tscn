@@ -1,0 +1,330 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/select_ball/select_ball_runtime_coordinator.gd" id="1_coordinator"]
+[ext_resource type="Script" uid="uid://cmwexv5v1ailv" path="res://scripts/wave_hud/wave_hud_state_source.gd" id="2_state"]
+[ext_resource type="Script" uid="uid://d1ru6gfxnmw1r" path="res://scripts/combo_system/combo_stage_settings.gd" id="3_combo_stage"]
+[ext_resource type="Resource" path="res://settings/bumpers/stage_01/Stage01BumperLayout.tres" id="4_bumper_stage"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/ui/wave_hud/wave_hud.tscn" id="5_wave_hud"]
+[ext_resource type="Texture2D" uid="uid://dsjw1kfs6d0xv" path="res://Resources/Art/board/octagonal_dark_wood_board.png" id="6_board_texture"]
+[ext_resource type="Texture2D" uid="uid://cccmtg74eywpf" path="res://Resources/Art/backgrounds/cursed_circus_outside_background.png" id="7_outside_background"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/walls/visuals/wall_visual_820x40_cursed_toy_v1.tscn" id="8_wall_visual"]
+[ext_resource type="Script" uid="uid://58k0flhnlg3" path="res://scripts/flipper_system/flipper_selector.gd" id="9_flipper_selector"]
+[ext_resource type="Script" uid="uid://lj3ocu4ruejo" path="res://scripts/flipper_system/flipper_controller.gd" id="10_flipper_controller"]
+[ext_resource type="PackedScene" uid="uid://ris3ga3vl6ci" path="res://Resources/Prefabs/flippers/variants/normal_flipper_left.tscn" id="11_left_flipper"]
+[ext_resource type="PackedScene" uid="uid://u4e8s8havfkw" path="res://Resources/Prefabs/flippers/variants/normal_flipper_right.tscn" id="12_right_flipper"]
+[ext_resource type="Script" path="res://scripts/ball_base_system/pinball_launcher.gd" id="13_launcher"]
+[ext_resource type="Script" uid="uid://dirv1p0s1sce1" path="res://scripts/combo_system/combo_system.gd" id="14_combo_system"]
+[ext_resource type="Script" path="res://scripts/combo_system/combo_collision_bridge.gd" id="15_collision_bridge"]
+[ext_resource type="Script" path="res://scripts/select_ball/select_ball_inventory.gd" id="16_inventory"]
+[ext_resource type="Script" path="res://scripts/select_ball/select_ball_flow_controller.gd" id="17_flow"]
+[ext_resource type="Script" path="res://scripts/combo_system/combo_wave_controller.gd" id="18_combo_wave"]
+[ext_resource type="Script" path="res://scripts/ball_base_system/wave_manager.gd" id="19_manager"]
+[ext_resource type="Script" path="res://scripts/select_ball/select_ball_definition.gd" id="20_definition"]
+[ext_resource type="Script" path="res://scripts/ball_base_system/ball_stock.gd" id="21_stock"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/balls/variants/mass/light_ball.tscn" id="22_light_ball"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/balls/variants/mass/normal_ball.tscn" id="23_normal_ball"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/balls/variants/mass/heavy_ball.tscn" id="24_heavy_ball"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/ui/ball_selection/current/select_ball_selection_hud.tscn" id="25_selection_hud"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/types/button_bumper.tscn" id="26_button_bumper"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/types/cotton_bumper.tscn" id="27_cotton_bumper"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/types/spring_doll_bumper.tscn" id="28_spring_bumper"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/types/toy_drum_bumper.tscn" id="29_drum_bumper"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/types/clockwork_toy_cannon.tscn" id="30_cannon_bumper"]
+
+[sub_resource type="Resource" id="StageSettings_wave"]
+script = ExtResource("3_combo_stage")
+stage_id = &"cursed_toy_demo"
+wave_target_scores = PackedInt32Array(250000, 400000, 650000, 1000000)
+
+[sub_resource type="Resource" id="BallDefinition_light"]
+script = ExtResource("20_definition")
+ball_id = &"light"
+display_name = "가벼운 공"
+ball_scene = ExtResource("22_light_ball")
+feature_summary = "가벼운 무게로 방향 전환과 빠른 반응에 유리합니다."
+
+[sub_resource type="Resource" id="BallStock_light"]
+script = ExtResource("21_stock")
+definition = SubResource("BallDefinition_light")
+count = 1
+
+[sub_resource type="Resource" id="BallDefinition_normal"]
+script = ExtResource("20_definition")
+ball_id = &"normal"
+display_name = "보통 공"
+ball_scene = ExtResource("23_normal_ball")
+feature_summary = "균형 잡힌 무게와 탄성으로 안정적인 궤적을 만듭니다."
+
+[sub_resource type="Resource" id="BallStock_normal"]
+script = ExtResource("21_stock")
+definition = SubResource("BallDefinition_normal")
+count = 1
+
+[sub_resource type="Resource" id="BallDefinition_heavy"]
+script = ExtResource("20_definition")
+ball_id = &"heavy"
+display_name = "무거운 공"
+ball_scene = ExtResource("24_heavy_ball")
+feature_summary = "큰 관성으로 충돌 흐름을 강하게 밀어붙입니다."
+
+[sub_resource type="Resource" id="BallStock_heavy"]
+script = ExtResource("21_stock")
+definition = SubResource("BallDefinition_heavy")
+count = 1
+
+[sub_resource type="RectangleShape2D" id="RectangleShape_diagonal"]
+size = Vector2(819.329, 24)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape_drain_horizontal"]
+resource_local_to_scene = true
+size = Vector2(2600, 160)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape_drain_vertical"]
+resource_local_to_scene = true
+size = Vector2(160, 1600)
+
+[node name="SelectBallTest" type="Node2D" unique_id=242104030 node_paths=PackedStringArray("launcher", "combo_system", "combo_collision_bridge", "wave_ball_inventory", "wave_ball_flow", "combo_wave_controller", "wave_manager", "flipper_selector", "ball_selection_hud", "ball_drain_area", "hud_state", "wave_hud", "board_camera", "bumpers_root")]
+script = ExtResource("1_coordinator")
+wave_stage_settings = SubResource("StageSettings_wave")
+bumper_stage_settings = ExtResource("4_bumper_stage")
+authored_bumper_wave_index = 2
+expected_bumper_kind_ids = Array[StringName]([&"stage01_button", &"stage01_button", &"stage01_cotton", &"stage01_spring_doll", &"stage01_toy_drum", &"stage01_clockwork_cannon"])
+launcher = NodePath("PinballLauncher")
+combo_system = NodePath("ComboSystem")
+combo_collision_bridge = NodePath("ComboCollisionBridge")
+wave_ball_inventory = NodePath("WaveBallInventory")
+wave_ball_flow = NodePath("WaveBallFlowController")
+combo_wave_controller = NodePath("ComboWaveController")
+wave_manager = NodePath("WaveManager")
+flipper_selector = NodePath("FlipperSelector")
+ball_selection_hud = NodePath("HUD/BallSelectionHud")
+ball_drain_area = NodePath("BallDrainArea")
+hud_state = NodePath("WaveHudStateSource")
+wave_hud = NodePath("HUD/WaveHud")
+board_camera = NodePath("Camera2D")
+bumpers_root = NodePath("Bumpers")
+board_world_bounds = Rect2(-1180, -700, 2360, 1400)
+maximum_board_zoom = 0.494
+hud_safe_top_design = 190.0
+board_margin_design = 24.0
+
+[node name="OutsideBackground" type="Sprite2D" parent="."]
+modulate = Color(0.82, 0.82, 0.82, 1)
+z_index = -20
+scale = Vector2(1.3397129, 1.3390011)
+texture = ExtResource("7_outside_background")
+
+[node name="BoardBackground" type="Sprite2D" parent="."]
+modulate = Color(0.7, 0.7, 0.7, 1)
+z_index = -10
+texture = ExtResource("6_board_texture")
+
+[node name="GapGuides" type="Node2D" parent="."]
+z_index = -5
+
+[node name="TopGap" type="Polygon2D" parent="GapGuides"]
+color = Color(0.65, 0.13, 0.18, 0.28)
+polygon = PackedVector2Array(-22, -630, 22, -630, 22, -606, -22, -606)
+
+[node name="BottomGap" type="Polygon2D" parent="GapGuides"]
+color = Color(0.65, 0.13, 0.18, 0.28)
+polygon = PackedVector2Array(-22, 606, 22, 606, 22, 630, -22, 630)
+
+[node name="LeftGap" type="Polygon2D" parent="GapGuides"]
+color = Color(0.65, 0.13, 0.18, 0.28)
+polygon = PackedVector2Array(-1120, -22, -1096, -22, -1096, 22, -1120, 22)
+
+[node name="RightGap" type="Polygon2D" parent="GapGuides"]
+color = Color(0.65, 0.13, 0.18, 0.28)
+polygon = PackedVector2Array(1096, -22, 1120, -22, 1120, 22, 1096, 22)
+
+[node name="Walls" type="Node2D" parent="."]
+
+[node name="TopRightDiagonal" type="StaticBody2D" parent="Walls" groups=["combo_walls"]]
+position = Vector2(735, -490)
+rotation = 0.348772
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/TopRightDiagonal"]
+position = Vector2(0, 12)
+shape = SubResource("RectangleShape_diagonal")
+
+[node name="Visual" parent="Walls/TopRightDiagonal" instance=ExtResource("8_wall_visual")]
+
+[node name="BottomRightDiagonal" type="StaticBody2D" parent="Walls" groups=["combo_walls"]]
+position = Vector2(735, 490)
+rotation = 2.7928207
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/BottomRightDiagonal"]
+position = Vector2(0, 12)
+shape = SubResource("RectangleShape_diagonal")
+
+[node name="Visual" parent="Walls/BottomRightDiagonal" instance=ExtResource("8_wall_visual")]
+
+[node name="BottomLeftDiagonal" type="StaticBody2D" parent="Walls" groups=["combo_walls"]]
+position = Vector2(-735, 490)
+rotation = -2.7928207
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/BottomLeftDiagonal"]
+position = Vector2(0, 12)
+shape = SubResource("RectangleShape_diagonal")
+
+[node name="Visual" parent="Walls/BottomLeftDiagonal" instance=ExtResource("8_wall_visual")]
+
+[node name="TopLeftDiagonal" type="StaticBody2D" parent="Walls" groups=["combo_walls"]]
+position = Vector2(-735, -490)
+rotation = -0.348772
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/TopLeftDiagonal"]
+position = Vector2(0, 12)
+shape = SubResource("RectangleShape_diagonal")
+
+[node name="Visual" parent="Walls/TopLeftDiagonal" instance=ExtResource("8_wall_visual")]
+
+[node name="Bumpers" type="Node2D" parent="."]
+
+[node name="BumperCenter" parent="Bumpers" instance=ExtResource("26_button_bumper")]
+position = Vector2(0, -270)
+
+[node name="BumperUpperLeft" parent="Bumpers" instance=ExtResource("27_cotton_bumper")]
+position = Vector2(-420, -190)
+
+[node name="BumperUpperRight" parent="Bumpers" instance=ExtResource("26_button_bumper")]
+position = Vector2(420, -190)
+bumper_id = &"button_bumper_right"
+
+[node name="BumperLowerLeft" parent="Bumpers" instance=ExtResource("28_spring_bumper")]
+position = Vector2(-460, 210)
+
+[node name="BumperLowerRight" parent="Bumpers" instance=ExtResource("29_drum_bumper")]
+position = Vector2(460, 210)
+
+[node name="BumperCannon" parent="Bumpers" instance=ExtResource("30_cannon_bumper")]
+position = Vector2(0, 190)
+
+[node name="FlipperSelector" type="Node2D" parent="."]
+script = ExtResource("9_flipper_selector")
+
+[node name="BottomController" type="Node2D" parent="FlipperSelector"]
+position = Vector2(0, 550)
+script = ExtResource("10_flipper_controller")
+
+[node name="LeftFlipper" parent="FlipperSelector/BottomController" instance=ExtResource("11_left_flipper")]
+position = Vector2(-350, 72.00001)
+flipper_length = 328.0
+
+[node name="RightFlipper" parent="FlipperSelector/BottomController" instance=ExtResource("12_right_flipper")]
+position = Vector2(350, 76.00001)
+flipper_length = 328.0
+
+[node name="TopController" type="Node2D" parent="FlipperSelector"]
+position = Vector2(0, -550)
+rotation = 3.1415927
+script = ExtResource("10_flipper_controller")
+
+[node name="LeftFlipper" parent="FlipperSelector/TopController" instance=ExtResource("11_left_flipper")]
+position = Vector2(-350, 0)
+flipper_length = 328.0
+
+[node name="RightFlipper" parent="FlipperSelector/TopController" instance=ExtResource("12_right_flipper")]
+position = Vector2(350, 0)
+flipper_length = 328.0
+
+[node name="LeftController" type="Node2D" parent="FlipperSelector"]
+position = Vector2(-1040, 0)
+rotation = 1.5707964
+script = ExtResource("10_flipper_controller")
+
+[node name="LeftFlipper" parent="FlipperSelector/LeftController" instance=ExtResource("11_left_flipper")]
+position = Vector2(-350, 0)
+flipper_length = 328.0
+
+[node name="RightFlipper" parent="FlipperSelector/LeftController" instance=ExtResource("12_right_flipper")]
+position = Vector2(350, 0)
+flipper_length = 328.0
+
+[node name="RightController" type="Node2D" parent="FlipperSelector"]
+position = Vector2(1040, 0)
+rotation = -1.5707964
+script = ExtResource("10_flipper_controller")
+
+[node name="LeftFlipper" parent="FlipperSelector/RightController" instance=ExtResource("11_left_flipper")]
+position = Vector2(-350, 0)
+flipper_length = 328.0
+
+[node name="RightFlipper" parent="FlipperSelector/RightController" instance=ExtResource("12_right_flipper")]
+position = Vector2(350, 0)
+flipper_length = 328.0
+
+[node name="PinballLauncher" type="Node2D" parent="."]
+position = Vector2(0, 400)
+rotation = -1.5707964
+script = ExtResource("13_launcher")
+default_launch_speed = 940.0
+minimum_launch_speed = 320.0
+maximum_launch_speed = 1540.0
+minimum_launch_angle_degrees = -45.0
+maximum_launch_angle_degrees = 45.0
+
+[node name="LauncherMarker" type="Polygon2D" parent="PinballLauncher"]
+z_index = -1
+color = Color(0.25, 0.85, 0.43, 0.25)
+polygon = PackedVector2Array(-42, -42, 42, -42, 42, 42, -42, 42)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(0, 16)
+zoom = Vector2(0.494, 0.494)
+
+[node name="ComboSystem" type="Node" parent="."]
+script = ExtResource("14_combo_system")
+
+[node name="ComboCollisionBridge" type="Node" parent="." node_paths=PackedStringArray("configured_combo_system")]
+script = ExtResource("15_collision_bridge")
+configured_combo_system = NodePath("../ComboSystem")
+
+[node name="WaveBallInventory" type="Node" parent="."]
+script = ExtResource("16_inventory")
+starting_stock = Array[ExtResource("21_stock")]([SubResource("BallStock_light"), SubResource("BallStock_normal"), SubResource("BallStock_heavy")])
+
+[node name="WaveBallFlowController" type="Node" parent="." node_paths=PackedStringArray("configured_inventory", "configured_launcher")]
+script = ExtResource("17_flow")
+configured_inventory = NodePath("../WaveBallInventory")
+configured_launcher = NodePath("../PinballLauncher")
+
+[node name="ComboWaveController" type="Node" parent="."]
+script = ExtResource("18_combo_wave")
+
+[node name="WaveManager" type="Node" parent="." node_paths=PackedStringArray("configured_ball_flow", "configured_combo_wave", "configured_combo_system", "configured_collision_bridge")]
+script = ExtResource("19_manager")
+configured_ball_flow = NodePath("../WaveBallFlowController")
+configured_combo_wave = NodePath("../ComboWaveController")
+configured_combo_system = NodePath("../ComboSystem")
+configured_collision_bridge = NodePath("../ComboCollisionBridge")
+
+[node name="WaveHudStateSource" type="Node" parent="."]
+script = ExtResource("2_state")
+
+[node name="BallDrainArea" type="Area2D" parent="."]
+visible = false
+collision_layer = 0
+
+[node name="TopDrain" type="CollisionShape2D" parent="BallDrainArea"]
+position = Vector2(0, -800)
+shape = SubResource("RectangleShape_drain_horizontal")
+
+[node name="BottomDrain" type="CollisionShape2D" parent="BallDrainArea"]
+position = Vector2(0, 800)
+shape = SubResource("RectangleShape_drain_horizontal")
+
+[node name="LeftDrain" type="CollisionShape2D" parent="BallDrainArea"]
+position = Vector2(-1280, 0)
+shape = SubResource("RectangleShape_drain_vertical")
+
+[node name="RightDrain" type="CollisionShape2D" parent="BallDrainArea"]
+position = Vector2(1280, 0)
+shape = SubResource("RectangleShape_drain_vertical")
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="BallSelectionHud" parent="HUD" instance=ExtResource("25_selection_hud")]
+
+[node name="WaveHud" parent="HUD" instance=ExtResource("5_wave_hud")]

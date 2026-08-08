@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="BumperAnimRules" format=3 uid="uid://taqbvdbx1ppu"]
+
+[ext_resource type="Script" uid="uid://bm7m861g3kp6d" path="res://scripts/bumper-system/anim/bumper_anim_rules.gd" id="1_rules"]
+[ext_resource type="Texture2D" uid="uid://bjjd3exqmdnh6" path="res://Resources/Art/bumpers/spring_doll_hit.png" id="2_hit"]
+
+[resource]
+script = ExtResource("1_rules")
+press_depth = 0.18
+press_offset_ratio = 0.13
+press_seconds = 0.04
+release_seconds = 0.28
+overshoot = 0.14
+hit_texture = ExtResource("2_hit")
+hit_frame_window = 0.55
+hit_frame_min_seconds = 0.22
+telegraph_hz = 6.0

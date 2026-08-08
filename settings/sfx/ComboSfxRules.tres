@@ -1,0 +1,108 @@
+[gd_resource type="Resource" script_class="ComboSfxRules" format=3 uid="uid://clg2h7t87mh7t"]
+
+[ext_resource type="Script" uid="uid://dks784cois8ke" path="res://scripts/sfx_system/rules/combo_sfx_rules.gd" id="1_rules"]
+[ext_resource type="Script" uid="uid://b18oyfr48qsjo" path="res://scripts/sfx_system/sfx_cue.gd" id="2_cue"]
+[ext_resource type="AudioStream" uid="uid://e4av2mgndnml" path="res://Resources/sfx/combo/SFX_Combo_Rise.wav" id="3_rise"]
+[ext_resource type="AudioStream" uid="uid://grcd7mcyybk2" path="res://Resources/sfx/combo/SFX_Combo_Tier.wav" id="4_tier"]
+[ext_resource type="AudioStream" uid="uid://ddj5byv6lx4ac" path="res://Resources/sfx/combo/SFX_Combo_Timeout.wav" id="5_timeout"]
+[ext_resource type="AudioStream" uid="uid://dds8q3vksk4pn" path="res://Resources/sfx/combo/SFX_Combo_Target.wav" id="6_target"]
+[ext_resource type="AudioStream" uid="uid://cooeb7h22oj35" path="res://Resources/sfx/wave/SFX_Wave_Win.wav" id="7_win"]
+[ext_resource type="AudioStream" uid="uid://ue1rob4qkcfp" path="res://Resources/sfx/wave/SFX_Wave_Lose.wav" id="8_lose"]
+
+[sub_resource type="Resource" id="SfxCue_rise"]
+script = ExtResource("2_cue")
+cue_id = &"combo_rise"
+role = "콤보 상승 — 유효 타격마다. 콤보가 오를수록 피치가 올라간다"
+streams = Array[AudioStream]([ExtResource("3_rise")])
+speed_tier_thresholds = PackedFloat32Array(420, 1050)
+maximum_concurrent = 3
+speed_volume_range = Vector2(0, 0)
+pitch_jitter = 0.05
+minimum_repeat_interval = 0.05
+repeat_attenuation_db = -3.0
+repeat_attenuation_floor_db = -9.0
+repeat_chain_reset_time = 0.24
+
+[sub_resource type="Resource" id="SfxCue_target"]
+script = ExtResource("2_cue")
+cue_id = &"combo_target"
+role = "목표 점수 도달 — 밝은 성취"
+streams = Array[AudioStream]([ExtResource("6_target")])
+speed_tier_thresholds = PackedFloat32Array(420, 1050)
+priority = 20
+maximum_concurrent = 1
+speed_volume_range = Vector2(0, 0)
+pitch_jitter = 0.05
+minimum_repeat_interval = 0.5
+repeat_attenuation_db = -3.0
+repeat_attenuation_floor_db = -9.0
+repeat_chain_reset_time = 0.24
+
+[sub_resource type="Resource" id="SfxCue_tier"]
+script = ExtResource("2_cue")
+cue_id = &"combo_tier"
+role = "콤보 단계 상승 — 상승음보다 크고 밝게"
+streams = Array[AudioStream]([ExtResource("4_tier")])
+speed_tier_thresholds = PackedFloat32Array(420, 1050)
+priority = 20
+maximum_concurrent = 2
+speed_volume_range = Vector2(0, 0)
+pitch_jitter = 0.02
+minimum_repeat_interval = 0.15
+repeat_attenuation_db = -3.0
+repeat_attenuation_floor_db = -9.0
+repeat_chain_reset_time = 0.24
+
+[sub_resource type="Resource" id="SfxCue_timeout"]
+script = ExtResource("2_cue")
+cue_id = &"combo_timeout"
+role = "콤보 실패 — 시간이 끊겨 점수 없이 끝남"
+streams = Array[AudioStream]([ExtResource("5_timeout")])
+speed_tier_thresholds = PackedFloat32Array(420, 1050)
+priority = 20
+maximum_concurrent = 1
+speed_volume_range = Vector2(0, 0)
+pitch_jitter = 0.02
+minimum_repeat_interval = 0.3
+repeat_attenuation_db = -3.0
+repeat_attenuation_floor_db = -9.0
+repeat_chain_reset_time = 0.24
+
+[sub_resource type="Resource" id="SfxCue_lose"]
+script = ExtResource("2_cue")
+cue_id = &"wave_lost"
+role = "웨이브 패배 — 공을 다 씀. 태엽이 멈춘다"
+streams = Array[AudioStream]([ExtResource("8_lose")])
+speed_tier_thresholds = PackedFloat32Array(420, 1050)
+priority = 30
+maximum_concurrent = 1
+speed_volume_range = Vector2(0, 0)
+pitch_jitter = 0.05
+minimum_repeat_interval = 1.0
+repeat_attenuation_db = -3.0
+repeat_attenuation_floor_db = -9.0
+repeat_chain_reset_time = 0.24
+
+[sub_resource type="Resource" id="SfxCue_win"]
+script = ExtResource("2_cue")
+cue_id = &"wave_won"
+role = "웨이브 승리 — 저주가 풀림. 오르골 한 음"
+streams = Array[AudioStream]([ExtResource("7_win")])
+speed_tier_thresholds = PackedFloat32Array(420, 1050)
+priority = 30
+maximum_concurrent = 1
+speed_volume_range = Vector2(0, 0)
+pitch_jitter = 0.05
+minimum_repeat_interval = 1.0
+repeat_attenuation_db = -3.0
+repeat_attenuation_floor_db = -9.0
+repeat_chain_reset_time = 0.24
+
+[resource]
+script = ExtResource("1_rules")
+rise_cue = SubResource("SfxCue_rise")
+tier_cue = SubResource("SfxCue_tier")
+timeout_cue = SubResource("SfxCue_timeout")
+target_reached_cue = SubResource("SfxCue_target")
+wave_won_cue = SubResource("SfxCue_win")
+wave_lost_cue = SubResource("SfxCue_lose")

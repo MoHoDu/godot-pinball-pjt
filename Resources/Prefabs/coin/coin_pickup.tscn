@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/coin_system/coin_pickup.gd" id="1_coin"]
+[ext_resource type="Resource" path="res://settings/coin/BasicCoin.tres" id="2_definition"]
+
+[sub_resource type="CircleShape2D" id="CircleShape_coin"]
+radius = 32.0
+
+[node name="CoinPickup" type="Area2D"]
+collision_layer = 0
+collision_mask = 1
+monitorable = false
+script = ExtResource("1_coin")
+definition = ExtResource("2_definition")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape_coin")
+
+[node name="Visual" type="Sprite2D" parent="."]
+texture_filter = 2

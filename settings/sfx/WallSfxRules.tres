@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="WallSfxRules" format=3 uid="uid://b7uqrbbu8hh5"]
+
+[ext_resource type="Script" uid="uid://dapsk3r446ntn" path="res://scripts/sfx_system/rules/wall_sfx_rules.gd" id="1_rules"]
+[ext_resource type="Script" uid="uid://b18oyfr48qsjo" path="res://scripts/sfx_system/sfx_cue.gd" id="2_cue"]
+[ext_resource type="AudioStream" uid="uid://bwt15ba628jcy" path="res://Resources/sfx/walls/SFX_Wall_Hit_Low.wav" id="3_low"]
+[ext_resource type="AudioStream" uid="uid://bivfj4ryijdja" path="res://Resources/sfx/walls/SFX_Wall_Hit_Mid.wav" id="4_mid"]
+[ext_resource type="AudioStream" uid="uid://bqpkw3epobqxo" path="res://Resources/sfx/walls/SFX_Wall_Hit_High.wav" id="5_high"]
+
+[sub_resource type="Resource" id="Cue_wall_hit"]
+script = ExtResource("2_cue")
+cue_id = &"wall_hit"
+role = "벽 충돌 — 유리공이 보드 프레임에 부딪힌다. 저·중·고속 3종"
+streams = Array[AudioStream]([ExtResource("3_low"), ExtResource("4_mid"), ExtResource("5_high")])
+selection_mode = 1
+speed_tier_thresholds = PackedFloat32Array(420, 1050)
+priority = 10
+maximum_concurrent = 4
+pitch_jitter = 0.05
+minimum_repeat_interval = 0.04
+repeat_attenuation_db = -3.0
+repeat_attenuation_floor_db = -9.0
+repeat_chain_reset_time = 0.24
+
+[resource]
+script = ExtResource("1_rules")
+hit_cue = SubResource("Cue_wall_hit")

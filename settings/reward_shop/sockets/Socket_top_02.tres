@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="RepairSocketDefinitionV02" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/reward_shop/repair_socket_definition_v02.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+socket_id = &"socket_top_02"
+difficulty = 2
+collision_radius = 33.0
+disabled_during_boss = false
+zone_tag = &"top"
+reserve_radius = 72.0

@@ -2,7 +2,7 @@ extends SceneTree
 
 
 const BOARD_SCENE := preload(
-	"res://scenes/test_flipper/test_flipper_wave_board.tscn"
+	"res://scenes/tests/flippers/test_flipper_wave_board.tscn"
 )
 
 

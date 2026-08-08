@@ -1,7 +1,7 @@
 extends SceneTree
 
 
-const BOARD_SCENE_PATH := "res://scenes/test_flipper/test_flipper_board.tscn"
+const BOARD_SCENE_PATH := "res://scenes/tests/flippers/test_flipper_board.tscn"
 const VIDEO_FLIPPER_PATH := \
 	"FlipperSelector/RightController/LeftFlipper"
 const RIGHT_BOTTOM_WALL_PATH := "Walls/RightBottomWall"

@@ -1,0 +1,200 @@
+[gd_scene load_steps=41 format=3]
+
+[ext_resource type="Script" path="res://scripts/boss_system/stage1_teddy_boss_runtime.gd" id="1_runtime"]
+[ext_resource type="Resource" path="res://settings/bosses/Stage1BossPhase1Rules.tres" id="2_phase1_rules"]
+[ext_resource type="Resource" path="res://settings/bosses/TeddyPhase2AttackRules.tres" id="3_phase2_rules"]
+[ext_resource type="Resource" path="res://settings/bosses/BossBallDamageWeightRules.tres" id="4_weight_rules"]
+[ext_resource type="Resource" path="res://settings/bosses/TeddyArmBallReflectionRules.tres" id="5_reflection_rules"]
+[ext_resource type="Resource" path="res://settings/bosses/CursedCottonAddRules.tres" id="6_cotton_rules"]
+[ext_resource type="Resource" path="res://settings/bosses/TeddyArmSweepPhase1FirstPattern.tres" id="7_first_pattern"]
+[ext_resource type="Resource" path="res://settings/bosses/TeddyArmSweepPhase1RepeatPattern.tres" id="8_repeat_pattern"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/boss/attacks/teddy_arm_sweep_attack.tscn" id="9_attack"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/boss/adds/cursed_cotton_add.tscn" id="10_cotton"]
+[ext_resource type="Script" path="res://scripts/boss_system/attacks/teddy_double_arm_up_sweep_attack.gd" id="11_double_attack"]
+[ext_resource type="Script" path="res://scripts/boss_system/boss_health_component.gd" id="12_health"]
+[ext_resource type="Script" path="res://scripts/boss_system/boss_combo_damage_adapter.gd" id="13_adapter"]
+[ext_resource type="Script" path="res://scripts/boss_system/boss_counter_gated_damage_applier.gd" id="14_applier"]
+[ext_resource type="Script" path="res://scripts/boss_system/boss_damage_gate.gd" id="15_gate"]
+[ext_resource type="Script" path="res://scripts/boss_system/boss_attack_controller.gd" id="16_controller"]
+[ext_resource type="Script" path="res://scripts/boss_system/boss_phase1_attack_runtime.gd" id="17_attack_runtime"]
+[ext_resource type="Script" path="res://scripts/boss_system/boss_phase1_attack_scheduler.gd" id="18_scheduler"]
+[ext_resource type="Script" path="res://scripts/boss_system/boss_phase1_attack_coordinator.gd" id="19_coordinator"]
+[ext_resource type="Script" path="res://scripts/boss_system/boss_phase1_attack_pattern_selector.gd" id="20_selector"]
+[ext_resource type="Script" path="res://scripts/boss_system/boss_phase_transition_controller.gd" id="21_transition"]
+[ext_resource type="Script" path="res://scripts/boss_system/boss_arm_hit_ball_tracker.gd" id="22_tracker"]
+[ext_resource type="Script" path="res://scripts/boss_system/boss_arm_ball_reflector.gd" id="23_reflector"]
+[ext_resource type="Script" path="res://scripts/boss_system/boss_parry_counter_resolver.gd" id="24_resolver"]
+[ext_resource type="Script" path="res://scripts/boss_system/boss_counter_window.gd" id="25_window"]
+[ext_resource type="Script" path="res://scripts/boss_system/boss_battle_completion_controller.gd" id="26_completion"]
+[ext_resource type="Script" path="res://scripts/boss_system/feedback/teddy_boss_feedback_controller.gd" id="27_feedback"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/boss/feedback/teddy_boss_feedback_ports.tscn" id="28_feedback_ports"]
+[ext_resource type="Script" path="res://scripts/boss_system/feedback/teddy_boss_presentation_bridge.gd" id="29_presentation_bridge"]
+[ext_resource type="Script" path="res://scripts/boss_system/anim/boss_art_rig.gd" id="30_art_rig"]
+[ext_resource type="Script" path="res://scripts/boss_system/vfx/boss_vfx_layer.gd" id="31_vfx"]
+[ext_resource type="Resource" path="res://settings/bosses/vfx/TeddyBossVfx.tres" id="32_vfx_rules"]
+[ext_resource type="Texture2D" path="res://Resources/Art/boss/boss_body.png" id="33_body"]
+[ext_resource type="Texture2D" path="res://Resources/Art/boss/boss_body_under.png" id="34_body_under"]
+[ext_resource type="Texture2D" path="res://Resources/Art/boss/boss_arm_left.png" id="35_arm_left"]
+[ext_resource type="Texture2D" path="res://Resources/Art/boss/boss_arm_right.png" id="36_arm_right"]
+[ext_resource type="Texture2D" path="res://Resources/Art/boss/boss_heart.png" id="37_heart"]
+[ext_resource type="Texture2D" path="res://Resources/Art/boss/boss_eye_left.png" id="38_eye_left"]
+[ext_resource type="Texture2D" path="res://Resources/Art/boss/boss_eye_right.png" id="39_eye_right"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape_boss_hurtbox"]
+size = Vector2(300, 330)
+
+[node name="Stage1TeddyBossRuntime" type="Node2D" node_paths=PackedStringArray("boss_hurtbox", "health", "damage_adapter", "damage_applier", "damage_gate", "attack_controller", "attack_runtime", "scheduler", "coordinator", "selector", "pattern_1_attack", "pattern_2_attack", "phase_transition", "arm_hit_tracker", "arm_ball_reflector", "counter_resolver", "counter_window", "completion_controller", "cotton_parent", "cotton_spawn_left", "cotton_spawn_right")]
+visible = false
+script = ExtResource("1_runtime")
+show_attack_placeholder_visuals = false
+phase1_rules = ExtResource("2_phase1_rules")
+phase2_rules = ExtResource("3_phase2_rules")
+weight_rules = ExtResource("4_weight_rules")
+reflection_rules = ExtResource("5_reflection_rules")
+cotton_rules = ExtResource("6_cotton_rules")
+first_pattern = ExtResource("7_first_pattern")
+repeat_pattern = ExtResource("8_repeat_pattern")
+cotton_scene = ExtResource("10_cotton")
+boss_hurtbox = NodePath("BossHurtbox")
+health = NodePath("Components/BossHealthComponent")
+damage_adapter = NodePath("Components/BossComboDamageAdapter")
+damage_applier = NodePath("Components/BossDamageApplier")
+damage_gate = NodePath("Components/BossDamageGate")
+attack_controller = NodePath("BossAttackController")
+attack_runtime = NodePath("AttackLoop/Runtime")
+scheduler = NodePath("AttackLoop/Scheduler")
+coordinator = NodePath("AttackLoop/Coordinator")
+selector = NodePath("AttackLoop/PatternSelector")
+pattern_1_attack = NodePath("TeddyArmSweepAttack")
+pattern_2_attack = NodePath("TeddyDoubleArmUpSweepAttack")
+phase_transition = NodePath("Components/BossPhaseTransitionController")
+arm_hit_tracker = NodePath("Components/BossArmHitBallTracker")
+arm_ball_reflector = NodePath("Components/BossArmBallReflector")
+counter_resolver = NodePath("Components/BossParryCounterResolver")
+counter_window = NodePath("Components/BossCounterWindow")
+completion_controller = NodePath("Components/BossBattleCompletionController")
+cotton_parent = NodePath("CottonContainer")
+cotton_spawn_left = NodePath("CursedCottonSpawnLeft")
+cotton_spawn_right = NodePath("CursedCottonSpawnRight")
+
+[node name="BossAttackController" type="Node" parent="." node_paths=PackedStringArray("attack")]
+script = ExtResource("16_controller")
+attack = NodePath("../TeddyArmSweepAttack")
+
+[node name="TeddyArmSweepAttack" parent="." instance=ExtResource("9_attack")]
+position = Vector2(0, -260)
+
+[node name="TeddyDoubleArmUpSweepAttack" parent="." instance=ExtResource("9_attack")]
+position = Vector2(0, -260)
+visible = false
+script = ExtResource("11_double_attack")
+idle_angle_degrees = 70.0
+telegraph_angle_degrees = 82.0
+active_angle_degrees = -105.0
+
+[node name="BossHurtbox" type="Area2D" parent="."]
+position = Vector2(0, -335)
+collision_layer = 0
+collision_mask = 1
+monitoring = false
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BossHurtbox"]
+shape = SubResource("RectangleShape_boss_hurtbox")
+
+[node name="AttackLoop" type="Node" parent="."]
+
+[node name="Runtime" type="Node" parent="AttackLoop"]
+script = ExtResource("17_attack_runtime")
+
+[node name="Scheduler" type="Node" parent="AttackLoop"]
+script = ExtResource("18_scheduler")
+
+[node name="Coordinator" type="Node" parent="AttackLoop"]
+script = ExtResource("19_coordinator")
+
+[node name="PatternSelector" type="Node" parent="AttackLoop"]
+script = ExtResource("20_selector")
+
+[node name="Components" type="Node" parent="."]
+
+[node name="BossHealthComponent" type="Node" parent="Components"]
+script = ExtResource("12_health")
+
+[node name="BossComboDamageAdapter" type="Node" parent="Components"]
+script = ExtResource("13_adapter")
+
+[node name="BossDamageApplier" type="Node" parent="Components"]
+script = ExtResource("14_applier")
+
+[node name="BossDamageGate" type="Node" parent="Components"]
+script = ExtResource("15_gate")
+
+[node name="BossPhaseTransitionController" type="Node" parent="Components"]
+script = ExtResource("21_transition")
+
+[node name="BossArmHitBallTracker" type="Node" parent="Components"]
+script = ExtResource("22_tracker")
+
+[node name="BossArmBallReflector" type="Node" parent="Components"]
+script = ExtResource("23_reflector")
+
+[node name="BossParryCounterResolver" type="Node" parent="Components"]
+script = ExtResource("24_resolver")
+
+[node name="BossCounterWindow" type="Node" parent="Components"]
+script = ExtResource("25_window")
+
+[node name="BossBattleCompletionController" type="Node" parent="Components"]
+script = ExtResource("26_completion")
+
+[node name="CottonContainer" type="Node2D" parent="."]
+
+[node name="CursedCottonSpawnLeft" type="Marker2D" parent="."]
+position = Vector2(-320, 80)
+
+[node name="CursedCottonSpawnRight" type="Marker2D" parent="."]
+position = Vector2(320, 80)
+
+[node name="Presentation" type="Node2D" parent="."]
+
+[node name="Vfx" type="Node2D" parent="Presentation"]
+position = Vector2(0, -335)
+script = ExtResource("31_vfx")
+rules = ExtResource("32_vfx_rules")
+rig_path = NodePath("../Rig")
+
+[node name="Rig" type="Node2D" parent="Presentation"]
+position = Vector2(0, -335)
+script = ExtResource("30_art_rig")
+body_texture = ExtResource("33_body")
+body_under_texture = ExtResource("34_body_under")
+arm_texture_left = ExtResource("35_arm_left")
+arm_texture_right = ExtResource("36_arm_right")
+heart_texture = ExtResource("37_heart")
+eye_texture_left = ExtResource("38_eye_left")
+eye_texture_right = ExtResource("39_eye_right")
+
+[node name="Feedback" type="Node" parent="."]
+
+[node name="TeddyBossFeedbackController" type="Node" parent="Feedback" node_paths=PackedStringArray("boss_runtime", "attack_controller", "pattern_1_attack", "pattern_2_attack", "arm_ball_reflector", "damage_applier", "counter_resolver", "counter_window", "phase_transition", "completion_controller", "cotton_parent")]
+script = ExtResource("27_feedback")
+boss_runtime = NodePath("../..")
+attack_controller = NodePath("../../BossAttackController")
+pattern_1_attack = NodePath("../../TeddyArmSweepAttack")
+pattern_2_attack = NodePath("../../TeddyDoubleArmUpSweepAttack")
+arm_ball_reflector = NodePath("../../Components/BossArmBallReflector")
+damage_applier = NodePath("../../Components/BossDamageApplier")
+counter_resolver = NodePath("../../Components/BossParryCounterResolver")
+counter_window = NodePath("../../Components/BossCounterWindow")
+phase_transition = NodePath("../../Components/BossPhaseTransitionController")
+completion_controller = NodePath("../../Components/BossBattleCompletionController")
+cotton_parent = NodePath("../../CottonContainer")
+
+[node name="TeddyBossFeedbackPorts" parent="Feedback" instance=ExtResource("28_feedback_ports")]
+
+[node name="TeddyBossPresentationBridge" type="Node" parent="Feedback" node_paths=PackedStringArray("feedback", "rig", "vfx")]
+script = ExtResource("29_presentation_bridge")
+feedback = NodePath("../TeddyBossFeedbackController")
+rig = NodePath("../../Presentation/Rig")
+vfx = NodePath("../../Presentation/Vfx")

@@ -1,7 +1,7 @@
 extends SceneTree
 
 
-const BOARD_SCENE_PATH := "res://scenes/test_flipper/test_flipper_board.tscn"
+const BOARD_SCENE_PATH := "res://scenes/tests/flippers/test_flipper_board.tscn"
 const BOARD_TEXTURE_PATH := "res://Resources/Art/board/octagonal_dark_wood_board.png"
 const OUTSIDE_BACKGROUND_TEXTURE_PATH := (
 	"res://Resources/Art/backgrounds/cursed_circus_outside_background.png"

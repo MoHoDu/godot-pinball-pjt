@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://tests/stage_system/fixtures/legacy_wave_completion_fixture.gd" id="1_fixture"]
+
+[node name="LegacyWaveFixture" type="Node"]
+
+[node name="CompletionEmitter" type="Node" parent="."]
+script = ExtResource("1_fixture")

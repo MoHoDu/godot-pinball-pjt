@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="AmbientDecorRules" format=3 uid="uid://cbt1lkw6dri08"]
+
+[ext_resource type="Script" uid="uid://bj6tpvvhyiht" path="res://scripts/ambient_vfx/ambient_decor_rules.gd" id="1_decor"]
+
+[resource]
+script = ExtResource("1_decor")
+star_max_alpha = 0.65
+star_period_min_s = 3.0
+star_period_max_s = 7.0
+star_sharpness = 3.0
+star_spin_period_min_s = 24.0
+star_spin_period_max_s = 48.0
+cloud_scale_amp = 0.018
+cloud_period_s = 16.0
+ray_count = 8
+ray_period_s = 36.0
+ray_max_alpha = 0.15
+ray_sharpness = 2.0

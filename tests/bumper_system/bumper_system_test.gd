@@ -1,24 +1,24 @@
 extends SceneTree
 
 
-const BUTTON_SCENE := preload("res://scenes/bumper_system/button_bumper.tscn")
-const COTTON_SCENE := preload("res://scenes/bumper_system/cotton_bumper.tscn")
-const SPRING_SCENE := preload("res://scenes/bumper_system/spring_doll_bumper.tscn")
-const DRUM_SCENE := preload("res://scenes/bumper_system/toy_drum_bumper.tscn")
-const CANNON_SCENE := preload("res://scenes/bumper_system/clockwork_toy_cannon.tscn")
+const BUTTON_SCENE := preload("res://Resources/Prefabs/bumpers/types/button_bumper.tscn")
+const COTTON_SCENE := preload("res://Resources/Prefabs/bumpers/types/cotton_bumper.tscn")
+const SPRING_SCENE := preload("res://Resources/Prefabs/bumpers/types/spring_doll_bumper.tscn")
+const DRUM_SCENE := preload("res://Resources/Prefabs/bumpers/types/toy_drum_bumper.tscn")
+const CANNON_SCENE := preload("res://Resources/Prefabs/bumpers/types/clockwork_toy_cannon.tscn")
 const STARLIGHT_SCENE := preload(
-	"res://scenes/bumper_system/starlight_brooch_bumper.tscn"
+	"res://Resources/Prefabs/bumpers/types/starlight_brooch_bumper.tscn"
 )
 const GOLDEN_GEARS_SCENE := preload(
-	"res://scenes/bumper_system/golden_gears_bumper.tscn"
+	"res://Resources/Prefabs/bumpers/types/golden_gears_bumper.tscn"
 )
 const CRESCENT_NEEDLE_SCENE := preload(
-	"res://scenes/bumper_system/crescent_needle_bumper.tscn"
+	"res://Resources/Prefabs/bumpers/types/crescent_needle_bumper.tscn"
 )
 const FORGOTTEN_STAR_BELL_SCENE := preload(
-	"res://scenes/bumper_system/forgotten_star_bell_bumper.tscn"
+	"res://Resources/Prefabs/bumpers/types/forgotten_star_bell_bumper.tscn"
 )
-const BUMPER_TEST_SCENE := preload("res://scenes/bumper_system/bumper_test.tscn")
+const BUMPER_TEST_SCENE := preload("res://scenes/tests/bumpers/bumper_test.tscn")
 const STAGE_LAYOUT := preload("res://settings/bumpers/stage_01/Stage01BumperLayout.tres")
 const BUMPER_WAVE_LOADOUT_SCRIPT := preload(
 	"res://scripts/bumper-system/bumper_wave_loadout.gd"
@@ -71,6 +71,52 @@ func _test_stage01_settings_and_strategies() -> void:
 		"장난감 북은 Bounce 타입이어야 한다.")
 	_expect(cannon.settings.bumper_type == BumperSettings.BumperType.SHOT,
 		"태엽 장난감 대포는 Shot 타입이어야 한다.")
+	_expect(cannon.object_settings is BumperObjectSettings,
+		"범퍼 루트 Inspector에는 별도 Object Settings 리소스가 있어야 한다.")
+	_expect(cannon.common_bumper_settings is BumperCommonSettings,
+		"범퍼 루트 Inspector에는 별도 Common Bumper Settings 리소스가 있어야 한다.")
+	_expect(cannon.type_settings is BumperTypeSettings,
+		"범퍼 루트 Inspector에는 별도 Type Settings 리소스가 있어야 한다.")
+	_expect(not _is_editor_property_visible(cannon, &"settings"),
+		"전체 Settings 묶음은 Inspector에서 중복 노출되면 안 된다.")
+	_expect(_is_editor_property_visible(cannon, &"object_settings") \
+			and _is_editor_property_visible(cannon, &"common_bumper_settings") \
+			and _is_editor_property_visible(cannon, &"type_settings"),
+		"범퍼 루트 Inspector에는 분리된 설정 슬롯 3개가 표시되어야 한다.")
+	_expect(not _is_editor_property_visible(button.type_settings, &"track_target_offset"),
+		"Normal 범퍼 Inspector에는 Track 목표 위치가 표시되면 안 된다.")
+	_expect(not _is_editor_property_visible(button.type_settings, &"launch_speed"),
+		"Normal 범퍼 Inspector에는 Shot 발사 속력이 표시되면 안 된다.")
+	_expect(_is_editor_property_visible(cannon.type_settings, &"launch_speed"),
+		"Shot 범퍼 Inspector에는 발사 속력이 표시되어야 한다.")
+	_expect(_is_editor_property_visible(cannon.type_settings, &"add_shot_direction_button"),
+		"Shot 범퍼 Inspector에는 파일 생성 없는 발사 방향 추가 버튼이 보여야 한다.")
+	_expect(not _is_editor_property_visible(cannon.type_settings, &"speed_multiplier"),
+		"Shot 범퍼 Inspector에는 사용하지 않는 일반 반응 배율이 표시되면 안 된다.")
+	var track_settings := button.settings.duplicate(true) as BumperSettings
+	track_settings.bumper_type = BumperSettings.BumperType.TRACK
+	_expect(_is_editor_property_visible(track_settings.type_settings, &"track_target_offset"),
+		"Track 범퍼 Inspector에는 목표 위치가 표시되어야 한다.")
+	_expect(not _is_editor_property_visible(track_settings.type_settings, &"selection_duration"),
+		"Track 범퍼 Inspector에는 Shot 선택 시간이 표시되면 안 된다.")
+	_expect(_is_editor_property_visible(button.object_settings, &"graphic_texture"),
+		"Object Settings에는 실제 그래픽 Texture 교체 속성이 표시되어야 한다.")
+
+	button.settings = button.settings.duplicate(true) as BumperSettings
+	var original_collision_radius := button.get_collision_radius()
+	var original_bumper_scale := button.scale
+	var test_image := Image.create(200, 100, false, Image.FORMAT_RGBA8)
+	var test_texture := ImageTexture.create_from_image(test_image)
+	button.object_settings.graphic_texture = test_texture
+	button.object_settings.visual_diameter = 120.0
+	button.object_settings.graphic_size_ratio = 0.75
+	var graphic_rect := button.object_settings.get_graphic_draw_rect()
+	_expect(graphic_rect.size.is_equal_approx(Vector2(90.0, 45.0)),
+		"실제 이미지는 긴 변을 기준으로 목표 외형 크기 안에 비율 유지되어야 한다.")
+	_expect_float(button.get_collision_radius(), original_collision_radius,
+		"그래픽 크기 변경은 범퍼 충돌 반경을 바꾸면 안 된다.")
+	_expect(button.scale == original_bumper_scale,
+		"그래픽 맞춤은 범퍼 루트 Scale을 변경하면 안 된다.")
 
 	var context := BallImpactContext.new(
 		_ball,
@@ -265,17 +311,56 @@ func _test_shot_control_and_deferred_destruction() -> void:
 	var cannon := await _spawn(CANNON_SCENE) as ShotBumper
 	var anchors := cannon.get_launch_anchors()
 	var safe_count := 0
+	var safe_anchor: ShotLaunchAnchor
 	for anchor: ShotLaunchAnchor in anchors:
 		if anchor.is_safe_default:
 			safe_count += 1
-	_expect(anchors.size() == 3,
-		"캐논은 2~3개 범위 안인 발사 앵커 3개를 가져야 한다.")
+			safe_anchor = anchor
+	_expect(anchors.size() > 3,
+		"캐논은 기본 입력 키 수보다 많은 발사 방향을 설정할 수 있어야 한다.")
+	_expect(not cannon.has_node(^"LaunchAnchors"),
+		"Shot 발사 방향은 씬 자식 노드가 아닌 Settings 배열에서 관리해야 한다.")
 	_expect(safe_count == 1,
 		"캐논 안전 기본 방향은 정확히 하나여야 한다.")
-	_expect_float(cannon.get_selection_duration(), 0.8,
-		"캐논 방향 선택 시간은 0.8초여야 한다.")
+	_expect_float(cannon.get_selection_duration(), 2.0,
+		"캐논 방향 선택 시간은 2.0초여야 한다.")
 	_expect_float(cannon.get_launch_speed(), 1300.0,
 		"캐논 고정 발사 속력은 1300이어야 한다.")
+	_expect(not safe_anchor.release_position.is_zero_approx(),
+		"캐논 안전 발사 위치는 Inspector에서 편집 가능한 좌표여야 한다.")
+	_expect(cannon.get_selected_launch_direction().is_equal_approx(
+			safe_anchor.get_local_launch_direction()),
+		"캐논 발사 위치 좌표가 실제 발사 방향에 적용되어야 한다.")
+	var editable_settings := cannon.settings.duplicate(true) as BumperSettings
+	var editable_directions := editable_settings.shot_launch_directions.duplicate()
+	editable_directions.remove_at(2)
+	var diagonal_direction := ShotLaunchAnchor.new()
+	diagonal_direction.display_name = "오른쪽 위"
+	diagonal_direction.release_position = Vector2(82.0, -82.0)
+	editable_directions.append(diagonal_direction)
+	editable_settings.shot_launch_directions = editable_directions
+	_expect(editable_settings.shot_launch_directions.size() == anchors.size(),
+		"Inspector 배열에서 Shot 방향을 삭제하고 새 방향을 추가할 수 있어야 한다.")
+	_expect(editable_settings.shot_launch_directions[-1].display_name == "오른쪽 위",
+		"Inspector 배열에서 Shot 방향 속성을 수정할 수 있어야 한다.")
+	var direction_count_before_add := editable_settings.shot_launch_directions.size()
+	var mouse_editable_direction := editable_settings.type_settings.add_shot_direction()
+	_expect(editable_settings.shot_launch_directions.size() == direction_count_before_add + 1,
+		"발사 방향 추가 버튼은 Shot 방향을 즉시 하나 추가해야 한다.")
+	_expect(mouse_editable_direction.resource_path.is_empty(),
+		"추가 버튼으로 만든 방향은 별도 Resource 파일을 요구하면 안 된다.")
+	_expect(mouse_editable_direction.release_position.length() > 0.0,
+		"새 방향은 2D 핸들로 즉시 편집할 수 있는 초기 위치를 가져야 한다.")
+	_expect(not _is_editor_property_visible(
+			mouse_editable_direction, &"input_action"),
+		"Shot 방향에는 방향별 키를 지정하는 input_action이 표시되면 안 된다.")
+
+	var editor_settings := cannon.settings.duplicate(true) as BumperSettings
+	cannon.settings = editor_settings
+	editor_settings.collision_diameter = 140.0
+	var cannon_shape := cannon.get_node(^"CollisionShape2D") as CollisionShape2D
+	_expect_float((cannon_shape.shape as CircleShape2D).radius, 70.0,
+		"Inspector 크기 변경은 물리 충돌 범위에 즉시 반영되어야 한다.")
 
 	_expect(cannon.register_valid_hit(_ball, 301),
 		"캐논 첫 접촉은 유효 타격이어야 한다.")
@@ -284,6 +369,26 @@ func _test_shot_control_and_deferred_destruction() -> void:
 		"캐논 방향 선택 중에는 공을 포신 내부에 고정해야 한다.")
 	_expect(cannon.current_durability == 1,
 		"캐논 첫 사용 후 내구도는 1이어야 한다.")
+	var visited_anchors: Dictionary = {
+		cannon.get_selected_launch_anchor().get_instance_id(): true,
+	}
+	for _index in range(anchors.size() - 1):
+		var next_direction_event := InputEventAction.new()
+		next_direction_event.action = ShotBumper.NEXT_DIRECTION_ACTION
+		next_direction_event.pressed = true
+		cannon._unhandled_input(next_direction_event)
+		visited_anchors[
+			cannon.get_selected_launch_anchor().get_instance_id()
+		] = true
+	_expect(visited_anchors.size() == anchors.size(),
+		"Shot 방향이 네 개를 넘어도 오른쪽 입력으로 모든 방향을 순회해야 한다.")
+	var selected_before_previous := cannon.get_selected_launch_anchor()
+	var previous_direction_event := InputEventAction.new()
+	previous_direction_event.action = ShotBumper.PREVIOUS_DIRECTION_ACTION
+	previous_direction_event.pressed = true
+	cannon._unhandled_input(previous_direction_event)
+	_expect(cannon.get_selected_launch_anchor() != selected_before_previous,
+		"왼쪽 입력은 현재 방향의 이전 방향을 선택해야 한다.")
 	_expect(cannon.release_controlled_ball(),
 		"스페이스 입력과 같은 즉시 발사 경로를 제공해야 한다.")
 	_expect_float(_ball.linear_velocity.length(), 1300.0,
@@ -379,7 +484,7 @@ func _test_bumper_test_scene_contract() -> void:
 			and scene.current_index == 1,
 		"재시작은 선택을 유지하고 공과 범퍼를 새 인스턴스로 교체해야 한다.")
 
-	await _send_key(KEY_A)
+	await _send_key(KEY_LEFT)
 	_expect(scene.current_index == 0 \
 			and scene.current_state == BumperTestController.TestState.SELECTING,
 		"실행 중 범퍼 전환은 현재 테스트를 중단하고 선택 상태로 돌아가야 한다.")
@@ -400,17 +505,25 @@ func _test_bumper_test_scene_contract() -> void:
 	_expect(scene.current_ball.freeze,
 		"캐논 입력 검증은 실제 Shot 제어 상태에서 실행해야 한다.")
 	var cannon_index := scene.current_index
-	await _send_key(KEY_A)
+	var cannon_anchors := cannon.get_launch_anchors()
+	var initial_anchor := cannon.get_selected_launch_anchor()
+	var initial_anchor_index := cannon_anchors.find(initial_anchor)
+	await _send_key(KEY_LEFT)
 	_expect(scene.current_index == cannon_index \
-			and cannon.get_selected_launch_direction().dot(Vector2.LEFT) > 0.99,
-		"캐논이 공을 제어할 때 A/D는 범퍼 선택에 소비되면 안 된다.")
-	await _send_key(KEY_D)
+			and cannon.get_selected_launch_anchor() \
+				== cannon_anchors[wrapi(
+					initial_anchor_index - 1, 0, cannon_anchors.size())],
+		"캐논 제어 중 왼쪽 방향키는 이전 발사 방향을 선택해야 한다.")
+	await _send_key(KEY_RIGHT)
 	_expect(scene.current_index == cannon_index \
-			and cannon.get_selected_launch_direction().dot(Vector2.RIGHT) > 0.99,
-		"캐논 제어 중 D 입력은 오른쪽 발사 앵커를 선택해야 한다.")
+			and cannon.get_selected_launch_anchor() == initial_anchor,
+		"캐논 제어 중 오른쪽 방향키는 다음 발사 방향을 선택해야 한다.")
+	await _send_key(KEY_RIGHT)
+	var selected_launch_direction := cannon.get_selected_launch_direction()
 	await _send_key(KEY_SPACE)
 	_expect(not scene.current_ball.freeze \
-			and scene.current_ball.linear_velocity.dot(Vector2.RIGHT) > 0.0,
+			and scene.current_ball.linear_velocity.normalized() \
+				.dot(selected_launch_direction) > 0.99,
 		"캐논 제어 중 Space 입력은 선택 방향으로 공을 발사해야 한다.")
 
 	var saved_scenes := scene.bumper_scenes
@@ -449,10 +562,11 @@ func _test_stage01_wave_layout() -> void:
 	var wave2: Resource = layout.call(&"get_wave", 1)
 	var wave3: Resource = layout.call(&"get_wave", 2)
 	var boss: Resource = layout.call(&"get_wave", 3)
-	_expect(wave1.get(&"normal_count_range") == Vector2i(4, 6) \
-			and wave1.get(&"bounce_count_range") == Vector2i.ZERO \
+	# 웨이브 1 레벨 디자인: 대각 벽 4곳의 리바운드(Bounce)와 중앙 Normal 묶음.
+	_expect(wave1.get(&"normal_count_range") == Vector2i(2, 3) \
+			and wave1.get(&"bounce_count_range") == Vector2i(4, 4) \
 			and wave1.get(&"shot_count_range") == Vector2i.ZERO,
-		"웨이브 1은 Normal 4~6개만 사용해야 한다.")
+		"웨이브 1은 벽 리바운드 4개와 중앙 Normal 2~3개를 사용해야 한다.")
 	_expect(wave2.get(&"bounce_count_range") == Vector2i(2, 3) \
 			and wave2.get(&"shot_count_range") == Vector2i.ZERO,
 		"웨이브 2에서 Bounce 2~3개를 처음 도입해야 한다.")
@@ -503,6 +617,14 @@ func _send_key(keycode: Key) -> void:
 func _expect_float(actual: float, expected: float, message: String) -> void:
 	_expect(absf(actual - expected) <= EPSILON,
 		"%s (expected=%s, actual=%s)" % [message, expected, actual])
+
+
+func _is_editor_property_visible(object: Object, property_name: StringName) -> bool:
+	for property: Dictionary in object.get_property_list():
+		if StringName(property.name) != property_name:
+			continue
+		return (int(property.usage) & PROPERTY_USAGE_EDITOR) != 0
+	return false
 
 
 func _expect(condition: bool, message: String) -> void:

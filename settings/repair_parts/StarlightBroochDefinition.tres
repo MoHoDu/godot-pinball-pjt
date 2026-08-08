@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RepairPartDefinition" format=3 uid="uid://btbkt1aoy4ikj"]
+
+[ext_resource type="Script" uid="uid://gxxb7iydtty0" path="res://scripts/repair_parts/data/repair_part_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+part_id = &"starlight_brooch"
+family = 0
+display_name = "별빛 브로치"
+bumper_kind_id = &"starlight_brooch"
+action_line = "다른 부품 둘을 거쳐 돌아오면 수리를 완성합니다"
+brooch_window_seconds = 6.0
+brooch_finish_multiplier = 3.0
+brooch_required_visits = 2

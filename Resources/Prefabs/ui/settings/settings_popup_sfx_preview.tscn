@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/ui/settings/settings_popup.tscn" id="1_base"]
+[ext_resource type="Script" path="res://scripts/settings/settings_popup_sfx_preview.gd" id="2_preview"]
+
+[node name="SettingsPopupSfxPreview" instance=ExtResource("1_base")]
+script = ExtResource("2_preview")
+
+[node name="SfxPreviewPlayer" type="AudioStreamPlayer" parent="."]
+process_mode = 3
+bus = &"SFX"
+
+[node name="SfxPreviewDebounce" type="Timer" parent="."]
+process_mode = 3
+wait_time = 0.15
+one_shot = true

@@ -1,0 +1,167 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Theme" path="res://Resources/ui/wave_hud/dark/wave_hud_theme.tres" id="1_theme"]
+[ext_resource type="Texture2D" path="res://Resources/Art/ui/select_ball/slots/selection_slot_pedestal.png" id="2_pedestal"]
+[ext_resource type="Texture2D" path="res://Resources/Art/balls/glass_eye_ball.png" id="3_ball"]
+[ext_resource type="Texture2D" path="res://Resources/Art/ui/select_ball/states/selection_focus_sigil.png" id="4_focus"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_slot_normal"]
+bg_color = Color(0.043, 0.153, 0.188, 0.96)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.337, 0.451, 0.435, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 7
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_slot_hover"]
+bg_color = Color(0.082, 0.255, 0.286, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.404, 0.847, 0.816, 0.8)
+corner_radius_top_left = 3
+corner_radius_top_right = 7
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_slot_pressed"]
+bg_color = Color(0.067, 0.216, 0.247, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.404, 0.847, 0.816, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 7
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 6
+shadow_color = Color(0.404, 0.847, 0.816, 0.18)
+shadow_size = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_slot_disabled"]
+bg_color = Color(0.035, 0.118, 0.145, 0.8)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.337, 0.451, 0.435, 0.55)
+corner_radius_top_left = 3
+corner_radius_top_right = 7
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_chip"]
+bg_color = Color(0.11, 0.255, 0.29, 0.94)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.337, 0.451, 0.435, 0.9)
+corner_radius_top_left = 2
+corner_radius_top_right = 5
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 4
+
+[node name="SelectBallSlotButton" type="Button"]
+custom_minimum_size = Vector2(180, 220)
+offset_right = 180.0
+offset_bottom = 220.0
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_theme")
+theme_override_colors/font_color = Color(0, 0, 0, 0)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 0)
+theme_override_colors/font_pressed_color = Color(0, 0, 0, 0)
+theme_override_styles/normal = SubResource("StyleBox_slot_normal")
+theme_override_styles/hover = SubResource("StyleBox_slot_hover")
+theme_override_styles/pressed = SubResource("StyleBox_slot_pressed")
+theme_override_styles/disabled = SubResource("StyleBox_slot_disabled")
+toggle_mode = true
+
+[node name="Pedestal" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 27.0
+offset_top = 10.0
+offset_right = 153.0
+offset_bottom = 136.0
+mouse_filter = 2
+texture = ExtResource("2_pedestal")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BallIcon" type="TextureRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 46.0
+offset_top = 29.0
+offset_right = 134.0
+offset_bottom = 117.0
+mouse_filter = 2
+texture = ExtResource("3_ball")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="FocusRing" type="TextureRect" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+offset_left = 20.0
+offset_top = 3.0
+offset_right = 160.0
+offset_bottom = 143.0
+mouse_filter = 2
+texture = ExtResource("4_focus")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="UsedSlash" type="ColorRect" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+offset_left = 38.0
+offset_top = 75.0
+offset_right = 142.0
+offset_bottom = 80.0
+rotation = -0.20944
+mouse_filter = 2
+color = Color(0.51, 0.608, 0.6, 0.88)
+
+[node name="BallName" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 10.0
+offset_top = 148.0
+offset_right = 170.0
+offset_bottom = 176.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.945, 0.902, 0.796, 1)
+theme_override_colors/font_shadow_color = Color(0.02, 0.08, 0.1, 0.8)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 17
+text = "기본 유리눈"
+horizontal_alignment = 1
+
+[node name="StatusChip" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 22.0
+offset_top = 181.0
+offset_right = 158.0
+offset_bottom = 207.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBox_chip")
+
+[node name="StatusText" type="Label" parent="StatusChip"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.776, 0.741, 0.659, 1)
+theme_override_font_sizes/font_size = 11
+text = "사용 가능"
+horizontal_alignment = 1
+vertical_alignment = 1

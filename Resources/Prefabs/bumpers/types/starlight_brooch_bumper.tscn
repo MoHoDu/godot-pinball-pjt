@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/base/bumper_base.tscn" id="1"]
+[ext_resource type="Resource" path="res://settings/bumpers/repair_parts/StarlightBrooch.tres" id="2"]
+
+[node name="StarlightBroochBumper" instance=ExtResource("1")]
+bumper_id = &"starlight_brooch"
+settings = ExtResource("2")

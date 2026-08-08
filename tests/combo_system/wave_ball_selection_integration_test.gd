@@ -2,9 +2,9 @@ extends SceneTree
 
 
 const HUD_SCENE := preload(
-	"res://scenes/ball_base_system/ball_selection_hud.tscn"
+	"res://Resources/Prefabs/ui/ball_selection/legacy/ball_selection_hud.tscn"
 )
-const LIGHT_BALL := preload("res://Resources/balls/mass_var/light_ball.tscn")
+const LIGHT_BALL := preload("res://Resources/Prefabs/balls/variants/mass/light_ball.tscn")
 
 
 var _failures: Array[String] = []

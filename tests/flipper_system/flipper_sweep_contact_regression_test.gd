@@ -1,9 +1,9 @@
 extends SceneTree
 
 
-const BASE_BALL_SCENE_PATH := "res://Resources/balls/base/base_ball.tscn"
+const BASE_BALL_SCENE_PATH := "res://Resources/Prefabs/balls/base/base_ball.tscn"
 const RIGHT_FLIPPER_SCENE_PATH := \
-	"res://Resources/flippers/sub_flipper/normal_flipper_right.tscn"
+	"res://Resources/Prefabs/flippers/variants/normal_flipper_right.tscn"
 const START_ROTATION := -PI / 12.0
 const END_ROTATION := PI / 6.0
 const PHYSICS_DELTA := 1.0 / 60.0

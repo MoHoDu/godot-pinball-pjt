@@ -1,0 +1,110 @@
+[gd_resource type="Resource" script_class="FlipperSfxRules" format=3 uid="uid://b28psjupshj6x"]
+
+[ext_resource type="Script" uid="uid://mq6vq61wyw0s" path="res://scripts/sfx_system/rules/flipper_sfx_rules.gd" id="1_rules"]
+[ext_resource type="Script" uid="uid://b18oyfr48qsjo" path="res://scripts/sfx_system/sfx_cue.gd" id="2_cue"]
+[ext_resource type="AudioStream" uid="uid://byjeb3q834b8r" path="res://Resources/sfx/flippers/SFX_Flipper_Return.wav" id="3_snd"]
+[ext_resource type="AudioStream" uid="uid://dyf2jiuvtcjxx" path="res://Resources/sfx/flippers/SFX_Flipper_Select.wav" id="4_snd"]
+[ext_resource type="AudioStream" uid="uid://1ilvivql8pnj" path="res://Resources/sfx/flippers/SFX_Flipper_Activate.wav" id="5_snd"]
+[ext_resource type="AudioStream" uid="uid://btkqdx2iaf0ow" path="res://Resources/sfx/flippers/SFX_Flipper_Hit.wav" id="6_snd"]
+[ext_resource type="AudioStream" uid="uid://bwufs8cuwitxi" path="res://Resources/sfx/flippers/SFX_Flipper_StrongHit.wav" id="7_snd"]
+[ext_resource type="AudioStream" uid="uid://neilechiykal" path="res://Resources/sfx/flippers/SFX_Flipper_Parry.wav" id="8_snd"]
+
+[sub_resource type="Resource" id="Cue_activate_cue"]
+script = ExtResource("2_cue")
+cue_id = &"flipper_activate"
+role = "플리퍼 작동 — Space 로 올라간다. 공을 못 맞혀도 난다"
+streams = Array[AudioStream]([ExtResource("5_snd")])
+speed_tier_thresholds = PackedFloat32Array(420, 1050)
+maximum_concurrent = 3
+speed_volume_range = Vector2(0, 0)
+pitch_jitter = 0.05
+minimum_repeat_interval = 0.04
+repeat_attenuation_db = -3.0
+repeat_attenuation_floor_db = -6.0
+repeat_chain_reset_time = 0.24
+
+[sub_resource type="Resource" id="Cue_hit_cue"]
+script = ExtResource("2_cue")
+cue_id = &"flipper_hit"
+role = "플리퍼 일반 타격 — 유리공을 친다. 단단한 톡/탁 (기획서 MUST)"
+streams = Array[AudioStream]([ExtResource("6_snd")])
+speed_tier_thresholds = PackedFloat32Array(420, 1050)
+priority = 30
+maximum_concurrent = 3
+speed_reference_range = Vector2(200, 1200)
+speed_volume_range = Vector2(-3, 0)
+pitch_jitter = 0.05
+minimum_repeat_interval = 0.04
+repeat_attenuation_db = -3.0
+repeat_attenuation_floor_db = -6.0
+repeat_chain_reset_time = 0.24
+
+[sub_resource type="Resource" id="Cue_parry_perfect_cue"]
+script = ExtResource("2_cue")
+cue_id = &"flipper_parry_perfect"
+role = "정확한 패링 — 명쾌한 탁. 우선순위 1위"
+streams = Array[AudioStream]([ExtResource("8_snd")])
+speed_tier_thresholds = PackedFloat32Array(420, 1050)
+priority = 50
+maximum_concurrent = 3
+speed_volume_range = Vector2(0, 0)
+pitch_jitter = 0.03
+minimum_repeat_interval = 0.04
+repeat_attenuation_db = -3.0
+repeat_attenuation_floor_db = -6.0
+repeat_chain_reset_time = 0.24
+
+[sub_resource type="Resource" id="Cue_return_cue"]
+script = ExtResource("2_cue")
+cue_id = &"flipper_return"
+role = "플리퍼 복귀 — 제자리로 내려앉는다. Space 를 놓을 때"
+streams = Array[AudioStream]([ExtResource("3_snd")])
+speed_tier_thresholds = PackedFloat32Array(420, 1050)
+maximum_concurrent = 2
+base_volume_db = 6.0
+speed_volume_range = Vector2(0, 0)
+pitch_jitter = 0.04
+minimum_repeat_interval = 0.04
+repeat_attenuation_db = -3.0
+repeat_attenuation_floor_db = -6.0
+repeat_chain_reset_time = 0.24
+
+[sub_resource type="Resource" id="Cue_select_cue"]
+script = ExtResource("2_cue")
+cue_id = &"flipper_select"
+role = "플리퍼 선택 — 방향키로 조작할 그룹을 바꾼다. 공과 무관"
+streams = Array[AudioStream]([ExtResource("4_snd")])
+speed_tier_thresholds = PackedFloat32Array(420, 1050)
+maximum_concurrent = 2
+speed_volume_range = Vector2(0, 0)
+pitch_jitter = 0.04
+minimum_repeat_interval = 0.04
+repeat_attenuation_db = -3.0
+repeat_attenuation_floor_db = -6.0
+repeat_chain_reset_time = 0.24
+
+[sub_resource type="Resource" id="Cue_strong_hit_cue"]
+script = ExtResource("2_cue")
+cue_id = &"flipper_strong_hit"
+role = "플리퍼 강한 타격 — 금속성 쾅이 아닌 탄력 있는 쫙/팡"
+streams = Array[AudioStream]([ExtResource("7_snd")])
+speed_tier_thresholds = PackedFloat32Array(420, 1050)
+priority = 30
+maximum_concurrent = 2
+speed_reference_range = Vector2(200, 1200)
+speed_volume_range = Vector2(-3, 0)
+pitch_jitter = 0.04
+minimum_repeat_interval = 0.04
+repeat_attenuation_db = -3.0
+repeat_attenuation_floor_db = -6.0
+repeat_chain_reset_time = 0.24
+
+[resource]
+script = ExtResource("1_rules")
+select_cue = SubResource("Cue_select_cue")
+activate_cue = SubResource("Cue_activate_cue")
+return_cue = SubResource("Cue_return_cue")
+hit_cue = SubResource("Cue_hit_cue")
+strong_hit_cue = SubResource("Cue_strong_hit_cue")
+strong_hit_speed_threshold = 1200.0
+parry_perfect_cue = SubResource("Cue_parry_perfect_cue")

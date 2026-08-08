@@ -1,0 +1,60 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/stage/coin/stage_wave_coin_system.tscn" id="1_system"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/coin/coin_spawn_point.tscn" id="2_point"]
+
+[node name="CoinSystem" instance=ExtResource("1_system")]
+expected_spawn_count = 12
+expected_main_count = 10
+expected_risk_count = 2
+
+[node name="Main01" parent="SpawnPoints" index="0" instance=ExtResource("2_point")]
+position = Vector2(-850, -300)
+point_id = &"main_01"
+
+[node name="Main02" parent="SpawnPoints" index="1" instance=ExtResource("2_point")]
+position = Vector2(850, -300)
+point_id = &"main_02"
+
+[node name="Main03" parent="SpawnPoints" index="2" instance=ExtResource("2_point")]
+position = Vector2(-900, 0)
+point_id = &"main_03"
+
+[node name="Main04" parent="SpawnPoints" index="3" instance=ExtResource("2_point")]
+position = Vector2(900, 0)
+point_id = &"main_04"
+
+[node name="Main05" parent="SpawnPoints" index="4" instance=ExtResource("2_point")]
+position = Vector2(-850, 300)
+point_id = &"main_05"
+
+[node name="Main06" parent="SpawnPoints" index="5" instance=ExtResource("2_point")]
+position = Vector2(850, 300)
+point_id = &"main_06"
+
+[node name="Main07" parent="SpawnPoints" index="6" instance=ExtResource("2_point")]
+position = Vector2(0, -350)
+point_id = &"main_07"
+
+[node name="Main08" parent="SpawnPoints" index="7" instance=ExtResource("2_point")]
+point_id = &"main_08"
+
+[node name="Main09" parent="SpawnPoints" index="8" instance=ExtResource("2_point")]
+position = Vector2(-400, 330)
+point_id = &"main_09"
+
+[node name="Main10" parent="SpawnPoints" index="9" instance=ExtResource("2_point")]
+position = Vector2(400, 330)
+point_id = &"main_10"
+
+[node name="Risk01" parent="SpawnPoints" index="10" instance=ExtResource("2_point")]
+position = Vector2(-560, -520)
+point_id = &"risk_01"
+route_kind = 1
+
+[node name="Risk02" parent="SpawnPoints" index="11" instance=ExtResource("2_point")]
+position = Vector2(560, -520)
+point_id = &"risk_02"
+route_kind = 1
+
+[editable path="SpawnPoints"]

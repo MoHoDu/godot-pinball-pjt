@@ -1,0 +1,154 @@
+[gd_scene load_steps=15 format=3 uid="uid://ckvjrw1dg7ute"]
+
+[ext_resource type="Script" uid="uid://biqih0rqfyrig" path="res://scripts/bumper-system/bumper_test_controller.gd" id="1_controller"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/balls/base/base_ball.tscn" id="2_ball"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/types/button_bumper.tscn" id="3_button"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/types/cotton_bumper.tscn" id="4_cotton"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/types/spring_doll_bumper.tscn" id="5_spring"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/types/toy_drum_bumper.tscn" id="6_drum"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/types/clockwork_toy_cannon.tscn" id="7_cannon"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/types/starlight_brooch_bumper.tscn" id="8_starlight"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/types/golden_gears_bumper.tscn" id="9_gears"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/types/crescent_needle_bumper.tscn" id="10_needle"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/types/forgotten_star_bell_bumper.tscn" id="11_bell"]
+
+[sub_resource type="StyleBoxFlat" id="Style_top"]
+bg_color = Color(0.047, 0.102, 0.145, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.22, 0.37, 0.46, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="Style_panel"]
+bg_color = Color(0.043, 0.086, 0.118, 0.94)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.18, 0.31, 0.39, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="Style_instruction"]
+bg_color = Color(0.059, 0.121, 0.157, 0.96)
+border_width_top = 1
+border_color = Color(0.26, 0.43, 0.51, 1)
+
+[node name="BumperTest" type="Node2D"]
+script = ExtResource("1_controller")
+bumper_scenes = Array[PackedScene]([ExtResource("3_button"), ExtResource("4_cotton"), ExtResource("5_spring"), ExtResource("6_drum"), ExtResource("7_cannon"), ExtResource("8_starlight"), ExtResource("9_gears"), ExtResource("10_needle"), ExtResource("11_bell")])
+ball_scene = ExtResource("2_ball")
+
+[node name="TestRig" type="Node2D" parent="."]
+
+[node name="BumperSlot" type="Node2D" parent="TestRig"]
+position = Vector2(576, 405)
+
+[node name="Balls" type="Node2D" parent="TestRig"]
+
+[node name="DropCaption" type="Label" parent="TestRig"]
+offset_left = 548.0
+offset_top = 145.0
+offset_right = 604.0
+offset_bottom = 173.0
+theme_override_colors/font_color = Color(0.75, 0.83, 0.86, 1)
+theme_override_font_sizes/font_size = 13
+text = "DROP"
+horizontal_alignment = 1
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="Title" type="Label" parent="HUD"]
+offset_left = 32.0
+offset_top = 22.0
+offset_right = 320.0
+offset_bottom = 50.0
+theme_override_colors/font_color = Color(0.94, 0.83, 0.54, 1)
+theme_override_font_sizes/font_size = 20
+text = "BUMPER LAB"
+
+[node name="Subtitle" type="Label" parent="HUD"]
+offset_left = 32.0
+offset_top = 50.0
+offset_right = 420.0
+offset_bottom = 72.0
+theme_override_colors/font_color = Color(0.48, 0.62, 0.69, 1)
+theme_override_font_sizes/font_size = 13
+text = "Single-object drop response harness"
+
+[node name="TopBar" type="PanelContainer" parent="HUD"]
+offset_left = 300.0
+offset_top = 22.0
+offset_right = 852.0
+offset_bottom = 76.0
+theme_override_styles/panel = SubResource("Style_top")
+
+[node name="SelectionLabel" type="Label" parent="HUD/TopBar"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.91, 0.94, 0.85, 1)
+theme_override_font_sizes/font_size = 18
+text = "<  01 / 09   단추 범퍼  >"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StatusPanel" type="PanelContainer" parent="HUD"]
+offset_left = 24.0
+offset_top = 92.0
+offset_right = 282.0
+offset_bottom = 592.0
+theme_override_styles/panel = SubResource("Style_panel")
+
+[node name="Margin" type="MarginContainer" parent="HUD/StatusPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 18
+
+[node name="StatusLabel" type="Label" parent="HUD/StatusPanel/Margin"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.76, 0.84, 0.83, 1)
+theme_override_font_sizes/font_size = 14
+text = "범퍼 상태"
+
+[node name="EventPanel" type="PanelContainer" parent="HUD"]
+offset_left = 870.0
+offset_top = 92.0
+offset_right = 1128.0
+offset_bottom = 592.0
+theme_override_styles/panel = SubResource("Style_panel")
+
+[node name="Margin" type="MarginContainer" parent="HUD/EventPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 18
+
+[node name="EventLabel" type="Label" parent="HUD/EventPanel/Margin"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.71, 0.8, 0.84, 1)
+theme_override_font_sizes/font_size = 13
+text = "EVENT LOG"
+autowrap_mode = 2
+
+[node name="InstructionBar" type="PanelContainer" parent="HUD"]
+offset_top = 608.0
+offset_right = 1152.0
+offset_bottom = 648.0
+theme_override_styles/panel = SubResource("Style_instruction")
+
+[node name="InstructionLabel" type="Label" parent="HUD/InstructionBar"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.86, 0.9, 0.81, 1)
+theme_override_font_sizes/font_size = 14
+text = "←/→ 또는 A/D  언제든 범퍼 선택     SPACE/ENTER  낙하 시작     R  동일 범퍼 즉시 재시작     캐논: W/A/D + SPACE"
+horizontal_alignment = 1
+vertical_alignment = 1
