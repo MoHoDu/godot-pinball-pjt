@@ -1,14 +1,46 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://c774b0ma5dh3k"]
 
 [ext_resource type="PackedScene" path="res://Resources/Prefabs/wave/base/wave_unique.tscn" id="1_wave"]
-[ext_resource type="Script" path="res://scripts/combo_system/combo_stage_settings.gd" id="2_settings"]
+[ext_resource type="Script" uid="uid://d1ru6gfxnmw1r" path="res://scripts/combo_system/combo_stage_settings.gd" id="2_settings"]
+[ext_resource type="Resource" path="res://settings/sfx/SfxDirectorRules.tres" id="3_7glqs"]
 
 [sub_resource type="Resource" id="StageSettings"]
 script = ExtResource("2_settings")
 stage_id = &"stage_01_wave_02"
-wave_target_scores = PackedInt32Array(500)
+wave_target_scores = PackedInt32Array(1500)
 
-[node name="Stage01Wave02" instance=ExtResource("1_wave")]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_av0vc"]
+resource_local_to_scene = true
+size = Vector2(2600, 160)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_26ud8"]
+resource_local_to_scene = true
+size = Vector2(160, 1600)
+
+[node name="Stage01Wave02" unique_id=1962597109 instance=ExtResource("1_wave")]
+minimum_full_bleed_aspect = 1.45
 wave_stage_settings = SubResource("StageSettings")
 
-[editable path="CoinSystem"]
+[node name="TopDrain" parent="BallDrainArea" index="0"]
+shape = SubResource("RectangleShape2D_av0vc")
+
+[node name="BottomDrain" parent="BallDrainArea" index="1"]
+shape = SubResource("RectangleShape2D_av0vc")
+
+[node name="LeftDrain" parent="BallDrainArea" index="2"]
+shape = SubResource("RectangleShape2D_26ud8")
+
+[node name="RightDrain" parent="BallDrainArea" index="3"]
+shape = SubResource("RectangleShape2D_26ud8")
+
+[node name="WaveHud" parent="HUD" parent_id_path=PackedInt32Array(739204287) index="1" unique_id=414747941]
+panel_fill_opacity = 0.68
+panel_shadow_opacity = 0.28
+
+[node name="SfxDirector" parent="." index="24"]
+rules = ExtResource("3_7glqs")
+
+[node name="_BackgroundDecor" parent="." index="28"]
+top_level = true
+z_index = -19
+z_as_relative = false
