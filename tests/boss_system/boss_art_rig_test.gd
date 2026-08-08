@@ -12,7 +12,7 @@ extends SceneTree
 ## 실행:
 ##   godot --headless --path . --script res://tests/boss_system/boss_art_rig_test.gd
 
-const SCENE := "res://scenes/boss_system/boss_art_test.tscn"
+const SCENE := "res://scenes/tests/boss/boss_art_test.tscn"
 const EPSILON := 0.5
 
 

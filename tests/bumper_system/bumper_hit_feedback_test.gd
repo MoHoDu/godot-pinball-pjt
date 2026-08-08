@@ -12,7 +12,7 @@ extends SceneTree
 ##   godot --headless --path . --script res://tests/bumper_system/bumper_hit_feedback_test.gd
 
 
-const BUTTON_SCENE := preload("res://scenes/bumper_system/button_bumper.tscn")
+const BUTTON_SCENE := preload("res://Resources/Prefabs/bumpers/types/button_bumper.tscn")
 const FEEDBACK_SCRIPT := preload("res://scripts/bumper-system/vfx/bumper_hit_feedback.gd")
 const BUTTON_VFX := preload("res://settings/bumpers/vfx/ButtonHitVfx.tres")
 const COTTON_VFX := preload("res://settings/bumpers/vfx/CottonHitVfx.tres")

@@ -2,11 +2,11 @@ extends SceneTree
 
 
 const CONTROLLER_SCENE_PATH := \
-	"res://Resources/flippers/flipper/flipper_controller_sample.tscn"
+	"res://Resources/Prefabs/flippers/controllers/flipper_controller_sample.tscn"
 const LEFT_FLIPPER_SCENE_PATH := \
-	"res://Resources/flippers/sub_flipper/normal_flipper_left.tscn"
+	"res://Resources/Prefabs/flippers/variants/normal_flipper_left.tscn"
 const RIGHT_FLIPPER_SCENE_PATH := \
-	"res://Resources/flippers/sub_flipper/normal_flipper_right.tscn"
+	"res://Resources/Prefabs/flippers/variants/normal_flipper_right.tscn"
 
 
 var _failures: Array[String] = []

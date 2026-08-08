@@ -2,9 +2,9 @@ extends SceneTree
 
 
 const EPSILON := 0.001
-const BASE_BALL_SCENE_PATH := "res://Resources/balls/base/base_ball.tscn"
+const BASE_BALL_SCENE_PATH := "res://Resources/Prefabs/balls/base/base_ball.tscn"
 const RIGHT_FLIPPER_SCENE_PATH := \
-	"res://Resources/flippers/sub_flipper/normal_flipper_right.tscn"
+	"res://Resources/Prefabs/flippers/variants/normal_flipper_right.tscn"
 const START_ROTATION := -PI / 4.0
 const END_ROTATION := PI / 4.0
 const BALL_CENTER := Vector2(80.0, 0.0)

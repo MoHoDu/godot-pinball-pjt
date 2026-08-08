@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://d1hn7wvhtpike"]
+
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/base/bumper_base.tscn" id="1"]
+[ext_resource type="Resource" uid="uid://qi7gh48soj6e" path="res://settings/bumpers/stage_01/ButtonBumper.tres" id="2"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_jcm41"]
+resource_local_to_scene = true
+radius = 44.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_o4hrc"]
+resource_local_to_scene = true
+radius = 48.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_b2itx"]
+resource_local_to_scene = true
+radius = 84.0
+
+[node name="ButtonBumper" unique_id=1088338236 instance=ExtResource("1")]
+bumper_id = &"button_bumper"
+settings = ExtResource("2")
+
+[node name="CollisionShape2D" parent="." index="0"]
+shape = SubResource("CircleShape2D_jcm41")
+
+[node name="CollisionShape2D" parent="HitArea" index="0"]
+shape = SubResource("CircleShape2D_o4hrc")
+
+[node name="CollisionShape2D" parent="SafeRespawnArea" index="0"]
+shape = SubResource("CircleShape2D_b2itx")
+
+[node name="ComboHitSource" parent="." index="3"]
+source_id = &"button_bumper"

@@ -10,7 +10,7 @@ extends SceneTree
 ## 헤드리스로 재현하지 않습니다. 엔진 씬에서 수동으로 확인합니다.
 
 
-const WAVE_COIN_SCENE := preload("res://scenes/wave/wave_coin.tscn")
+const WAVE_COIN_SCENE := preload("res://scenes/tests/wave_extensions/wave_coin.tscn")
 
 const HIT_WEIGHT := 20000.0
 const MAX_WAIT_FRAMES := 12

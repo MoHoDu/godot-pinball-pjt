@@ -2,7 +2,7 @@ extends SceneTree
 
 
 const BOARD_SCENE_PATH := \
-	"res://scenes/test_flipper/test_flipper_board.tscn"
+	"res://scenes/tests/flippers/test_flipper_board.tscn"
 const CONTACT_CANDIDATE := Vector2(-736.0, -48.0)
 const PHYSICS_DELTA := 1.0 / 60.0
 const ACTIVE_TIME := 0.1

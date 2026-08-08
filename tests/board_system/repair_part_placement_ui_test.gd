@@ -2,7 +2,7 @@ extends SceneTree
 
 
 const DEMO_SCENE := preload(
-	"res://scenes/boards/repair_part_placement_wave_demo.tscn"
+	"res://scenes/tests/boards/repair_part_placement_wave_demo.tscn"
 )
 
 
@@ -91,10 +91,23 @@ func _test_initial_phase(
 		"Repair placement session must be editable during the first stage phase.")
 	_expect(hud.visible and hud.is_drawer_open(),
 		"Placement drawer must start open while its tab remains available.")
-	_expect(not wave.wave_hud.visible and not wave.ball_selection_hud.visible,
-		"Gameplay HUD layers must be hidden only during repair placement.")
+	var settings_button := wave.get_node(
+		"HUD/WaveHud/DesignSpace/SettingsButton"
+	) as Control
+	_expect(wave.wave_hud.visible \
+		and settings_button.visible \
+		and not wave.ball_selection_hud.visible,
+		"Repair placement must keep only the gameplay settings control available.")
+	_expect(not wave.get_node("HUD/WaveHud/DesignSpace/LifeHud").visible \
+		and not wave.get_node("HUD/WaveHud/DesignSpace/ScoreRepairHud").visible \
+		and not wave.get_node("HUD/WaveHud/DesignSpace/CoinWalletHud").visible,
+		"Repair placement must hide gameplay status panels behind its own HUD.")
 	_expect(layout.get_placeables().is_empty(),
 		"The runtime wave layout must start without pre-consumed repair parts.")
+	_expect(hud.get_card(&"starlight_brooch") == null \
+		and hud.get_card(&"golden_gears") == null \
+		and hud.get_card(&"forgotten_star_bell") == null,
+		"Zero-count repair parts must not create inventory cards.")
 
 
 func _test_board_authoring_contract(layout: BoardLayout) -> void:
@@ -197,12 +210,14 @@ func _test_place_remove_and_replace(
 		"Placed repair part must occupy the selected socket.")
 	_expect(inventory.get_available_count(&"starlight_brooch") == 0,
 		"Mounted repair part must be reserved from the inventory immediately.")
-	_expect(hud.get_card(&"starlight_brooch").disabled,
-		"A zero-count inventory entry must become disabled.")
+	_expect(hud.get_card(&"starlight_brooch") == null,
+		"A zero-count inventory entry must remove its card.")
 	_expect(controller.remove_at_socket(&"middle_02"),
 		"The placement X action must remove the mounted repair part.")
 	_expect(inventory.get_available_count(&"starlight_brooch") == 1,
 		"Removed repair part must return to inventory before confirmation.")
+	_expect(hud.get_card(&"starlight_brooch") != null,
+		"A returned or rewarded repair part must recreate its inventory card.")
 
 	_expect(controller.place_kind_at_socket(
 		&"golden_gears", &"lower_02"
@@ -222,6 +237,9 @@ func _test_place_remove_and_replace(
 	_expect(inventory.get_available_count(&"starlight_brooch") == 1 \
 		and inventory.get_available_count(&"forgotten_star_bell") == 0,
 		"Replacement must return the old part and reserve the new part atomically.")
+	_expect(hud.get_card(&"starlight_brooch") != null \
+		and hud.get_card(&"forgotten_star_bell") == null,
+		"Replacement must restore the returned part card and hide the consumed one.")
 
 
 func _test_commit_flow(
@@ -245,6 +263,8 @@ func _test_commit_flow(
 		"The visible confirmation button signal must commit through the wave bridge.")
 	_expect(session.current_state == BoardPlacementSession.State.COMMITTED,
 		"Successful confirmation must lock inventory consumption for this wave.")
+	_expect(_placement_guides_hidden(session.layout),
+		"Ball selection must hide the grid, zones, sockets, and forbidden-area guides.")
 	_expect(wave.wave_manager.current_state == WaveManager.State.SELECTING_BALL \
 		and wave.wave_manager.current_stage_phase \
 			== WaveManager.StagePhase.BALL_SELECTION,
@@ -256,6 +276,13 @@ func _test_commit_flow(
 	_expect(camera.position.is_equal_approx(gameplay_camera_position) \
 		and camera.zoom.is_equal_approx(gameplay_camera_zoom),
 		"Placement must preserve the exact gameplay board camera layout.")
+	_expect(wave.wave_ball_flow.confirm_selection(),
+		"Ball selection must remain functional after placement confirmation.")
+	_expect(wave.launcher.launch_prepared_ball(),
+		"The first ball must launch after repair placement.")
+	_expect(session.current_state == BoardPlacementSession.State.LOCKED \
+		and _placement_guides_hidden(session.layout),
+		"In-play state must keep all placement-only visual guides hidden.")
 	wave.ball_selection_hud.visible = false
 	wave.wave_manager.call(
 		&"_set_stage_phase",
@@ -263,6 +290,21 @@ func _test_commit_flow(
 	)
 	_expect(not wave.ball_selection_hud.visible,
 		"The board bridge must not re-show ball selection HUD in result phases.")
+
+
+func _placement_guides_hidden(layout: BoardLayout) -> bool:
+	if layout.show_grid:
+		return false
+	for zone: BoardPlacementZone in layout.get_zones():
+		if zone.visible:
+			return false
+	for socket: BoardPlacementSocket in layout.get_sockets():
+		if socket.visible:
+			return false
+	for area: BoardForbiddenArea in layout.get_forbidden_areas():
+		if area.visible:
+			return false
+	return true
 
 
 func _test_placed_bumper_transform(session: BoardPlacementSession) -> void:

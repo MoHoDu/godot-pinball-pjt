@@ -1,0 +1,48 @@
+[gd_scene format=3 uid="uid://dy7qnl2vawihs"]
+
+[ext_resource type="PackedScene" path="res://scenes/dev/manual_review/flippers/test_flipper_legacy.tscn" id="1_f64m1"]
+[ext_resource type="Script" uid="uid://d068jln3lvom4" path="res://tests/flipper_system/test_flipper_area_direction.gd" id="2_area_test"]
+[ext_resource type="Script" uid="uid://ce2wax7g2gio8" path="res://scripts/ball_base_system/pinball_stats.gd" id="3_kl36y"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_auklf"]
+resource_local_to_scene = true
+bounce = 0.8
+
+[sub_resource type="Resource" id="Resource_tnxmd"]
+resource_local_to_scene = true
+script = ExtResource("3_kl36y")
+mass = 1.0
+elasticity = 0.8
+gravity_scale = 1.0
+initial_speed = 700.0
+minimum_speed = 200.0
+maximum_speed = 2500.0
+
+[node name="Test-Flipper" unique_id=270252956 instance=ExtResource("1_f64m1")]
+script = ExtResource("2_area_test")
+left_flipper_path = NodePath("FlipperControllers/FlipperController/LeftFlipper")
+right_flipper_path = NodePath("FlipperControllers/FlipperController/RightFlipper")
+guide_label_path = NodePath("TestGuide/Panel/GuideLabel")
+
+[node name="PinballBall" parent="." index="0" unique_id=71153037]
+physics_material_override = SubResource("PhysicsMaterial_auklf")
+stats = SubResource("Resource_tnxmd")
+
+[node name="TestGuide" type="CanvasLayer" parent="." index="3" unique_id=397336437]
+
+[node name="Panel" type="Panel" parent="TestGuide" index="0" unique_id=971211310]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 510.0
+offset_bottom = 225.0
+
+[node name="GuideLabel" type="Label" parent="TestGuide/Panel" index="0" unique_id=880581353]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 474.0
+offset_bottom = 193.0
+theme_override_font_sizes/font_size = 18
+text = "플리퍼 구역 충돌 테스트"
+
+[editable path="FlipperControllers/FlipperController"]

@@ -6,7 +6,7 @@ extends SceneTree
 ## 재시작해야 합니다.
 
 
-const WAVE_SCENE := preload("res://scenes/wave/wave_repair.tscn")
+const WAVE_SCENE := preload("res://scenes/tests/wave_extensions/wave_repair.tscn")
 
 const HIT_WEIGHT := 20000.0
 const MAX_WAIT_FRAMES := 12

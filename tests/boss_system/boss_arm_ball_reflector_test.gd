@@ -2,10 +2,10 @@ extends SceneTree
 
 
 const TeddyAttackScene: PackedScene = preload(
-	"res://scenes/boss_system/teddy_arm_sweep_attack.tscn"
+	"res://Resources/Prefabs/boss/attacks/teddy_arm_sweep_attack.tscn"
 )
 const NormalBallScene: PackedScene = preload(
-	"res://Resources/balls/mass_var/normal_ball.tscn"
+	"res://Resources/Prefabs/balls/variants/mass/normal_ball.tscn"
 )
 const ReflectionRulesResource: BossArmBallReflectionRules = preload(
 	"res://settings/bosses/TeddyArmBallReflectionRules.tres"

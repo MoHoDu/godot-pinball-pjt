@@ -5,7 +5,7 @@ extends SceneTree
 ## 스테이지가 4웨이브이므로 보상은 3회 발생하고 마지막 승리는 스테이지 클리어가 됩니다.
 
 
-const WAVE_REWARD_SCENE := preload("res://scenes/wave/wave_reward.tscn")
+const WAVE_REWARD_SCENE := preload("res://scenes/tests/wave_extensions/wave_reward.tscn")
 
 const HIT_WEIGHT := 20000.0
 const WAVE_COUNT := 4

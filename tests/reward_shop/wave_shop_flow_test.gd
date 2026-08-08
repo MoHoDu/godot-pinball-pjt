@@ -8,7 +8,7 @@ extends SceneTree
 ## 마지막 웨이브까지 진행해 상점 없이 스테이지 클리어로 끝나는지 봅니다.
 
 
-const WAVE_SHOP_SCENE := preload("res://scenes/wave/wave_shop.tscn")
+const WAVE_SHOP_SCENE := preload("res://scenes/tests/wave_extensions/wave_shop.tscn")
 
 const HIT_WEIGHT := 20000.0
 const WAVE_COUNT := 4

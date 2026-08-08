@@ -17,28 +17,28 @@ const FEEDBACK_NODE := ^"_HitFeedback"
 # (상속 씬, 원본 씬, 기대 피드백 클래스, 기대 규칙 클래스)
 const CASES := [
 	[
-		"res://scenes/bumper_system/vfx/button_bumper_vfx.tscn",
-		"res://scenes/bumper_system/button_bumper.tscn",
+		"res://Resources/Prefabs/bumpers/presented/button_bumper_vfx.tscn",
+		"res://Resources/Prefabs/bumpers/types/button_bumper.tscn",
 		"BumperHitFeedback", "BumperVfxRules",
 	],
 	[
-		"res://scenes/bumper_system/vfx/cotton_bumper_vfx.tscn",
-		"res://scenes/bumper_system/cotton_bumper.tscn",
+		"res://Resources/Prefabs/bumpers/presented/cotton_bumper_vfx.tscn",
+		"res://Resources/Prefabs/bumpers/types/cotton_bumper.tscn",
 		"BumperHitFeedback", "BumperVfxRules",
 	],
 	[
-		"res://scenes/bumper_system/vfx/spring_doll_bumper_vfx.tscn",
-		"res://scenes/bumper_system/spring_doll_bumper.tscn",
+		"res://Resources/Prefabs/bumpers/presented/spring_doll_bumper_vfx.tscn",
+		"res://Resources/Prefabs/bumpers/types/spring_doll_bumper.tscn",
 		"BumperBounceFeedback", "BumperBounceVfxRules",
 	],
 	[
-		"res://scenes/bumper_system/vfx/toy_drum_bumper_vfx.tscn",
-		"res://scenes/bumper_system/toy_drum_bumper.tscn",
+		"res://Resources/Prefabs/bumpers/presented/toy_drum_bumper_vfx.tscn",
+		"res://Resources/Prefabs/bumpers/types/toy_drum_bumper.tscn",
 		"BumperBounceFeedback", "BumperBounceVfxRules",
 	],
 	[
-		"res://scenes/bumper_system/vfx/clockwork_toy_cannon_vfx.tscn",
-		"res://scenes/bumper_system/clockwork_toy_cannon.tscn",
+		"res://Resources/Prefabs/bumpers/presented/clockwork_toy_cannon_vfx.tscn",
+		"res://Resources/Prefabs/bumpers/types/clockwork_toy_cannon.tscn",
 		"BumperShotFeedback", "BumperShotVfxRules",
 	],
 ]
@@ -68,7 +68,7 @@ func _run() -> void:
 
 ## 범퍼 5종 + 수리 부품 3종을 한 씬에서 보는 통합 검수 씬.
 func _check_combined_lab() -> void:
-	const LAB := "res://scenes/bumper_system/vfx/all_parts_vfx_test.tscn"
+	const LAB := "res://scenes/tests/bumpers/all_parts_vfx_test.tscn"
 	var packed := load(LAB) as PackedScene
 	_expect(packed != null, "%s 를 열 수 있어야 한다" % LAB)
 	if packed == null:

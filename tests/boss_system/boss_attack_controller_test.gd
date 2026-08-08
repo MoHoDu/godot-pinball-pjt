@@ -2,7 +2,7 @@ extends SceneTree
 
 
 const PATTERN_PATH := "res://settings/bosses/TeddyArmSweepPattern.tres"
-const ATTACK_SCENE_PATH := "res://scenes/boss_system/teddy_arm_sweep_attack.tscn"
+const ATTACK_SCENE_PATH := "res://Resources/Prefabs/boss/attacks/teddy_arm_sweep_attack.tscn"
 const TEST_DURATION := 0.03
 
 

@@ -17,7 +17,7 @@ func _init() -> void:
 
 
 func _run() -> void:
-	var packed := load("res://scenes/test_sfx/boss_art_sfx_test.tscn") as PackedScene
+	var packed := load("res://scenes/tests/sfx/boss_art_sfx_test.tscn") as PackedScene
 	if not _expect(packed != null, "검수 씬이 로딩된다"):
 		quit(1)
 		return

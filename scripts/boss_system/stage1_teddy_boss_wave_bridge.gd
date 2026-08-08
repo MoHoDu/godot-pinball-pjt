@@ -99,6 +99,14 @@ func _connect_signals() -> void:
 		boss_runtime.battle_completed.connect(_on_battle_completed)
 	if not wave_manager.boss_lost.is_connected(_on_boss_lost):
 		wave_manager.boss_lost.connect(_on_boss_lost)
+	if not boss_runtime.health.health_changed.is_connected(
+		_on_boss_health_changed
+	):
+		boss_runtime.health.health_changed.connect(_on_boss_health_changed)
+	if not boss_runtime.health.damage_applied.is_connected(
+		_on_boss_damage_applied
+	):
+		boss_runtime.health.damage_applied.connect(_on_boss_damage_applied)
 
 
 func _disconnect_signals() -> void:
@@ -113,6 +121,16 @@ func _disconnect_signals() -> void:
 	if is_instance_valid(wave_manager) \
 			and wave_manager.boss_lost.is_connected(_on_boss_lost):
 		wave_manager.boss_lost.disconnect(_on_boss_lost)
+	if is_instance_valid(boss_runtime) \
+			and is_instance_valid(boss_runtime.health):
+		if boss_runtime.health.health_changed.is_connected(
+			_on_boss_health_changed
+		):
+			boss_runtime.health.health_changed.disconnect(_on_boss_health_changed)
+		if boss_runtime.health.damage_applied.is_connected(
+			_on_boss_damage_applied
+		):
+			boss_runtime.health.damage_applied.disconnect(_on_boss_damage_applied)
 
 
 func _on_stage_phase_changed(
@@ -123,6 +141,7 @@ func _on_stage_phase_changed(
 		_enter_boss_phase()
 		return
 	if previous_phase == WaveManager.StagePhase.BOSS:
+		hud_state.clear_boss_health()
 		_set_placeholder_advance_disabled(false)
 		if not _boss_completion_in_progress and boss_runtime.is_battle_active():
 			boss_runtime.stop_battle()
@@ -137,8 +156,32 @@ func _enter_boss_phase() -> void:
 	)
 	if not boss_runtime.start_battle():
 		return
+	hud_state.set_boss_health(
+		boss_runtime.health.get_current_health(),
+		boss_runtime.health.get_max_health(),
+		0
+	)
 	if not wave_manager.start_boss_ball_cycle():
 		boss_runtime.stop_battle()
+
+
+func _on_boss_health_changed(current_health: int, max_health: int) -> void:
+	if wave_manager.current_stage_phase != WaveManager.StagePhase.BOSS:
+		return
+	hud_state.set_boss_health(current_health, max_health)
+
+
+func _on_boss_damage_applied(
+	applied_damage: int,
+	current_health: int
+) -> void:
+	if wave_manager.current_stage_phase != WaveManager.StagePhase.BOSS:
+		return
+	hud_state.set_boss_health(
+		current_health,
+		boss_runtime.health.get_max_health(),
+		applied_damage
+	)
 
 
 func _on_battle_completed() -> void:

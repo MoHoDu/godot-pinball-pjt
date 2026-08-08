@@ -10,13 +10,13 @@ extends SceneTree
 
 
 const BROOCH_SCENE := preload(
-	"res://scenes/repair_parts/parts/starlight_brooch_part.tscn"
+	"res://Resources/Prefabs/repair_parts/parts/starlight_brooch_part.tscn"
 )
 const GEARS_SCENE := preload(
-	"res://scenes/repair_parts/parts/golden_gears_part.tscn"
+	"res://Resources/Prefabs/repair_parts/parts/golden_gears_part.tscn"
 )
 const BELL_SCENE := preload(
-	"res://scenes/repair_parts/parts/forgotten_star_bell_part.tscn"
+	"res://Resources/Prefabs/repair_parts/parts/forgotten_star_bell_part.tscn"
 )
 const BALL_STUB := preload("res://tests/repair_parts/unit/test_ball_stub.gd")
 const BOARD_TEST_SCENE_PATH := \
@@ -189,7 +189,7 @@ func _test_no_needle_family() -> void:
 		"Family 열거형에 NEEDLE이 남아 있으면 안 된다.")
 	_expect(
 		not ResourceLoader.exists(
-			"res://scenes/repair_parts/parts/crescent_needle_part.tscn"
+			"res://Resources/Prefabs/repair_parts/parts/crescent_needle_part.tscn"
 		),
 		"초승달 바늘 부품 씬은 삭제되어야 한다."
 	)

@@ -2,10 +2,10 @@ extends SceneTree
 
 
 const Phase2RuntimeScene: PackedScene = preload(
-	"res://scenes/wave/test_teddy_phase2_runtime.tscn"
+	"res://scenes/tests/boss/test_teddy_phase2_runtime.tscn"
 )
 const NormalBallScene: PackedScene = preload(
-	"res://Resources/balls/mass_var/normal_ball.tscn"
+	"res://Resources/Prefabs/balls/variants/mass/normal_ball.tscn"
 )
 const PHASE_2_MIN_SEC: float = 2.8
 const PHASE_2_MAX_SEC: float = 3.8

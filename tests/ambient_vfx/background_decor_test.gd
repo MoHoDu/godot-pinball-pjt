@@ -8,7 +8,7 @@ extends SceneTree
 ## 4. 구름 위의 별이 구름의 자식으로 실려 있는가
 
 
-const LAB_SCENE := "res://scenes/test_ambient/ambient_lab.tscn"
+const LAB_SCENE := "res://scenes/tests/ambient/ambient_lab.tscn"
 
 var _failures: Array[String] = []
 
@@ -63,7 +63,7 @@ func _test_scene_copy_is_intact(lab: Node) -> void:
 	# 검수 전에는 "원본 wave.tscn 에 데코가 없어야 한다" 였으나,
 	# 통합 브랜치에서 형락님 승인으로 데코를 본 씬에 적용했다(2026-08-08).
 	# 이제는 반대로 — 본 씬에 데코가 규칙 리소스와 함께 배선돼 있어야 한다.
-	var wave_source := FileAccess.get_file_as_string("res://scenes/wave/wave.tscn")
+	var wave_source := FileAccess.get_file_as_string("res://Resources/Prefabs/wave/base/wave.tscn")
 	_expect(wave_source.contains("background_decor_animator.gd"),
 		"wave.tscn 에 데코 노드가 배선돼 있어야 한다.")
 	_expect(wave_source.contains("AmbientDecorRules.tres"),

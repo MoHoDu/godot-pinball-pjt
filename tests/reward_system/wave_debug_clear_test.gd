@@ -4,7 +4,7 @@ extends SceneTree
 ## 개발용 즉시 클리어 키(G)가 어느 상태에서 눌려도 정상 클리어 경로를 타는지 확인합니다.
 
 
-const WAVE_REWARD_SCENE := preload("res://scenes/wave/wave_reward.tscn")
+const WAVE_REWARD_SCENE := preload("res://scenes/tests/wave_extensions/wave_reward.tscn")
 
 
 var _failures: Array[String] = []

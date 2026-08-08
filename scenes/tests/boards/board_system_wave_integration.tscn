@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/wave/base/wave.tscn" id="1_wave"]
+
+[node name="BoardSystemWaveIntegration" type="Node2D"]
+
+[node name="Wave" parent="." instance=ExtResource("1_wave")]

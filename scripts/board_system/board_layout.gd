@@ -60,6 +60,10 @@ var _last_validation := BoardValidationResult.new()
 func _ready() -> void:
 	if Engine.is_editor_hint():
 		set_process(true)
+	else:
+		# Runtime layouts start outside the repair-placement phase. The placement
+		# session explicitly enables these visual guides when editing begins.
+		set_editing_enabled(false)
 	queue_redraw()
 	update_configuration_warnings()
 

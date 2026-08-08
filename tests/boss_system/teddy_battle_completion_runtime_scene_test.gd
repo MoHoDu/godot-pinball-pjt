@@ -2,10 +2,10 @@ extends SceneTree
 
 
 const BattleRuntimeScene: PackedScene = preload(
-	"res://scenes/wave/test_teddy_battle_completion_runtime.tscn"
+	"res://scenes/tests/boss/test_teddy_battle_completion_runtime.tscn"
 )
 const NormalBallScene: PackedScene = preload(
-	"res://Resources/balls/mass_var/normal_ball.tscn"
+	"res://Resources/Prefabs/balls/variants/mass/normal_ball.tscn"
 )
 
 

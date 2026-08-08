@@ -1,9 +1,9 @@
 extends SceneTree
 
 const LEFT_FLIPPER_SCENE_PATH := \
-	"res://Resources/flippers/sub_flipper/normal_flipper_left.tscn"
+	"res://Resources/Prefabs/flippers/variants/normal_flipper_left.tscn"
 const RIGHT_FLIPPER_SCENE_PATH := \
-	"res://Resources/flippers/sub_flipper/normal_flipper_right.tscn"
+	"res://Resources/Prefabs/flippers/variants/normal_flipper_right.tscn"
 const RULES_SCRIPT_PATH := "res://scripts/flipper_system/flipper_state_rules.gd"
 const RULES_RESOURCE_PATH := "res://settings/flippers/FlipperStateRules.tres"
 const EPSILON := 0.001

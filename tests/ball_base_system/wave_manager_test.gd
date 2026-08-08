@@ -1,7 +1,7 @@
 extends SceneTree
 
 
-const LIGHT_BALL := preload("res://Resources/balls/mass_var/light_ball.tscn")
+const LIGHT_BALL := preload("res://Resources/Prefabs/balls/variants/mass/light_ball.tscn")
 
 
 var _failures: Array[String] = []

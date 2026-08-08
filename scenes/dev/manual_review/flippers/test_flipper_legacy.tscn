@@ -1,0 +1,40 @@
+[gd_scene format=3 uid="uid://ca7jfhva110hi"]
+
+[ext_resource type="Script" uid="uid://byppywgsavdei" path="res://tests/flipper_system/test_flipper_scene.gd" id="1_jgvd2"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/balls/base/base_ball.tscn" id="2_1ovb5"]
+[ext_resource type="Script" uid="uid://ce2wax7g2gio8" path="res://scripts/ball_base_system/pinball_stats.gd" id="3_jbmqe"]
+[ext_resource type="Script" uid="uid://58k0flhnlg3" path="res://scripts/flipper_system/flipper_selector.gd" id="4_ad2m8"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/flippers/controllers/flipper_controller_sample.tscn" id="5_rxxuw"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_jgvd2"]
+resource_local_to_scene = true
+bounce = 0.8
+
+[sub_resource type="Resource" id="Resource_1ovb5"]
+resource_local_to_scene = true
+script = ExtResource("3_jbmqe")
+mass = 1.0
+elasticity = 0.8
+gravity_scale = 1.0
+initial_speed = 700.0
+minimum_speed = 200.0
+maximum_speed = 2500.0
+
+[node name="Test-Flipper" type="Node2D" unique_id=270252956]
+script = ExtResource("1_jgvd2")
+ball_reset_position = Vector2(150, 0)
+
+[node name="PinballBall" parent="." unique_id=71153037 instance=ExtResource("2_1ovb5")]
+position = Vector2(283, -312)
+physics_material_override = SubResource("PhysicsMaterial_jgvd2")
+stats = SubResource("Resource_1ovb5")
+ball_diameter = 128.0
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=2035507205]
+zoom = Vector2(0.4, 0.4)
+
+[node name="FlipperControllers" type="Node2D" parent="." unique_id=1024680401]
+script = ExtResource("4_ad2m8")
+
+[node name="FlipperController" parent="FlipperControllers" unique_id=1981825440 instance=ExtResource("5_rxxuw")]
+position = Vector2(12, 444)

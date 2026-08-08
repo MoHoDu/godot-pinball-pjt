@@ -253,7 +253,7 @@ rig.set_expression(&"roar")        # 상태 7 페이즈 전환 포효
 ## 5. 검수
 
 ```
-godot --path . res://scenes/boss_system/boss_art_test.tscn
+godot --path . res://scenes/tests/boss/boss_art_test.tscn
 ```
 
 `1` 대기 · `2` 예고 · `3` 공격 · `4` 경직 · `5` 피격 · `6` 강한 피격 · `7` 포효 ·

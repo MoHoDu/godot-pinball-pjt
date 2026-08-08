@@ -2,7 +2,7 @@ extends SceneTree
 
 
 const DamageGateRuntimeScene: PackedScene = preload(
-	"res://scenes/wave/test_teddy_phase1_damage_gate_runtime.tscn"
+	"res://scenes/tests/boss/test_teddy_phase1_damage_gate_runtime.tscn"
 )
 const INTEGRATION_PROTOTYPE_SCRIPT_PATH: String = (
 	"res://scripts/boss_system/debug/"

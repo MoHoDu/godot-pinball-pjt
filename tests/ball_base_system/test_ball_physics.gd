@@ -16,13 +16,13 @@ extends Node2D
 ## (표시 이름, 씬 경로) — 숫자키 1번부터 차례로 대응합니다.
 ## 경로는 대문자 res://Resources/ 로 씁니다. 소문자면 Linux/macOS 익스포트에서 못 엽니다.
 const BALL_TYPES: Array = [
-	["기본", "res://Resources/balls/base/base_ball.tscn"],
-	["데드 (탄성 0)", "res://Resources/balls/elastic_var/dead_ball.tscn"],
-	["러버 (탄성 0.6)", "res://Resources/balls/elastic_var/rubber_ball.tscn"],
-	["슈퍼 (탄성 0.9)", "res://Resources/balls/elastic_var/super_ball.tscn"],
-	["가벼움 (질량 0.5)", "res://Resources/balls/mass_var/light_ball.tscn"],
-	["보통 (질량 2)", "res://Resources/balls/mass_var/normal_ball.tscn"],
-	["무거움 (질량 8)", "res://Resources/balls/mass_var/heavy_ball.tscn"],
+	["기본", "res://Resources/Prefabs/balls/base/base_ball.tscn"],
+	["데드 (탄성 0)", "res://Resources/Prefabs/balls/variants/elastic/dead_ball.tscn"],
+	["러버 (탄성 0.6)", "res://Resources/Prefabs/balls/variants/elastic/rubber_ball.tscn"],
+	["슈퍼 (탄성 0.9)", "res://Resources/Prefabs/balls/variants/elastic/super_ball.tscn"],
+	["가벼움 (질량 0.5)", "res://Resources/Prefabs/balls/variants/mass/light_ball.tscn"],
+	["보통 (질량 2)", "res://Resources/Prefabs/balls/variants/mass/normal_ball.tscn"],
+	["무거움 (질량 8)", "res://Resources/Prefabs/balls/variants/mass/heavy_ball.tscn"],
 ]
 
 ## 기획서 기준 실제 게임 크기입니다. VFX 검수는 이 크기로 해야 의미가 있습니다.

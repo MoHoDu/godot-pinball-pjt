@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/wave/base/wave_unique.tscn" id="1_wave"]
+[ext_resource type="Script" path="res://scripts/combo_system/combo_stage_settings.gd" id="2_settings"]
+
+[sub_resource type="Resource" id="StageSettings"]
+script = ExtResource("2_settings")
+stage_id = &"stage_01_wave_03"
+wave_target_scores = PackedInt32Array(1000)
+
+[node name="Stage01Wave03" instance=ExtResource("1_wave")]
+wave_stage_settings = SubResource("StageSettings")
+
+[editable path="CoinSystem"]

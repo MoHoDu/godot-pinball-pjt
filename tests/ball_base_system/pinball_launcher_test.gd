@@ -1,7 +1,7 @@
 extends SceneTree
 
 
-const BALL_SCENE_PATH := "res://Resources/balls/base/base_ball.tscn"
+const BALL_SCENE_PATH := "res://Resources/Prefabs/balls/base/base_ball.tscn"
 const LAUNCHER_SCRIPT := preload(
 	"res://scripts/ball_base_system/pinball_launcher.gd"
 )

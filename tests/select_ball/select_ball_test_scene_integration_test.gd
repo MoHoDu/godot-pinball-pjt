@@ -1,7 +1,7 @@
 extends SceneTree
 
 
-const TEST_SCENE := preload("res://scenes/select-ball/select_ball_test.tscn")
+const TEST_SCENE := preload("res://scenes/tests/ball_selection/select_ball_test.tscn")
 
 
 var _failures: Array[String] = []

@@ -1,11 +1,11 @@
-[gd_resource type="Resource" script_class="RewardBallSceneMap" load_steps=7 format=3]
+[gd_resource type="Resource" script_class="RewardBallSceneMap" format=3 uid="uid://cine1i2m0g3ts"]
 
-[ext_resource type="Script" path="res://scripts/reward_shop/reward_ball_scene_map.gd" id="1_map"]
-[ext_resource type="PackedScene" path="res://Resources/balls/reward/clockwork_ball.tscn" id="2_clockwork"]
-[ext_resource type="PackedScene" path="res://Resources/balls/reward/rubber_ball.tscn" id="3_rubber"]
-[ext_resource type="PackedScene" path="res://Resources/balls/reward/gel_ball.tscn" id="4_gel"]
-[ext_resource type="PackedScene" path="res://Resources/balls/reward/lead_ball.tscn" id="5_lead"]
-[ext_resource type="PackedScene" path="res://Resources/balls/reward/hollow_bell_ball.tscn" id="6_hollow_bell"]
+[ext_resource type="Script" uid="uid://coutrnkrvygke" path="res://scripts/reward_shop/reward_ball_scene_map.gd" id="1_map"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/balls/variants/reward/clockwork_ball.tscn" id="2_clockwork"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/balls/variants/reward/rubber_ball.tscn" id="3_rubber"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/balls/variants/reward/gel_ball.tscn" id="4_gel"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/balls/variants/reward/lead_ball.tscn" id="5_lead"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/balls/variants/reward/hollow_bell_ball.tscn" id="6_hollow_bell"]
 
 [resource]
 script = ExtResource("1_map")

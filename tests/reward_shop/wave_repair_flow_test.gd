@@ -5,7 +5,7 @@ extends SceneTree
 ## wave_repair.tscn 실씬으로 확인합니다. (기획서 8-2, 9장)
 
 
-const WAVE_SCENE := preload("res://scenes/wave/wave_repair.tscn")
+const WAVE_SCENE := preload("res://scenes/tests/wave_extensions/wave_repair.tscn")
 
 const HIT_WEIGHT := 20000.0
 const MAX_WAIT_FRAMES := 12

@@ -1,7 +1,7 @@
 extends SceneTree
 
 
-const WAVE_SCENE := preload("res://scenes/wave/wave.tscn")
+const WAVE_SCENE := preload("res://Resources/Prefabs/wave/base/wave_unique.tscn")
 
 var _failures: Array[String] = []
 
@@ -24,6 +24,16 @@ func _run() -> void:
 		"설정 팝업은 수리 UI보다 높은 CanvasLayer 100에 있어야 한다.")
 	_expect(popup != null and not popup.visible,
 		"게임 시작 시 설정 팝업은 숨겨져 있어야 한다.")
+	_expect(popup != null \
+		and popup.get_node_or_null(^"SfxPreviewPlayer") != null \
+		and popup.get_node_or_null(^"SfxPreviewDebounce") != null,
+		"실제 웨이브 설정 팝업에는 SFX 미리듣기 플레이어와 디바운스가 있어야 한다.")
+	_expect(wave.wave_manager.current_stage_phase \
+		== WaveManager.StagePhase.REPAIR_PLACEMENT,
+		"설정 통합 테스트는 실제 수리 부품 배치 단계에서 시작해야 한다.")
+	_expect(hud.visible \
+		and wave.get_node("HUD/WaveHud/DesignSpace/SettingsButton").visible,
+		"수리 부품 배치 중에도 설정 버튼은 계속 표시되어야 한다.")
 
 	hud.settings_requested.emit()
 	_expect(paused, "설정 버튼을 누르면 SceneTree가 일시정지되어야 한다.")
@@ -37,6 +47,11 @@ func _run() -> void:
 	_expect(not paused, "플레이 중 연 설정을 닫으면 게임이 재개되어야 한다.")
 	_expect(not bool(hud_state.get_snapshot()[&"paused"]),
 		"팝업을 닫은 뒤 HUD의 일시정지 표시도 해제되어야 한다.")
+	_expect(wave.wave_manager.current_stage_phase \
+		== WaveManager.StagePhase.REPAIR_PLACEMENT \
+		and wave.get_node("RepairBoardLayout/PlacementSession").current_state \
+			== BoardPlacementSession.State.EDITING,
+		"설정을 닫아도 진행 중이던 배치 단계와 편집 상태를 보존해야 한다.")
 
 	paused = true
 	hud_state.set_paused(true)

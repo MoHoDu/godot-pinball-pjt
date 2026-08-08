@@ -8,7 +8,7 @@ extends SceneTree
 ##   - 해금 실패 시 코인 롤백(6-3 검사⑤)
 
 
-const WAVE_SCENE := preload("res://scenes/wave/wave_repair.tscn")
+const WAVE_SCENE := preload("res://scenes/tests/wave_extensions/wave_repair.tscn")
 
 const HIT_WEIGHT := 20000.0
 const MAX_WAIT_FRAMES := 12

@@ -2,7 +2,7 @@ extends SceneTree
 ## Stage 01 위에 설정 팝업을 연 상태를 Movie Writer로 검수하는 캡처 진입점입니다.
 
 
-const STAGE_SCENE := preload("res://scenes/stage_01.tscn")
+const STAGE_SCENE := preload("res://scenes/game/stages/stage_01/stage_01.tscn")
 
 
 func _init() -> void:

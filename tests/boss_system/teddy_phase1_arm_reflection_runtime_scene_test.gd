@@ -2,13 +2,13 @@ extends SceneTree
 
 
 const ReflectionRuntimeScene: PackedScene = preload(
-	"res://scenes/wave/test_teddy_phase1_arm_reflection_runtime.tscn"
+	"res://scenes/tests/boss/test_teddy_phase1_arm_reflection_runtime.tscn"
 )
 const ExistingCounterRuntimeScene: PackedScene = preload(
-	"res://scenes/wave/test_teddy_phase1_parry_counter_runtime.tscn"
+	"res://scenes/tests/boss/test_teddy_phase1_parry_counter_runtime.tscn"
 )
 const NORMAL_BALL_SCENE: PackedScene = preload(
-	"res://Resources/balls/mass_var/normal_ball.tscn"
+	"res://Resources/Prefabs/balls/variants/mass/normal_ball.tscn"
 )
 const PROTOTYPE_SCRIPT_PATH: String = (
 	"res://scripts/boss_system/debug/"

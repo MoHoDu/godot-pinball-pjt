@@ -14,8 +14,12 @@ const DEFAULT_CATALOG := preload(
 const DEFAULT_BALL_SCENE_MAP := preload(
 	"res://settings/reward_shop/RewardBallSceneMap_Stage01.tres"
 )
-const MAIN_COORDINATOR_SCRIPT_PATH := \
+const MAIN_COORDINATOR_SCRIPT := preload(
 	"res://scripts/wave_hud/wave_runtime_coordinator.gd"
+)
+const FULL_BLEED_COORDINATOR_SCRIPT := preload(
+	"res://scripts/wave_hud/wave_runtime_coordinator_full_bleed.gd"
+)
 
 
 @export_category("Stage Reward")
@@ -84,7 +88,10 @@ func _initialize() -> void:
 	# 메인 WaveRuntimeCoordinator 씬에서만 새 통합 브리지를 활성화합니다.
 	var parent_script := get_parent().get_script() as Script
 	if parent_script == null \
-			or parent_script.resource_path != MAIN_COORDINATOR_SCRIPT_PATH \
+			or parent_script not in [
+				MAIN_COORDINATOR_SCRIPT,
+				FULL_BLEED_COORDINATOR_SCRIPT,
+			] \
 			or not ball_inventory is SelectBallInventory:
 		set_process_unhandled_input(false)
 		return

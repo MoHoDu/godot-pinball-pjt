@@ -14,20 +14,20 @@ extends SceneTree
 
 const CASES := [
 	[
-		"res://scenes/repair_parts/vfx/starlight_brooch_vfx.tscn",
-		"res://scenes/bumper_system/starlight_brooch_bumper.tscn",
+		"res://Resources/Prefabs/repair_parts/presented/starlight_brooch_vfx.tscn",
+		"res://Resources/Prefabs/bumpers/types/starlight_brooch_bumper.tscn",
 	],
 	[
-		"res://scenes/repair_parts/vfx/forgotten_star_bell_vfx.tscn",
-		"res://scenes/bumper_system/forgotten_star_bell_bumper.tscn",
+		"res://Resources/Prefabs/repair_parts/presented/forgotten_star_bell_vfx.tscn",
+		"res://Resources/Prefabs/bumpers/types/forgotten_star_bell_bumper.tscn",
 	],
 	[
-		"res://scenes/repair_parts/vfx/golden_gears_vfx.tscn",
-		"res://scenes/bumper_system/golden_gears_bumper.tscn",
+		"res://Resources/Prefabs/repair_parts/presented/golden_gears_vfx.tscn",
+		"res://Resources/Prefabs/bumpers/types/golden_gears_bumper.tscn",
 	],
 ]
-const GEARS_SCENE := "res://scenes/repair_parts/vfx/golden_gears_vfx.tscn"
-const BROOCH_SCENE := "res://scenes/repair_parts/vfx/starlight_brooch_vfx.tscn"
+const GEARS_SCENE := "res://Resources/Prefabs/repair_parts/presented/golden_gears_vfx.tscn"
+const BROOCH_SCENE := "res://Resources/Prefabs/repair_parts/presented/starlight_brooch_vfx.tscn"
 const BROOCH_ANIM := preload("res://settings/repair_parts/anim/StarlightBroochAnim.tres")
 const EPSILON := 0.001
 

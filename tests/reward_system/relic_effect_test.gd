@@ -2,9 +2,9 @@ extends SceneTree
 
 
 const FLIPPER_SCENE := preload(
-	"res://Resources/flippers/sub_flipper/normal_flipper_left.tscn"
+	"res://Resources/Prefabs/flippers/variants/normal_flipper_left.tscn"
 )
-const LIGHT_BALL := preload("res://Resources/balls/mass_var/light_ball.tscn")
+const LIGHT_BALL := preload("res://Resources/Prefabs/balls/variants/mass/light_ball.tscn")
 
 const EPSILON := 0.0001
 

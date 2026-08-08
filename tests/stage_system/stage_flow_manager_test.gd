@@ -2,11 +2,11 @@ extends SceneTree
 
 
 const MANAGER_SCENE := preload(
-	"res://scenes/stage_system/stage_flow_manager.tscn"
+	"res://Resources/Prefabs/stage/flow/stage_flow_manager.tscn"
 )
-const STAGE_01_SCENE := preload("res://scenes/stage_01.tscn")
+const STAGE_01_SCENE := preload("res://scenes/game/stages/stage_01/stage_01.tscn")
 const PLACEHOLDER_REWARD_SCENE := preload(
-	"res://scenes/stage_system/stage_reward_placeholder.tscn"
+	"res://scenes/tests/stage/fixtures/stage_reward_placeholder.tscn"
 )
 const WAVE_SCENE := preload(
 	"res://tests/stage_system/fixtures/stage_segment_fixture.tscn"
@@ -18,9 +18,9 @@ const BOSS_SCENE := preload(
 	"res://tests/stage_system/fixtures/boss_completion_fixture.tscn"
 )
 const EXISTING_WAVE_SCENES: Array[PackedScene] = [
-	preload("res://scenes/wave/levels/wave_01.tscn"),
-	preload("res://scenes/wave/levels/wave_02.tscn"),
-	preload("res://scenes/wave/levels/wave_03.tscn"),
+	preload("res://scenes/tests/stage/fixtures/legacy_waves/wave_01.tscn"),
+	preload("res://scenes/tests/stage/fixtures/legacy_waves/wave_02.tscn"),
+	preload("res://scenes/tests/stage/fixtures/legacy_waves/wave_03.tscn"),
 ]
 
 
@@ -229,6 +229,9 @@ func _test_stage_coin_wallet_continuity() -> void:
 	var first_wallet_label := manager.active_scene.get_node(
 		^"HUD/WaveHud/DesignSpace/CoinWalletHud/Margin/Row/BalanceLabel"
 	) as Label
+	var first_coin_animator := manager.active_scene.get_node_or_null(
+		^"HUD/CoinHudFlyAnimator"
+	)
 	_expect(
 		first_roster == null,
 		"프로덕션 웨이브는 범퍼 가이드 UI를 표시하지 않아야 한다."
@@ -262,6 +265,9 @@ func _test_stage_coin_wallet_continuity() -> void:
 		if child is CoinPickup:
 			(child as CoinPickup)._on_body_entered(test_ball)
 			break
+	_expect(first_coin_animator != null \
+		and int(first_coin_animator.call(&"get_active_fly_count")) == 1,
+		"실제 Stage 01 코인 획득은 코인 HUD 이동 연출을 즉시 시작해야 한다.")
 	await process_frame
 	_expect(
 		manager.current_coin_balance == 2
@@ -519,7 +525,7 @@ func _test_stage_01_scene_configuration() -> void:
 	_expect(
 		manager.boss_scenes.size() == 1
 			and manager.boss_scenes[0].resource_path
-				== "res://scenes/wave/stage1_teddy_boss_scene.tscn",
+				== "res://scenes/game/stages/stage_01/boss/stage1_teddy_boss_scene.tscn",
 		"Stage 01은 실제 테디 보스 씬 하나를 보스 배열에 직접 연결해야 한다."
 	)
 	for index in mini(manager.wave_scenes.size(), expected_scores.size()):

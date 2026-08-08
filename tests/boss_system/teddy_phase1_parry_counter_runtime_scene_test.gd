@@ -2,7 +2,7 @@ extends SceneTree
 
 
 const CounterRuntimeScene: PackedScene = preload(
-	"res://scenes/wave/test_teddy_phase1_parry_counter_runtime.tscn"
+	"res://scenes/tests/boss/test_teddy_phase1_parry_counter_runtime.tscn"
 )
 const PROTOTYPE_SCRIPT_PATH: String = (
 	"res://scripts/boss_system/debug/"

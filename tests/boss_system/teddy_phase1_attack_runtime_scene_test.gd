@@ -1,7 +1,7 @@
 extends SceneTree
 
 const RuntimeScene: PackedScene = preload(
-	"res://scenes/wave/test_teddy_phase1_attack_runtime.tscn"
+	"res://scenes/tests/boss/test_teddy_phase1_attack_runtime.tscn"
 )
 const RULES_PATH: String = \
 	"res://settings/bosses/Stage1BossPhase1Rules.tres"

@@ -61,7 +61,6 @@ release_position = Vector2(-63.16942, -63.736553)
 [sub_resource type="Resource" id="Resource_type"]
 script = ExtResource("6_5dsfg")
 bumper_type = 3
-selection_duration = 0.8
 shot_launch_directions = Array[ExtResource("3_anchor")]([SubResource("ShotDirection_1"), SubResource("ShotDirection_2"), SubResource("ShotDirection_3"), SubResource("ShotDirection_4"), SubResource("ShotDirection_5"), SubResource("ShotDirection_6"), SubResource("ShotDirection_7")])
 
 [resource]
@@ -75,7 +74,6 @@ bumper_type = 3
 theme_keywords = PackedStringArray()
 max_durability = 2
 respawn_delay = 6.0
-selection_duration = 0.8
 shot_launch_directions = Array[ExtResource("3_anchor")]([SubResource("ShotDirection_1"), SubResource("ShotDirection_2"), SubResource("ShotDirection_3"), SubResource("ShotDirection_4"), SubResource("ShotDirection_5"), SubResource("ShotDirection_6"), SubResource("ShotDirection_7")])
 collision_diameter = 76.0
 visual_diameter = 86.0

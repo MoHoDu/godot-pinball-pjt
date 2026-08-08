@@ -1,12 +1,12 @@
 extends SceneTree
 
 
-const LAYOUT_SCENE := preload("res://Resources/boards/square_board_layout.tscn")
+const LAYOUT_SCENE := preload("res://Resources/Prefabs/boards/square_board_layout.tscn")
 const WAVE_INTEGRATION_SCENE := preload(
-	"res://scenes/boards/board_system_wave_integration.tscn"
+	"res://scenes/tests/boards/board_system_wave_integration.tscn"
 )
 const BROOCH_SCENE := preload(
-	"res://Resources/boards/starlight_brooch_placeable.tscn"
+	"res://Resources/Prefabs/repair_parts/placeables/starlight_brooch_placeable.tscn"
 )
 
 
@@ -246,8 +246,8 @@ func _test_wave_bridge() -> void:
 		"Board commit must advance the latest WaveManager into ball selection.")
 	_expect(session.current_state == BoardPlacementSession.State.COMMITTED,
 		"Wave bridge must preserve committed state until first launch.")
-	_expect(not layout.get_zones()[0].visible and not layout.get_sockets()[0].visible,
-		"Committed layouts must hide editor guides before gameplay.")
+	_expect(_placement_guides_hidden(layout),
+		"Committed layouts must hide every placement guide before gameplay.")
 	_expect(wave.wave_hud.visible \
 		and wave.ball_selection_hud.visible \
 		and not wave.get_node(
@@ -260,6 +260,8 @@ func _test_wave_bridge() -> void:
 		"The composed scene must launch the prepared first ball.")
 	_expect(session.current_state == BoardPlacementSession.State.LOCKED,
 		"Actual first-ball launch must transition board placement to LOCKED.")
+	_expect(_placement_guides_hidden(layout),
+		"Locked in-play layouts must keep every placement guide hidden.")
 
 	integration.queue_free()
 	await process_frame
@@ -270,6 +272,21 @@ func _has_issue(result: BoardValidationResult, code: StringName) -> bool:
 		if StringName(issue.get(&"code", &"")) == code:
 			return true
 	return false
+
+
+func _placement_guides_hidden(layout: BoardLayout) -> bool:
+	if layout.show_grid:
+		return false
+	for zone: BoardPlacementZone in layout.get_zones():
+		if zone.visible:
+			return false
+	for socket: BoardPlacementSocket in layout.get_sockets():
+		if socket.visible:
+			return false
+	for area: BoardForbiddenArea in layout.get_forbidden_areas():
+		if area.visible:
+			return false
+	return true
 
 
 func _expect(condition: bool, message: String) -> void:

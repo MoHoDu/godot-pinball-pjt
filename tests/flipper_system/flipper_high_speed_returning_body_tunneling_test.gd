@@ -1,7 +1,7 @@
 extends SceneTree
 
 
-const BOARD_SCENE_PATH := "res://scenes/test_flipper/test_flipper_board.tscn"
+const BOARD_SCENE_PATH := "res://scenes/tests/flippers/test_flipper_board.tscn"
 const FlipperStateClass := preload("res://scripts/flipper_system/flipper_state.gd")
 const TEST_SPEED := 1540.0
 const START_OFFSET := Vector2(62.0, -150.0)

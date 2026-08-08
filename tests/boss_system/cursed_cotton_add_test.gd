@@ -2,10 +2,10 @@ extends SceneTree
 
 
 const CottonScene: PackedScene = preload(
-	"res://scenes/boss_system/cursed_cotton_add.tscn"
+	"res://Resources/Prefabs/boss/adds/cursed_cotton_add.tscn"
 )
 const NormalBallScene: PackedScene = preload(
-	"res://Resources/balls/mass_var/normal_ball.tscn"
+	"res://Resources/Prefabs/balls/variants/mass/normal_ball.tscn"
 )
 const RulesResource: CursedCottonAddRules = preload(
 	"res://settings/bosses/CursedCottonAddRules.tres"

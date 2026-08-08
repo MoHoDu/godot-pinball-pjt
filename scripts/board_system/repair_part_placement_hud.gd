@@ -14,7 +14,7 @@ const DRAWER_OPEN_Y := 702.0
 const DRAWER_CLOSED_Y := 1014.0
 const DRAG_THRESHOLD := 10.0
 const CARD_SCENE := preload(
-	"res://Resources/boards/repair_part_inventory_card.tscn"
+	"res://Resources/Prefabs/ui/repair_placement/repair_part_inventory_card.tscn"
 )
 
 
@@ -96,7 +96,10 @@ func render_inventory(
 	selected_socket_id: StringName,
 	compatibility: Dictionary
 ) -> void:
-	_snapshot = snapshot.duplicate(true)
+	_snapshot.clear()
+	for data: Dictionary in snapshot:
+		if int(data.get(&"available_count", 0)) > 0:
+			_snapshot.append(data.duplicate(true))
 	_selected_socket_id = selected_socket_id
 	_compatibility = compatibility.duplicate(true)
 	_rebuild_cards_if_needed()
@@ -145,9 +148,12 @@ func get_card(kind_id: StringName) -> RepairPartInventoryCard:
 
 
 func _rebuild_cards_if_needed() -> void:
-	if _cards.size() == _snapshot.size():
+	if _has_matching_card_ids():
 		return
+	if not _candidate_kind.is_empty() and not _snapshot_has_kind(_candidate_kind):
+		_clear_drag()
 	for child: Node in _inventory_row.get_children():
+		_inventory_row.remove_child(child)
 		child.queue_free()
 	_cards.clear()
 	for data: Dictionary in _snapshot:
@@ -156,6 +162,23 @@ func _rebuild_cards_if_needed() -> void:
 		var kind_id := StringName(data.get(&"kind_id", &""))
 		_cards[kind_id] = card
 		card.interaction_started.connect(_on_card_interaction_started)
+
+
+func _has_matching_card_ids() -> bool:
+	if _cards.size() != _snapshot.size():
+		return false
+	for data: Dictionary in _snapshot:
+		var kind_id := StringName(data.get(&"kind_id", &""))
+		if kind_id.is_empty() or not _cards.has(kind_id):
+			return false
+	return true
+
+
+func _snapshot_has_kind(kind_id: StringName) -> bool:
+	for data: Dictionary in _snapshot:
+		if StringName(data.get(&"kind_id", &"")) == kind_id:
+			return true
+	return false
 
 
 func _on_card_interaction_started(

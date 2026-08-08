@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3]
 
-[ext_resource type="PackedScene" path="res://scenes/wave/wave.tscn" id="1_wave"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/wave/base/wave.tscn" id="1_wave"]
 [ext_resource type="Script" path="res://integration/scenarios/wave_hud_showcase.gd" id="2_script"]
 
 [node name="WaveHudShowcase" instance=ExtResource("1_wave")]

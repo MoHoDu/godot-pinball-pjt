@@ -1,0 +1,564 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://b35gfy37afi7d" path="res://scripts/wave_hud/wave_runtime_coordinator.gd" id="1_s1vs3"]
+[ext_resource type="Script" uid="uid://d1ru6gfxnmw1r" path="res://scripts/combo_system/combo_stage_settings.gd" id="2_1u4ew"]
+[ext_resource type="Resource" uid="uid://chsx6iwv1j6p3" path="res://settings/bumpers/stage_01/Stage01BumperLayout.tres" id="3_4k51b"]
+[ext_resource type="Texture2D" uid="uid://cccmtg74eywpf" path="res://Resources/Art/backgrounds/cursed_circus_outside_background.png" id="4_q88qb"]
+[ext_resource type="Texture2D" uid="uid://dsjw1kfs6d0xv" path="res://Resources/Art/board/octagonal_dark_wood_board.png" id="5_4escb"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/walls/visuals/wall_visual_820x40_cursed_toy_v1.tscn" id="6_ul1l1"]
+[ext_resource type="PackedScene" uid="uid://d1hn7wvhtpike" path="res://Resources/Prefabs/bumpers/types/button_bumper.tscn" id="7_h3cfc"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/types/cotton_bumper.tscn" id="8_x2t4c"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/types/spring_doll_bumper.tscn" id="9_54hdn"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/types/toy_drum_bumper.tscn" id="10_fi181"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/types/clockwork_toy_cannon.tscn" id="11_fwggk"]
+[ext_resource type="Script" uid="uid://c2rm7omkmejhb" path="res://scripts/bumper-system/shot_response_strategy.gd" id="12_8k2a2"]
+[ext_resource type="Script" uid="uid://58k0flhnlg3" path="res://scripts/flipper_system/flipper_selector.gd" id="13_ri0gd"]
+[ext_resource type="Script" uid="uid://lj3ocu4ruejo" path="res://scripts/flipper_system/flipper_controller.gd" id="14_xh30w"]
+[ext_resource type="PackedScene" uid="uid://ris3ga3vl6ci" path="res://Resources/Prefabs/flippers/variants/normal_flipper_left.tscn" id="15_uua4h"]
+[ext_resource type="PackedScene" uid="uid://u4e8s8havfkw" path="res://Resources/Prefabs/flippers/variants/normal_flipper_right.tscn" id="16_fh4pn"]
+[ext_resource type="Script" uid="uid://c1n1lurdkbtkj" path="res://scripts/ball_base_system/pinball_launcher.gd" id="17_b0xry"]
+[ext_resource type="Script" uid="uid://dirv1p0s1sce1" path="res://scripts/combo_system/combo_system.gd" id="18_7ipim"]
+[ext_resource type="Script" uid="uid://b8m3vh7insfky" path="res://scripts/combo_system/combo_collision_bridge.gd" id="19_uleab"]
+[ext_resource type="Script" uid="uid://0iu2wd6prhg0" path="res://scripts/ball_base_system/wave_ball_inventory.gd" id="20_a3p13"]
+[ext_resource type="Script" uid="uid://dbhskt37l73b5" path="res://scripts/ball_base_system/ball_stock.gd" id="21_vvkpe"]
+[ext_resource type="PackedScene" uid="uid://5v4byhqjcnno" path="res://Resources/Prefabs/balls/variants/mass/light_ball.tscn" id="22_7ehbo"]
+[ext_resource type="Script" uid="uid://s82gae2421um" path="res://scripts/ball_base_system/ball_definition.gd" id="23_r36l7"]
+[ext_resource type="PackedScene" uid="uid://csrwlhfpki4fs" path="res://Resources/Prefabs/balls/variants/mass/normal_ball.tscn" id="24_qlpb0"]
+[ext_resource type="PackedScene" uid="uid://bjccffqopu0ej" path="res://Resources/Prefabs/balls/variants/mass/heavy_ball.tscn" id="25_8en2v"]
+[ext_resource type="Script" uid="uid://c0a8g2k5ycoxp" path="res://scripts/ball_base_system/wave_ball_flow_controller.gd" id="26_cuyf8"]
+[ext_resource type="Script" uid="uid://cudkgw71kx8vj" path="res://scripts/combo_system/combo_wave_controller.gd" id="27_1esjo"]
+[ext_resource type="Script" uid="uid://cm3baeo6imaxa" path="res://scripts/ball_base_system/wave_manager.gd" id="28_xy6o4"]
+[ext_resource type="Script" uid="uid://cmwexv5v1ailv" path="res://scripts/wave_hud/wave_hud_state_source.gd" id="29_glfl8"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/ui/ball_selection/legacy/ball_selection_hud.tscn" id="30_un66i"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/ui/wave_hud/wave_hud.tscn" id="31_npsca"]
+[ext_resource type="Script" path="res://scripts/boss_system/debug/teddy_phase1_attack_runtime_prototype.gd" id="32_boss_prototype"]
+[ext_resource type="Script" path="res://scripts/boss_system/boss_attack_controller.gd" id="33_boss_controller"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/boss/attacks/teddy_arm_sweep_attack.tscn" id="34_arm_sweep"]
+[ext_resource type="Script" path="res://scripts/boss_system/boss_phase1_attack_runtime.gd" id="35_phase1_runtime"]
+[ext_resource type="Script" path="res://scripts/boss_system/boss_phase1_attack_scheduler.gd" id="36_phase1_scheduler"]
+[ext_resource type="Script" path="res://scripts/boss_system/boss_phase1_attack_coordinator.gd" id="37_phase1_coordinator"]
+[ext_resource type="Script" path="res://scripts/boss_system/boss_phase1_attack_pattern_selector.gd" id="38_pattern_selector"]
+[ext_resource type="Resource" path="res://settings/bosses/Stage1BossPhase1Rules.tres" id="39_phase1_rules"]
+[ext_resource type="Resource" path="res://settings/bosses/TeddyArmSweepPhase1FirstPattern.tres" id="40_first_pattern"]
+[ext_resource type="Resource" path="res://settings/bosses/TeddyArmSweepPhase1RepeatPattern.tres" id="41_repeat_pattern"]
+[ext_resource type="Script" path="res://scripts/boss_system/debug/teddy_phase1_damage_runtime_prototype.gd" id="42_damage_prototype"]
+[ext_resource type="Script" path="res://scripts/boss_system/boss_health_component.gd" id="43_health"]
+[ext_resource type="Script" path="res://scripts/boss_system/boss_combo_damage_adapter.gd" id="44_damage_adapter"]
+[ext_resource type="Script" path="res://scripts/boss_system/boss_damage_applier.gd" id="45_damage_applier"]
+[ext_resource type="Resource" path="res://settings/bosses/BossBallDamageWeightRules.tres" id="46_weight_rules"]
+
+[sub_resource type="Resource" id="StageSettings_wave"]
+script = ExtResource("2_1u4ew")
+stage_id = &"cursed_toy_demo"
+wave_target_scores = PackedInt32Array(250000, 400000, 650000, 1000000)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape_diagonal"]
+size = Vector2(819.329, 24)
+
+[sub_resource type="Resource" id="Resource_jkexw"]
+script = ExtResource("12_8k2a2")
+
+[sub_resource type="Resource" id="BallDefinition_light"]
+script = ExtResource("23_r36l7")
+ball_id = &"light"
+display_name = "Light Ball"
+ball_scene = ExtResource("22_7ehbo")
+
+[sub_resource type="Resource" id="BallStock_light"]
+script = ExtResource("21_vvkpe")
+definition = SubResource("BallDefinition_light")
+
+[sub_resource type="Resource" id="BallDefinition_normal"]
+script = ExtResource("23_r36l7")
+ball_id = &"normal"
+display_name = "Normal Ball"
+ball_scene = ExtResource("24_qlpb0")
+
+[sub_resource type="Resource" id="BallStock_normal"]
+script = ExtResource("21_vvkpe")
+definition = SubResource("BallDefinition_normal")
+
+[sub_resource type="Resource" id="BallDefinition_heavy"]
+script = ExtResource("23_r36l7")
+ball_id = &"heavy"
+display_name = "Heavy Ball"
+ball_scene = ExtResource("25_8en2v")
+
+[sub_resource type="Resource" id="BallStock_heavy"]
+script = ExtResource("21_vvkpe")
+definition = SubResource("BallDefinition_heavy")
+
+[sub_resource type="RectangleShape2D" id="RectangleShape_drain_horizontal"]
+resource_local_to_scene = true
+size = Vector2(2600, 160)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape_drain_vertical"]
+resource_local_to_scene = true
+size = Vector2(160, 1600)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape_boss_hurtbox"]
+size = Vector2(300, 460)
+
+[node name="Wave" type="Node2D" unique_id=242104030 node_paths=PackedStringArray("launcher", "combo_system", "combo_collision_bridge", "wave_ball_inventory", "wave_ball_flow", "combo_wave_controller", "wave_manager", "flipper_selector", "ball_selection_hud", "ball_drain_area", "hud_state", "wave_hud", "board_camera", "bumpers_root")]
+script = ExtResource("1_s1vs3")
+wave_stage_settings = SubResource("StageSettings_wave")
+bumper_stage_settings = ExtResource("3_4k51b")
+authored_bumper_wave_index = 2
+expected_bumper_kind_ids = Array[StringName]([&"stage01_button", &"stage01_button", &"stage01_cotton", &"stage01_spring_doll", &"stage01_toy_drum", &"stage01_clockwork_cannon"])
+launcher = NodePath("PinballLauncher")
+combo_system = NodePath("ComboSystem")
+combo_collision_bridge = NodePath("ComboCollisionBridge")
+wave_ball_inventory = NodePath("WaveBallInventory")
+wave_ball_flow = NodePath("WaveBallFlowController")
+combo_wave_controller = NodePath("ComboWaveController")
+wave_manager = NodePath("WaveManager")
+flipper_selector = NodePath("FlipperSelector")
+ball_selection_hud = NodePath("HUD/BallSelectionHud")
+ball_drain_area = NodePath("BallDrainArea")
+hud_state = NodePath("WaveHudStateSource")
+wave_hud = NodePath("HUD/WaveHud")
+board_camera = NodePath("Camera2D")
+bumpers_root = NodePath("Bumpers")
+
+[node name="OutsideBackground" type="Sprite2D" parent="." unique_id=1247986944]
+modulate = Color(0.82, 0.82, 0.82, 1)
+z_index = -20
+scale = Vector2(1.3397129, 1.339001)
+texture = ExtResource("4_q88qb")
+
+[node name="BoardBackground" type="Sprite2D" parent="." unique_id=1874281435]
+modulate = Color(0.7, 0.7, 0.7, 1)
+z_index = -10
+texture = ExtResource("5_4escb")
+
+[node name="GapGuides" type="Node2D" parent="." unique_id=97426761]
+z_index = -5
+
+[node name="TopGap" type="Polygon2D" parent="GapGuides" unique_id=1494737708]
+color = Color(0.65, 0.13, 0.18, 0.28)
+polygon = PackedVector2Array(-22, -630, 22, -630, 22, -606, -22, -606)
+
+[node name="BottomGap" type="Polygon2D" parent="GapGuides" unique_id=797079368]
+color = Color(0.65, 0.13, 0.18, 0.28)
+polygon = PackedVector2Array(-22, 606, 22, 606, 22, 630, -22, 630)
+
+[node name="LeftGap" type="Polygon2D" parent="GapGuides" unique_id=711571481]
+color = Color(0.65, 0.13, 0.18, 0.28)
+polygon = PackedVector2Array(-1120, -22, -1096, -22, -1096, 22, -1120, 22)
+
+[node name="RightGap" type="Polygon2D" parent="GapGuides" unique_id=1195903791]
+color = Color(0.65, 0.13, 0.18, 0.28)
+polygon = PackedVector2Array(1096, -22, 1120, -22, 1120, 22, 1096, 22)
+
+[node name="Walls" type="Node2D" parent="." unique_id=880171152]
+
+[node name="TopRightDiagonal" type="StaticBody2D" parent="Walls" unique_id=1996630462 groups=["combo_walls"]]
+position = Vector2(735, -490)
+rotation = 0.348772
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/TopRightDiagonal" unique_id=1347879549]
+position = Vector2(0, 12)
+shape = SubResource("RectangleShape_diagonal")
+
+[node name="Visual" parent="Walls/TopRightDiagonal" unique_id=1559760786 instance=ExtResource("6_ul1l1")]
+
+[node name="BottomRightDiagonal" type="StaticBody2D" parent="Walls" unique_id=1135428217 groups=["combo_walls"]]
+position = Vector2(735, 490)
+rotation = 2.7928207
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/BottomRightDiagonal" unique_id=1488993819]
+position = Vector2(0, 12)
+shape = SubResource("RectangleShape_diagonal")
+
+[node name="Visual" parent="Walls/BottomRightDiagonal" unique_id=262610617 instance=ExtResource("6_ul1l1")]
+
+[node name="BottomLeftDiagonal" type="StaticBody2D" parent="Walls" unique_id=1246970724 groups=["combo_walls"]]
+position = Vector2(-735, 490)
+rotation = -2.7928207
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/BottomLeftDiagonal" unique_id=1189773304]
+position = Vector2(0, 12)
+shape = SubResource("RectangleShape_diagonal")
+
+[node name="Visual" parent="Walls/BottomLeftDiagonal" unique_id=955290904 instance=ExtResource("6_ul1l1")]
+
+[node name="TopLeftDiagonal" type="StaticBody2D" parent="Walls" unique_id=742352370 groups=["combo_walls"]]
+position = Vector2(-735, -490)
+rotation = -0.348772
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/TopLeftDiagonal" unique_id=1447077877]
+position = Vector2(0, 12)
+shape = SubResource("RectangleShape_diagonal")
+
+[node name="Visual" parent="Walls/TopLeftDiagonal" unique_id=1362720616 instance=ExtResource("6_ul1l1")]
+
+[node name="Bumpers" type="Node2D" parent="." unique_id=1144402446]
+
+[node name="BumperCenter" parent="Bumpers" unique_id=1184156493 instance=ExtResource("7_h3cfc")]
+position = Vector2(0, -270)
+
+[node name="BumperUpperLeft" parent="Bumpers" unique_id=2016466414 instance=ExtResource("8_x2t4c")]
+position = Vector2(-420, -190)
+
+[node name="BumperUpperRight" parent="Bumpers" unique_id=976731568 instance=ExtResource("7_h3cfc")]
+position = Vector2(420, -190)
+bumper_id = &"button_bumper_right"
+
+[node name="BumperLowerLeft" parent="Bumpers" unique_id=1155343190 instance=ExtResource("9_54hdn")]
+position = Vector2(-460, 210)
+
+[node name="BumperLowerRight" parent="Bumpers" unique_id=1847381481 instance=ExtResource("10_fi181")]
+position = Vector2(460, 210)
+
+[node name="BumperCannon" parent="Bumpers" unique_id=1628015170 instance=ExtResource("11_fwggk")]
+position = Vector2(0, 190)
+response_strategy = SubResource("Resource_jkexw")
+
+[node name="FlipperSelector" type="Node2D" parent="." unique_id=1920620016]
+script = ExtResource("13_ri0gd")
+
+[node name="BottomController" type="Node2D" parent="FlipperSelector" unique_id=20737717]
+position = Vector2(0, 550)
+script = ExtResource("14_xh30w")
+
+[node name="LeftFlipper" parent="FlipperSelector/BottomController" unique_id=500113259 instance=ExtResource("15_uua4h")]
+position = Vector2(-350, 72.00001)
+flipper_length = 328.0
+
+[node name="RightFlipper" parent="FlipperSelector/BottomController" unique_id=96070730 instance=ExtResource("16_fh4pn")]
+position = Vector2(350, 76.00001)
+flipper_length = 328.0
+
+[node name="TopController" type="Node2D" parent="FlipperSelector" unique_id=858197973]
+position = Vector2(0, -550)
+rotation = 3.1415927
+script = ExtResource("14_xh30w")
+
+[node name="LeftFlipper" parent="FlipperSelector/TopController" unique_id=1557462066 instance=ExtResource("15_uua4h")]
+position = Vector2(-350, 0)
+flipper_length = 328.0
+
+[node name="RightFlipper" parent="FlipperSelector/TopController" unique_id=575251231 instance=ExtResource("16_fh4pn")]
+position = Vector2(350, 0)
+flipper_length = 328.0
+
+[node name="LeftController" type="Node2D" parent="FlipperSelector" unique_id=1857656650]
+position = Vector2(-1040, 0)
+rotation = 1.5707964
+script = ExtResource("14_xh30w")
+
+[node name="LeftFlipper" parent="FlipperSelector/LeftController" unique_id=1271897557 instance=ExtResource("15_uua4h")]
+position = Vector2(-350, 0)
+flipper_length = 328.0
+
+[node name="RightFlipper" parent="FlipperSelector/LeftController" unique_id=1331821497 instance=ExtResource("16_fh4pn")]
+position = Vector2(350, 0)
+flipper_length = 328.0
+
+[node name="RightController" type="Node2D" parent="FlipperSelector" unique_id=223445953]
+position = Vector2(1040, 0)
+rotation = -1.5707964
+script = ExtResource("14_xh30w")
+
+[node name="LeftFlipper" parent="FlipperSelector/RightController" unique_id=1296668251 instance=ExtResource("15_uua4h")]
+position = Vector2(-350, 0)
+flipper_length = 328.0
+
+[node name="RightFlipper" parent="FlipperSelector/RightController" unique_id=177584355 instance=ExtResource("16_fh4pn")]
+position = Vector2(350, 0)
+flipper_length = 328.0
+
+[node name="PinballLauncher" type="Node2D" parent="." unique_id=682893525]
+position = Vector2(0, 400)
+rotation = -1.5707964
+script = ExtResource("17_b0xry")
+minimum_launch_angle_degrees = -45.0
+maximum_launch_angle_degrees = 45.0
+
+[node name="LauncherMarker" type="Polygon2D" parent="PinballLauncher" unique_id=1612067050]
+z_index = -1
+color = Color(0.25, 0.85, 0.43, 0.25)
+polygon = PackedVector2Array(-42, -42, 42, -42, 42, 42, -42, 42)
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=375746745]
+position = Vector2(0, 16)
+zoom = Vector2(0.494, 0.494)
+
+[node name="ComboSystem" type="Node" parent="." unique_id=760287772]
+script = ExtResource("18_7ipim")
+
+[node name="ComboCollisionBridge" type="Node" parent="." unique_id=1530420507 node_paths=PackedStringArray("configured_combo_system")]
+script = ExtResource("19_uleab")
+configured_combo_system = NodePath("../ComboSystem")
+
+[node name="WaveBallInventory" type="Node" parent="." unique_id=150677151]
+script = ExtResource("20_a3p13")
+starting_stock = Array[ExtResource("21_vvkpe")]([SubResource("BallStock_light"), SubResource("BallStock_normal"), SubResource("BallStock_heavy")])
+
+[node name="WaveBallFlowController" type="Node" parent="." unique_id=1559637729 node_paths=PackedStringArray("configured_inventory", "configured_launcher")]
+script = ExtResource("26_cuyf8")
+configured_inventory = NodePath("../WaveBallInventory")
+configured_launcher = NodePath("../PinballLauncher")
+
+[node name="ComboWaveController" type="Node" parent="." unique_id=1614939086]
+script = ExtResource("27_1esjo")
+
+[node name="WaveManager" type="Node" parent="." unique_id=2076887365 node_paths=PackedStringArray("configured_ball_flow", "configured_combo_wave", "configured_combo_system", "configured_collision_bridge")]
+script = ExtResource("28_xy6o4")
+configured_ball_flow = NodePath("../WaveBallFlowController")
+configured_combo_wave = NodePath("../ComboWaveController")
+configured_combo_system = NodePath("../ComboSystem")
+configured_collision_bridge = NodePath("../ComboCollisionBridge")
+
+[node name="WaveHudStateSource" type="Node" parent="." unique_id=76749773]
+script = ExtResource("29_glfl8")
+
+[node name="BallDrainArea" type="Area2D" parent="." unique_id=1222370182]
+visible = false
+collision_layer = 0
+
+[node name="TopDrain" type="CollisionShape2D" parent="BallDrainArea" unique_id=1504410852]
+position = Vector2(0, -800)
+shape = SubResource("RectangleShape_drain_horizontal")
+
+[node name="BottomDrain" type="CollisionShape2D" parent="BallDrainArea" unique_id=9074598]
+position = Vector2(0, 800)
+shape = SubResource("RectangleShape_drain_horizontal")
+
+[node name="LeftDrain" type="CollisionShape2D" parent="BallDrainArea" unique_id=1133239729]
+position = Vector2(-1280, 0)
+shape = SubResource("RectangleShape_drain_vertical")
+
+[node name="RightDrain" type="CollisionShape2D" parent="BallDrainArea" unique_id=1432189215]
+position = Vector2(1280, 0)
+shape = SubResource("RectangleShape_drain_vertical")
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=739204287]
+
+[node name="BallSelectionHud" parent="HUD" unique_id=1456410610 instance=ExtResource("30_un66i")]
+
+[node name="WaveHud" parent="HUD" unique_id=414747941 instance=ExtResource("31_npsca")]
+
+[node name="BossPrototype" type="Node2D" parent="." node_paths=PackedStringArray("runtime", "scheduler", "coordinator", "selector", "controller", "teddy_attack", "start_button", "stop_button", "reset_button", "new_ball_grace_button", "runtime_state_label", "scheduler_state_label", "controller_state_label", "current_pattern_label", "remaining_wait_label", "remaining_grace_label", "last_repeat_delay_label", "event_log")]
+script = ExtResource("32_boss_prototype")
+rules = ExtResource("39_phase1_rules")
+first_pattern = ExtResource("40_first_pattern")
+repeat_pattern = ExtResource("41_repeat_pattern")
+runtime = NodePath("Phase1Attack/Runtime")
+scheduler = NodePath("Phase1Attack/Scheduler")
+coordinator = NodePath("Phase1Attack/Coordinator")
+selector = NodePath("Phase1Attack/PatternSelector")
+controller = NodePath("BossAttackController")
+teddy_attack = NodePath("TeddyArmSweepAttack")
+start_button = NodePath("DebugCanvas/DebugUI/Panel/VBox/ButtonRow/StartButton")
+stop_button = NodePath("DebugCanvas/DebugUI/Panel/VBox/ButtonRow/StopButton")
+reset_button = NodePath("DebugCanvas/DebugUI/Panel/VBox/ButtonRow/ResetButton")
+new_ball_grace_button = NodePath("DebugCanvas/DebugUI/Panel/VBox/ButtonRow/NewBallGraceButton")
+runtime_state_label = NodePath("DebugCanvas/DebugUI/Panel/VBox/RuntimeStateLabel")
+scheduler_state_label = NodePath("DebugCanvas/DebugUI/Panel/VBox/SchedulerStateLabel")
+controller_state_label = NodePath("DebugCanvas/DebugUI/Panel/VBox/ControllerStateLabel")
+current_pattern_label = NodePath("DebugCanvas/DebugUI/Panel/VBox/CurrentPatternLabel")
+remaining_wait_label = NodePath("DebugCanvas/DebugUI/Panel/VBox/RemainingWaitLabel")
+remaining_grace_label = NodePath("DebugCanvas/DebugUI/Panel/VBox/RemainingGraceLabel")
+last_repeat_delay_label = NodePath("DebugCanvas/DebugUI/Panel/VBox/LastRepeatDelayLabel")
+event_log = NodePath("DebugCanvas/DebugUI/Panel/VBox/EventLog")
+
+[node name="BossAttackController" type="Node" parent="BossPrototype" node_paths=PackedStringArray("attack")]
+script = ExtResource("33_boss_controller")
+attack = NodePath("../TeddyArmSweepAttack")
+
+[node name="TeddyArmSweepAttack" parent="BossPrototype" instance=ExtResource("34_arm_sweep")]
+position = Vector2(0, -260)
+
+[node name="Phase1Attack" type="Node" parent="BossPrototype"]
+
+[node name="Runtime" type="Node" parent="BossPrototype/Phase1Attack"]
+script = ExtResource("35_phase1_runtime")
+
+[node name="Scheduler" type="Node" parent="BossPrototype/Phase1Attack"]
+script = ExtResource("36_phase1_scheduler")
+
+[node name="Coordinator" type="Node" parent="BossPrototype/Phase1Attack"]
+script = ExtResource("37_phase1_coordinator")
+
+[node name="PatternSelector" type="Node" parent="BossPrototype/Phase1Attack"]
+script = ExtResource("38_pattern_selector")
+
+[node name="DebugCanvas" type="CanvasLayer" parent="BossPrototype"]
+layer = 100
+
+[node name="DebugUI" type="Control" parent="BossPrototype/DebugCanvas"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Panel" type="PanelContainer" parent="BossPrototype/DebugCanvas/DebugUI"]
+custom_minimum_size = Vector2(500, 750)
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 520.0
+offset_bottom = 770.0
+
+[node name="VBox" type="VBoxContainer" parent="BossPrototype/DebugCanvas/DebugUI/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="TitleLabel" type="Label" parent="BossPrototype/DebugCanvas/DebugUI/Panel/VBox"]
+layout_mode = 2
+text = "Teddy Phase 1 Attack Runtime"
+
+[node name="ButtonRow" type="HBoxContainer" parent="BossPrototype/DebugCanvas/DebugUI/Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="StartButton" type="Button" parent="BossPrototype/DebugCanvas/DebugUI/Panel/VBox/ButtonRow"]
+layout_mode = 2
+text = "Start"
+
+[node name="StopButton" type="Button" parent="BossPrototype/DebugCanvas/DebugUI/Panel/VBox/ButtonRow"]
+layout_mode = 2
+text = "Stop"
+
+[node name="ResetButton" type="Button" parent="BossPrototype/DebugCanvas/DebugUI/Panel/VBox/ButtonRow"]
+layout_mode = 2
+text = "Reset"
+
+[node name="NewBallGraceButton" type="Button" parent="BossPrototype/DebugCanvas/DebugUI/Panel/VBox/ButtonRow"]
+layout_mode = 2
+text = "New Ball Grace"
+
+[node name="RuntimeStateLabel" type="Label" parent="BossPrototype/DebugCanvas/DebugUI/Panel/VBox"]
+layout_mode = 2
+text = "Runtime: Ready=false  Running=false"
+
+[node name="SchedulerStateLabel" type="Label" parent="BossPrototype/DebugCanvas/DebugUI/Panel/VBox"]
+layout_mode = 2
+text = "Scheduler: STOPPED"
+
+[node name="ControllerStateLabel" type="Label" parent="BossPrototype/DebugCanvas/DebugUI/Panel/VBox"]
+layout_mode = 2
+text = "Controller: IDLE"
+
+[node name="CurrentPatternLabel" type="Label" parent="BossPrototype/DebugCanvas/DebugUI/Panel/VBox"]
+layout_mode = 2
+text = "Current Pattern: None"
+
+[node name="RemainingWaitLabel" type="Label" parent="BossPrototype/DebugCanvas/DebugUI/Panel/VBox"]
+layout_mode = 2
+text = "Remaining Wait: 0.00 s"
+
+[node name="RemainingGraceLabel" type="Label" parent="BossPrototype/DebugCanvas/DebugUI/Panel/VBox"]
+layout_mode = 2
+text = "Remaining Grace: 0.00 s"
+
+[node name="LastRepeatDelayLabel" type="Label" parent="BossPrototype/DebugCanvas/DebugUI/Panel/VBox"]
+layout_mode = 2
+text = "Last Repeat Delay: 0.00 s"
+
+[node name="EventLog" type="RichTextLabel" parent="BossPrototype/DebugCanvas/DebugUI/Panel/VBox"]
+custom_minimum_size = Vector2(440, 360)
+layout_mode = 2
+size_flags_vertical = 3
+scroll_active = true
+text = "Waiting for setup..."
+
+[node name="BossHurtbox" type="Area2D" parent="BossPrototype"]
+position = Vector2(0, -335)
+collision_layer = 0
+collision_mask = 1
+monitoring = true
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BossPrototype/BossHurtbox"]
+shape = SubResource("RectangleShape_boss_hurtbox")
+
+[node name="Phase1Damage" type="Node" parent="BossPrototype" node_paths=PackedStringArray("combo_system", "ball_flow", "boss_hurtbox", "health", "damage_adapter", "damage_applier", "boss_health_label", "health_ratio_label", "last_damage_label", "total_boss_hits_label", "current_ball_weight_label", "current_multiplier_label", "phase_threshold_label", "invulnerability_label", "damage_event_log")]
+script = ExtResource("42_damage_prototype")
+rules = ExtResource("39_phase1_rules")
+weight_rules = ExtResource("46_weight_rules")
+combo_system = NodePath("../../ComboSystem")
+ball_flow = NodePath("../../WaveBallFlowController")
+boss_hurtbox = NodePath("../BossHurtbox")
+health = NodePath("BossHealthComponent")
+damage_adapter = NodePath("BossComboDamageAdapter")
+damage_applier = NodePath("BossDamageApplier")
+boss_health_label = NodePath("../DebugCanvas/DebugUI/DamagePanel/VBox/BossHealthLabel")
+health_ratio_label = NodePath("../DebugCanvas/DebugUI/DamagePanel/VBox/HealthRatioLabel")
+last_damage_label = NodePath("../DebugCanvas/DebugUI/DamagePanel/VBox/LastDamageLabel")
+total_boss_hits_label = NodePath("../DebugCanvas/DebugUI/DamagePanel/VBox/TotalBossHitsLabel")
+current_ball_weight_label = NodePath("../DebugCanvas/DebugUI/DamagePanel/VBox/CurrentBallWeightLabel")
+current_multiplier_label = NodePath("../DebugCanvas/DebugUI/DamagePanel/VBox/CurrentMultiplierLabel")
+phase_threshold_label = NodePath("../DebugCanvas/DebugUI/DamagePanel/VBox/PhaseThresholdLabel")
+invulnerability_label = NodePath("../DebugCanvas/DebugUI/DamagePanel/VBox/InvulnerabilityLabel")
+damage_event_log = NodePath("../DebugCanvas/DebugUI/DamagePanel/VBox/DamageEventLog")
+
+[node name="BossHealthComponent" type="Node" parent="BossPrototype/Phase1Damage"]
+script = ExtResource("43_health")
+
+[node name="BossComboDamageAdapter" type="Node" parent="BossPrototype/Phase1Damage"]
+script = ExtResource("44_damage_adapter")
+
+[node name="BossDamageApplier" type="Node" parent="BossPrototype/Phase1Damage"]
+script = ExtResource("45_damage_applier")
+
+[node name="DamagePanel" type="PanelContainer" parent="BossPrototype/DebugCanvas/DebugUI"]
+custom_minimum_size = Vector2(500, 750)
+offset_left = 540.0
+offset_top = 20.0
+offset_right = 1040.0
+offset_bottom = 770.0
+
+[node name="VBox" type="VBoxContainer" parent="BossPrototype/DebugCanvas/DebugUI/DamagePanel"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="TitleLabel" type="Label" parent="BossPrototype/DebugCanvas/DebugUI/DamagePanel/VBox"]
+layout_mode = 2
+text = "Teddy Phase 1 Damage Runtime"
+
+[node name="BossHealthLabel" type="Label" parent="BossPrototype/DebugCanvas/DebugUI/DamagePanel/VBox"]
+layout_mode = 2
+text = "Boss HP: 12000 / 12000"
+
+[node name="HealthRatioLabel" type="Label" parent="BossPrototype/DebugCanvas/DebugUI/DamagePanel/VBox"]
+layout_mode = 2
+text = "HP Ratio: 1.000"
+
+[node name="LastDamageLabel" type="Label" parent="BossPrototype/DebugCanvas/DebugUI/DamagePanel/VBox"]
+layout_mode = 2
+text = "Last Damage: Calculated 0 / Applied 0"
+
+[node name="TotalBossHitsLabel" type="Label" parent="BossPrototype/DebugCanvas/DebugUI/DamagePanel/VBox"]
+layout_mode = 2
+text = "Total Boss Hits: 0"
+
+[node name="CurrentBallWeightLabel" type="Label" parent="BossPrototype/DebugCanvas/DebugUI/DamagePanel/VBox"]
+layout_mode = 2
+text = "Current Ball Damage Weight: None"
+
+[node name="CurrentMultiplierLabel" type="Label" parent="BossPrototype/DebugCanvas/DebugUI/DamagePanel/VBox"]
+layout_mode = 2
+text = "Current Ball Damage Multiplier: 0.00"
+
+[node name="PhaseThresholdLabel" type="Label" parent="BossPrototype/DebugCanvas/DebugUI/DamagePanel/VBox"]
+layout_mode = 2
+text = "Phase Threshold: ABOVE_50"
+
+[node name="InvulnerabilityLabel" type="Label" parent="BossPrototype/DebugCanvas/DebugUI/DamagePanel/VBox"]
+layout_mode = 2
+text = "INVULNERABILITY: NOT IMPLEMENTED"
+
+[node name="DamageEventLogTitle" type="Label" parent="BossPrototype/DebugCanvas/DebugUI/DamagePanel/VBox"]
+layout_mode = 2
+text = "Damage Event Log"
+
+[node name="DamageEventLog" type="RichTextLabel" parent="BossPrototype/DebugCanvas/DebugUI/DamagePanel/VBox"]
+custom_minimum_size = Vector2(440, 410)
+layout_mode = 2
+size_flags_vertical = 3
+scroll_active = true
+text = "Waiting for damage setup..."

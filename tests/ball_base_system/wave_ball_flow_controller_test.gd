@@ -4,8 +4,8 @@ extends SceneTree
 const FLOW_SCRIPT := preload(
 	"res://scripts/ball_base_system/wave_ball_flow_controller.gd"
 )
-const LIGHT_BALL := preload("res://Resources/balls/mass_var/light_ball.tscn")
-const HEAVY_BALL := preload("res://Resources/balls/mass_var/heavy_ball.tscn")
+const LIGHT_BALL := preload("res://Resources/Prefabs/balls/variants/mass/light_ball.tscn")
+const HEAVY_BALL := preload("res://Resources/Prefabs/balls/variants/mass/heavy_ball.tscn")
 
 
 var _failures: Array[String] = []

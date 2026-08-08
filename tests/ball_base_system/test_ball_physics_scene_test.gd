@@ -1,6 +1,6 @@
 extends SceneTree
 
-const SCENE_PATH := "res://scenes/test_ball/test_ball_physics.tscn"
+const SCENE_PATH := "res://scenes/tests/balls/test_ball_physics.tscn"
 const CONTROLLER_SCRIPT := "res://tests/ball_base_system/test_ball_physics.gd"
 
 var _failures: Array[String] = []
