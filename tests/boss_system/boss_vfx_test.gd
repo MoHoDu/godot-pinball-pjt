@@ -13,7 +13,7 @@ extends SceneTree
 ## 실행:
 ##   godot --headless --path . --script res://tests/boss_system/boss_vfx_test.gd
 
-const SCENE := "res://scenes/boss_system/boss_art_test.tscn"
+const SCENE := "res://scenes/tests/boss/boss_art_test.tscn"
 
 
 var _failures: Array[String] = []

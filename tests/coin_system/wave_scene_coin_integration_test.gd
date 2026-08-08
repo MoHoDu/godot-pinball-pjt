@@ -4,7 +4,7 @@ extends SceneTree
 ## 최신 wave.tscn에 에디터 배치·누적·리셋 수명주기가 연결됐는지 검증합니다.
 
 
-const WAVE_SCENE := preload("res://scenes/wave/wave.tscn")
+const WAVE_SCENE := preload("res://Resources/Prefabs/wave/base/wave.tscn")
 
 
 var _failures: Array[String] = []

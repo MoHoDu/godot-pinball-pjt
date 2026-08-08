@@ -1,11 +1,11 @@
 extends SceneTree
 
 const LEFT_FLIPPER_SCENE_PATH := \
-	"res://Resources/flippers/sub_flipper/normal_flipper_left.tscn"
+	"res://Resources/Prefabs/flippers/variants/normal_flipper_left.tscn"
 const RIGHT_FLIPPER_SCENE_PATH := \
-	"res://Resources/flippers/sub_flipper/normal_flipper_right.tscn"
+	"res://Resources/Prefabs/flippers/variants/normal_flipper_right.tscn"
 const CONTROLLER_SCENE_PATH := \
-	"res://Resources/flippers/flipper/flipper_controller_sample.tscn"
+	"res://Resources/Prefabs/flippers/controllers/flipper_controller_sample.tscn"
 const EXPECTED_DEFAULT_LENGTH := 1552.0
 const EXPECTED_MINIMUM_LENGTH := 64.0
 const EXPECTED_MAXIMUM_LENGTH := 4096.0

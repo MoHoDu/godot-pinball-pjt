@@ -2,10 +2,10 @@ extends SceneTree
 
 
 const DebugWaveScene: PackedScene = preload(
-	"res://scenes/wave/debug_teddy_boss_wave.tscn"
+	"res://scenes/tests/boss/debug_teddy_boss_wave.tscn"
 )
 const ProductionWaveScene: PackedScene = preload(
-	"res://scenes/wave/stage1_teddy_boss_wave.tscn"
+	"res://scenes/game/stages/stage_01/boss/stage1_teddy_boss_wave.tscn"
 )
 const ComboSystemScript: Script = preload(
 	"res://scripts/combo_system/combo_system.gd"

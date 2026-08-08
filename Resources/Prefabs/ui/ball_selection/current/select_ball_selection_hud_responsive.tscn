@@ -1,0 +1,7 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/ui/ball_selection/current/select_ball_selection_hud.tscn" id="1_base"]
+[ext_resource type="Script" path="res://scripts/select_ball/select_ball_selection_hud_responsive.gd" id="2_script"]
+
+[node name="SelectBallSelectionHudResponsive" instance=ExtResource("1_base")]
+script = ExtResource("2_script")

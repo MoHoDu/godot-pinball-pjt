@@ -2,7 +2,7 @@ extends SceneTree
 
 
 const LEFT_FLIPPER_SCENE_PATH := \
-	"res://Resources/flippers/sub_flipper/normal_flipper_left.tscn"
+	"res://Resources/Prefabs/flippers/variants/normal_flipper_left.tscn"
 const GRADE_PERFECT := 2
 
 

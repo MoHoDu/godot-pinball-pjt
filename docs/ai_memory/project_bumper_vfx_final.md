@@ -103,7 +103,7 @@ git log --oneline --decorate art/vfx-final-20260807~5..art/vfx-final-20260807
 ## 검수하는 법
 
 ```
-godot --path . res://scenes/bumper_system/vfx/all_parts_vfx_test.tscn
+godot --path . res://scenes/tests/bumpers/all_parts_vfx_test.tscn
 ```
 
 8종이 한 씬에 들어 있다. `←`/`→` 선택, `Space` 공 투하, `R` 재시작.

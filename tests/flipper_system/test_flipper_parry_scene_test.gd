@@ -1,7 +1,7 @@
 extends SceneTree
 
 
-const TEST_SCENE_PATH := "res://scenes/test_flipper/test_flipper_parry.tscn"
+const TEST_SCENE_PATH := "res://scenes/tests/flippers/test_flipper_parry.tscn"
 const EPSILON := 0.001
 
 

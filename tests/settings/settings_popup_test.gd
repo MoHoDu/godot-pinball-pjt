@@ -1,7 +1,7 @@
 extends SceneTree
 
 
-const POPUP_SCENE := preload("res://scenes/settings/settings_popup.tscn")
+const POPUP_SCENE := preload("res://Resources/Prefabs/ui/settings/settings_popup.tscn")
 
 var _failures: Array[String] = []
 

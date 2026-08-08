@@ -23,7 +23,7 @@ func _run() -> void:
 			"%s 길이가 충분하다 (%.1fs)" % [entry[0], stream.get_length()])
 
 	# 씬 배선 — wave 씬에 재생기가 있고 스트림이 물려 있다
-	var packed := load("res://scenes/wave/wave.tscn") as PackedScene
+	var packed := load("res://Resources/Prefabs/wave/base/wave.tscn") as PackedScene
 	_expect(packed != null, "wave 씬이 로딩된다")
 	if packed != null:
 		var scene := packed.instantiate()
@@ -41,7 +41,7 @@ func _run() -> void:
 
 	# stage_01이 실제 사용하는 프로덕션 보스 씬에 보스 루프가 물려 있다.
 	var boss_packed := load(
-		"res://scenes/wave/stage1_teddy_boss_scene.tscn"
+		"res://scenes/game/stages/stage_01/boss/stage1_teddy_boss_scene.tscn"
 	) as PackedScene
 	if _expect(boss_packed != null, "프로덕션 보스 씬이 로딩된다"):
 		var boss_scene := boss_packed.instantiate()

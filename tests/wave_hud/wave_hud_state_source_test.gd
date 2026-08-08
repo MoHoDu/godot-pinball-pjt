@@ -87,7 +87,7 @@ func _run() -> void:
 	_expect(source.get_current_life_type() == &"normal",
 		"Life consumption must wrap to the next remaining slot.")
 
-	var hud_scene := load("res://scenes/wave_hud/wave_hud.tscn") as PackedScene
+	var hud_scene := load("res://Resources/Prefabs/ui/wave_hud/wave_hud.tscn") as PackedScene
 	var hud := hud_scene.instantiate() as WaveHud
 	root.add_child(hud)
 	await process_frame

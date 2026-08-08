@@ -1,0 +1,159 @@
+[gd_scene load_steps=21 format=3]
+
+; ★ 사운드 연구실.
+;
+; 게임 보드를 상속하지 않고 **처음부터 새로 만든 방**입니다.
+; 게임 지오메트리를 지켜야 할 이유가 없고, 오히려 소리를 확인하기 좋은 형태여야 합니다.
+;
+; 방 구조: 1460 × 900 닫힌 상자. 중력을 끄면 공이 감속 없이 계속 튕겨
+;         벽 충돌음이 연달아 납니다. 속도를 바꿔가며 저·중·고속 구간을 다 들을 수 있습니다.
+;
+; 벽은 group "combo_walls" 에 등록돼 있어야 ComboCollisionBridge 가 잡습니다.
+
+[ext_resource type="Script" path="res://tests/sfx_system/sfx_lab.gd" id="1_lab"]
+[ext_resource type="PackedScene" uid="uid://bhh5qyc3llygr" path="res://Resources/Prefabs/balls/base/base_ball.tscn" id="2_ball"]
+[ext_resource type="Script" path="res://scripts/combo_system/combo_system.gd" id="3_combo"]
+[ext_resource type="Script" path="res://scripts/combo_system/combo_collision_bridge.gd" id="4_bridge"]
+[ext_resource type="Script" path="res://scripts/sfx_system/sfx_director.gd" id="5_director"]
+[ext_resource type="Script" path="res://scripts/sfx_system/wave_sfx_binder.gd" id="6_binder"]
+[ext_resource type="Resource" path="res://settings/sfx/FlipperSfxRules.tres" id="8_flipper"]
+[ext_resource type="Resource" path="res://settings/sfx/WallSfxRules.tres" id="80_wall"]
+[ext_resource type="Resource" path="res://settings/sfx/BallFlowSfxRules.tres" id="81_flow"]
+[ext_resource type="Resource" path="res://settings/sfx/BumperSfxRules.tres" id="82_bumper"]
+[ext_resource type="Script" path="res://tests/sfx_system/sfx_debug_hud.gd" id="9_hud"]
+[ext_resource type="Script" path="res://scripts/flipper_system/flipper_selector.gd" id="10_selector"]
+[ext_resource type="Script" path="res://scripts/flipper_system/flipper_controller.gd" id="11_controller"]
+[ext_resource type="PackedScene" uid="uid://ris3ga3vl6ci" path="res://Resources/Prefabs/flippers/variants/normal_flipper_left.tscn" id="12_left"]
+[ext_resource type="PackedScene" uid="uid://u4e8s8havfkw" path="res://Resources/Prefabs/flippers/variants/normal_flipper_right.tscn" id="13_right"]
+[ext_resource type="Resource" path="res://settings/sfx/ComboSfxRules.tres" id="90_combo"]
+[ext_resource type="Resource" path="res://settings/sfx/BossSfxRules.tres" id="91_boss"]
+
+[sub_resource type="RectangleShape2D" id="Rect_horizontal"]
+size = Vector2(1520, 60)
+
+[sub_resource type="RectangleShape2D" id="Rect_vertical"]
+size = Vector2(60, 900)
+
+[sub_resource type="PhysicsMaterial" id="PhysMat_wall"]
+friction = 0.05
+bounce = 0.98
+
+[node name="SfxLab" type="Node2D"]
+script = ExtResource("1_lab")
+ball_path = NodePath("PinballBall")
+director_path = NodePath("SfxDirector")
+flipper_rules = ExtResource("8_flipper")
+wall_rules = ExtResource("80_wall")
+ball_flow_rules = ExtResource("81_flow")
+bumper_rules = ExtResource("82_bumper")
+combo_rules = ExtResource("90_combo")
+boss_rules = ExtResource("91_boss")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(0.62, 0.62)
+
+[node name="Floor" type="Polygon2D" parent="."]
+color = Color(0.06, 0.08, 0.11, 1)
+polygon = PackedVector2Array(-730, -450, 730, -450, 730, 450, -730, 450)
+
+[node name="Walls" type="Node2D" parent="."]
+
+[node name="TopWall" type="StaticBody2D" parent="Walls" groups=["combo_walls"]]
+position = Vector2(0, -480)
+physics_material_override = SubResource("PhysMat_wall")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/TopWall"]
+shape = SubResource("Rect_horizontal")
+
+[node name="Visual" type="Polygon2D" parent="Walls/TopWall"]
+color = Color(0.55, 0.5, 0.42, 1)
+polygon = PackedVector2Array(-760, -30, 760, -30, 760, 30, -760, 30)
+
+[node name="BottomWall" type="StaticBody2D" parent="Walls" groups=["combo_walls"]]
+position = Vector2(0, 480)
+physics_material_override = SubResource("PhysMat_wall")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/BottomWall"]
+shape = SubResource("Rect_horizontal")
+
+[node name="Visual" type="Polygon2D" parent="Walls/BottomWall"]
+color = Color(0.55, 0.5, 0.42, 1)
+polygon = PackedVector2Array(-760, -30, 760, -30, 760, 30, -760, 30)
+
+[node name="LeftWall" type="StaticBody2D" parent="Walls" groups=["combo_walls"]]
+position = Vector2(-760, 0)
+physics_material_override = SubResource("PhysMat_wall")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/LeftWall"]
+shape = SubResource("Rect_vertical")
+
+[node name="Visual" type="Polygon2D" parent="Walls/LeftWall"]
+color = Color(0.55, 0.5, 0.42, 1)
+polygon = PackedVector2Array(-30, -450, 30, -450, 30, 450, -30, 450)
+
+[node name="RightWall" type="StaticBody2D" parent="Walls" groups=["combo_walls"]]
+position = Vector2(760, 0)
+physics_material_override = SubResource("PhysMat_wall")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/RightWall"]
+shape = SubResource("Rect_vertical")
+
+[node name="Visual" type="Polygon2D" parent="Walls/RightWall"]
+color = Color(0.55, 0.5, 0.42, 1)
+polygon = PackedVector2Array(-30, -450, 30, -450, 30, 450, -30, 450)
+
+[node name="FlipperSelector" type="Node2D" parent="." node_paths=PackedStringArray("selected")]
+script = ExtResource("10_selector")
+selected = NodePath("BottomController")
+
+[node name="BottomController" type="Node2D" parent="FlipperSelector"]
+position = Vector2(0, 220)
+script = ExtResource("11_controller")
+
+[node name="LeftFlipper" parent="FlipperSelector/BottomController" instance=ExtResource("12_left")]
+position = Vector2(-480, 0)
+flipper_length = 500.0
+
+[node name="RightFlipper" parent="FlipperSelector/BottomController" instance=ExtResource("13_right")]
+position = Vector2(480, 0)
+flipper_length = 500.0
+
+[node name="TopController" type="Node2D" parent="FlipperSelector"]
+position = Vector2(0, -240)
+script = ExtResource("11_controller")
+
+[node name="LeftFlipper" parent="FlipperSelector/TopController" instance=ExtResource("12_left")]
+position = Vector2(-480, 0)
+flipper_length = 500.0
+
+[node name="RightFlipper" parent="FlipperSelector/TopController" instance=ExtResource("13_right")]
+position = Vector2(480, 0)
+flipper_length = 500.0
+
+[node name="PinballBall" parent="." instance=ExtResource("2_ball")]
+ball_diameter = 44.0
+
+[node name="ComboSystem" type="Node" parent="."]
+script = ExtResource("3_combo")
+
+[node name="ComboCollisionBridge" type="Node" parent="." node_paths=PackedStringArray("configured_combo_system", "configured_ball")]
+script = ExtResource("4_bridge")
+configured_combo_system = NodePath("../ComboSystem")
+configured_ball = NodePath("../PinballBall")
+
+[node name="SfxDirector" type="Node" parent="."]
+script = ExtResource("5_director")
+
+[node name="_WaveSfxBinder" type="Node" parent="."]
+script = ExtResource("6_binder")
+flipper_rules = ExtResource("8_flipper")
+wall_rules = ExtResource("80_wall")
+ball_flow_rules = ExtResource("81_flow")
+bumper_rules = ExtResource("82_bumper")
+combo_rules = ExtResource("90_combo")
+boss_rules = ExtResource("91_boss")
+
+[node name="_SfxDebugHud" type="CanvasLayer" parent="."]
+script = ExtResource("9_hud")
+director_path = NodePath("../SfxDirector")
+lab_path = NodePath("..")

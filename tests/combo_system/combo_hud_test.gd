@@ -2,7 +2,7 @@ extends SceneTree
 
 
 const COMBO_SYSTEM_PATH := "res://scripts/combo_system/combo_system.gd"
-const COMBO_HUD_SCENE_PATH := "res://scenes/combo_system/combo_hud.tscn"
+const COMBO_HUD_SCENE_PATH := "res://Resources/Prefabs/ui/combo/combo_hud.tscn"
 const EPSILON := 0.001
 
 

@@ -2,7 +2,7 @@ extends SceneTree
 
 
 const DamageRuntimeScene: PackedScene = preload(
-	"res://scenes/wave/test_teddy_phase1_damage_runtime.tscn"
+	"res://scenes/tests/boss/test_teddy_phase1_damage_runtime.tscn"
 )
 const WEIGHT_RULES_PATH: String = (
 	"res://settings/bosses/BossBallDamageWeightRules.tres"

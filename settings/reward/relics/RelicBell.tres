@@ -1,12 +1,10 @@
-[gd_resource type="Resource" script_class="RelicDefinition" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="RelicDefinition" format=3 uid="uid://bajbxwex5eyew"]
 
-[ext_resource type="Script" path="res://scripts/reward_system/relic_definition.gd" id="1_definition"]
-[ext_resource type="Script" path="res://scripts/reward_system/effects/relic_effect_extra_ball.gd" id="2_effect"]
+[ext_resource type="Script" uid="uid://c6wylryatkusy" path="res://scripts/reward_system/relic_definition.gd" id="1_definition"]
+[ext_resource type="Script" uid="uid://c3xl4332v32pw" path="res://scripts/reward_system/effects/relic_effect_extra_ball.gd" id="2_effect"]
 
 [sub_resource type="Resource" id="Effect_bell"]
 script = ExtResource("2_effect")
-balls_per_stack = 1
-target_ball_id = &""
 
 [resource]
 script = ExtResource("1_definition")

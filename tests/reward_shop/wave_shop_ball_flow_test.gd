@@ -4,7 +4,7 @@ extends SceneTree
 ## 상점 구매 공이 다음 웨이브 선택지에 실제로 실리는지 씬으로 확인합니다.
 
 
-const WAVE_SCENE := preload("res://scenes/wave/wave_shop_ball.tscn")
+const WAVE_SCENE := preload("res://scenes/tests/wave_extensions/wave_shop_ball.tscn")
 
 const HIT_WEIGHT := 20000.0
 const MAX_WAIT_FRAMES := 12

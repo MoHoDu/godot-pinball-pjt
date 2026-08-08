@@ -4,12 +4,12 @@ extends SceneTree
 ## 코인 지갑·픽업·필드 컨트롤러 단위 테스트입니다.
 
 
-const COIN_PICKUP_SCENE := preload("res://scenes/coin_system/coin_pickup.tscn")
+const COIN_PICKUP_SCENE := preload("res://Resources/Prefabs/coin/coin_pickup.tscn")
 const COIN_SPAWN_POINT_SCENE := preload(
-	"res://scenes/coin_system/coin_spawn_point.tscn"
+	"res://Resources/Prefabs/coin/coin_spawn_point.tscn"
 )
 const EMPTY_COIN_SYSTEM_SCENE := preload(
-	"res://scenes/stage_system/stage_wave_coin_system.tscn"
+	"res://Resources/Prefabs/stage/coin/stage_wave_coin_system.tscn"
 )
 
 

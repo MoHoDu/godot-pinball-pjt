@@ -1,0 +1,10 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" uid="uid://6fbf244c58gg" path="res://Resources/Prefabs/wave/base/wave.tscn" id="1_board"]
+[ext_resource type="Script" path="res://scripts/wave_hud/wave_shop_ball_coordinator.gd" id="2_coordinator"]
+[ext_resource type="Resource" path="res://settings/reward_shop/WaveShopBumperLayout_Demo.tres" id="3_bumper_layout"]
+
+[node name="WaveShopBall" instance=ExtResource("1_board")]
+script = ExtResource("2_coordinator")
+bumper_stage_settings = ExtResource("3_bumper_layout")
+wave_stage_index = 0

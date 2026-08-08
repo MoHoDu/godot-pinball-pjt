@@ -1,8 +1,8 @@
 extends SceneTree
 
 
-const BALL_SCENE := preload("res://Resources/balls/base/base_ball.tscn")
-const BUTTON_SCENE := preload("res://scenes/bumper_system/button_bumper.tscn")
+const BALL_SCENE := preload("res://Resources/Prefabs/balls/base/base_ball.tscn")
+const BUTTON_SCENE := preload("res://Resources/Prefabs/bumpers/types/button_bumper.tscn")
 
 
 var _failures: Array[String] = []

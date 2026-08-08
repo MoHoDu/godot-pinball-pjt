@@ -1,8 +1,8 @@
-[gd_resource type="Resource" script_class="RewardShopCatalog" load_steps=13 format=3]
+[gd_resource type="Resource" script_class="RewardShopCatalog" format=3 uid="uid://bjot62jli1frb"]
 
-[ext_resource type="Script" path="res://scripts/reward_shop/reward_shop_catalog.gd" id="1_catalog"]
-[ext_resource type="Script" path="res://scripts/reward_shop/reward_ball_offer.gd" id="2_ball"]
-[ext_resource type="Script" path="res://scripts/reward_shop/repair_part_offer.gd" id="3_part"]
+[ext_resource type="Script" uid="uid://cf2f7w3p1aoxc" path="res://scripts/reward_shop/reward_shop_catalog.gd" id="1_catalog"]
+[ext_resource type="Script" uid="uid://buspib2x35cuc" path="res://scripts/reward_shop/reward_ball_offer.gd" id="2_ball"]
+[ext_resource type="Script" uid="uid://bfygurs6p4bm4" path="res://scripts/reward_shop/repair_part_offer.gd" id="3_part"]
 
 [sub_resource type="Resource" id="Ball_clockwork"]
 script = ExtResource("2_ball")
@@ -27,7 +27,6 @@ script = ExtResource("2_ball")
 ball_id = &"gel"
 display_name = "완충 젤 유리눈"
 price = 11
-performance_group = 1
 merit_text = "생존 안정성이 높아 오래 살아남습니다."
 cost_text = "점수 생산이 느립니다."
 
@@ -35,7 +34,6 @@ cost_text = "점수 생산이 느립니다."
 script = ExtResource("2_ball")
 ball_id = &"lead"
 display_name = "납심 유리눈"
-price = 9
 performance_group = 2
 merit_text = "묵직한 관성으로 정밀한 조준이 가능합니다."
 cost_text = "평균 안정성이 낮아 숙련이 필요합니다."
@@ -44,7 +42,6 @@ cost_text = "평균 안정성이 낮아 숙련이 필요합니다."
 script = ExtResource("2_ball")
 ball_id = &"hollow_bell"
 display_name = "속빈 방울눈"
-price = 9
 performance_group = 2
 merit_text = "예측 밖 반동으로 뜻밖의 고점을 만듭니다."
 cost_text = "결과 편차와 통제 난도가 높습니다."
@@ -53,14 +50,13 @@ cost_text = "결과 편차와 통제 난도가 높습니다."
 script = ExtResource("3_part")
 part_id = &"starlight_brooch"
 display_name = "별빛 브로치"
-required_partner_kinds = 2
-bundle_count = 1
 price = 11
 verb_text = "완성한다"
 condition_text = "6초 안에 서로 다른 부품 2종을 방문한 뒤 브로치로 돌아오면"
 effect_text = "완성 타격 1회 (기본 타격 x3.0)"
 works_standalone = false
 needs_partner = true
+required_partner_kinds = 2
 
 [sub_resource type="Resource" id="Part_clockwork_gear"]
 script = ExtResource("3_part")
@@ -71,20 +67,15 @@ price = 12
 verb_text = "감고 터뜨린다"
 condition_text = "공이 접촉하면"
 effect_text = "접촉 시 속력 x1.15, 2.4초 내 3번째 접촉에 +180px/s 과회전"
-works_standalone = true
-needs_partner = false
 
 [sub_resource type="Resource" id="Part_bell"]
 script = ExtResource("3_part")
 part_id = &"forgotten_star_bell"
 display_name = "잊혀진 별방울"
 bundle_count = 3
-price = 9
 verb_text = "늦게 울린다"
 condition_text = "공이 접촉하고 0.60초 뒤"
 effect_text = "지연 동안 쌓은 콤보 x0.25를 반올림한 만큼 콤보 추가"
-works_standalone = true
-needs_partner = false
 
 [resource]
 script = ExtResource("1_catalog")

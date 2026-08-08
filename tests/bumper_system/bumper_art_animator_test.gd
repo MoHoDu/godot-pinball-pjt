@@ -13,9 +13,9 @@ extends SceneTree
 ##   godot --headless --path . --script res://tests/bumper_system/bumper_art_animator_test.gd
 
 
-const SPRING_SCENE := "res://scenes/bumper_system/vfx/spring_doll_bumper_vfx.tscn"
-const DRUM_SCENE := "res://scenes/bumper_system/vfx/toy_drum_bumper_vfx.tscn"
-const CANNON_SCENE := "res://scenes/bumper_system/vfx/clockwork_toy_cannon_vfx.tscn"
+const SPRING_SCENE := "res://Resources/Prefabs/bumpers/presented/spring_doll_bumper_vfx.tscn"
+const DRUM_SCENE := "res://Resources/Prefabs/bumpers/presented/toy_drum_bumper_vfx.tscn"
+const CANNON_SCENE := "res://Resources/Prefabs/bumpers/presented/clockwork_toy_cannon_vfx.tscn"
 const COTTON_ANIM := preload("res://settings/bumpers/anim/CottonAnim.tres")
 const SPRING_ANIM := preload("res://settings/bumpers/anim/SpringDollAnim.tres")
 const DRUM_ANIM := preload("res://settings/bumpers/anim/ToyDrumAnim.tres")

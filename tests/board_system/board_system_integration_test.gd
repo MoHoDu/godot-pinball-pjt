@@ -1,12 +1,12 @@
 extends SceneTree
 
 
-const LAYOUT_SCENE := preload("res://Resources/boards/square_board_layout.tscn")
+const LAYOUT_SCENE := preload("res://Resources/Prefabs/boards/square_board_layout.tscn")
 const WAVE_INTEGRATION_SCENE := preload(
-	"res://scenes/boards/board_system_wave_integration.tscn"
+	"res://scenes/tests/boards/board_system_wave_integration.tscn"
 )
 const BROOCH_SCENE := preload(
-	"res://Resources/boards/starlight_brooch_placeable.tscn"
+	"res://Resources/Prefabs/repair_parts/placeables/starlight_brooch_placeable.tscn"
 )
 
 

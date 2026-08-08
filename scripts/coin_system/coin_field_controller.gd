@@ -17,7 +17,7 @@ signal coin_pickup_collected(
 signal board_coin_changed(board_coin: int)
 
 
-const DEFAULT_PICKUP_SCENE := preload("res://scenes/coin_system/coin_pickup.tscn")
+const DEFAULT_PICKUP_SCENE := preload("res://Resources/Prefabs/coin/coin_pickup.tscn")
 
 
 @export var layout: CoinSpawnLayout

@@ -6,7 +6,7 @@ extends SceneTree
 ## 테스트 시간을 줄이려고 유예를 0.6초로 줄여 실행합니다.
 
 
-const WAVE_SCENE := preload("res://scenes/wave/wave.tscn")
+const WAVE_SCENE := preload("res://Resources/Prefabs/wave/base/wave.tscn")
 
 const HIT_WEIGHT := 20000.0
 const MAX_TIMEOUT_FRAMES := 300

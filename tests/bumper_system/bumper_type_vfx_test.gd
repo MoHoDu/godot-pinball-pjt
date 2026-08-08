@@ -13,8 +13,8 @@ extends SceneTree
 ##   godot --headless --path . --script res://tests/bumper_system/bumper_type_vfx_test.gd
 
 
-const SPRING_SCENE := preload("res://scenes/bumper_system/spring_doll_bumper.tscn")
-const CANNON_SCENE := preload("res://scenes/bumper_system/clockwork_toy_cannon.tscn")
+const SPRING_SCENE := preload("res://Resources/Prefabs/bumpers/types/spring_doll_bumper.tscn")
+const CANNON_SCENE := preload("res://Resources/Prefabs/bumpers/types/clockwork_toy_cannon.tscn")
 const BOUNCE_FEEDBACK := preload(
 	"res://scripts/bumper-system/vfx/bumper_bounce_feedback.gd"
 )

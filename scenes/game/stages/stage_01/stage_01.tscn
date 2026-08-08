@@ -1,0 +1,72 @@
+[gd_scene load_steps=23 format=3 uid="uid://rpjv1okgqa67"]
+
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/stage/flow/configured_stage_flow_manager.tscn" id="1_manager"]
+[ext_resource type="PackedScene" path="res://scenes/game/stages/stage_01/waves/stage_01_wave_01.tscn" id="2_wave_01"]
+[ext_resource type="PackedScene" path="res://scenes/game/stages/stage_01/waves/stage_01_wave_02.tscn" id="3_wave_02"]
+[ext_resource type="PackedScene" path="res://scenes/game/stages/stage_01/waves/stage_01_wave_03.tscn" id="4_wave_03"]
+[ext_resource type="PackedScene" path="res://scenes/game/stages/stage_01/boss/stage1_teddy_boss_scene.tscn" id="5_boss"]
+[ext_resource type="Script" path="res://scripts/stage_system/loadout/stage_initial_ball_entry.gd" id="6_ball_entry"]
+[ext_resource type="Script" path="res://scripts/stage_system/loadout/stage_initial_repair_part_entry.gd" id="7_part_entry"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/balls/variants/mass/light_ball.tscn" id="8_light"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/balls/variants/mass/normal_ball.tscn" id="9_normal"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/balls/variants/mass/heavy_ball.tscn" id="10_heavy"]
+[ext_resource type="Resource" path="res://settings/bumpers/repair_parts/StarlightBrooch.tres" id="11_brooch_settings"]
+[ext_resource type="Resource" path="res://settings/bumpers/repair_parts/GoldenGears.tres" id="12_gears_settings"]
+[ext_resource type="Resource" path="res://settings/bumpers/repair_parts/ForgottenStarBell.tres" id="13_bell_settings"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/repair_parts/placeables/starlight_brooch_placeable.tscn" id="14_brooch_prefab"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/repair_parts/placeables/golden_gears_placeable.tscn" id="15_gears_prefab"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/repair_parts/placeables/forgotten_star_bell_placeable.tscn" id="16_bell_prefab"]
+
+[sub_resource type="Resource" id="InitialBall_light"]
+script = ExtResource("6_ball_entry")
+ball_id = &"light"
+display_name = "가벼운 공"
+ball_prefab = ExtResource("8_light")
+feature_summary = "가벼운 무게로 방향 전환과 빠른 반응에 유리합니다."
+
+[sub_resource type="Resource" id="InitialBall_normal"]
+script = ExtResource("6_ball_entry")
+ball_id = &"normal"
+display_name = "보통 공"
+ball_prefab = ExtResource("9_normal")
+feature_summary = "균형 잡힌 무게와 탄성으로 안정적인 궤적을 만듭니다."
+
+[sub_resource type="Resource" id="InitialBall_heavy"]
+script = ExtResource("6_ball_entry")
+ball_id = &"heavy"
+display_name = "무거운 공"
+ball_prefab = ExtResource("10_heavy")
+feature_summary = "큰 관성으로 충돌 흐름을 강하게 밀어붙입니다."
+
+[sub_resource type="Resource" id="InitialPart_brooch"]
+script = ExtResource("7_part_entry")
+settings = ExtResource("11_brooch_settings")
+part_prefab = ExtResource("14_brooch_prefab")
+starting_count = 0
+one_line_feature = "완성한다 · 6초 귀환"
+placeholder_icon = "✦"
+
+[sub_resource type="Resource" id="InitialPart_gears"]
+script = ExtResource("7_part_entry")
+settings = ExtResource("12_gears_settings")
+part_prefab = ExtResource("15_gears_prefab")
+starting_count = 0
+one_line_feature = "타격 가속 · 과회전"
+placeholder_icon = "⚙"
+
+[sub_resource type="Resource" id="InitialPart_bell"]
+script = ExtResource("7_part_entry")
+settings = ExtResource("13_bell_settings")
+part_prefab = ExtResource("16_bell_prefab")
+starting_count = 0
+one_line_feature = "콤보 여운 · 파동"
+placeholder_icon = "♢"
+
+[node name="Stage01" type="Node"]
+
+[node name="StageFlowManager" parent="." instance=ExtResource("1_manager")]
+wave_scenes = Array[PackedScene]([ExtResource("2_wave_01"), ExtResource("3_wave_02"), ExtResource("4_wave_03")])
+boss_scenes = Array[PackedScene]([ExtResource("5_boss")])
+launches_per_wave = 3
+initial_balls = Array[ExtResource("6_ball_entry")]([SubResource("InitialBall_light"), SubResource("InitialBall_normal"), SubResource("InitialBall_heavy")])
+initial_repair_parts = Array[ExtResource("7_part_entry")]([SubResource("InitialPart_brooch"), SubResource("InitialPart_gears"), SubResource("InitialPart_bell")])

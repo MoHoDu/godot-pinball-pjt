@@ -21,14 +21,14 @@ const OUT_DIR := "res://tests/evidence/bumper_vfx"
 const BACKGROUND := Color(0.078, 0.106, 0.149, 1.0)
 
 const CASES := [
-	["res://scenes/bumper_system/vfx/button_bumper_vfx.tscn", "button", Vector2(150.0, 180.0)],
-	["res://scenes/bumper_system/vfx/cotton_bumper_vfx.tscn", "cotton", Vector2(390.0, 180.0)],
-	["res://scenes/bumper_system/vfx/spring_doll_bumper_vfx.tscn", "spring", Vector2(630.0, 180.0)],
-	["res://scenes/bumper_system/vfx/toy_drum_bumper_vfx.tscn", "drum", Vector2(870.0, 180.0)],
-	["res://scenes/bumper_system/vfx/clockwork_toy_cannon_vfx.tscn", "cannon", Vector2(150.0, 430.0)],
-	["res://scenes/repair_parts/vfx/starlight_brooch_vfx.tscn", "brooch", Vector2(390.0, 430.0)],
-	["res://scenes/repair_parts/vfx/golden_gears_vfx.tscn", "gears", Vector2(630.0, 430.0)],
-	["res://scenes/repair_parts/vfx/forgotten_star_bell_vfx.tscn", "bell", Vector2(870.0, 430.0)],
+	["res://Resources/Prefabs/bumpers/presented/button_bumper_vfx.tscn", "button", Vector2(150.0, 180.0)],
+	["res://Resources/Prefabs/bumpers/presented/cotton_bumper_vfx.tscn", "cotton", Vector2(390.0, 180.0)],
+	["res://Resources/Prefabs/bumpers/presented/spring_doll_bumper_vfx.tscn", "spring", Vector2(630.0, 180.0)],
+	["res://Resources/Prefabs/bumpers/presented/toy_drum_bumper_vfx.tscn", "drum", Vector2(870.0, 180.0)],
+	["res://Resources/Prefabs/bumpers/presented/clockwork_toy_cannon_vfx.tscn", "cannon", Vector2(150.0, 430.0)],
+	["res://Resources/Prefabs/repair_parts/presented/starlight_brooch_vfx.tscn", "brooch", Vector2(390.0, 430.0)],
+	["res://Resources/Prefabs/repair_parts/presented/golden_gears_vfx.tscn", "gears", Vector2(630.0, 430.0)],
+	["res://Resources/Prefabs/repair_parts/presented/forgotten_star_bell_vfx.tscn", "bell", Vector2(870.0, 430.0)],
 ]
 
 ## 캡처 시점(초). 파동과 조각이 퍼지는 중간을 잡는다.

@@ -1,7 +1,16 @@
 extends SceneTree
 
 
-const WAVE_SCENE := preload("res://scenes/wave/wave.tscn")
+const WAVE_SCENE := preload("res://Resources/Prefabs/wave/base/wave_unique.tscn")
+const LIGHT_BALL := preload(
+	"res://Resources/Prefabs/balls/variants/mass/light_ball.tscn"
+)
+const NORMAL_BALL := preload(
+	"res://Resources/Prefabs/balls/variants/mass/normal_ball.tscn"
+)
+const HEAVY_BALL := preload(
+	"res://Resources/Prefabs/balls/variants/mass/heavy_ball.tscn"
+)
 
 
 var _failures: Array[String] = []
@@ -13,6 +22,12 @@ func _init() -> void:
 
 func _run() -> void:
 	var wave := WAVE_SCENE.instantiate() as WaveRuntimeCoordinator
+	var authored_inventory := wave.wave_ball_inventory as WaveUniqueBallInventory
+	authored_inventory.starting_stock = [
+		_make_stock(&"light", "가벼운 공", LIGHT_BALL),
+		_make_stock(&"normal", "보통 공", NORMAL_BALL),
+		_make_stock(&"heavy", "무거운 공", HEAVY_BALL),
+	]
 	root.add_child(wave)
 	await process_frame
 	await process_frame
@@ -38,9 +53,9 @@ func _run() -> void:
 	_expect(bridge.wallet.balance == 0 and parts.total_count == 0,
 		"A new stage must start with no coins and no repair parts.")
 	_expect(inventory.reusable_owned_balls \
-		and inventory.get_owned_definitions().size() == 1 \
+		and inventory.get_owned_definitions().size() == 3 \
 		and inventory.total_remaining == 3,
-		"The stage must start with one owned ball and three reusable launches.")
+		"The stage must start with three unique balls and three launches.")
 	_expect(WaveClearDelayController.convert_delay_score(
 		999999, 250000, 0.05, 5
 	) == 5, "Score reward conversion must cap each normal wave at five coins.")
@@ -86,7 +101,7 @@ func _run() -> void:
 	bridge.wallet.reset(999)
 	var bought_ball := bridge.shop_controller.buy_ball(0)
 	var bought_part := bridge.shop_controller.buy_part(0)
-	_expect(bought_ball and inventory.get_owned_definitions().size() == 2,
+	_expect(bought_ball and inventory.get_owned_definitions().size() == 4,
 		"Buying a ball must add it to the selectable main inventory.")
 	_expect(bought_part and parts.total_count > 0,
 		"Buying a part must add its bundle to the placement inventory.")
@@ -124,7 +139,7 @@ func _run() -> void:
 		and manager.current_stage_phase == WaveManager.StagePhase.REPAIR_PLACEMENT,
 		"Failure must roll the stage back to wave-one placement.")
 	_expect(bridge.wallet.balance == 0 \
-		and inventory.get_owned_definitions().size() == 1 \
+		and inventory.get_owned_definitions().size() == 3 \
 		and parts.total_count == 0,
 		"Failure must restore stage-entry coins, reward balls, and parts.")
 	_expect(placement_session.layout.get_placeables().is_empty(),
@@ -133,6 +148,21 @@ func _run() -> void:
 	wave.queue_free()
 	await process_frame
 	_finish()
+
+
+func _make_stock(
+	ball_id: StringName,
+	display_name: String,
+	prefab: PackedScene
+) -> BallStock:
+	var definition := SelectBallDefinition.new()
+	definition.ball_id = ball_id
+	definition.display_name = display_name
+	definition.ball_scene = prefab
+	var stock := BallStock.new()
+	stock.definition = definition
+	stock.count = 1
+	return stock
 
 
 func _expect(condition: bool, message: String) -> void:

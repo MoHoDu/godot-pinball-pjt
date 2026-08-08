@@ -1,8 +1,8 @@
 extends SceneTree
 
 
-const TEST_SCENE_PATH := "res://scenes/wave/test_teddy_arm_sweep.tscn"
-const BALL_SCENE_PATH := "res://Resources/balls/mass_var/normal_ball.tscn"
+const TEST_SCENE_PATH := "res://scenes/tests/boss/test_teddy_arm_sweep.tscn"
+const BALL_SCENE_PATH := "res://Resources/Prefabs/balls/variants/mass/normal_ball.tscn"
 
 
 var _failures: Array[String] = []

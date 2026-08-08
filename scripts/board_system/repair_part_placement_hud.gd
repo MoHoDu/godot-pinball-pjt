@@ -14,7 +14,7 @@ const DRAWER_OPEN_Y := 702.0
 const DRAWER_CLOSED_Y := 1014.0
 const DRAG_THRESHOLD := 10.0
 const CARD_SCENE := preload(
-	"res://Resources/boards/repair_part_inventory_card.tscn"
+	"res://Resources/Prefabs/ui/repair_placement/repair_part_inventory_card.tscn"
 )
 
 

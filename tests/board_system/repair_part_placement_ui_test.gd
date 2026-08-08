@@ -2,7 +2,7 @@ extends SceneTree
 
 
 const DEMO_SCENE := preload(
-	"res://scenes/boards/repair_part_placement_wave_demo.tscn"
+	"res://scenes/tests/boards/repair_part_placement_wave_demo.tscn"
 )
 
 
@@ -91,8 +91,17 @@ func _test_initial_phase(
 		"Repair placement session must be editable during the first stage phase.")
 	_expect(hud.visible and hud.is_drawer_open(),
 		"Placement drawer must start open while its tab remains available.")
-	_expect(not wave.wave_hud.visible and not wave.ball_selection_hud.visible,
-		"Gameplay HUD layers must be hidden only during repair placement.")
+	var settings_button := wave.get_node(
+		"HUD/WaveHud/DesignSpace/SettingsButton"
+	) as Control
+	_expect(wave.wave_hud.visible \
+		and settings_button.visible \
+		and not wave.ball_selection_hud.visible,
+		"Repair placement must keep only the gameplay settings control available.")
+	_expect(not wave.get_node("HUD/WaveHud/DesignSpace/LifeHud").visible \
+		and not wave.get_node("HUD/WaveHud/DesignSpace/ScoreRepairHud").visible \
+		and not wave.get_node("HUD/WaveHud/DesignSpace/CoinWalletHud").visible,
+		"Repair placement must hide gameplay status panels behind its own HUD.")
 	_expect(layout.get_placeables().is_empty(),
 		"The runtime wave layout must start without pre-consumed repair parts.")
 

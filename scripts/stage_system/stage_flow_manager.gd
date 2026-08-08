@@ -28,7 +28,7 @@ enum Phase {
 
 
 const DEFAULT_REWARD_SCENE := preload(
-	"res://scenes/stage_system/stage_reward_shop_screen.tscn"
+	"res://Resources/Prefabs/ui/reward_shop/stage_reward_shop_screen.tscn"
 )
 
 const DEFAULT_WAVE_COMPLETION_SIGNALS: Array[StringName] = [

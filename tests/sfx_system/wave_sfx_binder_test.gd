@@ -10,7 +10,7 @@ extends SceneTree
 ##   이 테스트는 정확히 그 조건(코드 인스턴스화 = current_scene 이 null)에서
 ##   배선이 되는지 봅니다. 옛 방식이면 여기서 0을 찾고 실패합니다.
 
-const SCENE_PATH := "res://scenes/wave/wave_sfx.tscn"
+const SCENE_PATH := "res://scenes/tests/wave_extensions/wave_sfx.tscn"
 const WALL_RULES_PATH := "res://settings/sfx/WallSfxRules.tres"
 const FLIPPER_RULES_PATH := "res://settings/sfx/FlipperSfxRules.tres"
 
@@ -37,7 +37,7 @@ func _run() -> void:
 ## 바꾸려다 실패하고 **빈 값을 남긴다**. 에러도 경고도 없다.
 ## 그 결과 공도 디렉터도 못 찾아 **모든 키가 먹통**이었다.
 func _test_sfx_lab_scene() -> void:
-	var packed := load("res://scenes/test_sfx/sfx_lab.tscn") as PackedScene
+	var packed := load("res://scenes/tests/sfx/sfx_lab.tscn") as PackedScene
 	_expect(packed != null, "사운드 연구실 씬을 불러올 수 있어야 한다.")
 
 	if packed == null:
@@ -100,7 +100,7 @@ func _is_descendant(node: Node, ancestor: Node) -> bool:
 
 ## 공 사운드 테스트 씬이 실제로 소리를 낼 수 있는 상태인가
 func _test_sound_test_scene() -> void:
-	var packed := load("res://scenes/test_sfx/test_ball_sfx.tscn") as PackedScene
+	var packed := load("res://scenes/tests/sfx/test_ball_sfx.tscn") as PackedScene
 	_expect(packed != null, "공 사운드 테스트 씬을 불러올 수 있어야 한다.")
 
 	if packed == null:
@@ -128,7 +128,7 @@ func _test_sound_test_scene() -> void:
 		_expect(binder.get_director() != null, "테스트 씬 디렉터를 찾아야 한다.")
 
 	# 원본 test_flipper_board.tscn 은 그대로여야 한다
-	var original := (load("res://scenes/test_flipper/test_flipper_board.tscn") as PackedScene).instantiate()
+	var original := (load("res://scenes/tests/flippers/test_flipper_board.tscn") as PackedScene).instantiate()
 	_expect(original.get_node_or_null(^"SfxDirector") == null,
 		"원본 test_flipper_board.tscn 은 그대로여야 한다 (씬 복제 규칙).")
 	original.free()
@@ -244,7 +244,7 @@ func _test_scene_wiring() -> void:
 
 ## 승인된 SFX가 실제 메인 웨이브에 병합되었는지
 func _test_main_scene_wiring() -> void:
-	var original := load("res://scenes/wave/wave.tscn") as PackedScene
+	var original := load("res://Resources/Prefabs/wave/base/wave.tscn") as PackedScene
 	_expect(original != null, "메인 wave.tscn 을 불러올 수 있어야 한다.")
 
 	if original == null:

@@ -9,7 +9,7 @@ extends SceneTree
 ##
 ##   그래서 실제 씬을 띄우고 **시그널을 직접 발화시켜** 디렉터가 재생했는지 봅니다.
 
-const LAB_PATH := "res://scenes/test_sfx/sfx_lab.tscn"
+const LAB_PATH := "res://scenes/tests/sfx/sfx_lab.tscn"
 const COMBO_RULES_PATH := "res://settings/sfx/ComboSfxRules.tres"
 const BUMPER_RULES_PATH := "res://settings/sfx/BumperSfxRules.tres"
 const FLOW_RULES_PATH := "res://settings/sfx/BallFlowSfxRules.tres"

@@ -10,7 +10,7 @@ extends SceneTree
 ##   그래서 여기서는 **범퍼를 하나씩 갈아 끼우며** 매번 잡히는지 봅니다.
 ##   한 번 성공하는 것으로는 늦은 배선을 검증할 수 없습니다.
 
-const SCENE := "res://scenes/test_sfx/bumper_sfx_test.tscn"
+const SCENE := "res://scenes/tests/sfx/bumper_sfx_test.tscn"
 
 ## VFX 테스트 씬에 배치된 5종입니다. 재질음이 서로 갈리는 것들입니다.
 const EXPECTED_KINDS: Array[StringName] = [

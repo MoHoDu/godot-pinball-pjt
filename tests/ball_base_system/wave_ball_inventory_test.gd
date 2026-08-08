@@ -10,8 +10,8 @@ const BALL_DEFINITION_SCRIPT := preload(
 const BALL_STOCK_SCRIPT := preload(
 	"res://scripts/ball_base_system/ball_stock.gd"
 )
-const LIGHT_BALL := preload("res://Resources/balls/mass_var/light_ball.tscn")
-const HEAVY_BALL := preload("res://Resources/balls/mass_var/heavy_ball.tscn")
+const LIGHT_BALL := preload("res://Resources/Prefabs/balls/variants/mass/light_ball.tscn")
+const HEAVY_BALL := preload("res://Resources/Prefabs/balls/variants/mass/heavy_ball.tscn")
 
 
 var _failures: Array[String] = []

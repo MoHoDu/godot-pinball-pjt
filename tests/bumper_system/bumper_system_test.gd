@@ -1,24 +1,24 @@
 extends SceneTree
 
 
-const BUTTON_SCENE := preload("res://scenes/bumper_system/button_bumper.tscn")
-const COTTON_SCENE := preload("res://scenes/bumper_system/cotton_bumper.tscn")
-const SPRING_SCENE := preload("res://scenes/bumper_system/spring_doll_bumper.tscn")
-const DRUM_SCENE := preload("res://scenes/bumper_system/toy_drum_bumper.tscn")
-const CANNON_SCENE := preload("res://scenes/bumper_system/clockwork_toy_cannon.tscn")
+const BUTTON_SCENE := preload("res://Resources/Prefabs/bumpers/types/button_bumper.tscn")
+const COTTON_SCENE := preload("res://Resources/Prefabs/bumpers/types/cotton_bumper.tscn")
+const SPRING_SCENE := preload("res://Resources/Prefabs/bumpers/types/spring_doll_bumper.tscn")
+const DRUM_SCENE := preload("res://Resources/Prefabs/bumpers/types/toy_drum_bumper.tscn")
+const CANNON_SCENE := preload("res://Resources/Prefabs/bumpers/types/clockwork_toy_cannon.tscn")
 const STARLIGHT_SCENE := preload(
-	"res://scenes/bumper_system/starlight_brooch_bumper.tscn"
+	"res://Resources/Prefabs/bumpers/types/starlight_brooch_bumper.tscn"
 )
 const GOLDEN_GEARS_SCENE := preload(
-	"res://scenes/bumper_system/golden_gears_bumper.tscn"
+	"res://Resources/Prefabs/bumpers/types/golden_gears_bumper.tscn"
 )
 const CRESCENT_NEEDLE_SCENE := preload(
-	"res://scenes/bumper_system/crescent_needle_bumper.tscn"
+	"res://Resources/Prefabs/bumpers/types/crescent_needle_bumper.tscn"
 )
 const FORGOTTEN_STAR_BELL_SCENE := preload(
-	"res://scenes/bumper_system/forgotten_star_bell_bumper.tscn"
+	"res://Resources/Prefabs/bumpers/types/forgotten_star_bell_bumper.tscn"
 )
-const BUMPER_TEST_SCENE := preload("res://scenes/bumper_system/bumper_test.tscn")
+const BUMPER_TEST_SCENE := preload("res://scenes/tests/bumpers/bumper_test.tscn")
 const STAGE_LAYOUT := preload("res://settings/bumpers/stage_01/Stage01BumperLayout.tres")
 const BUMPER_WAVE_LOADOUT_SCRIPT := preload(
 	"res://scripts/bumper-system/bumper_wave_loadout.gd"

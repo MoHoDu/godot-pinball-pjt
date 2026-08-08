@@ -1,0 +1,73 @@
+[gd_scene load_steps=16 format=3]
+
+[ext_resource type="PackedScene" uid="uid://6fbf244c58gg" path="res://Resources/Prefabs/wave/base/wave.tscn" id="1_wave"]
+[ext_resource type="Script" path="res://scripts/select_ball/wave_unique_ball_inventory.gd" id="2_inventory"]
+[ext_resource type="Script" path="res://scripts/select_ball/select_ball_selection_hud_responsive.gd" id="3_hud"]
+[ext_resource type="Script" path="res://scripts/wave_hud/life_hud_v02.gd" id="4_life"]
+[ext_resource type="Script" path="res://scripts/wave_hud/wave_runtime_coordinator_full_bleed.gd" id="5_runtime"]
+[ext_resource type="Script" path="res://scripts/wave_hud/wave_hud_placement.gd" id="6_wave_hud"]
+[ext_resource type="Script" path="res://scripts/board_system/board_wave_placement_bridge_hud.gd" id="7_placement"]
+[ext_resource type="Script" path="res://scripts/ball_base_system/ball_definition.gd" id="8_definition"]
+[ext_resource type="Script" path="res://scripts/ball_base_system/ball_stock.gd" id="9_stock"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/balls/variants/mass/light_ball.tscn" id="10_light"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/balls/variants/mass/normal_ball.tscn" id="11_normal"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/balls/variants/mass/heavy_ball.tscn" id="12_heavy"]
+
+[sub_resource type="Resource" id="BallDefinition_light"]
+script = ExtResource("8_definition")
+ball_id = &"light"
+display_name = "가벼운 공"
+ball_scene = ExtResource("10_light")
+feature_summary = "가벼운 무게로 방향 전환과 빠른 반응에 유리합니다."
+
+[sub_resource type="Resource" id="BallStock_light"]
+script = ExtResource("9_stock")
+definition = SubResource("BallDefinition_light")
+count = 1
+
+[sub_resource type="Resource" id="BallDefinition_normal"]
+script = ExtResource("8_definition")
+ball_id = &"normal"
+display_name = "보통 공"
+ball_scene = ExtResource("11_normal")
+feature_summary = "균형 잡힌 무게와 탄성으로 안정적인 궤적을 만듭니다."
+
+[sub_resource type="Resource" id="BallStock_normal"]
+script = ExtResource("9_stock")
+definition = SubResource("BallDefinition_normal")
+count = 1
+
+[sub_resource type="Resource" id="BallDefinition_heavy"]
+script = ExtResource("8_definition")
+ball_id = &"heavy"
+display_name = "무거운 공"
+ball_scene = ExtResource("12_heavy")
+feature_summary = "큰 관성으로 충돌 흐름을 강하게 밀어붙입니다."
+
+[sub_resource type="Resource" id="BallStock_heavy"]
+script = ExtResource("9_stock")
+definition = SubResource("BallDefinition_heavy")
+count = 1
+
+[node name="WaveUnique" instance=ExtResource("1_wave")]
+script = ExtResource("5_runtime")
+
+[node name="WaveBallInventory" parent="." index="0"]
+script = ExtResource("2_inventory")
+starting_stock = Array[ExtResource("9_stock")]([SubResource("BallStock_light"), SubResource("BallStock_normal"), SubResource("BallStock_heavy")])
+reusable_owned_balls = true
+launches_per_wave = 3
+
+[node name="BallSelectionHud" parent="HUD" index="0"]
+script = ExtResource("3_hud")
+
+[node name="LifeHud" parent="HUD/WaveHud/DesignSpace" index="0"]
+script = ExtResource("4_life")
+
+[node name="WaveHud" parent="HUD" index="1"]
+script = ExtResource("6_wave_hud")
+
+[node name="BoardWavePlacementBridge" parent="." index="25"]
+script = ExtResource("7_placement")
+
+[editable path="CoinSystem"]

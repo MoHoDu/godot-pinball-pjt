@@ -2,7 +2,7 @@ extends SceneTree
 
 
 const BOARD_SCENE_PATH := \
-	"res://scenes/test_flipper/test_flipper_board.tscn"
+	"res://scenes/tests/flippers/test_flipper_board.tscn"
 const TEST_POSITION := Vector2(-736.0, -48.0)
 
 

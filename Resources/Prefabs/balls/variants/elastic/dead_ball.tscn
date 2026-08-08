@@ -1,0 +1,52 @@
+[gd_scene format=3 uid="uid://cpch6xwastfm0"]
+
+[ext_resource type="PackedScene" uid="uid://bhh5qyc3llygr" path="res://Resources/Prefabs/balls/base/base_ball.tscn" id="1_ia1i7"]
+[ext_resource type="Script" uid="uid://ce2wax7g2gio8" path="res://scripts/ball_base_system/pinball_stats.gd" id="2_yoqht"]
+[ext_resource type="Resource" path="res://settings/balls/BallGazeRules.tres" id="3_w3uuf"]
+[ext_resource type="Resource" path="res://settings/balls/BallGlowOutlineRules.tres" id="4_5qpxn"]
+[ext_resource type="Resource" path="res://settings/balls/BallTrailRules.tres" id="5_wwvh7"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_mjjbb"]
+resource_local_to_scene = true
+bounce = 0.8
+
+[sub_resource type="Resource" id="Resource_1mpby"]
+resource_local_to_scene = true
+script = ExtResource("2_yoqht")
+mass = 1.0
+elasticity = 0.8
+gravity_scale = 1.0
+initial_speed = 700.0
+minimum_speed = 200.0
+maximum_speed = 5000.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_gokte"]
+resource_local_to_scene = true
+radius = 15.3
+
+[node name="PinballBall" unique_id=1730574864 instance=ExtResource("1_ia1i7")]
+physics_material_override = SubResource("PhysicsMaterial_mjjbb")
+stats = SubResource("Resource_1mpby")
+ball_diameter = 34.0
+
+[node name="Visual" parent="." index="0" unique_id=1870657790]
+top_level = true
+gaze_rules = ExtResource("3_w3uuf")
+
+[node name="Sprite2D" parent="Visual" index="0" unique_id=1614424068]
+scale = Vector2(0.033203125, 0.033203125)
+
+[node name="CollisionShape2D" parent="." index="1" unique_id=383084480]
+shape = SubResource("CircleShape2D_gokte")
+
+[node name="_GlowOutline" parent="." index="2" unique_id=1108423771]
+top_level = true
+z_index = 10
+z_as_relative = false
+outline_rules = ExtResource("4_5qpxn")
+
+[node name="_Trail" parent="." index="3" unique_id=1108423772]
+top_level = true
+z_index = 5
+z_as_relative = false
+trail_rules = ExtResource("5_wwvh7")

@@ -1,9 +1,9 @@
 extends SceneTree
 
 
-const WAVE_SCENE := "res://scenes/wave/wave.tscn"
+const WAVE_SCENE := "res://Resources/Prefabs/wave/base/wave.tscn"
 const WAVE_NORMAL_BALL_SCENE := \
-	"res://Resources/balls/mass_var/normal_ball.tscn"
+	"res://Resources/Prefabs/balls/variants/mass/normal_ball.tscn"
 
 var _failures: Array[String] = []
 
@@ -56,7 +56,7 @@ func _test_standalone_scene_source() -> void:
 	)
 	_expect(scene_source.contains("[node name=\"Wave\" type=\"Node2D\""),
 		"Wave scene root must be authored directly as Node2D.")
-	_expect(not scene_source.contains("res://scenes/test_flipper/"),
+	_expect(not scene_source.contains("res://scenes/tests/flippers/"),
 		"Wave scene must not inherit or instance a test board.")
 	_expect(not scene_source.contains("res://tests/"),
 		"Wave scene resources must not depend on test code.")
@@ -77,10 +77,10 @@ func _test_standalone_scene_source() -> void:
 		"res://scripts/select_ball/select_ball_flow_controller.gd"
 	), "Wave scene must mark balls used only after an actual launch.")
 	_expect(scene_source.contains(
-		"res://scenes/select-ball/select_ball_selection_hud.tscn"
+		"res://Resources/Prefabs/ui/ball_selection/current/select_ball_selection_hud.tscn"
 	), "Wave scene must use the confirmed ball-selection HUD.")
 	_expect(scene_source.contains(
-		"res://Resources/boards/wave_repair_board_layout.tscn"
+		"res://Resources/Prefabs/boards/wave_repair_board_layout.tscn"
 	), "Wave scene must own the repair-part board layout.")
 	_expect(scene_source.contains(
 		"res://scripts/board_system/board_wave_placement_bridge.gd"
@@ -139,8 +139,9 @@ func _test_repair_content_configuration(wave: WaveRuntimeCoordinator) -> void:
 
 
 func _test_scene_structure(wave: WaveRuntimeCoordinator) -> void:
-	_expect(String(ProjectSettings.get_setting(&"application/run/main_scene")) == WAVE_SCENE,
-		"The project main scene must run the integrated Wave HUD scene.")
+	_expect(String(ProjectSettings.get_setting(&"application/run/main_scene")) \
+		== "res://scenes/game/start/start_screen.tscn",
+		"The project main scene must run the organized start scene.")
 	_expect(wave.get_node_or_null("HUD/GuideLabel") == null,
 		"Standalone Wave scene must not retain the legacy guide HUD.")
 	_expect(wave.get_node_or_null("HUD/ComboHud") == null,

@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Pinball_Logue"
-run/main_scene="res://scenes/start/start_screen.tscn"
+run/main_scene="res://scenes/game/start/start_screen.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://Resources/ui/icon.svg"
 
@@ -23,7 +23,6 @@ GameSettings="*res://scripts/settings/game_settings_service.gd"
 [display]
 
 window/stretch/mode="canvas_items"
-window/stretch/aspect="keep"
 
 [editor_plugins]
 

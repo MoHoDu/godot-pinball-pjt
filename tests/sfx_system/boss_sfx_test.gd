@@ -26,7 +26,7 @@ func _run() -> void:
 		_expect(cue != null and not cue.streams.is_empty(),
 			"%s 에 음원이 물려 있다" % field)
 
-	var packed := load("res://scenes/test_sfx/sfx_lab_ball.tscn") as PackedScene
+	var packed := load("res://scenes/tests/sfx/sfx_lab_ball.tscn") as PackedScene
 	var scene := packed.instantiate()
 	root.add_child(scene)
 	await physics_frame

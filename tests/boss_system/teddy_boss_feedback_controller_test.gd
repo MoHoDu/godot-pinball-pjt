@@ -2,7 +2,7 @@ extends SceneTree
 
 
 const PRODUCTION_RUNTIME_SCENE: PackedScene = preload(
-	"res://scenes/boss_system/stage1_teddy_boss_runtime.tscn"
+	"res://Resources/Prefabs/boss/runtime/stage1_teddy_boss_runtime.tscn"
 )
 const FeedbackControllerScript: Script = preload(
 	"res://scripts/boss_system/feedback/teddy_boss_feedback_controller.gd"

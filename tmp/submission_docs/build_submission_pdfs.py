@@ -329,7 +329,7 @@ def build_game_guide():
         p("소스 코드 실행", "h2"),
         bullet("Godot 4.7.1 호환 환경에서 저장소의 project.godot 파일을 엽니다."),
         bullet("프로젝트 실행(F6이 아닌 전체 프로젝트 실행)을 선택합니다."),
-        bullet("메인 씬은 res://scenes/wave/wave.tscn 입니다."),
+        bullet("메인 씬은 res://Resources/Prefabs/wave/base/wave.tscn 입니다."),
         todo("저장소 URL: https://github.com/[계정]/[저장소]"),
         p("5. 제출 링크", "h1"),
         table(

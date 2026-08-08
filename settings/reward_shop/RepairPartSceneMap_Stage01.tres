@@ -1,9 +1,9 @@
-[gd_resource type="Resource" script_class="RepairPartSceneMap" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="RepairPartSceneMap" format=3 uid="uid://1ahh8cjx5m6y"]
 
-[ext_resource type="Script" path="res://scripts/reward_shop/repair_part_scene_map.gd" id="1_map"]
-[ext_resource type="PackedScene" path="res://scenes/repair_parts/parts/starlight_brooch_part.tscn" id="2_brooch"]
-[ext_resource type="PackedScene" path="res://scenes/repair_parts/parts/golden_gears_part.tscn" id="3_gears"]
-[ext_resource type="PackedScene" path="res://scenes/repair_parts/parts/forgotten_star_bell_part.tscn" id="5_bell"]
+[ext_resource type="Script" uid="uid://dd34wdreleatc" path="res://scripts/reward_shop/repair_part_scene_map.gd" id="1_map"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/repair_parts/parts/starlight_brooch_part.tscn" id="2_brooch"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/repair_parts/parts/golden_gears_part.tscn" id="3_gears"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/repair_parts/parts/forgotten_star_bell_part.tscn" id="5_bell"]
 
 [resource]
 script = ExtResource("1_map")

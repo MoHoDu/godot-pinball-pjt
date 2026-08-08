@@ -6,7 +6,7 @@ const DUMMY_BALL_ICON: Texture2D = preload(
 	"res://Resources/Art/balls/glass_eye_ball.png"
 )
 const SLOT_BUTTON_SCENE: PackedScene = preload(
-	"res://scenes/select-ball/select_ball_slot_button.tscn"
+	"res://Resources/Prefabs/ui/ball_selection/current/select_ball_slot_button.tscn"
 )
 const COLOR_TEXT_PRIMARY := Color("f1e6cb")
 const COLOR_TEXT_SECONDARY := Color("c6bda8")

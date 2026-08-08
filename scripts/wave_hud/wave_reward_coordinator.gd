@@ -10,7 +10,7 @@ extends WaveRuntimeCoordinator
 
 
 const REWARD_CHOICE_HUD_SCENE := preload(
-	"res://scenes/reward_system/reward_choice_hud.tscn"
+	"res://Resources/Prefabs/ui/reward/reward_choice_hud.tscn"
 )
 const DEFAULT_RELIC_POOL := preload("res://settings/reward/RelicPool.tres")
 

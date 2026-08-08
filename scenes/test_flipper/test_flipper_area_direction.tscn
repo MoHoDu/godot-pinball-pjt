@@ -1,14 +1,14 @@
-[gd_scene format=3 uid="uid://bxn5b0ymh4g74"]
+[gd_scene format=3 uid="uid://dy7qnl2vawihs"]
 
-[ext_resource type="PackedScene" uid="uid://bl7f22o1hfcl1" path="res://scenes/test_flipper/test_flipper.tscn" id="1_f64m1"]
+[ext_resource type="PackedScene" uid="uid://ca7jfhva110hi" path="res://scenes/test_flipper/test_flipper.tscn" id="1_f64m1"]
 [ext_resource type="Script" uid="uid://d068jln3lvom4" path="res://tests/flipper_system/test_flipper_area_direction.gd" id="2_area_test"]
 [ext_resource type="Script" uid="uid://ce2wax7g2gio8" path="res://scripts/ball_base_system/pinball_stats.gd" id="3_kl36y"]
 
-[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_f64m1"]
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_auklf"]
 resource_local_to_scene = true
 bounce = 0.8
 
-[sub_resource type="Resource" id="Resource_je5hw"]
+[sub_resource type="Resource" id="Resource_tnxmd"]
 resource_local_to_scene = true
 script = ExtResource("3_kl36y")
 mass = 1.0
@@ -25,8 +25,8 @@ right_flipper_path = NodePath("FlipperControllers/FlipperController/RightFlipper
 guide_label_path = NodePath("TestGuide/Panel/GuideLabel")
 
 [node name="PinballBall" parent="." index="0" unique_id=71153037]
-physics_material_override = SubResource("PhysicsMaterial_f64m1")
-stats = SubResource("Resource_je5hw")
+physics_material_override = SubResource("PhysicsMaterial_auklf")
+stats = SubResource("Resource_tnxmd")
 
 [node name="TestGuide" type="CanvasLayer" parent="." index="3" unique_id=397336437]
 

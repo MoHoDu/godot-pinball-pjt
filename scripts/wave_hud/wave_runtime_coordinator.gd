@@ -6,7 +6,7 @@ const HUD_DESIGN_SIZE := Vector2(1920.0, 1080.0)
 const COTTON_KIND_ID: StringName = &"stage01_cotton"
 const TOY_DRUM_KIND_ID: StringName = &"stage01_toy_drum"
 const SETTINGS_POPUP_SCENE := preload(
-	"res://scenes/settings/settings_popup.tscn"
+	"res://Resources/Prefabs/ui/settings/settings_popup.tscn"
 )
 
 
