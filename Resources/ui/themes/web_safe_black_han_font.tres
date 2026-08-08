@@ -1,8 +1,8 @@
-[gd_resource type="FontVariation" load_steps=3 format=3]
+[gd_resource type="FontVariation" format=3 uid="uid://pmjqj3kfq2c3"]
 
-[ext_resource type="FontFile" path="res://Resources/ui/fonts/black_han_sans/BlackHanSans-Regular.ttf" id="1_display"]
-[ext_resource type="FontFile" path="res://Resources/ui/fonts/noto_sans_kr/NotoSansKR-wght.ttf" id="2_fallback"]
+[ext_resource type="FontFile" uid="uid://2ft3ipv1i32m" path="res://Resources/ui/fonts/black_han_sans/BlackHanSans-Regular.ttf" id="1_display"]
+[ext_resource type="FontFile" uid="uid://sji00hjbq8f3" path="res://Resources/ui/fonts/noto_sans_kr/NotoSansKR-wght.ttf" id="2_fallback"]
 
 [resource]
-base_font = ExtResource("1_display")
 fallbacks = Array[Font]([ExtResource("2_fallback")])
+base_font = ExtResource("1_display")
