@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="PackedScene" uid="uid://6fbf244c58gg" path="res://Resources/Prefabs/wave/base/wave.tscn" id="1_wave"]
 [ext_resource type="Script" path="res://scripts/select_ball/wave_unique_ball_inventory.gd" id="2_inventory"]
@@ -12,6 +12,7 @@
 [ext_resource type="PackedScene" path="res://Resources/Prefabs/balls/variants/mass/light_ball.tscn" id="10_light"]
 [ext_resource type="PackedScene" path="res://Resources/Prefabs/balls/variants/mass/normal_ball.tscn" id="11_normal"]
 [ext_resource type="PackedScene" path="res://Resources/Prefabs/balls/variants/mass/heavy_ball.tscn" id="12_heavy"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/ui/coin/coin_hud_fly_animator.tscn" id="13_coin_fly"]
 
 [sub_resource type="Resource" id="BallDefinition_light"]
 script = ExtResource("8_definition")
@@ -69,5 +70,9 @@ script = ExtResource("6_wave_hud")
 
 [node name="BoardWavePlacementBridge" parent="." index="25"]
 script = ExtResource("7_placement")
+
+[node name="CoinHudFlyAnimator" parent="HUD" index="2" node_paths=PackedStringArray("coin_field", "wallet_target") instance=ExtResource("13_coin_fly")]
+coin_field = NodePath("../../CoinSystem")
+wallet_target = NodePath("../WaveHud/DesignSpace/CoinWalletHud")
 
 [editable path="CoinSystem"]

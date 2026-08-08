@@ -229,6 +229,9 @@ func _test_stage_coin_wallet_continuity() -> void:
 	var first_wallet_label := manager.active_scene.get_node(
 		^"HUD/WaveHud/DesignSpace/CoinWalletHud/Margin/Row/BalanceLabel"
 	) as Label
+	var first_coin_animator := manager.active_scene.get_node_or_null(
+		^"HUD/CoinHudFlyAnimator"
+	)
 	_expect(
 		first_roster == null,
 		"프로덕션 웨이브는 범퍼 가이드 UI를 표시하지 않아야 한다."
@@ -262,6 +265,9 @@ func _test_stage_coin_wallet_continuity() -> void:
 		if child is CoinPickup:
 			(child as CoinPickup)._on_body_entered(test_ball)
 			break
+	_expect(first_coin_animator != null \
+		and int(first_coin_animator.call(&"get_active_fly_count")) == 1,
+		"실제 Stage 01 코인 획득은 코인 HUD 이동 연출을 즉시 시작해야 한다.")
 	await process_frame
 	_expect(
 		manager.current_coin_balance == 2

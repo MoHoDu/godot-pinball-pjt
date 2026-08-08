@@ -14,6 +14,11 @@ signal coin_pickup_collected(
 	value: int,
 	wallet_after: int
 )
+signal coin_visual_collected(
+	viewport_position: Vector2,
+	texture: Texture2D,
+	value: int
+)
 signal board_coin_changed(board_coin: int)
 
 
@@ -92,7 +97,7 @@ func spawn_for_wave(wave_id: int) -> int:
 			else 2
 		)
 		pickup.position = positions[position_index]
-		pickup.collected.connect(_on_pickup_collected)
+		pickup.collected.connect(_on_pickup_collected.bind(pickup))
 		add_child(pickup)
 		spawned += 1
 	return spawned
@@ -226,7 +231,20 @@ func remaining_pickup_count() -> int:
 	return count
 
 
-func _on_pickup_collected(pickup_id: StringName, value: int) -> void:
+func _on_pickup_collected(
+	pickup_id: StringName,
+	value: int,
+	pickup: CoinPickup = null
+) -> void:
+	if pickup != null and is_instance_valid(pickup):
+		var texture: Texture2D
+		if pickup.definition != null:
+			texture = pickup.definition.visual_texture
+		coin_visual_collected.emit(
+			pickup.get_global_transform_with_canvas().origin,
+			texture,
+			value
+		)
 	_board_coin_this_wave += value
 	var wallet_after := _board_coin_this_wave
 	if _wallet != null:
