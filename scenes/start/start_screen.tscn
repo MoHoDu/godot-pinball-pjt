@@ -1,9 +1,11 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://c0j1pyjvqt3tj"]
 
-[ext_resource type="Script" path="res://scripts/start/start_screen.gd" id="1_script"]
-[ext_resource type="PackedScene" path="res://scenes/wave/wave.tscn" id="2_wave"]
+[ext_resource type="Script" uid="uid://pkl24ma0af18" path="res://scripts/start/start_screen.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://6fbf244c58gg" path="res://scenes/wave/wave.tscn" id="2_wave"]
+[ext_resource type="Texture2D" uid="uid://siou3sb4vvck" path="res://Resources/ui/start_screen/start_background.png.png" id="3_5g2ft"]
+[ext_resource type="Texture2D" uid="uid://2tej1b3fj0c1" path="res://Resources/ui/start_screen/pinball_logue_logo.png.png" id="4_las0u"]
 
-[node name="StartScreen" type="Control"]
+[node name="StartScreen" type="Control" unique_id=345827483]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -13,7 +15,7 @@ grow_vertical = 2
 script = ExtResource("1_script")
 next_scene = ExtResource("2_wave")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="ColorRect" parent="." unique_id=207427060]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -23,7 +25,16 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.075, 0.12, 0.18, 1)
 
-[node name="DarkOverlay" type="ColorRect" parent="."]
+[node name="StartBackground" type="TextureRect" parent="." unique_id=351023057]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_5g2ft")
+
+[node name="DarkOverlay" type="ColorRect" parent="." unique_id=1668265366]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -33,7 +44,22 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.015, 0.02, 0.035, 0.58)
 
-[node name="Center" type="CenterContainer" parent="."]
+[node name="Logo" type="TextureRect" parent="." unique_id=1629536949]
+custom_minimum_size = Vector2(450, 250)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -456.0
+offset_top = 10.0
+offset_right = 444.0
+offset_bottom = 330.0
+grow_horizontal = 2
+texture = ExtResource("4_las0u")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Center" type="CenterContainer" parent="." unique_id=2013541372]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -42,11 +68,12 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="Content" type="VBoxContainer" parent="Center"]
+[node name="Content" type="VBoxContainer" parent="Center" unique_id=1091396356]
 layout_mode = 2
 theme_override_constants/separation = 34
 
-[node name="Title" type="Label" parent="Center/Content"]
+[node name="Title" type="Label" parent="Center/Content" unique_id=844349119]
+visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0.96, 0.88, 0.64, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
@@ -56,7 +83,7 @@ theme_override_font_sizes/font_size = 72
 text = "PINBALL ROGUE"
 horizontal_alignment = 1
 
-[node name="StartPrompt" type="Label" parent="Center/Content"]
+[node name="StartPrompt" type="Label" parent="Center/Content" unique_id=630135363]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.92, 0.94, 1, 1)
@@ -67,7 +94,7 @@ theme_override_font_sizes/font_size = 26
 text = "아무 버튼이나 눌러 시작"
 horizontal_alignment = 1
 
-[node name="FadeRect" type="ColorRect" parent="."]
+[node name="FadeRect" type="ColorRect" parent="." unique_id=684265154]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
