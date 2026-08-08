@@ -220,9 +220,9 @@ func _test_stage_coin_wallet_continuity() -> void:
 	var first_coin_field := manager.active_scene.get_node(
 		^"CoinSystem"
 	) as CoinFieldController
-	var first_roster := manager.active_scene.get_node(
+	var first_roster := manager.active_scene.get_node_or_null(
 		^"HUD/BumperRosterHud"
-	) as BumperRosterHud
+	)
 	var first_ball_hud := manager.active_scene.get_node(
 		^"HUD/BallSelectionHud"
 	) as SelectBallSelectionHud
@@ -230,8 +230,8 @@ func _test_stage_coin_wallet_continuity() -> void:
 		^"HUD/WaveHud/DesignSpace/CoinWalletHud/Margin/Row/BalanceLabel"
 	) as Label
 	_expect(
-		first_roster.visible and first_roster.position.y <= 20.0,
-		"범퍼 가이드는 배치 단계에만 보드 위쪽 안전 영역에 표시되어야 한다."
+		first_roster == null,
+		"프로덕션 웨이브는 범퍼 가이드 UI를 표시하지 않아야 한다."
 	)
 	_expect(
 		first_ball_hud != null
@@ -241,7 +241,6 @@ func _test_stage_coin_wallet_continuity() -> void:
 	)
 	_expect(first_wave_manager.advance_stage_phase(), "첫 웨이브 플레이 단계에 진입해야 한다.")
 	await process_frame
-	_expect(not first_roster.visible, "배치가 끝나면 범퍼 가이드를 숨겨야 한다.")
 	_expect(
 		first_coin_field.remaining_pickup_count() == 12,
 		"스테이지 웨이브에도 코인 12개가 생성되어야 한다."
@@ -503,6 +502,12 @@ func _test_existing_wave_scene_contracts() -> void:
 
 
 func _test_stage_01_scene_configuration() -> void:
+	_expect(
+		ProjectSettings.get_setting(
+			"display/window/stretch/aspect", ""
+		) == "keep",
+		"웹 화면 크기가 달라도 16:9 UI 프레임의 종횡비를 유지해야 한다."
+	)
 	var stage := STAGE_01_SCENE.instantiate()
 	var manager := stage.get_node(^"StageFlowManager") as StageFlowManager
 	var expected_scores := PackedInt32Array([300, 500, 1000])
@@ -533,6 +538,11 @@ func _test_stage_01_scene_configuration() -> void:
 		_expect(
 			selection_hud != null,
 			"Stage 01 웨이브 %d는 최신 공 선택 UI를 사용해야 한다."
+				% (index + 1)
+		)
+		_expect(
+			wave.get_node_or_null(^"HUD/BumperRosterHud") == null,
+			"Stage 01 웨이브 %d는 범퍼 가이드 UI를 제거해야 한다."
 				% (index + 1)
 		)
 		_expect_stage_wave_uses_latest_runtime(wave, index)

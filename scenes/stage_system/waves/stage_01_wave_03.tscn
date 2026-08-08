@@ -11,7 +11,4 @@ wave_target_scores = PackedInt32Array(1000)
 [node name="Stage01Wave03" instance=ExtResource("1_wave")]
 wave_stage_settings = SubResource("StageSettings")
 
-[node name="BumperRosterHud" parent="HUD" index="2"]
-wave_label = "WAVE 03"
-
 [editable path="CoinSystem"]

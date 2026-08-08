@@ -31,8 +31,6 @@
 [ext_resource type="PackedScene" path="res://scenes/bumper_system/spring_doll_bumper.tscn" id="28_spring_bumper"]
 [ext_resource type="PackedScene" path="res://scenes/bumper_system/toy_drum_bumper.tscn" id="29_drum_bumper"]
 [ext_resource type="PackedScene" path="res://scenes/bumper_system/clockwork_toy_cannon.tscn" id="30_cannon_bumper"]
-[ext_resource type="PackedScene" path="res://scenes/wave_hud/bumper_roster_hud.tscn" id="31_roster_hud"]
-
 [sub_resource type="Resource" id="StageSettings_wave"]
 script = ExtResource("3_combo_stage")
 stage_id = &"cursed_toy_demo"
@@ -392,6 +390,3 @@ shape = SubResource("RectangleShape_drain_vertical")
 [node name="BallSelectionHud" parent="HUD" instance=ExtResource("25_selection_hud")]
 
 [node name="WaveHud" parent="HUD" instance=ExtResource("5_wave_hud")]
-
-[node name="BumperRosterHud" parent="HUD" instance=ExtResource("31_roster_hud")]
-wave_label = "삼각형 보드"
