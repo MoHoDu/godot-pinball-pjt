@@ -324,11 +324,31 @@ func _test_stage_coin_wallet_continuity() -> void:
 		"마지막 웨이브에서도 현재 코인으로 실제 보상 상점을 열어야 한다."
 	)
 	final_reward.continue_stage()
+	await _wait_frames(6)
+	var boss_scene := manager.active_scene as Stage1TeddyBossScene
+	var boss_coin_session := _get_active_coin_session(manager)
+	var boss_coin_field := manager.active_scene.get_node(
+		^"CoinSystem"
+	) as CoinFieldController
+	var boss_reward_bridge := manager.active_scene.get_node(
+		^"WaveRewardShopBridge"
+	) as WaveRewardShopBridge
+	_expect(
+		manager.current_phase == StageFlowManager.Phase.BOSS
+			and boss_scene != null
+			and boss_coin_session != null
+			and boss_coin_session.wallet == manager.coin_wallet
+			and boss_coin_field.remaining_pickup_count() == 0
+			and not boss_reward_bridge.embedded_reward_enabled
+			and manager.current_coin_balance == 12,
+		"마지막 보상 뒤 실제 보스가 공용 코인을 유지한 채 시작되어야 한다."
+	)
+	_defeat_active_boss(manager)
 	await _wait_for_transition()
 	_expect(
 		manager.current_phase == StageFlowManager.Phase.COMPLETE
 			and manager.current_coin_balance == 0,
-		"스테이지 완료 시 공용 코인 지갑을 초기화해야 한다."
+		"보스 처치로 스테이지가 완료되면 공용 코인 지갑을 초기화해야 한다."
 	)
 
 	stage.queue_free()
@@ -390,16 +410,39 @@ func _test_stage_reward_purchase_persistence() -> void:
 		embedded_bridge != null and not embedded_bridge.embedded_reward_enabled,
 		"StageFlowManager 웨이브에서는 내부 보상 브리지를 비활성화해야 한다."
 	)
-	var failed_wave_manager := manager.active_scene.get_node(
-		^"WaveManager"
-	) as WaveManager
-	failed_wave_manager.wave_lost.emit(0, failed_wave_manager.target_score)
+	_complete_active_wave(manager, 500)
+	await _wait_for_transition()
+	(manager.active_scene as StageRewardShopScreen).continue_stage()
+	await _wait_for_transition()
+	_complete_active_wave(manager, 1000)
+	await _wait_for_transition()
+	(manager.active_scene as StageRewardShopScreen).continue_stage()
+	await _wait_frames(6)
+
+	var boss_inventory := manager.active_scene.get_node(
+		^"WaveBallInventory"
+	) as SelectBallInventory
+	var boss_part_inventory := manager.active_scene.get_node(
+		^"RepairPartInventory"
+	) as RepairPartInventory
+	var boss_owned_ball_ids: Array[StringName] = []
+	for definition: BallDefinition in boss_inventory.get_owned_definitions():
+		boss_owned_ball_ids.append(definition.ball_id)
+	_expect(
+		manager.current_phase == StageFlowManager.Phase.BOSS
+			and manager.active_scene is Stage1TeddyBossScene
+			and boss_owned_ball_ids.has(ball_offer.ball_id)
+			and boss_part_inventory.count_of(part_offer.part_id)
+				== expected_part_count,
+		"보스 씬은 일반 웨이브 보상으로 얻은 공과 부품 상태를 이어받아야 한다."
+	)
+	await _exhaust_active_boss_balls(manager)
 	await _wait_for_transition()
 	_expect(
 		manager.current_phase == StageFlowManager.Phase.WAVE
 			and manager.current_wave_index == 0
 			and manager.current_coin_balance == 0,
-		"웨이브 실패 시 코인을 초기화하고 스테이지 첫 웨이브로 롤백해야 한다."
+		"보스 공 라이프 소진 시 코인을 초기화하고 스테이지 첫 웨이브로 롤백해야 한다."
 	)
 	_expect(
 		manager.stage_ball_inventory.unlocked_ids.is_empty()
@@ -468,6 +511,12 @@ func _test_stage_01_scene_configuration() -> void:
 		stage.free()
 		return
 	_expect(manager.wave_scenes.size() == 3, "Stage 01은 일반 웨이브 3개를 연결해야 한다.")
+	_expect(
+		manager.boss_scenes.size() == 1
+			and manager.boss_scenes[0].resource_path
+				== "res://scenes/wave/stage1_teddy_boss_scene.tscn",
+		"Stage 01은 실제 테디 보스 씬 하나를 보스 배열에 직접 연결해야 한다."
+	)
 	for index in mini(manager.wave_scenes.size(), expected_scores.size()):
 		var wave := manager.wave_scenes[index].instantiate()
 		var settings := wave.get(&"wave_stage_settings") as ComboStageSettings
@@ -565,6 +614,36 @@ func _destroy_manager(manager: StageFlowManager) -> void:
 func _wait_for_transition() -> void:
 	await process_frame
 	await process_frame
+
+
+func _wait_frames(frame_count: int) -> void:
+	for _frame in frame_count:
+		await process_frame
+
+
+func _defeat_active_boss(manager: StageFlowManager) -> void:
+	var runtime := manager.active_scene.get_node(
+		^"Stage1TeddyBossRuntime"
+	) as Stage1TeddyBossRuntime
+	var health := runtime.get_node(
+		^"Components/BossHealthComponent"
+	) as BossHealthComponent
+	health.apply_damage(health.get_current_health())
+
+
+func _exhaust_active_boss_balls(manager: StageFlowManager) -> void:
+	var flow := manager.active_scene.get_node(
+		^"WaveBallFlowController"
+	) as WaveBallFlowController
+	var launcher := manager.active_scene.get_node(
+		^"PinballLauncher"
+	) as PinballLauncher
+	for _launch_index in WaveManager.BALLS_PER_WAVE:
+		_expect(flow.confirm_selection(), "보스 공을 선택할 수 있어야 한다.")
+		var active_ball := flow.active_ball
+		_expect(launcher.launch_prepared_ball(), "보스 공을 발사할 수 있어야 한다.")
+		_expect(flow.on_ball_drained(active_ball), "보스 공 낙하를 처리할 수 있어야 한다.")
+		await process_frame
 
 
 func _expect(condition: bool, message: String) -> void:

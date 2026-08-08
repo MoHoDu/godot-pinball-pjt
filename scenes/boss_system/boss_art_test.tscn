@@ -1,0 +1,37 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scripts/boss_system/anim/boss_art_rig.gd" id="1_rig"]
+[ext_resource type="Script" path="res://scripts/boss_system/anim/boss_art_test_controller.gd" id="2_ctrl"]
+[ext_resource type="Texture2D" path="res://Resources/Art/boss/boss_body.png" id="3_body"]
+[ext_resource type="Texture2D" path="res://Resources/Art/boss/boss_body_under.png" id="10_under"]
+[ext_resource type="Texture2D" path="res://Resources/Art/boss/boss_arm_left.png" id="4_arm_l"]
+[ext_resource type="Texture2D" path="res://Resources/Art/boss/boss_arm_right.png" id="5_arm_r"]
+[ext_resource type="Texture2D" path="res://Resources/Art/boss/boss_heart.png" id="6_heart"]
+[ext_resource type="Texture2D" path="res://Resources/Art/boss/boss_eye_left.png" id="7_eye_l"]
+[ext_resource type="Texture2D" path="res://Resources/Art/boss/boss_eye_right.png" id="8_eye_r"]
+
+[node name="BossArtTest" type="Node2D"]
+script = ExtResource("2_ctrl")
+
+[node name="Backdrop" type="ColorRect" parent="."]
+offset_right = 1152.0
+offset_bottom = 648.0
+color = Color(0.101961, 0.117647, 0.152941, 1)
+
+[node name="Rig" type="Node2D" parent="."]
+position = Vector2(576, 326)
+script = ExtResource("1_rig")
+body_texture = ExtResource("3_body")
+body_under_texture = ExtResource("10_under")
+arm_texture_left = ExtResource("4_arm_l")
+arm_texture_right = ExtResource("5_arm_r")
+heart_texture = ExtResource("6_heart")
+eye_texture_left = ExtResource("7_eye_l")
+eye_texture_right = ExtResource("8_eye_r")
+
+[node name="Label" type="Label" parent="."]
+offset_left = 24.0
+offset_top = 16.0
+offset_right = 900.0
+offset_bottom = 96.0
+text = "1 대기  2 예고  3 공격  4 경직  5 피격  6 강한피격  7 포효   Space 예고→공격 재생"

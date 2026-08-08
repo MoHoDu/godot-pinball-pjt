@@ -1,4 +1,4 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://dcdx4ni7o885k"]
 
 [ext_resource type="Script" uid="uid://b35gfy37afi7d" path="res://scripts/wave_hud/wave_runtime_coordinator.gd" id="1_borfr"]
 [ext_resource type="Script" uid="uid://d1ru6gfxnmw1r" path="res://scripts/combo_system/combo_stage_settings.gd" id="2_bin77"]
@@ -25,32 +25,22 @@
 [ext_resource type="Script" uid="uid://cmwexv5v1ailv" path="res://scripts/wave_hud/wave_hud_state_source.gd" id="28_ldohg"]
 [ext_resource type="PackedScene" path="res://scenes/ball_base_system/ball_selection_hud.tscn" id="29_acmd4"]
 [ext_resource type="PackedScene" path="res://scenes/wave_hud/wave_hud.tscn" id="30_ljfd2"]
-[ext_resource type="PackedScene" path="res://scenes/bumper_system/button_bumper.tscn" id="31_button_bumper"]
+[ext_resource type="PackedScene" uid="uid://d1hn7wvhtpike" path="res://scenes/bumper_system/button_bumper.tscn" id="31_button_bumper"]
 [ext_resource type="PackedScene" path="res://scenes/bumper_system/cotton_bumper.tscn" id="32_cotton_bumper"]
-[ext_resource type="PackedScene" path="res://scenes/bumper_system/spring_doll_bumper.tscn" id="33_spring_bumper"]
-[ext_resource type="PackedScene" path="res://scenes/bumper_system/toy_drum_bumper.tscn" id="34_drum_bumper"]
-[ext_resource type="PackedScene" path="res://scenes/bumper_system/clockwork_toy_cannon.tscn" id="35_cannon_bumper"]
-[ext_resource type="Script" uid="uid://c2rm7omkmejhb" path="res://scripts/bumper-system/shot_response_strategy.gd" id="36_shot_strategy"]
 [ext_resource type="Resource" path="res://settings/bumpers/stage_01_compact/ButtonBumperCompact.tres" id="37_button_compact"]
 [ext_resource type="Resource" path="res://settings/bumpers/stage_01_compact/CottonBumperCompact.tres" id="38_cotton_compact"]
-[ext_resource type="Resource" path="res://settings/bumpers/stage_01_compact/SpringDollBumperCompact.tres" id="39_spring_compact"]
-[ext_resource type="Resource" path="res://settings/bumpers/stage_01_compact/ToyDrumBumperCompact.tres" id="40_drum_compact"]
-[ext_resource type="Resource" path="res://settings/bumpers/stage_01_compact/ClockworkToyCannonCompact.tres" id="41_cannon_compact"]
 [ext_resource type="PackedScene" path="res://scenes/wave_hud/bumper_roster_hud.tscn" id="42_roster_hud"]
 [ext_resource type="PackedScene" path="res://Resources/boards/levels/wave_01_repair_layout.tscn" id="43_repair_layout"]
 [ext_resource type="PackedScene" path="res://Resources/boards/repair_part_placement_hud.tscn" id="44_repair_hud"]
-[ext_resource type="Script" path="res://scripts/board_system/board_wave_placement_bridge.gd" id="45_repair_bridge"]
-[ext_resource type="Script" path="res://scripts/board_system/repair_part_placement_controller.gd" id="46_repair_controller"]
-[ext_resource type="Script" path="res://scripts/board_system/repair_part_inventory.gd" id="47_repair_inventory"]
-[ext_resource type="Script" path="res://scripts/board_system/repair_part_inventory_entry.gd" id="48_repair_entry"]
+[ext_resource type="Script" uid="uid://blldm50le1340" path="res://scripts/board_system/board_wave_placement_bridge.gd" id="45_repair_bridge"]
+[ext_resource type="Script" uid="uid://3lgp3rkeisku" path="res://scripts/board_system/repair_part_placement_controller.gd" id="46_repair_controller"]
+[ext_resource type="Script" uid="uid://p1ugtw5302lm" path="res://scripts/board_system/repair_part_inventory.gd" id="47_repair_inventory"]
+[ext_resource type="Script" uid="uid://c8rix02nx23yb" path="res://scripts/board_system/repair_part_inventory_entry.gd" id="48_repair_entry"]
 [ext_resource type="Resource" path="res://settings/bumpers/repair_parts/StarlightBrooch.tres" id="49_brooch_settings"]
 [ext_resource type="Resource" path="res://settings/bumpers/repair_parts/GoldenGears.tres" id="50_gears_settings"]
-[ext_resource type="Resource" path="res://settings/bumpers/repair_parts/CrescentNeedle.tres" id="51_needle_settings"]
-[ext_resource type="Resource" path="res://settings/bumpers/repair_parts/ForgottenStarBell.tres" id="52_bell_settings"]
+[ext_resource type="PackedScene" path="res://scenes/bumper_system/rebound_test_bumper.tscn" id="50_rebound"]
 [ext_resource type="PackedScene" path="res://Resources/boards/starlight_brooch_placeable.tscn" id="53_brooch_placeable"]
 [ext_resource type="PackedScene" path="res://Resources/boards/golden_gears_placeable.tscn" id="54_gears_placeable"]
-[ext_resource type="PackedScene" path="res://Resources/boards/crescent_needle_placeable.tscn" id="55_needle_placeable"]
-[ext_resource type="PackedScene" path="res://Resources/boards/forgotten_star_bell_placeable.tscn" id="56_bell_placeable"]
 
 [sub_resource type="Resource" id="StageSettings_wave"]
 script = ExtResource("2_bin77")
@@ -101,9 +91,6 @@ size = Vector2(160, 1600)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bin77"]
 size = Vector2(819.329, 24)
 
-[sub_resource type="Resource" id="Resource_shot_strategy"]
-script = ExtResource("36_shot_strategy")
-
 [sub_resource type="Resource" id="RepairEntry_brooch"]
 script = ExtResource("48_repair_entry")
 settings = ExtResource("49_brooch_settings")
@@ -124,8 +111,6 @@ placeholder_icon = "⚙"
 script = ExtResource("1_borfr")
 wave_stage_settings = SubResource("StageSettings_wave")
 bumper_stage_settings = ExtResource("3_ftx8i")
-authored_bumper_wave_index = 0
-expected_bumper_kind_ids = Array[StringName]([])
 launcher = NodePath("PinballLauncher")
 combo_system = NodePath("ComboSystem")
 combo_collision_bridge = NodePath("ComboCollisionBridge")
@@ -164,39 +149,45 @@ shape = SubResource("RectangleShape2D_ftx8i")
 debug_color = Color(0.94972855, 0.16442639, 0.39801326, 0.41960785)
 
 [node name="Bumpers" type="Node2D" parent="." unique_id=249523259]
+visible = false
 
-[node name="BumperWallUpperLeft" parent="Bumpers" instance=ExtResource("31_button_bumper")]
-position = Vector2(-650, -399)
-bumper_id = &"button_wall_upper_left"
-settings = ExtResource("37_button_compact")
+[node name="ReboundUpperLeft" parent="Bumpers" unique_id=371130859 instance=ExtResource("50_rebound")]
+position = Vector2(-624.46, -378.51)
+rotation = 2.7928207
+bumper_id = &"rebound_upper_left"
 
-[node name="BumperWallUpperRight" parent="Bumpers" instance=ExtResource("31_button_bumper")]
-position = Vector2(650, -399)
-bumper_id = &"button_wall_upper_right"
-settings = ExtResource("37_button_compact")
+[node name="ReboundUpperRight" parent="Bumpers" unique_id=1025065304 instance=ExtResource("50_rebound")]
+position = Vector2(623.46, -378.51)
+rotation = -2.7928207
+bumper_id = &"rebound_upper_right"
 
-[node name="BumperWallLowerLeft" parent="Bumpers" instance=ExtResource("31_button_bumper")]
-position = Vector2(-643, 409)
-bumper_id = &"button_wall_lower_left"
-settings = ExtResource("37_button_compact")
+[node name="ReboundLowerLeft" parent="Bumpers" unique_id=1448138545 instance=ExtResource("50_rebound")]
+position = Vector2(-617.46, 389.51)
+rotation = 0.3487720
+bumper_id = &"rebound_lower_left"
 
-[node name="BumperWallLowerRight" parent="Bumpers" instance=ExtResource("31_button_bumper")]
-position = Vector2(643, 409)
-bumper_id = &"button_wall_lower_right"
-settings = ExtResource("37_button_compact")
+[node name="ReboundLowerRight" parent="Bumpers" unique_id=1444488746 instance=ExtResource("50_rebound")]
+position = Vector2(616.46, 389.51)
+rotation = -0.3487720
+bumper_id = &"rebound_lower_right"
 
-[node name="BumperTopCenter" parent="Bumpers" instance=ExtResource("31_button_bumper")]
-position = Vector2(0, -250)
-bumper_id = &"button_top_center"
-settings = ExtResource("37_button_compact")
-
-[node name="BumperLaunchGate" parent="Bumpers" instance=ExtResource("32_cotton_bumper")]
-position = Vector2(0, 250)
-bumper_id = &"cotton_launch_gate"
+[node name="BumperCoreTop" parent="Bumpers" unique_id=2113427411 instance=ExtResource("32_cotton_bumper")]
+position = Vector2(0, -288)
+bumper_id = &"cotton_core_top"
 settings = ExtResource("38_cotton_compact")
 
+[node name="BumperCoreLeft" parent="Bumpers" unique_id=1623670812 instance=ExtResource("31_button_bumper")]
+position = Vector2(-288, 0)
+bumper_id = &"button_core_left"
+settings = ExtResource("37_button_compact")
+
+[node name="BumperCoreRight" parent="Bumpers" unique_id=999229086 instance=ExtResource("31_button_bumper")]
+position = Vector2(288, 0)
+bumper_id = &"button_core_right"
+settings = ExtResource("37_button_compact")
+
 [node name="PinballLauncher" type="Node2D" parent="." unique_id=537150401]
-position = Vector2(0, 400)
+position = Vector2(0, 372)
 rotation = -1.5707964
 script = ExtResource("16_oc07t")
 minimum_launch_angle_degrees = -45.0
@@ -257,21 +248,21 @@ position = Vector2(1280, 0)
 shape = SubResource("RectangleShape_drain_vertical")
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=2138127428]
+visible = false
 
 [node name="BallSelectionHud" parent="HUD" unique_id=1865861035 instance=ExtResource("29_acmd4")]
 
 [node name="WaveHud" parent="HUD" unique_id=205794630 instance=ExtResource("30_ljfd2")]
 
-[node name="BumperRosterHud" parent="HUD" instance=ExtResource("42_roster_hud")]
+[node name="BumperRosterHud" parent="HUD" unique_id=39415548 instance=ExtResource("42_roster_hud")]
 wave_label = "WAVE 01"
-
 
 [node name="Walls" type="Node2D" parent="." unique_id=1054457750]
 
 [node name="Top" type="Node2D" parent="Walls" unique_id=1397097050]
 
 [node name="TopRightDiagonal" type="StaticBody2D" parent="Walls/Top" unique_id=816351727 groups=["combo_walls"]]
-position = Vector2(661, -431)
+position = Vector2(632, -402)
 rotation = 0.34877196
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/TopRightDiagonal" unique_id=1115751119]
@@ -281,7 +272,7 @@ shape = SubResource("RectangleShape2D_bin77")
 [node name="Visual" parent="Walls/Top/TopRightDiagonal" unique_id=603172277 instance=ExtResource("6_av5ge")]
 
 [node name="TopLeftDiagonal" type="StaticBody2D" parent="Walls/Top" unique_id=1697113537 groups=["combo_walls"]]
-position = Vector2(-661.0001, -431)
+position = Vector2(-633.0001, -402)
 rotation = -0.348772
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/TopLeftDiagonal" unique_id=1508027846]
@@ -292,7 +283,7 @@ shape = SubResource("RectangleShape2D_bin77")
 position = Vector2(6.6, 2.4)
 
 [node name="TopRigthVertical" type="StaticBody2D" parent="Walls/Top" unique_id=2109036029 groups=["combo_walls"]]
-position = Vector2(358, -694)
+position = Vector2(329, -665)
 rotation = 2.0943952
 scale = Vector2(0.28, 1.042)
 
@@ -303,7 +294,7 @@ shape = SubResource("RectangleShape2D_bin77")
 [node name="Visual" parent="Walls/Top/TopRigthVertical" unique_id=411608391 instance=ExtResource("6_av5ge")]
 
 [node name="TopLeftVertical" type="StaticBody2D" parent="Walls/Top" unique_id=1669184563 groups=["combo_walls"]]
-position = Vector2(-358, -702)
+position = Vector2(-330, -673)
 rotation = -2.0943952
 scale = Vector2(0.255, 1.042)
 
@@ -315,7 +306,7 @@ shape = SubResource("RectangleShape2D_bin77")
 position = Vector2(0.00025431183, -7.278369e-13)
 
 [node name="TopLeftSide" type="StaticBody2D" parent="Walls/Top" unique_id=864212274 groups=["combo_walls"]]
-position = Vector2(-1214.0001, -342.00006)
+position = Vector2(-1186, -313.00006)
 rotation = 0.20943952
 scale = Vector2(0.5, 1)
 
@@ -327,7 +318,7 @@ shape = SubResource("RectangleShape2D_bin77")
 position = Vector2(0.00025431183, -7.278369e-13)
 
 [node name="TopRightSide" type="StaticBody2D" parent="Walls/Top" unique_id=863916641 groups=["combo_walls"]]
-position = Vector2(-1214, 356.99997)
+position = Vector2(-1185.9999, 329)
 rotation = 2.8797934
 scale = Vector2(0.5, 1)
 
@@ -341,7 +332,7 @@ position = Vector2(0.00025431183, -7.278369e-13)
 [node name="Bottom" type="Node2D" parent="Walls" unique_id=1848326491]
 
 [node name="BottomRightDiagonal" type="StaticBody2D" parent="Walls/Bottom" unique_id=512452783 groups=["combo_walls"]]
-position = Vector2(654, 441)
+position = Vector2(625, 413)
 rotation = 2.7928207
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom/BottomRightDiagonal" unique_id=1197987137]
@@ -351,7 +342,7 @@ shape = SubResource("RectangleShape2D_bin77")
 [node name="Visual" parent="Walls/Bottom/BottomRightDiagonal" unique_id=1570794061 instance=ExtResource("6_av5ge")]
 
 [node name="BottomLeftDiagonal" type="StaticBody2D" parent="Walls/Bottom" unique_id=1641593198 groups=["combo_walls"]]
-position = Vector2(-654.0001, 441)
+position = Vector2(-626.0001, 413)
 rotation = -2.7928207
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom/BottomLeftDiagonal" unique_id=1143503514]
@@ -362,7 +353,7 @@ shape = SubResource("RectangleShape2D_bin77")
 position = Vector2(-6.6, 2.4)
 
 [node name="BottomRightVertical" type="StaticBody2D" parent="Walls/Bottom" unique_id=87521949 groups=["combo_walls"]]
-position = Vector2(342, 693)
+position = Vector2(313, 665)
 rotation = 1.0471976
 scale = Vector2(0.25, 1)
 
@@ -373,7 +364,7 @@ shape = SubResource("RectangleShape2D_bin77")
 [node name="Visual" parent="Walls/Bottom/BottomRightVertical" unique_id=488983619 instance=ExtResource("6_av5ge")]
 
 [node name="BottomLeftVertical" type="StaticBody2D" parent="Walls/Bottom" unique_id=1905014300 groups=["combo_walls"]]
-position = Vector2(-342, 693)
+position = Vector2(-314, 665)
 rotation = -1.0471976
 scale = Vector2(0.25, 1.042)
 
@@ -385,7 +376,7 @@ shape = SubResource("RectangleShape2D_bin77")
 position = Vector2(-24.999502, 0)
 
 [node name="BottomLeftSide" type="StaticBody2D" parent="Walls/Bottom" unique_id=886827620 groups=["combo_walls"]]
-position = Vector2(1214, -334.00006)
+position = Vector2(1185, -305.00006)
 rotation = -0.20943952
 scale = Vector2(0.5, 1)
 
@@ -397,7 +388,7 @@ shape = SubResource("RectangleShape2D_bin77")
 position = Vector2(3.326577, -7.8251457)
 
 [node name="BottomRightSide" type="StaticBody2D" parent="Walls/Bottom" unique_id=1620610219 groups=["combo_walls"]]
-position = Vector2(1198, 357.00003)
+position = Vector2(1169, 329.00003)
 rotation = 3.408628
 scale = Vector2(0.5, 1)
 
@@ -412,96 +403,98 @@ position = Vector2(0.00025431183, -7.278369e-13)
 script = ExtResource("12_nt34j")
 
 [node name="BottomController" type="Node2D" parent="FlipperSelector" unique_id=620399436]
-position = Vector2(0, 501)
+position = Vector2(0, 473)
 script = ExtResource("13_7fouc")
 
 [node name="LeftFlipper" parent="FlipperSelector/BottomController" unique_id=1915782774 instance=ExtResource("14_jh417")]
-position = Vector2(-286.99988, 98)
+position = Vector2(-258.99988, 98)
+rotation = 0.43633232
 flipper_length = 360.0
-rotation = 0.6981317
-initial_angle_degrees = 40.0
+initial_angle_degrees = 25.0
 maximum_angle_degrees = -80.0
 
 [node name="RightFlipper" parent="FlipperSelector/BottomController" unique_id=2137998633 instance=ExtResource("15_kj6db")]
-position = Vector2(287, 98)
+position = Vector2(258, 98)
+rotation = -0.43633232
 flipper_length = 360.0
-rotation = -0.6981317
-initial_angle_degrees = -40.0
+initial_angle_degrees = -25.0
 maximum_angle_degrees = 80.0
 
 [node name="TopController" type="Node2D" parent="FlipperSelector" unique_id=52918414]
-position = Vector2(0, -582)
+position = Vector2(0, -553)
 rotation = 3.1415927
 script = ExtResource("13_7fouc")
 
 [node name="LeftFlipper" parent="FlipperSelector/TopController" unique_id=1022724147 instance=ExtResource("14_jh417")]
-position = Vector2(-287, 0)
+position = Vector2(-258, 0)
+rotation = 0.43633232
 flipper_length = 360.0
-rotation = 0.6981317
-initial_angle_degrees = 40.0
+initial_angle_degrees = 25.0
 maximum_angle_degrees = -80.0
 
 [node name="RightFlipper" parent="FlipperSelector/TopController" unique_id=560543059 instance=ExtResource("15_kj6db")]
-position = Vector2(285.99988, 0)
+position = Vector2(257.99988, 0)
+rotation = -0.43633232
 flipper_length = 360.0
-rotation = -0.6981317
-initial_angle_degrees = -40.0
+initial_angle_degrees = -25.0
 maximum_angle_degrees = 80.0
 
 [node name="LeftController" type="Node2D" parent="FlipperSelector" unique_id=778351050]
-position = Vector2(-1046, 0)
+position = Vector2(-1017.9999, 0)
 rotation = 1.5707964
 script = ExtResource("13_7fouc")
 
 [node name="LeftFlipper" parent="FlipperSelector/LeftController" unique_id=1480574411 instance=ExtResource("14_jh417")]
-position = Vector2(-287, -24)
+position = Vector2(-257.99994, -24)
+rotation = 0.43633232
 flipper_length = 360.0
-rotation = 0.6981317
-initial_angle_degrees = 40.0
+initial_angle_degrees = 25.0
 maximum_angle_degrees = -80.0
 
 [node name="RightFlipper" parent="FlipperSelector/LeftController" unique_id=2091025610 instance=ExtResource("15_kj6db")]
-position = Vector2(287, -24)
+position = Vector2(259, -24)
+rotation = -0.43633232
 flipper_length = 360.0
-rotation = -0.6981317
-initial_angle_degrees = -40.0
+initial_angle_degrees = -25.0
 maximum_angle_degrees = 80.0
 
 [node name="RightController" type="Node2D" parent="FlipperSelector" unique_id=1365978519]
-position = Vector2(998, 0)
+position = Vector2(969, 0)
 rotation = -1.5707964
 script = ExtResource("13_7fouc")
 
 [node name="LeftFlipper" parent="FlipperSelector/RightController" unique_id=1051254799 instance=ExtResource("14_jh417")]
-position = Vector2(-286, 24)
+position = Vector2(-258, 24)
+rotation = 0.43633232
 flipper_length = 360.0
-rotation = 0.6981317
-initial_angle_degrees = 40.0
+initial_angle_degrees = 25.0
 maximum_angle_degrees = -80.0
 
 [node name="RightFlipper" parent="FlipperSelector/RightController" unique_id=991188738 instance=ExtResource("15_kj6db")]
-position = Vector2(287, 24)
+position = Vector2(258, 24)
+rotation = -0.43633232
 flipper_length = 360.0
-rotation = -0.6981317
-initial_angle_degrees = -40.0
+initial_angle_degrees = -25.0
 maximum_angle_degrees = 80.0
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1316343289]
 position = Vector2(0, 1)
 zoom = Vector2(0.43, 0.43)
 
-[node name="RepairBoardLayout" parent="." instance=ExtResource("43_repair_layout")]
+[node name="RepairBoardLayout" parent="." unique_id=1967190913 instance=ExtResource("43_repair_layout")]
+visible = false
 
-[node name="RepairPlacementHUD" type="CanvasLayer" parent="."]
+[node name="RepairPlacementHUD" type="CanvasLayer" parent="." unique_id=1220501144]
 layer = 50
+visible = false
 
-[node name="RepairPartPlacementHud" parent="RepairPlacementHUD" instance=ExtResource("44_repair_hud")]
+[node name="RepairPartPlacementHud" parent="RepairPlacementHUD" unique_id=906310659 instance=ExtResource("44_repair_hud")]
 
-[node name="RepairPartInventory" type="Node" parent="."]
+[node name="RepairPartInventory" type="Node" parent="." unique_id=966501832]
 script = ExtResource("47_repair_inventory")
 entries = Array[ExtResource("48_repair_entry")]([SubResource("RepairEntry_brooch"), SubResource("RepairEntry_gears")])
 
-[node name="BoardWavePlacementBridge" type="Node" parent="." node_paths=PackedStringArray("wave_manager", "placement_session", "combo_system", "wave_hud", "ball_selection_hud", "placement_hud")]
+[node name="BoardWavePlacementBridge" type="Node" parent="." unique_id=1466314158 node_paths=PackedStringArray("wave_manager", "placement_session", "combo_system", "wave_hud", "ball_selection_hud", "placement_hud")]
 script = ExtResource("45_repair_bridge")
 wave_manager = NodePath("../WaveManager")
 placement_session = NodePath("../RepairBoardLayout/PlacementSession")
@@ -510,7 +503,7 @@ wave_hud = NodePath("../HUD/WaveHud")
 ball_selection_hud = NodePath("../HUD/BallSelectionHud")
 placement_hud = NodePath("../RepairPlacementHUD/RepairPartPlacementHud")
 
-[node name="RepairPartPlacementController" type="Node" parent="." node_paths=PackedStringArray("placement_session", "inventory", "placement_hud", "wave_bridge")]
+[node name="RepairPartPlacementController" type="Node" parent="." unique_id=881282926 node_paths=PackedStringArray("placement_session", "inventory", "placement_hud", "wave_bridge")]
 script = ExtResource("46_repair_controller")
 placement_session = NodePath("../RepairBoardLayout/PlacementSession")
 inventory = NodePath("../RepairPartInventory")

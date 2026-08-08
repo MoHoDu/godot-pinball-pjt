@@ -4,13 +4,13 @@
 
 [resource]
 script = ExtResource("1_rules")
-tick_count = 1
-tick_length_ratio = 0.12
-tick_width = 2.5
+tick_count = 4
+tick_length_ratio = 0.34
+tick_width = 4
 tick_spread_degrees = 26.0
-tick_lifetime = 0.08
+tick_lifetime = 0.14
 tick_color = Color(0.9, 0.86, 0.76, 0.55)
-chip_count = 0
+chip_count = 4
 chip_radius_ratio = 0.06
 chip_travel_ratio = 0.3
 chip_lifetime = 0.2
@@ -27,5 +27,13 @@ unselected_path_alpha = 0.22
 selected_path_color = Color(0.96, 0.86, 0.52, 0.85)
 capture_press_ratio = 0.1
 trail_lifetime = 0.22
-smoke_count = 3
-smoke_color = Color(0.72, 0.7, 0.66, 0.45)
+smoke_count = 11
+smoke_radius_ratio = 0.30
+smoke_color = Color(0.86, 0.84, 0.80, 0.5)
+glow_strength = 0.85
+flash_radius_ratio = 0.52
+flash_lifetime = 0.17
+flash_color = Color(1.0, 0.88, 0.62, 0.85)
+sparkle_count = 4
+sparkle_radius_ratio = 0.3
+sparkle_color = Color(1.0, 0.93, 0.70, 0.95)

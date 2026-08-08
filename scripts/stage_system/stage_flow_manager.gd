@@ -61,6 +61,13 @@ const DEFAULT_WAVE_FAILURE_SIGNALS: Array[StringName] = [
 	&"game_over",
 ]
 
+const DEFAULT_BOSS_FAILURE_SIGNALS: Array[StringName] = [
+	&"boss_lost",
+	&"wave_lost",
+	&"stage_failed",
+	&"game_over",
+]
+
 
 @export_category("Stage Scenes")
 
@@ -116,6 +123,11 @@ const DEFAULT_WAVE_FAILURE_SIGNALS: Array[StringName] = [
 ## 웨이브 실패 시 스테이지 시작 상태로 롤백할 선택적 시그널 이름입니다.
 @export var wave_failure_signals: Array[StringName] = (
 	DEFAULT_WAVE_FAILURE_SIGNALS.duplicate()
+)
+
+## 보스 공 라이프 소진 시 스테이지 시작 상태로 롤백할 선택적 시그널입니다.
+@export var boss_failure_signals: Array[StringName] = (
+	DEFAULT_BOSS_FAILURE_SIGNALS.duplicate()
 )
 
 
@@ -301,15 +313,20 @@ func _show_scene(
 		_completion_signal
 	)
 	_completion_source.connect(_completion_signal, _completion_callable)
-	if next_phase == Phase.WAVE and not wave_failure_signals.is_empty():
+	var failure_signals: Array[StringName] = []
+	if next_phase == Phase.WAVE:
+		failure_signals = wave_failure_signals
+	elif next_phase == Phase.BOSS:
+		failure_signals = boss_failure_signals
+	if not failure_signals.is_empty():
 		var failure_binding := _find_completion_binding(
-			instance, wave_failure_signals
+			instance, failure_signals
 		)
 		if not failure_binding.is_empty():
 			_failure_source = failure_binding.source as Node
 			_failure_signal = failure_binding.signal_name as StringName
 			# 완료와 실패는 같은 인자 제거 규칙을 쓰되 서로 다른 처리기로 연결합니다.
-			_failure_callable = Callable(self, &"_on_active_wave_failed")
+			_failure_callable = Callable(self, &"_on_active_gameplay_failed")
 			var failure_argument_count := _get_signal_argument_count(
 				_failure_source, _failure_signal
 			)
@@ -380,8 +397,8 @@ func _on_active_scene_completed() -> void:
 	)
 
 
-func _on_active_wave_failed() -> void:
-	if _transition_pending or _phase != Phase.WAVE:
+func _on_active_gameplay_failed() -> void:
+	if _transition_pending or _phase not in [Phase.WAVE, Phase.BOSS]:
 		return
 	_transition_pending = true
 	var run_generation := _run_generation
@@ -392,7 +409,8 @@ func _on_active_wave_failed() -> void:
 
 
 func _rollback_after_failure(run_generation: int) -> void:
-	if run_generation != _run_generation or _phase != Phase.WAVE \
+	if run_generation != _run_generation \
+			or _phase not in [Phase.WAVE, Phase.BOSS] \
 			or not _transition_pending:
 		return
 	_transition_pending = false
@@ -464,7 +482,7 @@ func _prepare_stage_coin_integration(instance: Node) -> void:
 
 func _prepare_stage_reward_integration(instance: Node, next_phase: Phase) -> void:
 	_ensure_stage_reward_runtime()
-	if next_phase == Phase.WAVE:
+	if next_phase in [Phase.WAVE, Phase.BOSS]:
 		var embedded_bridge := instance.find_child(
 			"WaveRewardShopBridge", true, false
 		) as WaveRewardShopBridge

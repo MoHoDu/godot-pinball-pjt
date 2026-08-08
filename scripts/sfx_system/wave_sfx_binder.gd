@@ -20,11 +20,18 @@ const PARRY_SIGNAL: StringName = &"parry_resolved"
 const FLIPPER_STATE_SIGNAL: StringName = &"state_changed"
 
 const FLIPPER_GROUP: StringName = &"combo_flippers"
+## 파괴음을 재질 타격음 뒤로 보내려고 넘기는 물리 프레임 수입니다.
+## 자세한 이유는 `_on_bumper_state_changed` 주석에 있습니다.
+const DESTROY_DELAY_FRAMES: int = 2
+
 const BUMPER_GROUP: StringName = &"bumper_objects"
+const BALL_GROUP: StringName = &"pinball_balls"
+const BODY_ENTERED_SIGNAL: StringName = &"body_entered"
 
 # Tier 3·4 시그널. 전부 기존 스크립트에 이미 있는 것들입니다.
 const LAUNCH_SIGNAL: StringName = &"ball_launched"
 const DRAIN_SIGNAL: StringName = &"ball_drained"
+const BALL_SELECTED_SIGNAL: StringName = &"ball_selection_confirmed"
 const COMBO_CHANGED_SIGNAL: StringName = &"combo_changed"
 const COMBO_TIER_SIGNAL: StringName = &"combo_tier_changed"
 const COMBO_FINISHED_SIGNAL: StringName = &"combo_finished"
@@ -34,6 +41,7 @@ const BUMPER_RESPONSE_SIGNAL: StringName = &"response_resolved"
 const BUMPER_STATE_SIGNAL: StringName = &"state_changed"
 const SHOT_CONTROL_STARTED_SIGNAL: StringName = &"control_started"
 const SHOT_CONTROL_ENDED_SIGNAL: StringName = &"control_ended"
+const SHOT_SELECTION_SIGNAL: StringName = &"selection_changed"
 
 ## BumperState 와 값을 맞춥니다.
 const BUMPER_STATE_DESTROYED: int = 1
@@ -60,6 +68,16 @@ var _selector: Node
 var _last_selected: Object = null
 
 var _bound_bumpers: Array[Node] = []
+var _bound_balls: Array[Node] = []
+
+## 공별로 "이 물리 프레임에 타격음을 이미 냈는가"를 적어 둡니다.
+var _hit_frames: Dictionary = {}
+
+## 플리퍼 상태 전이도 프레임 단위로 묶습니다. 이유는 _on_flipper_state_changed 참고.
+var _state_frames: Dictionary = {}
+
+## 대포별로 "이 프레임에 조준음을 이미 냈는가". 철컥과 겹치는 것을 막습니다.
+var _aim_frames: Dictionary = {}
 var _bound_emitters: Array[Node] = []
 
 
@@ -95,6 +113,13 @@ func _ready() -> void:
 	_bind_selector(scan_root)
 	_bind_bumpers()
 	_bind_emitters(scan_root)
+	_bind_ball_contacts()
+
+	# ★ 나중에 생기는 것들도 잡습니다.
+	#   공은 웨이브마다 새로 만들어지고, 범퍼도 리스폰·교체로 갈립니다.
+	#   `_ready()` 에 한 번만 훑으면 그 뒤로 생긴 것은 통째로 무음이 됩니다.
+	#   실제로 범퍼 테스트 씬에서 배선 0건으로 드러났습니다.
+	get_tree().node_added.connect(_on_node_added)
 
 
 func _process(_delta: float) -> void:
@@ -121,8 +146,14 @@ func get_bound_source_counts() -> Dictionary:
 		&"bridges": _bound_bridges.size(),
 		&"flippers": _bound_flippers.size(),
 		&"bumpers": _bound_bumpers.size(),
+		&"balls": _bound_balls.size(),
 		&"emitters": _bound_emitters.size(),
 	}
+
+
+## 지금 배선돼 있는 범퍼들입니다. 늦게 생긴 범퍼가 잡혔는지 보는 테스트용입니다.
+func get_bound_bumpers() -> Array[Node]:
+	return _bound_bumpers.duplicate()
 
 
 func get_director() -> SfxDirector:
@@ -133,6 +164,8 @@ func get_director() -> SfxDirector:
 
 ## 자기가 매달린 가지의 꼭대기입니다. current_scene 을 쓰지 않는 이유는 클래스 주석 참고.
 func _scan_root() -> Node:
+	if not is_inside_tree():
+		return null
 	var tree := get_tree()
 	if tree == null:
 		return null
@@ -218,16 +251,22 @@ func _bind_bumpers() -> void:
 		return
 
 	for node in get_tree().get_nodes_in_group(BUMPER_GROUP):
-		if not _is_in_branch(node, scan_root):
-			continue
+		if _is_in_branch(node, scan_root):
+			_bind_bumper(node)
 
-		_connect_once(node, BUMPER_RESPONSE_SIGNAL, _on_bumper_response)
-		_connect_once(node, BUMPER_STATE_SIGNAL,
-			_on_bumper_state_changed.bind(node))
-		_connect_once(node, SHOT_CONTROL_STARTED_SIGNAL, _on_cannon_control)
-		_connect_once(node, SHOT_CONTROL_ENDED_SIGNAL, _on_cannon_fire)
 
-		_bound_bumpers.append(node)
+func _bind_bumper(node: Node) -> void:
+	if node in _bound_bumpers:
+		return
+
+	_connect_once(node, BUMPER_RESPONSE_SIGNAL, _on_bumper_response)
+	_connect_once(node, BUMPER_STATE_SIGNAL,
+		_on_bumper_state_changed.bind(node))
+	_connect_once(node, SHOT_CONTROL_STARTED_SIGNAL, _on_cannon_control)
+	_connect_once(node, SHOT_CONTROL_ENDED_SIGNAL, _on_cannon_fire)
+	_connect_once(node, SHOT_SELECTION_SIGNAL, _on_cannon_aim)
+
+	_bound_bumpers.append(node)
 
 
 ## 흐름·콤보 시그널을 내는 노드들입니다.
@@ -243,6 +282,7 @@ func _bind_emitters(node: Node) -> void:
 	for entry: Array in [
 		[LAUNCH_SIGNAL, _on_ball_launched],
 		[DRAIN_SIGNAL, _on_ball_drained],
+		[BALL_SELECTED_SIGNAL, _on_ball_selected],
 		[COMBO_CHANGED_SIGNAL, _on_combo_changed],
 		[COMBO_TIER_SIGNAL, _on_combo_tier_changed],
 		[COMBO_FINISHED_SIGNAL, _on_combo_finished],
@@ -269,6 +309,101 @@ func _connect_once(node: Node, signal_name: StringName, target: Callable) -> boo
 
 	node.connect(signal_name, target)
 	return true
+
+
+## ★ 공이 플리퍼에 닿는 **모든** 순간을 잡습니다.
+##
+## 브릿지의 `flipper_contact_registered` 는 **ACTIVE 스윕 접촉일 때만** 옵니다
+## (combo_collision_bridge.gd:165-172). 콤보 타이머가 대기·복귀 중인 플리퍼의
+## 패시브 접촉으로 갱신되면 안 되기 때문입니다. 그건 콤보에는 맞는 조건입니다.
+##
+## 그런데 **소리는 조건이 다릅니다.** 공이 멈춰 있는 플리퍼에 부딪혀도 소리는
+## 나야 합니다. 실제로 "플리퍼가 공을 칠 때마다 소리가 나야 하는데 안 난다"는
+## 지적이 나왔고, 원인이 정확히 이것이었습니다.
+##
+## 공은 `contact_monitor` 가 켜져 있어(pinball.gd:92) 접촉을 직접 알려줍니다.
+## 브릿지 구독은 그대로 둡니다 — 겹쳐 울리는 것은 큐의 최소 간격(0.04초)이 막습니다.
+func _bind_ball_contacts() -> void:
+	var scan_root := _scan_root()
+	if scan_root == null:
+		return
+
+	for ball in get_tree().get_nodes_in_group(BALL_GROUP):
+		if _is_in_branch(ball, scan_root):
+			_bind_ball(ball)
+
+
+func _bind_ball(ball: Node) -> void:
+	if ball in _bound_balls:
+		return
+
+	_connect_once(ball, BODY_ENTERED_SIGNAL, _on_ball_body_entered.bind(ball))
+	_bound_balls.append(ball)
+
+
+## ★ 트리에 나중에 들어온 공·범퍼를 잡습니다.
+##
+## 공은 웨이브마다 새로 만들어지고, 범퍼도 테스트 리그나 리스폰으로 갈립니다.
+## `_ready()` 한 번의 훑기로는 **그 뒤에 생긴 것이 전부 무음**이 됩니다.
+##
+## ★ `node_added` 는 `_ready()` **이전에** 옵니다. 그룹 등록은 대개 `_ready()`
+##   안에서 하므로 이 시점엔 아직 그룹에 없습니다. 그래서 준비될 때까지 기다립니다.
+func _on_node_added(node: Node) -> void:
+	if node.is_node_ready():
+		_bind_late(node)
+	else:
+		node.ready.connect(_bind_late.bind(node), CONNECT_ONE_SHOT)
+
+
+func _bind_late(node: Node) -> void:
+	var scan_root := _scan_root()
+	if scan_root == null or not _is_in_branch(node, scan_root):
+		return
+
+	if node.is_in_group(BUMPER_GROUP):
+		_bind_bumper(node)
+	elif node.is_in_group(BALL_GROUP):
+		_bind_ball(node)
+
+
+## 벽은 브릿지가 맡습니다. 여기서는 플리퍼 접촉만 봅니다.
+func _on_ball_body_entered(body: Node, ball: RigidBody2D) -> void:
+	if body == null or not body.is_in_group(FLIPPER_GROUP):
+		return
+
+	_play_flipper_hit(ball)
+
+
+## ★ 한 번의 접촉에는 타격음 **하나**만 납니다.
+##
+## 같은 접촉이 두 경로로 들어옵니다 — 공의 `body_entered` 와 브릿지의
+## `flipper_contact_registered`. 둘 다 각자 속도를 읽어 큐를 고르는데,
+## 그 사이에 속도가 임계값(1200px/s)을 넘나들면 **하나는 일반 타격,
+## 하나는 강한 타격**을 골라 두 소리가 겹칩니다. 큐가 다르면 최소 간격
+## 스로틀도 막지 못합니다.
+##
+## 그래서 물리 프레임 단위로 래치를 걸어 먼저 온 것만 울립니다.
+## 세게 친 것은 강한 타격 하나로 들려야지, 둘이 같이 나면 안 됩니다.
+func _play_flipper_hit(ball: RigidBody2D) -> void:
+	if flipper_rules == null or not is_instance_valid(ball):
+		return
+
+	var frame := Engine.get_physics_frames()
+	var ball_id := ball.get_instance_id()
+	if _hit_frames.get(ball_id, -1) == frame:
+		return
+
+	var speed := _ball_speed(ball)
+	var cue := flipper_rules.get_hit_cue(speed)
+	if cue == null:
+		return
+
+	var controller := _controller_for_ball(ball)
+	if controller == null:
+		return
+
+	_hit_frames[ball_id] = frame
+	controller.play(cue, speed)
 
 
 ## 선택 폴링이 붙었는지입니다. 테스트용입니다.
@@ -343,17 +478,9 @@ func _on_wall_contact(_wall: Node, ball: RigidBody2D) -> void:
 
 
 func _on_flipper_contact(_flipper: Node, ball: RigidBody2D) -> void:
-	if flipper_rules == null:
-		return
+	# 공의 body_entered 와 같은 래치를 탑니다. 자세한 이유는 _play_flipper_hit 참고.
+	_play_flipper_hit(ball)
 
-	var speed := _ball_speed(ball)
-	var cue := flipper_rules.get_hit_cue(speed)
-	if cue == null:
-		return
-
-	var controller := _controller_for_ball(ball)
-	if controller != null:
-		controller.play(cue, speed)
 
 
 func _on_parry_resolved(
@@ -377,6 +504,17 @@ func _on_parry_resolved(
 		controller.play(cue, _ball_speed(ball))
 
 
+## ★ Space 한 번에 소리 하나.
+##
+## 한 컨트롤러의 **좌우 플리퍼가 함께** 움직입니다. 그래서 상태 전이가 두 번
+## 오고 작동음도 두 번 요청됩니다. 문제가 둘입니다.
+##
+##   ① 기계는 하나인데 소리가 둘이면 겹쳐서 지저분해집니다
+##   ② 작동음·복귀음은 AMBIENT 클래스(하드캡 2)라, 좌우 작동음이 두 자리를
+##      다 먹으면 **뒤따라오는 복귀음이 통째로 버려집니다.**
+##      실제로 그래서 "A3 가 작동을 안 한다"는 지적이 나왔습니다.
+##
+## 그래서 같은 물리 프레임의 같은 상태 전이는 **먼저 온 것만** 울립니다.
 func _on_flipper_state_changed(_previous: int, current: int, flipper: Node) -> void:
 	if flipper_rules == null:
 		return
@@ -391,9 +529,18 @@ func _on_flipper_state_changed(_previous: int, current: int, flipper: Node) -> v
 	if cue == null:
 		return
 
-	var controller := _controller_for_source(flipper)
+	var frame := Engine.get_physics_frames()
+	if _state_frames.get(current, -1) == frame:
+		return
+
+	_state_frames[current] = frame
+
+	# 소스를 플리퍼가 아니라 바인더로 둡니다. 좌우가 각자 컨트롤러를 가지면
+	# 연타 감쇠와 최소 간격이 따로 세어져 묶은 의미가 없어집니다.
+	var controller := _controller_for_source(self)
 	if controller != null:
 		controller.play(cue, 0.0)
+
 
 
 # ── Tier 3 흐름·콤보 ────────────────────────────────────────
@@ -419,6 +566,17 @@ func _on_ball_drained(_ball: Node, _remaining: int) -> void:
 	var controller := _controller_for_source(self)
 	if controller != null:
 		controller.play(ball_flow_rules.drain_cue, 0.0)
+
+
+## 웨이브 시작 시 쓸 공을 골랐을 때.
+func _on_ball_selected(_definition: Resource, _remaining: int) -> void:
+	if ball_flow_rules == null or ball_flow_rules.select_cue == null:
+		return
+
+	# 공이 아직 없을 수 있으니 바인더에 답니다.
+	var controller := _controller_for_source(self)
+	if controller != null:
+		controller.play(ball_flow_rules.select_cue, 0.0)
 
 
 ## 콤보가 오를 때마다. **피치 사다리가 이 소리의 전부입니다.**
@@ -522,6 +680,26 @@ func _on_bumper_state_changed(_previous: int, current: int, _bumper: Node) -> vo
 	if cue == null:
 		return
 
+	# ★ 파괴음은 한 프레임 미뤄야 **때린 뒤에 부서집니다.**
+	#
+	#   범퍼는 내구도를 타격 처리 안에서 즉시 깎고(bumper.gd:248), 튕겨내는
+	#   응답은 `call_deferred` 로 미룹니다(bumper.gd:274). 그래서 그대로 두면
+	#   파괴 상태가 **재질 타격음보다 먼저** 도착합니다.
+	#   실제로 솜·북에서 "파괴음 → 재질음" 순서로 나는 것을 확인했습니다.
+	#
+	#   `call_deferred` 로는 못 고칩니다. 내구도 감소가 응답 예약보다 앞서
+	#   일어나므로 같은 큐에 넣어도 여전히 앞섭니다. 프레임을 넘겨야 합니다.
+	#   한 프레임으로는 모자랍니다. 미뤄진 응답이 풀리는 시점과 `physics_frame`
+	#   신호가 같은 틱 안에서 엇갈려서, 두 프레임을 넘겨야 확실히 뒤로 갑니다.
+	if current == BUMPER_STATE_DESTROYED:
+		for _f in DESTROY_DELAY_FRAMES:
+			if not is_inside_tree():
+				return
+			var tree := get_tree()
+			if tree == null:
+				return
+			await tree.physics_frame
+
 	var controller := _controller_for_source(self)
 	if controller != null:
 		controller.play(cue, 0.0)
@@ -531,9 +709,32 @@ func _on_cannon_control(bumper: Node, _ball: RigidBody2D) -> void:
 	if bumper_rules == null or bumper_rules.cannon_control_cue == null:
 		return
 
+	# 조준이 시작되면 방향 선택도 함께 확정되어 `selection_changed` 가 붙어 옵니다.
+	# 철컥 위에 조준음을 겹쳐 봐야 뭉치기만 합니다. 이 프레임은 철컥에 양보합니다.
+	_aim_frames[bumper] = Engine.get_physics_frames()
+
 	var controller := _controller_for_source(bumper)
 	if controller != null:
 		controller.play(bumper_rules.cannon_control_cue, 0.0)
+
+
+## 조준 방향을 한 칸 옮겼습니다. 태엽이 맞물립니다.
+##
+## ★ 조준을 시작하는 순간에도 `selection_changed` 가 한 번 옵니다.
+##   그때는 철컥(control)이 이미 울리므로 겹칩니다. 같은 프레임이면 건너뜁니다.
+func _on_cannon_aim(bumper: Node, _anchor: Object) -> void:
+	if bumper_rules == null or bumper_rules.cannon_aim_cue == null:
+		return
+
+	var frame := Engine.get_physics_frames()
+	if _aim_frames.get(bumper, -1) == frame:
+		return
+
+	_aim_frames[bumper] = frame
+
+	var controller := _controller_for_source(bumper)
+	if controller != null:
+		controller.play(bumper_rules.cannon_aim_cue, 0.0)
 
 
 func _on_cannon_fire(bumper: Node, ball: RigidBody2D) -> void:

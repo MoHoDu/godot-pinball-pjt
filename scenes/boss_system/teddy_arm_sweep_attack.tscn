@@ -1,0 +1,94 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/boss_system/teddy_arm_sweep_attack.gd" id="1_attack"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape_arm"]
+size = Vector2(84, 350)
+
+[node name="TeddyArmSweepAttack" type="Node2D" node_paths=PackedStringArray("left_shoulder_pivot", "right_shoulder_pivot", "left_hit_area", "right_hit_area", "left_arm_visual", "right_arm_visual")]
+script = ExtResource("1_attack")
+left_shoulder_pivot = NodePath("LeftShoulderPivot")
+right_shoulder_pivot = NodePath("RightShoulderPivot")
+left_hit_area = NodePath("LeftShoulderPivot/LeftArm/Hitbox")
+right_hit_area = NodePath("RightShoulderPivot/RightArm/Hitbox")
+left_arm_visual = NodePath("LeftShoulderPivot/LeftArm/ArmVisual")
+right_arm_visual = NodePath("RightShoulderPivot/RightArm/ArmVisual")
+
+[node name="BodyVisual" type="Node2D" parent="."]
+z_index = 6
+
+[node name="Torso" type="Polygon2D" parent="BodyVisual"]
+color = Color(0.42, 0.24, 0.14, 1)
+polygon = PackedVector2Array(-150, -20, -135, -100, -85, -150, 0, -170, 85, -150, 135, -100, 150, -20, 142, 85, 95, 145, 0, 165, -95, 145, -142, 85)
+
+[node name="Head" type="Polygon2D" parent="BodyVisual"]
+position = Vector2(0, -190)
+color = Color(0.58, 0.35, 0.2, 1)
+polygon = PackedVector2Array(-110, 0, -95, -70, -50, -112, 0, -125, 50, -112, 95, -70, 110, 0, 95, 70, 50, 108, 0, 120, -50, 108, -95, 70)
+
+[node name="LeftEar" type="Polygon2D" parent="BodyVisual"]
+position = Vector2(-82, -272)
+color = Color(0.48, 0.27, 0.15, 1)
+polygon = PackedVector2Array(-42, 0, -30, -32, 0, -44, 30, -32, 42, 0, 30, 32, 0, 44, -30, 32)
+
+[node name="RightEar" type="Polygon2D" parent="BodyVisual"]
+position = Vector2(82, -272)
+color = Color(0.48, 0.27, 0.15, 1)
+polygon = PackedVector2Array(-42, 0, -30, -32, 0, -44, 30, -32, 42, 0, 30, 32, 0, 44, -30, 32)
+
+[node name="Muzzle" type="Polygon2D" parent="BodyVisual"]
+position = Vector2(0, -172)
+color = Color(0.75, 0.55, 0.36, 1)
+polygon = PackedVector2Array(-55, 0, -42, -34, 0, -48, 42, -34, 55, 0, 42, 34, 0, 48, -42, 34)
+
+[node name="LeftShoulderPivot" type="Node2D" parent="."]
+position = Vector2(-125, -72)
+rotation = 0.2617994
+z_index = 5
+
+[node name="LeftArm" type="Node2D" parent="LeftShoulderPivot"]
+
+[node name="ArmVisual" type="Polygon2D" parent="LeftShoulderPivot/LeftArm"]
+color = Color(0.62, 0.38, 0.21, 1)
+polygon = PackedVector2Array(-42, -18, 42, -18, 48, 310, 30, 365, 0, 382, -30, 365, -48, 310)
+
+[node name="PawVisual" type="Polygon2D" parent="LeftShoulderPivot/LeftArm"]
+position = Vector2(0, 356)
+color = Color(0.78, 0.55, 0.33, 1)
+polygon = PackedVector2Array(-58, 0, -42, -42, 0, -58, 42, -42, 58, 0, 42, 42, 0, 58, -42, 42)
+
+[node name="Hitbox" type="Area2D" parent="LeftShoulderPivot/LeftArm"]
+position = Vector2(0, 175)
+collision_layer = 0
+collision_mask = 1
+monitoring = true
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LeftShoulderPivot/LeftArm/Hitbox"]
+shape = SubResource("RectangleShape_arm")
+
+[node name="RightShoulderPivot" type="Node2D" parent="."]
+position = Vector2(125, -72)
+rotation = -0.2617994
+z_index = 5
+
+[node name="RightArm" type="Node2D" parent="RightShoulderPivot"]
+
+[node name="ArmVisual" type="Polygon2D" parent="RightShoulderPivot/RightArm"]
+color = Color(0.52, 0.3, 0.17, 1)
+polygon = PackedVector2Array(-42, -18, 42, -18, 48, 310, 30, 365, 0, 382, -30, 365, -48, 310)
+
+[node name="PawVisual" type="Polygon2D" parent="RightShoulderPivot/RightArm"]
+position = Vector2(0, 356)
+color = Color(0.72, 0.48, 0.28, 1)
+polygon = PackedVector2Array(-58, 0, -42, -42, 0, -58, 42, -42, 58, 0, 42, 42, 0, 58, -42, 42)
+
+[node name="Hitbox" type="Area2D" parent="RightShoulderPivot/RightArm"]
+position = Vector2(0, 175)
+collision_layer = 0
+collision_mask = 1
+monitoring = true
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RightShoulderPivot/RightArm/Hitbox"]
+shape = SubResource("RectangleShape_arm")
