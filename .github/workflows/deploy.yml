@@ -30,11 +30,36 @@ jobs:
           mkdir -v -p ~/.local/share/godot/export_templates
           mv /root/.local/share/godot/export_templates/4.7.1.stable ~/.local/share/godot/export_templates/4.7.1.stable
 
+      - name: Run Headless Smoke Tests
+        run: |
+          set -eu
+          for scenario in \
+            tests/resource_system/release_side_effect_guard_test.gd \
+            tests/stage_system/stage_initial_loadout_test.gd \
+            tests/stage_system/stage_flow_manager_test.gd \
+            tests/stage_system/stage_reward_shop_screen_recovery_test.gd \
+            tests/coin_system/wave_scene_coin_integration_test.gd \
+            tests/reward_shop/wave_reward_shop_bridge_test.gd \
+            tests/settings/global_web_font_theme_test.gd \
+            tests/settings/web_symbol_font_fallback_test.gd \
+            tests/settings/settings_popup_test.gd
+          do
+            godot --headless --path . --script "res://$scenario"
+          done
+
       - name: Web Build
         run: |
+          set -eu
           mkdir -v -p build/web
           # 🚨 중요: "Web" 부분은 Godot 엔진의 [프로젝트] -> [내보내기] 에 설정된 웹 프리셋 이름과 정확히 같아야 합니다.
           godot --headless --export-release "Web" build/web/index.html
+
+      - name: Verify Web Artifact
+        run: |
+          set -eu
+          test -s build/web/index.html
+          test -s build/web/index.pck
+          test -s build/web/index.wasm
 
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
