@@ -1,0 +1,31 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/coin_system/coin_field_controller.gd" id="1_coin_field"]
+[ext_resource type="Script" path="res://scripts/coin_system/coin_wallet.gd" id="2_coin_wallet"]
+[ext_resource type="Script" path="res://scripts/coin_system/wave_clear_delay_controller.gd" id="3_clear_delay"]
+[ext_resource type="Script" path="res://scripts/coin_system/wave_coin_session.gd" id="4_coin_session"]
+[ext_resource type="Resource" path="res://settings/coin/BasicCoin.tres" id="5_coin_definition"]
+
+[node name="CoinSystem" type="Node2D" node_paths=PackedStringArray("spawn_points_root", "board_layout", "bumpers_root")]
+z_index = 3
+script = ExtResource("1_coin_field")
+coin_definition = ExtResource("5_coin_definition")
+spawn_points_root = NodePath("SpawnPoints")
+board_layout = NodePath("../RepairBoardLayout")
+bumpers_root = NodePath("../Bumpers")
+
+[node name="SpawnPoints" type="Node2D" parent="."]
+
+[node name="CoinWallet" type="Node" parent="."]
+script = ExtResource("2_coin_wallet")
+
+[node name="WaveClearDelayController" type="Node" parent="."]
+script = ExtResource("3_clear_delay")
+
+[node name="CoinSession" type="Node" parent="." node_paths=PackedStringArray("wave_manager", "wallet", "field", "clear_delay", "wallet_label")]
+script = ExtResource("4_coin_session")
+wave_manager = NodePath("../../WaveManager")
+wallet = NodePath("../CoinWallet")
+field = NodePath("..")
+clear_delay = NodePath("../WaveClearDelayController")
+wallet_label = NodePath("../../HUD/WaveHud/DesignSpace/CoinWalletHud/Margin/Row/BalanceLabel")

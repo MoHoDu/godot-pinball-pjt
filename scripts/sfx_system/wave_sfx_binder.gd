@@ -164,6 +164,8 @@ func get_director() -> SfxDirector:
 
 ## 자기가 매달린 가지의 꼭대기입니다. current_scene 을 쓰지 않는 이유는 클래스 주석 참고.
 func _scan_root() -> Node:
+	if not is_inside_tree():
+		return null
 	var tree := get_tree()
 	if tree == null:
 		return null
@@ -691,7 +693,12 @@ func _on_bumper_state_changed(_previous: int, current: int, _bumper: Node) -> vo
 	#   신호가 같은 틱 안에서 엇갈려서, 두 프레임을 넘겨야 확실히 뒤로 갑니다.
 	if current == BUMPER_STATE_DESTROYED:
 		for _f in DESTROY_DELAY_FRAMES:
-			await get_tree().physics_frame
+			if not is_inside_tree():
+				return
+			var tree := get_tree()
+			if tree == null:
+				return
+			await tree.physics_frame
 
 	var controller := _controller_for_source(self)
 	if controller != null:

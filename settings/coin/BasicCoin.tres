@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="CoinDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/coin_system/coin_definition.gd" id="1_definition"]
+[ext_resource type="Texture2D" path="res://Resources/wave_hud/coin_wallet_icon.png" id="2_coin_icon"]
+
+[resource]
+script = ExtResource("1_definition")
+coin_id = &"basic_coin"
+display_name = "기본 코인"
+value = 2
+visual_radius = 32.0
+visual_texture = ExtResource("2_coin_icon")
+fill_color = Color(0.9, 0.72, 0.25, 1)
+rim_color = Color(0.96, 0.93, 0.82, 1)

@@ -22,10 +22,39 @@ const COLOR_TITLE: String = "7fe3dc"
 @export var title_path: NodePath = NodePath("Margin/Rows/Title")
 ## 제목에 함께 표시할 웨이브 이름입니다. 비우면 씬 이름을 씁니다.
 @export var wave_label: String = ""
+## 현재 웨이브의 단계 상태를 제공하는 매니저입니다.
+@export var wave_manager_path: NodePath = NodePath("../../WaveManager")
+## 플레이 필드를 가리지 않도록 수리 부품 배치 단계에서만 목록을 표시합니다.
+@export var show_only_during_repair_placement := true
+
+
+var _wave_manager: WaveManager
 
 
 func _ready() -> void:
+	_wave_manager = get_node_or_null(wave_manager_path) as WaveManager
+	if _wave_manager != null:
+		_wave_manager.stage_phase_changed.connect(_on_stage_phase_changed)
+	_update_visibility()
 	call_deferred(&"refresh")
+
+
+func _on_stage_phase_changed(
+	_previous_phase: WaveManager.StagePhase,
+	_current_phase: WaveManager.StagePhase
+) -> void:
+	_update_visibility()
+
+
+func _update_visibility() -> void:
+	if not show_only_during_repair_placement:
+		visible = true
+		return
+	visible = (
+		_wave_manager != null
+		and _wave_manager.current_stage_phase
+			== WaveManager.StagePhase.REPAIR_PLACEMENT
+	)
 
 
 ## 배치된 범퍼를 다시 읽어 목록을 갱신합니다.

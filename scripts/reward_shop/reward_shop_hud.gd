@@ -90,6 +90,8 @@ var _card_views: Array[Dictionary] = []
 var _selected_index := -1
 var _wave_result_text := ""
 var _next_wave_number := 2
+var _reward_destination_text := "다음 웨이브"
+var _total_wave_count := 0
 var _handoff_in_progress := false
 
 var _purchased_ball_id: StringName = &""
@@ -133,6 +135,11 @@ func set_wave_summary(
 ) -> void:
 	_wave_result_text = "WAVE %02d" % (wave_index + 1)
 	_next_wave_number = wave_index + 2
+
+
+func set_reward_destination(destination_text: String, total_wave_count := 0) -> void:
+	_reward_destination_text = destination_text
+	_total_wave_count = total_wave_count
 
 
 func get_card_count() -> int:
@@ -1005,7 +1012,15 @@ func _confirm_handoff() -> void:
 
 
 func _refresh_handoff_summary() -> void:
-	_handoff_wave_label.text = "웨이브 %02d 준비 완료" % _next_wave_number
+	match _reward_destination_text:
+		"보스 진행":
+			_handoff_wave_label.text = "보스전 준비 완료"
+		"스테이지 완료":
+			_handoff_wave_label.text = "스테이지 보상 정산 완료"
+		_:
+			var next_wave := mini(_next_wave_number, _total_wave_count) \
+				if _total_wave_count > 0 else _next_wave_number
+			_handoff_wave_label.text = "웨이브 %02d 준비 완료" % next_wave
 	_handoff_ball_label.text = (
 		"기본 유리눈"
 		if _purchased_ball_id == &""

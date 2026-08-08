@@ -17,6 +17,7 @@ func _run() -> void:
 	await _test_confirmed_stage_phase_sequence()
 	await _test_direct_boss_stage_entry()
 	await _test_boss_ball_cycle_preserves_phase()
+	await _test_boss_ball_exhaustion_defeat()
 	await _test_exhaustion_defeat()
 	await _test_stage_rejects_non_three_ball_inventory()
 	await _test_terminal_signal_reentrancy()
@@ -297,6 +298,49 @@ func _test_boss_ball_cycle_preserves_phase() -> void:
 		manager.current_stage_phase == WaveManager.StagePhase.REPAIR_PLACEMENT,
 		"Stage restart must restore normal Wave flow."
 	)
+	await _destroy_fixture(fixture)
+
+
+func _test_boss_ball_exhaustion_defeat() -> void:
+	var fixture := await _create_fixture(3, 100)
+	var manager: WaveManager = fixture.manager
+	var flow: WaveBallFlowController = fixture.flow
+	var launcher: PinballLauncher = fixture.launcher
+	var boss_lost_count := {&"value": 0}
+	var wave_lost_count := {&"value": 0}
+	manager.boss_lost.connect(func() -> void:
+		boss_lost_count.value += 1
+	)
+	manager.wave_lost.connect(func(_score: int, _target: int) -> void:
+		wave_lost_count.value += 1
+	)
+
+	_expect(manager.enter_boss_stage(fixture.settings),
+		"Boss exhaustion fixture should enter BOSS directly.")
+	_expect(manager.start_boss_ball_cycle(),
+		"Boss exhaustion fixture should start its Ball cycle.")
+	for index in WaveManager.BALLS_PER_WAVE:
+		_expect(flow.confirm_selection(),
+			"Boss exhaustion cycle %d should select a Ball." % index)
+		var ball := flow.active_ball
+		_expect(launcher.launch_prepared_ball(),
+			"Boss exhaustion cycle %d should launch." % index)
+		_expect(flow.on_ball_drained(ball),
+			"Boss exhaustion cycle %d should drain." % index)
+	await process_frame
+
+	_expect(boss_lost_count.value == 1,
+		"Exhausting all Boss lives must emit boss_lost exactly once.")
+	_expect(wave_lost_count.value == 0,
+		"Boss exhaustion must not emit the normal Wave loss signal.")
+	_expect(manager.current_state == WaveManager.State.LOST,
+		"Boss exhaustion must expose the LOST runtime state.")
+	_expect(manager.current_stage_phase == WaveManager.StagePhase.BOSS,
+		"Boss exhaustion must stay in BOSS until StageFlowManager rolls back.")
+	_expect(not manager.is_boss_ball_cycle_active(),
+		"Boss exhaustion must close the active Boss Ball cycle.")
+	_expect(not manager.advance_stage_phase(),
+		"A defeated Boss attempt must not advance to STAGE_COMPLETE.")
 	await _destroy_fixture(fixture)
 
 

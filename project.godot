@@ -15,14 +15,14 @@ run/main_scene="res://scenes/wave/wave.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://Resources/ui/icon.svg"
 
+[autoload]
+
+StageDataRepository="*res://scripts/stage_manage/stage_reward_repository.gd"
+
 [display]
 
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
-
-[autoload]
-
-StageDataRepository="*res://scripts/stage_manage/stage_reward_repository.gd"
 
 [editor_plugins]
 

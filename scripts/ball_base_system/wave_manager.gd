@@ -10,6 +10,7 @@ signal ball_cycle_resolved(ball: Pinball, remaining_balls: int, awarded_score: i
 signal clear_choice_requested(current_score: int, target_score: int, remaining_balls: int)
 signal wave_won(current_score: int, target_score: int)
 signal wave_lost(current_score: int, target_score: int)
+signal boss_lost
 signal wave_retried
 signal stage_entered(stage_id: StringName, wave_index: int)
 signal stage_phase_changed(previous_phase: StagePhase, current_phase: StagePhase)
@@ -66,6 +67,7 @@ var _terminal_finalize_queued := false
 var _stage_phase: StagePhase = StagePhase.INACTIVE
 var _stage_is_active := false
 var _last_wave_was_won := false
+var _target_completion_deferred := false
 var _boss_ball_cycle_started := false
 var _boss_ball_cycle_active := false
 var _boss_phase_completion_ready := false
@@ -168,6 +170,12 @@ func bind_collision_bridge(next_bridge: ComboCollisionBridge) -> bool:
 		collision_bridge.bind_combo_system(combo_system)
 	collision_bridge.bind_ball(active_ball)
 	return true
+
+
+## 종료 유예 같은 외부 규칙이 목표 달성 뒤 현재 공을 계속 진행할 때 사용합니다.
+## 기본값은 false라 기존 WaveManager 단독 흐름은 즉시 완료 동작을 유지합니다.
+func set_target_completion_deferred(is_deferred: bool) -> void:
+	_target_completion_deferred = is_deferred
 
 
 func enter_stage(stage_settings: Resource, start_wave_index := 0) -> bool:
@@ -539,7 +547,7 @@ func _on_boss_ball_flow_state_changed(
 		WaveBallFlowController.State.IN_PLAY:
 			_set_state(State.IN_PLAY)
 		WaveBallFlowController.State.EXHAUSTED:
-			_set_state(State.INACTIVE)
+			_finish_boss_lost()
 
 
 func _on_flow_active_ball_changed(next_ball: Pinball) -> void:
@@ -606,7 +614,8 @@ func _on_wave_clear_requested(_score: int, _target: int) -> void:
 func _on_target_score_reached(_score: int, _target: int) -> void:
 	if _boss_ball_cycle_active:
 		return
-	if _state == State.IN_PLAY and combo_wave != null:
+	if _state == State.IN_PLAY and combo_wave != null \
+			and not _target_completion_deferred:
 		combo_wave.complete_reached_target()
 
 
@@ -657,6 +666,18 @@ func _finish_lost() -> void:
 	_set_state(State.LOST)
 	_set_stage_phase(StagePhase.WAVE_RESULT)
 	wave_lost.emit(current_score, target_score)
+
+
+func _finish_boss_lost() -> void:
+	if not _boss_ball_cycle_active or _state == State.LOST:
+		return
+	_boss_ball_cycle_active = false
+	_boss_ball_cycle_started = false
+	_boss_phase_completion_ready = false
+	_clear_after_drain = false
+	_last_wave_was_won = false
+	_set_state(State.LOST)
+	boss_lost.emit()
 
 
 func _set_state(next_state: State) -> void:

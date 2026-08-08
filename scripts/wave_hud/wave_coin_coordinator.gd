@@ -36,6 +36,20 @@ func _ready() -> void:
 
 
 func _build_coin_system() -> void:
+	# 최신 wave.tscn은 에디터 배치가 보이는 CoinSystem을 직접 보유합니다.
+	# 과거 파생 씬도 이를 상속하므로 두 번째 필드/지갑을 만들지 않고 재사용합니다.
+	var authored_field := get_node_or_null(^"CoinSystem") as CoinFieldController
+	var authored_session := get_node_or_null(
+		^"CoinSystem/CoinSession"
+	) as WaveCoinSession
+	if authored_field != null and authored_session != null:
+		coin_field = authored_field
+		coin_wallet = authored_session.wallet
+		clear_delay = authored_session.clear_delay
+		_coin_label = authored_session.wallet_label
+		_connect_coin_event_log()
+		return
+
 	coin_wallet = CoinWallet.new()
 	coin_wallet.name = "CoinWallet"
 	add_child(coin_wallet)
@@ -55,9 +69,7 @@ func _build_coin_system() -> void:
 	_build_coin_label()
 
 	coin_wallet.wallet_changed.connect(_on_wallet_changed)
-	coin_field.coin_pickup_collected.connect(_on_coin_collected)
-	clear_delay.wave_clear_delay_started.connect(_on_delay_started)
-	clear_delay.wave_clear_delay_finished.connect(_on_delay_finished)
+	_connect_coin_event_log()
 	wave_manager.wave_entered.connect(_on_coin_wave_entered)
 	wave_manager.wave_retried.connect(_on_coin_wave_retried)
 
@@ -67,7 +79,16 @@ func _build_coin_system() -> void:
 	_refresh_coin_label()
 
 
-## 코인 HUD가 정식 디자인되기 전까지 쓰는 자리표시자 라벨입니다.
+func _connect_coin_event_log() -> void:
+	if not coin_field.coin_pickup_collected.is_connected(_on_coin_collected):
+		coin_field.coin_pickup_collected.connect(_on_coin_collected)
+	if not clear_delay.wave_clear_delay_started.is_connected(_on_delay_started):
+		clear_delay.wave_clear_delay_started.connect(_on_delay_started)
+	if not clear_delay.wave_clear_delay_finished.is_connected(_on_delay_finished):
+		clear_delay.wave_clear_delay_finished.connect(_on_delay_finished)
+
+
+## 오래된 파생 웨이브에 정식 HUD가 없을 때만 쓰는 호환용 라벨입니다.
 func _build_coin_label() -> void:
 	var hud_root := get_node_or_null("HUD")
 	if hud_root == null:
@@ -75,8 +96,8 @@ func _build_coin_label() -> void:
 		return
 	_coin_label = Label.new()
 	_coin_label.name = "CoinWalletLabel"
-	_coin_label.position = Vector2(24.0, 240.0)
-	_coin_label.add_theme_font_size_override(&"font_size", 30)
+	_coin_label.position = Vector2(1604.0, 24.0)
+	_coin_label.add_theme_font_size_override(&"font_size", 26)
 	_coin_label.add_theme_color_override(
 		&"font_color", Color(0.90, 0.72, 0.25)
 	)
@@ -90,13 +111,9 @@ func _build_coin_label() -> void:
 func _refresh_coin_label() -> void:
 	if _coin_label == null:
 		return
-	var board_coin := 0
-	if coin_field != null:
-		board_coin = coin_field.board_coin_this_wave
-	_coin_label.text = "COIN %d  (이번 웨이브 +%d)" % [
-		coin_wallet.balance if coin_wallet != null else 0,
-		board_coin,
-	]
+	_coin_label.text = "× %d" % (
+		coin_wallet.balance if coin_wallet != null else 0
+	)
 
 
 func _on_wallet_changed(_balance: int, _delta: int) -> void:

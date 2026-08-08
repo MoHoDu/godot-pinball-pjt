@@ -97,6 +97,8 @@ func _connect_signals() -> void:
 		wave_manager.stage_phase_changed.connect(_on_stage_phase_changed)
 	if not boss_runtime.battle_completed.is_connected(_on_battle_completed):
 		boss_runtime.battle_completed.connect(_on_battle_completed)
+	if not wave_manager.boss_lost.is_connected(_on_boss_lost):
+		wave_manager.boss_lost.connect(_on_boss_lost)
 
 
 func _disconnect_signals() -> void:
@@ -108,6 +110,9 @@ func _disconnect_signals() -> void:
 	if is_instance_valid(boss_runtime) \
 			and boss_runtime.battle_completed.is_connected(_on_battle_completed):
 		boss_runtime.battle_completed.disconnect(_on_battle_completed)
+	if is_instance_valid(wave_manager) \
+			and wave_manager.boss_lost.is_connected(_on_boss_lost):
+		wave_manager.boss_lost.disconnect(_on_boss_lost)
 
 
 func _on_stage_phase_changed(
@@ -146,6 +151,13 @@ func _on_battle_completed() -> void:
 	_boss_completion_in_progress = false
 	if wave_manager.current_stage_phase != WaveManager.StagePhase.BOSS:
 		_set_placeholder_advance_disabled(false)
+
+
+func _on_boss_lost() -> void:
+	_boss_completion_in_progress = false
+	if is_instance_valid(boss_runtime) and boss_runtime.is_battle_active():
+		boss_runtime.stop_battle()
+	_set_placeholder_advance_disabled(true)
 
 
 func _set_placeholder_advance_disabled(disabled: bool) -> void:
