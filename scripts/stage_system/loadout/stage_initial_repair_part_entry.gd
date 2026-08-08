@@ -8,6 +8,9 @@ extends Resource
 @export var part_prefab: PackedScene
 @export_range(0, 99, 1) var starting_count := 0
 @export_multiline var one_line_feature := ""
+## 배치 인벤토리 카드와 드래그 고스트에 표시할 실제 부품 이미지입니다.
+@export var icon: Texture2D
+## 이전 씬과의 직렬화 호환을 위해 남겨 둡니다. 신규 설정은 icon을 사용하세요.
 @export var placeholder_icon := "?"
 
 
@@ -36,5 +39,6 @@ func make_inventory_entry() -> RepairPartInventoryEntry:
 	entry.placeable_scene = part_prefab
 	entry.starting_count = starting_count
 	entry.one_line_feature = one_line_feature
+	entry.icon = icon
 	entry.placeholder_icon = placeholder_icon
 	return entry

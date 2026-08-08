@@ -263,7 +263,7 @@ func _build_header(parent: VBoxContainer) -> void:
 	_title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_title_label.add_theme_font_override(
 		&"font",
-		load("res://Resources/fonts/black_and_white_picture/BlackAndWhitePicture-Regular.ttf")
+		load("res://Resources/ui/themes/web_safe_picture_font.tres")
 	)
 	_title_label.add_theme_color_override(&"font_color", COLOR_IVORY)
 	_title_label.add_theme_font_size_override(&"font_size", 36)
@@ -298,6 +298,9 @@ func _build_tabs(parent: VBoxContainer) -> void:
 	_exit_tab = _make_button("게임 종료", &"danger")
 	_exit_tab.name = "ExitTab"
 	_exit_tab.pressed.connect(show_exit_confirmation)
+	# 브라우저에서 SceneTree.quit()은 캔버스를 영구 정지시키므로 종료 메뉴를
+	# 제공하지 않습니다. 네이티브 빌드는 기존 종료 흐름을 그대로 유지합니다.
+	_exit_tab.visible = not OS.has_feature("web")
 	tabs.add_child(_exit_tab)
 
 
@@ -508,7 +511,7 @@ func _make_license_row(entry: Dictionary) -> PanelContainer:
 	var name_label := _make_label(String(entry[&"title"]), 17, COLOR_IVORY)
 	name_label.add_theme_font_override(
 		&"font",
-		load("res://Resources/ui/fonts/black_han_sans/BlackHanSans-Regular.ttf")
+		load("res://Resources/ui/themes/web_safe_black_han_font.tres")
 	)
 	labels.add_child(name_label)
 	labels.add_child(_make_label(String(entry[&"summary"]), 13, COLOR_MUTED))

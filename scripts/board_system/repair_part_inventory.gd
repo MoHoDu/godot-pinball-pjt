@@ -183,6 +183,7 @@ func get_snapshot() -> Array[Dictionary]:
 			&"kind_id": kind_id,
 			&"display_name": entry.settings.display_name,
 			&"feature": entry.one_line_feature,
+			&"icon": entry.icon,
 			&"placeholder_icon": entry.placeholder_icon,
 			&"available_count": get_available_count(kind_id),
 			&"reserved_count": get_reserved_count(kind_id),
