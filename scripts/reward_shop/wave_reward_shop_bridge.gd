@@ -62,6 +62,9 @@ var _entry_coin_balance := 0
 var _entry_owned_definitions: Array[BallDefinition] = []
 var _entry_unlocked_reward_ids: Array[StringName] = []
 var _entry_part_counts: Dictionary = {}
+var _runtime_ready := false
+var _recovery_overlay: Control
+var _recovery_message: Label
 
 
 func _ready() -> void:
@@ -95,9 +98,9 @@ func _initialize() -> void:
 			or not ball_inventory is SelectBallInventory:
 		set_process_unhandled_input(false)
 		return
-	_assert_dependencies()
-	if wave_manager == null or combo_system == null \
-			or ball_inventory == null or part_inventory == null:
+	var dependency_error := _get_dependency_error()
+	if not dependency_error.is_empty():
+		_fail_initialization(dependency_error)
 		return
 
 	if wallet == null:
@@ -111,10 +114,10 @@ func _initialize() -> void:
 		clear_delay.score_ratio_per_coin = score_ratio_per_coin
 		clear_delay.clear_delay_coin_cap = score_coin_cap
 		add_child(clear_delay)
-		assert(
-			clear_delay.bind(wave_manager, wallet, null),
-			"Reward bridge could not bind score coin settlement."
-		)
+		var clear_delay_bound := clear_delay.bind(wave_manager, wallet, null)
+		if not clear_delay_bound:
+			_fail_initialization("Reward bridge could not bind score coin settlement.")
+			return
 
 	shop_controller = RewardShopController.new()
 	shop_controller.name = "RewardShopController"
@@ -122,10 +125,12 @@ func _initialize() -> void:
 	shop_controller.stage_id = stage_id
 	shop_controller.random_seed = random_seed
 	add_child(shop_controller)
-	assert(
-		shop_controller.bind(wallet, part_inventory),
-		"Reward bridge could not bind the wallet and repair inventory."
-	)
+	var controller_bound := shop_controller.bind(wallet, part_inventory)
+	if not controller_bound:
+		_fail_initialization(
+			"Reward bridge could not bind the wallet and repair inventory."
+		)
+		return
 
 	_shop_layer = CanvasLayer.new()
 	_shop_layer.name = "RewardShopLayer"
@@ -134,10 +139,10 @@ func _initialize() -> void:
 	shop_hud = RewardShopHud.new()
 	shop_hud.name = "RewardShopHud"
 	_shop_layer.add_child(shop_hud)
-	assert(
-		shop_hud.bind(shop_controller, wallet, part_inventory),
-		"Reward bridge could not bind the reward HUD."
-	)
+	var hud_bound := shop_hud.bind(shop_controller, wallet, part_inventory)
+	if not hud_bound:
+		_fail_initialization("Reward bridge could not bind the reward HUD.")
+		return
 
 	shop_hud.proceed_requested.connect(_on_shop_proceed)
 	shop_controller.ball_unlocked.connect(_on_ball_unlocked)
@@ -147,6 +152,7 @@ func _initialize() -> void:
 	wave_manager.wave_lost.connect(_on_wave_lost)
 	wave_manager.stage_completed.connect(_on_stage_completed)
 
+	_runtime_ready = true
 	_capture_stage_entry()
 	_sync_current_phase()
 
@@ -169,6 +175,13 @@ func _on_stage_phase_changed(
 	_previous_phase: WaveManager.StagePhase,
 	current_phase: WaveManager.StagePhase
 ) -> void:
+	if current_phase == WaveManager.StagePhase.REWARD and not _runtime_ready:
+		_show_recovery(
+			"보상 화면을 준비하지 못했습니다.\n계속 버튼을 눌러 다음 웨이브로 이동해 주세요."
+		)
+		return
+	if current_phase != WaveManager.StagePhase.REWARD:
+		_hide_recovery()
 	if current_phase == WaveManager.StagePhase.WAVE_RESULT \
 			and wave_manager.current_state == WaveManager.State.WON:
 		# _finish_won()의 같은 시그널 체인에서 wave_won 코인 정산이 끝난 뒤
@@ -195,7 +208,12 @@ func _sync_current_phase() -> void:
 
 
 func _open_reward_shop() -> void:
-	if shop_controller == null or shop_controller.is_open:
+	if shop_controller == null:
+		_show_recovery(
+			"보상 화면을 준비하지 못했습니다.\n계속 버튼을 눌러 다음 웨이브로 이동해 주세요."
+		)
+		return
+	if shop_controller.is_open:
 		return
 	if wave_hud != null:
 		wave_hud.visible = false
@@ -208,6 +226,9 @@ func _open_reward_shop() -> void:
 		wave_manager.current_wave_index, wave_manager.current_wave_index
 	):
 		push_error("Reward bridge could not open the stage reward shop.")
+		_show_recovery(
+			"보상 목록을 열지 못했습니다.\n계속 버튼을 눌러 다음 웨이브로 이동해 주세요."
+		)
 
 
 func _on_shop_proceed() -> void:
@@ -217,6 +238,90 @@ func _on_shop_proceed() -> void:
 	_last_delay_coin = 0
 	if not wave_manager.advance_stage_phase():
 		push_error("Reward bridge could not advance from the reward phase.")
+
+
+func _fail_initialization(error_message: String) -> void:
+	push_error(error_message)
+	_runtime_ready = false
+	if wave_manager != null \
+			and not wave_manager.stage_phase_changed.is_connected(
+				_on_stage_phase_changed
+			):
+		wave_manager.stage_phase_changed.connect(_on_stage_phase_changed)
+	if wave_manager != null \
+			and wave_manager.current_stage_phase == WaveManager.StagePhase.REWARD:
+		_show_recovery(
+			"보상 화면을 준비하지 못했습니다.\n계속 버튼을 눌러 다음 웨이브로 이동해 주세요."
+		)
+
+
+func _show_recovery(message: String) -> void:
+	if _recovery_overlay == null:
+		_build_recovery_overlay()
+	_recovery_message.text = message
+	_recovery_overlay.visible = true
+
+
+func _hide_recovery() -> void:
+	if _recovery_overlay != null:
+		_recovery_overlay.visible = false
+
+
+func _build_recovery_overlay() -> void:
+	if _shop_layer == null:
+		_shop_layer = CanvasLayer.new()
+		_shop_layer.name = "RewardShopRecoveryLayer"
+		_shop_layer.layer = 26
+		add_child(_shop_layer)
+	_recovery_overlay = ColorRect.new()
+	_recovery_overlay.name = "RewardRecoveryOverlay"
+	_recovery_overlay.color = Color(0.06, 0.08, 0.12, 0.96)
+	_recovery_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	_recovery_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_shop_layer.add_child(_recovery_overlay)
+
+	var center := CenterContainer.new()
+	center.name = "Center"
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_recovery_overlay.add_child(center)
+
+	var content := VBoxContainer.new()
+	content.name = "Content"
+	content.custom_minimum_size = Vector2(520.0, 0.0)
+	content.add_theme_constant_override(&"separation", 24)
+	center.add_child(content)
+
+	var title := Label.new()
+	title.text = "보상 화면 오류"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override(&"font_size", 36)
+	content.add_child(title)
+
+	_recovery_message = Label.new()
+	_recovery_message.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_recovery_message.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_recovery_message.add_theme_font_size_override(&"font_size", 22)
+	content.add_child(_recovery_message)
+
+	var continue_button := Button.new()
+	continue_button.name = "ContinueButton"
+	continue_button.text = "다음 웨이브 계속"
+	continue_button.custom_minimum_size = Vector2(0.0, 64.0)
+	continue_button.add_theme_font_size_override(&"font_size", 24)
+	continue_button.pressed.connect(_on_recovery_proceed)
+	content.add_child(continue_button)
+
+
+func _on_recovery_proceed() -> void:
+	_hide_recovery()
+	if wave_manager == null \
+			or wave_manager.current_stage_phase != WaveManager.StagePhase.REWARD:
+		return
+	if not wave_manager.advance_stage_phase():
+		_show_recovery(
+			"다음 웨이브로 이동하지 못했습니다.\n잠시 후 다시 시도해 주세요."
+		)
+		push_error("Reward bridge recovery could not advance from the reward phase.")
 
 
 func _on_ball_unlocked(ball_id: StringName) -> void:
@@ -327,12 +432,19 @@ func _on_stage_completed(_stage_runtime_id: StringName) -> void:
 	_last_delay_coin = 0
 
 
-func _assert_dependencies() -> void:
-	assert(wave_manager != null, "Reward bridge requires RewardWaveManager.")
-	assert(combo_system != null, "Reward bridge requires ComboSystem.")
-	assert(ball_inventory != null, "Reward bridge requires SelectBallInventory.")
-	assert(part_inventory != null, "Reward bridge requires RepairPartInventory.")
-	assert(placement_session != null,
-		"Reward bridge requires BoardPlacementSession.")
-	assert(ball_inventory == null or ball_inventory.reusable_owned_balls,
-		"Reward bridge requires reusable-owned-ball inventory mode.")
+func _get_dependency_error() -> String:
+	if wave_manager == null:
+		return "Reward bridge requires RewardWaveManager."
+	if combo_system == null:
+		return "Reward bridge requires ComboSystem."
+	if ball_inventory == null:
+		return "Reward bridge requires SelectBallInventory."
+	if part_inventory == null:
+		return "Reward bridge requires RepairPartInventory."
+	if placement_session == null:
+		return "Reward bridge requires BoardPlacementSession."
+	if not ball_inventory.reusable_owned_balls:
+		return "Reward bridge requires reusable-owned-ball inventory mode."
+	if shop_catalog == null:
+		return "Reward bridge requires RewardShopCatalog."
+	return ""

@@ -48,19 +48,23 @@ func bind_stage_runtime(
 
 
 func _ready() -> void:
-	assert(wave_manager != null, "CoinSession requires WaveManager.")
-	assert(wallet != null, "CoinSession requires CoinWallet.")
-	assert(field != null, "CoinSession requires CoinFieldController.")
-	assert(clear_delay != null, "CoinSession requires WaveClearDelayController.")
+	if wave_manager == null or wallet == null or field == null or clear_delay == null:
+		push_error("CoinSession requires WaveManager, CoinWallet, CoinFieldController, and WaveClearDelayController.")
+		set_process(false)
+		set_process_unhandled_input(false)
+		return
 	if wallet_label == null:
 		wallet_label = get_node_or_null(
 			^"../../HUD/WaveHud/DesignSpace/CoinWalletHud/Margin/Row/BalanceLabel"
 		) as Label
-	assert(field.bind_wallet(wallet), "Coin field could not bind its wallet.")
-	assert(
-		clear_delay.bind(wave_manager, wallet, field),
-		"Clear-delay coin controller could not bind the wave runtime."
-	)
+	var field_bound := field.bind_wallet(wallet)
+	if not field_bound:
+		push_error("Coin field could not bind its wallet.")
+		return
+	var clear_delay_bound := clear_delay.bind(wave_manager, wallet, field)
+	if not clear_delay_bound:
+		push_error("Clear-delay coin controller could not bind the wave runtime.")
+		return
 
 	wallet.wallet_changed.connect(_on_wallet_changed)
 	field.board_coin_changed.connect(_on_board_coin_changed)

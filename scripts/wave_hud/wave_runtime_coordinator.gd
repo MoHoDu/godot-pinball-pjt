@@ -8,6 +8,7 @@ const TOY_DRUM_KIND_ID: StringName = &"stage01_toy_drum"
 const SETTINGS_POPUP_SCENE := preload(
 	"res://Resources/Prefabs/ui/settings/settings_popup.tscn"
 )
+const START_SCREEN_PATH := "res://scenes/game/start/start_screen.tscn"
 
 
 @export_category("Wave Configuration")
@@ -325,6 +326,19 @@ func _initialize_hud_state() -> void:
 
 func _configure_lives_from_inventory() -> void:
 	var ball_types: Array[StringName] = []
+	var select_inventory := wave_ball_inventory as SelectBallInventory
+	if select_inventory != null and select_inventory.reusable_owned_balls:
+		var current_type := &""
+		if select_inventory.selected_definition != null:
+			current_type = select_inventory.selected_definition.ball_id
+		elif not select_inventory.get_owned_definitions().is_empty():
+			current_type = select_inventory.get_owned_definitions()[0].ball_id
+		if current_type.is_empty():
+			return
+		for _slot in select_inventory.launches_per_wave:
+			ball_types.append(current_type)
+		hud_state.configure_lives(ball_types)
+		return
 	for stock: BallStock in wave_ball_inventory.starting_stock:
 		if stock == null or not stock.is_valid():
 			continue
@@ -518,6 +532,12 @@ func _on_settings_closed() -> void:
 
 
 func _on_game_exit_requested() -> void:
+	if OS.has_feature("web"):
+		# 방어 경로: 웹에서는 UI에서 종료 버튼을 숨기지만 외부 호출이 와도
+		# 엔진을 정지시키지 않고 시작 화면으로 안전하게 복귀합니다.
+		get_tree().paused = false
+		get_tree().change_scene_to_file(START_SCREEN_PATH)
+		return
 	get_tree().quit()
 
 

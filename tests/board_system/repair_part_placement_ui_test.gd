@@ -151,6 +151,14 @@ func _test_inventory_states(
 	var bell := hud.get_card(&"forgotten_star_bell")
 	_expect(brooch != null and gears != null and bell != null,
 		"Placement drawer must render all three v0.3 repair-part entries.")
+	_expect(brooch.get_icon_texture() != null \
+		and gears.get_icon_texture() != null \
+		and bell.get_icon_texture() != null,
+		"Placement cards must render the authored repair-part textures.")
+	_expect(not brooch.is_icon_fallback_visible() \
+		and not gears.is_icon_fallback_visible() \
+		and not bell.is_icon_fallback_visible(),
+		"Authored repair-part textures must not use the text fallback.")
 	_expect(hud.get_card(&"crescent_needle") == null,
 		"Placement drawer must not render the removed Crescent Needle entry.")
 	_expect(brooch.disabled and gears.disabled and bell.disabled,

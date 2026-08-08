@@ -1,7 +1,7 @@
 [gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/board_system/repair_part_placement_hud.gd" id="1_script"]
-[ext_resource type="FontFile" path="res://Resources/fonts/black_and_white_picture/BlackAndWhitePicture-Regular.ttf" id="2_font"]
+[ext_resource type="FontVariation" path="res://Resources/ui/themes/web_safe_picture_font.tres" id="2_font"]
 [ext_resource type="Texture2D" path="res://Resources/Art/ui/textures/panels/cursed_toy_panel_texture.png" id="3_texture"]
 
 [sub_resource type="StyleBoxFlat" id="Style_drawer"]
@@ -133,7 +133,7 @@ theme_override_font_sizes/font_size = 24
 theme_override_styles/normal = SubResource("Style_tab")
 theme_override_styles/hover = SubResource("Style_tab_hover")
 theme_override_styles/pressed = SubResource("Style_tab_hover")
-text = "수리 부품 인벤토리  ▼"
+text = "수리 부품 인벤토리 (접기)"
 
 [node name="StatusLabel" type="Label" parent="DesignSpace/Drawer"]
 unique_name_in_owner = true
@@ -184,8 +184,25 @@ offset_bottom = 84.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("Style_ghost")
 
-[node name="DragIcon" type="Label" parent="DesignSpace/DragGhost"]
+[node name="DragIcon" type="TextureRect" parent="DesignSpace/DragGhost"]
 unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="DragIconFallback" type="Label" parent="DesignSpace/DragGhost"]
+unique_name_in_owner = true
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -194,9 +211,8 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.66, 0.51, 0.25, 1)
-theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 38
-text = "✦"
+text = "?"
 horizontal_alignment = 1
 vertical_alignment = 1
 

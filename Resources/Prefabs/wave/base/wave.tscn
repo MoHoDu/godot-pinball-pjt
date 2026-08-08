@@ -80,6 +80,12 @@
 
 [ext_resource type="Resource" path="res://settings/bumpers/repair_parts/ForgottenStarBell.tres" id="40_bell_settings"]
 
+[ext_resource type="Texture2D" path="res://Resources/Art/repair_parts/starlight_brooch.png" id="40_brooch_icon"]
+
+[ext_resource type="Texture2D" path="res://Resources/Art/repair_parts/golden_gears.png" id="40_gears_icon"]
+
+[ext_resource type="Texture2D" path="res://Resources/Art/repair_parts/forgotten_star_bell.png" id="40_bell_icon"]
+
 [ext_resource type="Script" path="res://scripts/sfx_system/sfx_director.gd" id="41_sfx_director"]
 
 [ext_resource type="Script" path="res://scripts/sfx_system/wave_sfx_binder_strict.gd" id="42_sfx_binder"]
@@ -171,7 +177,7 @@ settings = ExtResource("37_brooch_settings")
 placeable_scene = ExtResource("41_brooch_placeable")
 starting_count = 0
 one_line_feature = "완성한다 · 6초 귀환"
-placeholder_icon = "✦"
+icon = ExtResource("40_brooch_icon")
 
 [sub_resource type="Resource" id="RepairEntry_gears"]
 script = ExtResource("36_repair_entry")
@@ -179,7 +185,7 @@ settings = ExtResource("38_gears_settings")
 placeable_scene = ExtResource("42_gears_placeable")
 starting_count = 0
 one_line_feature = "구동한다 · 연속 반응"
-placeholder_icon = "⚙"
+icon = ExtResource("40_gears_icon")
 
 [sub_resource type="Resource" id="RepairEntry_bell"]
 script = ExtResource("36_repair_entry")
@@ -187,7 +193,7 @@ settings = ExtResource("40_bell_settings")
 placeable_scene = ExtResource("44_bell_placeable")
 starting_count = 0
 one_line_feature = "울린다 · 반응 전달"
-placeholder_icon = "✧"
+icon = ExtResource("40_bell_icon")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape_drain_horizontal"]
 resource_local_to_scene = true
