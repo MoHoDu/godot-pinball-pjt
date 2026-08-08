@@ -89,9 +89,16 @@ func _run() -> void:
 		ball_row.custom_minimum_size.y, 282.0 * design_scale
 	), "공 카드 행 높이가 설계 비율과 같아야 한다.")
 	var shop_title := hud.find_child("ShopTitleLabel", true, false) as Label
-	_expect(shop_title != null and shop_title.get_theme_font(&"font").resource_path.ends_with(
+	var display_font := (
+		shop_title.get_theme_font(&"font") as FontVariation
+		if shop_title != null
+		else null
+	)
+	_expect(display_font != null and display_font.base_font.resource_path.ends_with(
 		"Resources/ui/fonts/black_han_sans/BlackHanSans-Regular.ttf"
-	), "상점 제목은 설계와 같은 Black Han Sans를 사용해야 한다.")
+	), "상점 제목은 설계와 같은 Black Han Sans를 기반으로 사용해야 한다.")
+	_expect(display_font != null and display_font.has_char("·".unicode_at(0)),
+		"상점 장식 폰트는 Web 구매 문구의 구분 기호를 표시해야 한다.")
 	var initial_ball_rule := hud.find_child("BallRuleLabel", true, false) as Label
 	var body_font := (
 		initial_ball_rule.get_theme_font(&"font") as FontVariation

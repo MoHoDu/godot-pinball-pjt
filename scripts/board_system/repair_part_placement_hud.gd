@@ -25,7 +25,8 @@ const CARD_SCENE := preload(
 @onready var _status_label: Label = %StatusLabel
 @onready var _confirm_button: Button = %ConfirmButton
 @onready var _drag_ghost: Control = %DragGhost
-@onready var _drag_icon: Label = %DragIcon
+@onready var _drag_icon: TextureRect = %DragIcon
+@onready var _drag_icon_fallback: Label = %DragIconFallback
 @onready var _drag_count: Label = %DragCount
 
 
@@ -189,7 +190,10 @@ func _on_card_interaction_started(
 	_candidate_start = viewport_position
 	_dragging = false
 	var data := _find_data(kind_id)
-	_drag_icon.text = String(data.get(&"placeholder_icon", "?"))
+	var icon := data.get(&"icon", null) as Texture2D
+	_drag_icon.texture = icon
+	_drag_icon.visible = icon != null
+	_drag_icon_fallback.visible = icon == null
 	_drag_count.text = "×1"
 	_position_drag_ghost(viewport_position)
 
@@ -218,9 +222,9 @@ func _clear_drag() -> void:
 func _set_drawer_position(animated: bool) -> void:
 	var target_y := DRAWER_OPEN_Y if _drawer_open else DRAWER_CLOSED_Y
 	_drawer_tab.text = (
-		"수리 부품 인벤토리  ▼"
+		"수리 부품 인벤토리 (접기)"
 		if _drawer_open
-		else "수리 부품 인벤토리  ▲"
+		else "수리 부품 인벤토리 (펼치기)"
 	)
 	if not animated or not is_inside_tree():
 		_drawer.position.y = target_y

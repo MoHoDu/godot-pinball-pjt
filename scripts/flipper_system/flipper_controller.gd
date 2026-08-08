@@ -39,8 +39,6 @@ func collect_flippers() -> void:
 	for child: Node in get_children():
 		if child is PinballFlipper:
 			flippers.append(child as PinballFlipper)
-		
-	print("찾은 플리퍼 수: ", flippers.size())
 
 
 func _physics_process(_delta: float) -> void:

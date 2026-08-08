@@ -35,6 +35,8 @@ var _total_wave_count := 0
 var _destination_text := ""
 var _configured := false
 var _completed := false
+var _recovery_overlay: Control
+var _recovery_message: Label
 
 
 func bind_coin_wallet(wallet: CoinWallet) -> bool:
@@ -72,12 +74,17 @@ func configure_reward(
 
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	assert(_wallet != null, "Stage reward shop requires the stage CoinWallet.")
-	assert(_stage_ball_inventory != null,
-		"Stage reward shop requires StageBallInventory.")
-	assert(_part_inventory != null,
-		"Stage reward shop requires RepairPartInventory.")
 	if _wallet == null or _stage_ball_inventory == null or _part_inventory == null:
+		_show_recovery(
+			"보상 데이터를 불러오지 못했습니다.\n계속 버튼을 눌러 다음 단계로 이동해 주세요."
+		)
+		push_error("Stage reward shop requires all persistent inventories.")
+		return
+	if shop_catalog == null:
+		_show_recovery(
+			"보상 설정을 불러오지 못했습니다.\n계속 버튼을 눌러 다음 단계로 이동해 주세요."
+		)
+		push_error("Stage reward shop requires RewardShopCatalog.")
 		return
 
 	shop_controller = RewardShopController.new()
@@ -86,36 +93,55 @@ func _ready() -> void:
 	shop_controller.stage_id = stage_id
 	shop_controller.random_seed = random_seed
 	add_child(shop_controller)
-	assert(shop_controller.bind(_wallet, _part_inventory),
-		"Stage reward controller could not bind persistent inventories.")
+	var controller_bound := shop_controller.bind(_wallet, _part_inventory)
+	if not controller_bound:
+		_show_recovery(
+			"보상 상점을 준비하지 못했습니다.\n계속 버튼을 눌러 다음 단계로 이동해 주세요."
+		)
+		push_error("Stage reward controller could not bind persistent inventories.")
+		return
 	shop_controller.reset_unlocked_balls(_stage_ball_inventory.unlocked_ids)
 	shop_controller.ball_unlocked.connect(_on_ball_unlocked)
 
 	shop_hud = RewardShopHud.new()
 	shop_hud.name = "RewardShopHud"
 	add_child(shop_hud)
-	assert(shop_hud.bind(shop_controller, _wallet, _part_inventory),
-		"Stage reward HUD could not bind the reward controller.")
+	var hud_bound := shop_hud.bind(shop_controller, _wallet, _part_inventory)
+	if not hud_bound:
+		_show_recovery(
+			"보상 화면을 표시하지 못했습니다.\n계속 버튼을 눌러 다음 단계로 이동해 주세요."
+		)
+		push_error("Stage reward HUD could not bind the reward controller.")
+		return
 	shop_hud.proceed_requested.connect(_on_proceed_requested)
 	_open_shop_if_ready()
 
 
 ## 테스트·자동 진행에서 실제 확인 완료와 같은 경로를 호출합니다.
 func continue_stage() -> bool:
-	if shop_controller == null or not shop_controller.is_open or _completed:
+	if _completed:
 		return false
-	_on_proceed_requested()
+	if _recovery_overlay != null and _recovery_overlay.visible:
+		_complete_reward()
+		return true
+	if shop_controller == null or not shop_controller.is_open:
+		return false
+	_complete_reward()
 	return true
 
 
 func _open_shop_if_ready() -> void:
 	if not _configured or not is_node_ready() or shop_controller == null \
+			or shop_hud == null \
 			or shop_controller.is_open:
 		return
 	shop_hud.set_wave_summary(_wave_index, 0, 0)
 	shop_hud.set_reward_destination(_destination_text, _total_wave_count)
 	if not shop_controller.open_shop(_wave_index, _wave_index):
 		push_error("Stage reward shop could not open for wave %d." % (_wave_index + 1))
+		_show_recovery(
+			"보상 목록을 열지 못했습니다.\n계속 버튼을 눌러 다음 단계로 이동해 주세요."
+		)
 
 
 func _on_ball_unlocked(ball_id: StringName) -> void:
@@ -137,6 +163,61 @@ func _on_ball_unlocked(ball_id: StringName) -> void:
 func _on_proceed_requested() -> void:
 	if shop_controller == null or not shop_controller.is_open or _completed:
 		return
+	_complete_reward()
+
+
+func _complete_reward() -> void:
+	if _completed:
+		return
 	_completed = true
-	shop_controller.close_shop()
+	if shop_controller != null and shop_controller.is_open:
+		shop_controller.close_shop()
 	reward_completed.emit()
+
+
+func _show_recovery(message: String) -> void:
+	if _recovery_overlay == null:
+		_build_recovery_overlay()
+	_recovery_message.text = message
+	_recovery_overlay.visible = true
+	_recovery_overlay.move_to_front()
+
+
+func _build_recovery_overlay() -> void:
+	_recovery_overlay = ColorRect.new()
+	_recovery_overlay.name = "RewardRecoveryOverlay"
+	_recovery_overlay.color = Color(0.06, 0.08, 0.12, 0.96)
+	_recovery_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	_recovery_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	add_child(_recovery_overlay)
+
+	var center := CenterContainer.new()
+	center.name = "Center"
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_recovery_overlay.add_child(center)
+
+	var content := VBoxContainer.new()
+	content.name = "Content"
+	content.custom_minimum_size = Vector2(520.0, 0.0)
+	content.add_theme_constant_override(&"separation", 24)
+	center.add_child(content)
+
+	var title := Label.new()
+	title.text = "보상 화면 오류"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override(&"font_size", 36)
+	content.add_child(title)
+
+	_recovery_message = Label.new()
+	_recovery_message.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_recovery_message.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_recovery_message.add_theme_font_size_override(&"font_size", 22)
+	content.add_child(_recovery_message)
+
+	var continue_button := Button.new()
+	continue_button.name = "ContinueButton"
+	continue_button.text = "다음 단계 계속"
+	continue_button.custom_minimum_size = Vector2(0.0, 64.0)
+	continue_button.add_theme_font_size_override(&"font_size", 24)
+	continue_button.pressed.connect(_complete_reward)
+	content.add_child(continue_button)

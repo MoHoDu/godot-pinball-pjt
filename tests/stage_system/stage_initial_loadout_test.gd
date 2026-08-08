@@ -31,13 +31,17 @@ func _run() -> void:
 		var initial_ids: Array[StringName] = []
 		for entry: StageInitialBallEntry in manager.initial_balls:
 			initial_ids.append(entry.ball_id)
-		_expect(initial_ids == [&"light", &"normal", &"heavy"],
+		_expect(initial_ids == [&"gel", &"normal", &"heavy"],
 			"Stage 01 must preserve the authored ball id and prefab order.")
 		_expect(manager.initial_balls[0].ball_prefab.resource_path.ends_with(
-			"/light_ball.tscn"
+			"/gel_ball.tscn"
 		) and manager.initial_balls[2].ball_prefab.resource_path.ends_with(
 			"/heavy_ball.tscn"
 		), "Stage 01 ball ids must point to their matching prefabs.")
+		_expect(manager.initial_balls[0].display_name == "젤 공",
+			"Stage 01 gel ball display name must not contain stale whitespace.")
+		_expect(manager.initial_coin_balance == 0,
+			"Stage 01 initial coin balance must be an explicit safe integer.")
 		var wave := manager.active_scene
 		var inventory := wave.find_child(
 			"WaveBallInventory", true, false
@@ -58,9 +62,12 @@ func _run() -> void:
 			"The active wave must receive all Inspector repair part prefabs.")
 		if wave_parts != null:
 			for entry: RepairPartInventoryEntry in wave_parts.entries:
-				_expect(entry.starting_count == 0 \
-					and entry.placeable_scene != null,
-					"Stage 01 repair entries must preserve prefab and starting count.")
+				var expected_count := 3 \
+					if entry.get_kind_id() == &"starlight_brooch" else 0
+				_expect(entry.starting_count == expected_count \
+					and entry.placeable_scene != null \
+					and entry.icon != null,
+					"Stage 01 repair entries must preserve prefab, icon, and starting count.")
 
 	stage.queue_free()
 	await process_frame

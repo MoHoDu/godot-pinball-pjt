@@ -15,7 +15,7 @@ const CURTAIN_BACKGROUND := preload(
 	"res://Resources/Art/backgrounds/cursed_circus_curtain_background.png"
 )
 const DISPLAY_FONT := preload(
-	"res://Resources/ui/fonts/black_han_sans/BlackHanSans-Regular.ttf"
+	"res://Resources/ui/themes/web_safe_black_han_font.tres"
 )
 const BODY_FONT_SOURCE := preload(
 	"res://Resources/ui/fonts/noto_sans_kr/NotoSansKR-wght.ttf"

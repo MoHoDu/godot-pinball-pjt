@@ -8,7 +8,8 @@ signal interaction_started(kind_id: StringName, viewport_position: Vector2)
 @onready var _type_label: Label = %TypeLabel
 @onready var _name_label: Label = %NameLabel
 @onready var _feature_label: Label = %FeatureLabel
-@onready var _icon_label: Label = %IconLabel
+@onready var _icon_texture: TextureRect = %IconTexture
+@onready var _icon_fallback_label: Label = %IconFallbackLabel
 @onready var _stack_back: Control = %StackBack
 @onready var _stack_middle: Control = %StackMiddle
 @onready var _stack_count: Label = %StackCount
@@ -27,7 +28,10 @@ func configure(data: Dictionary, is_compatible: bool) -> void:
 	_type_label.text = "수리 부품"
 	_name_label.text = String(data.get(&"display_name", "이름 없음"))
 	_feature_label.text = String(data.get(&"feature", ""))
-	_icon_label.text = String(data.get(&"placeholder_icon", "?"))
+	var icon := data.get(&"icon", null) as Texture2D
+	_icon_texture.texture = icon
+	_icon_texture.visible = icon != null
+	_icon_fallback_label.visible = icon == null
 	_stack_count.text = "×%d" % available_count
 	_stack_back.visible = available_count >= 2
 	_stack_middle.visible = available_count >= 3
@@ -45,6 +49,14 @@ func get_stack_text() -> String:
 
 func has_layered_stack() -> bool:
 	return _stack_back.visible or _stack_middle.visible
+
+
+func get_icon_texture() -> Texture2D:
+	return _icon_texture.texture
+
+
+func is_icon_fallback_visible() -> bool:
+	return _icon_fallback_label.visible
 
 
 func _on_button_down() -> void:

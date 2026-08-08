@@ -382,11 +382,14 @@ func _test_stage_reward_purchase_persistence() -> void:
 
 	var ball_offer := reward.shop_controller.ball_offers[0]
 	var part_offer := reward.shop_controller.part_offers[0]
+	var initial_part_count := manager.reward_part_inventory.count_of(
+		part_offer.part_id
+	)
 	_expect(reward.shop_controller.buy_ball(0),
 		"보상 상점에서 공을 구매할 수 있어야 한다.")
 	_expect(reward.shop_controller.buy_part(0),
 		"보상 상점에서 수리 부품을 구매할 수 있어야 한다.")
-	var expected_part_count := part_offer.bundle_count
+	var expected_part_count := initial_part_count + part_offer.bundle_count
 	_expect(reward.continue_stage(),
 		"보상 확인 뒤 다음 스테이지 웨이브로 진행해야 한다.")
 	await _wait_for_transition()
@@ -451,7 +454,8 @@ func _test_stage_reward_purchase_persistence() -> void:
 	)
 	_expect(
 		manager.stage_ball_inventory.unlocked_ids.is_empty()
-			and manager.reward_part_inventory.count_of(part_offer.part_id) == 0,
+			and manager.reward_part_inventory.count_of(part_offer.part_id)
+				== initial_part_count,
 		"스테이지 롤백은 보상으로 구매한 공과 수리 부품도 시작 상태로 복원해야 한다."
 	)
 
