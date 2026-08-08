@@ -573,7 +573,9 @@ func _test_pause_connection(wave: WaveRuntimeCoordinator) -> void:
 	active_ball.global_position = Vector2.ZERO
 	root.size = original_size
 	await process_frame
+	var settings_popup := wave.get_node("SettingsOverlay/SettingsPopup") as SettingsPopup
 	settings.emit_signal(&"pressed")
+	await settings_popup.close_requested
 	_expect(not paused, "Settings button must remain able to resume while paused.")
 
 
