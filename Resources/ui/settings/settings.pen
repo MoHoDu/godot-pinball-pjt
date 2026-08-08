@@ -1,0 +1,4962 @@
+{
+  "version": "2.17",
+  "children": [
+    {
+      "type": "frame",
+      "id": "ciVXc",
+      "x": 0,
+      "y": 0,
+      "name": "00 Design System",
+      "clip": true,
+      "width": 2040,
+      "height": 3900,
+      "fill": "$color-bg",
+      "layout": "vertical",
+      "gap": 28,
+      "padding": 48,
+      "children": [
+        {
+          "type": "text",
+          "id": "w9cBE8",
+          "name": "Design System Title",
+          "fill": "$color-ivory",
+          "content": "SETTINGS · DESIGN SYSTEM",
+          "fontFamily": "$font-display",
+          "fontSize": 46,
+          "fontWeight": "normal",
+          "letterSpacing": 1.5
+        },
+        {
+          "type": "text",
+          "id": "Ej0i6",
+          "name": "Design Principle",
+          "fill": "$color-muted",
+          "content": "Cursed Toy dark cartoon · 필요한 정보만 남기고 플레이의 흐름을 가리지 않는다.",
+          "fontFamily": "$font-body",
+          "fontSize": 18,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "ijLSt",
+          "name": "Color Tokens",
+          "width": "fill_container",
+          "height": 144,
+          "gap": 14,
+          "children": [
+            {
+              "type": "frame",
+              "id": "CDtyg",
+              "name": "Token Deep Navy",
+              "width": "fill_container",
+              "height": 144,
+              "fill": "$color-bg",
+              "cornerRadius": [
+                7,
+                3,
+                8,
+                4
+              ],
+              "stroke": "$color-ivory",
+              "strokeWidth": 2,
+              "layout": "vertical",
+              "gap": 6,
+              "padding": 14,
+              "justifyContent": "end",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "ANLQP",
+                  "name": "Deep Navy Name",
+                  "fill": "$color-ivory",
+                  "content": "Deep Navy",
+                  "fontFamily": "$font-body",
+                  "fontSize": 14,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "HBO2k",
+                  "name": "Deep Navy Role",
+                  "fill": "$color-muted",
+                  "content": "$color-bg",
+                  "fontFamily": "$font-body",
+                  "fontSize": 11,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "v94ee9",
+              "name": "Token Toy Teal",
+              "width": "fill_container",
+              "height": 144,
+              "fill": "$color-surface",
+              "cornerRadius": [
+                7,
+                3,
+                8,
+                4
+              ],
+              "stroke": "$color-ivory",
+              "strokeWidth": 2,
+              "layout": "vertical",
+              "gap": 6,
+              "padding": 14,
+              "justifyContent": "end",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Fwjm1",
+                  "name": "Toy Teal Name",
+                  "fill": "$color-ivory",
+                  "content": "Toy Teal",
+                  "fontFamily": "$font-body",
+                  "fontSize": 14,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "CTw9n",
+                  "name": "Toy Teal Role",
+                  "fill": "$color-muted",
+                  "content": "$color-surface",
+                  "fontFamily": "$font-body",
+                  "fontSize": 11,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "F2qwgj",
+              "name": "Token Panel",
+              "width": "fill_container",
+              "height": 144,
+              "fill": "$color-panel",
+              "cornerRadius": [
+                7,
+                3,
+                8,
+                4
+              ],
+              "stroke": "$color-ivory",
+              "strokeWidth": 2,
+              "layout": "vertical",
+              "gap": 6,
+              "padding": 14,
+              "justifyContent": "end",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "pBDLq",
+                  "name": "Panel Name",
+                  "fill": "$color-ivory",
+                  "content": "Panel",
+                  "fontFamily": "$font-body",
+                  "fontSize": 14,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "etKrE",
+                  "name": "Panel Role",
+                  "fill": "$color-muted",
+                  "content": "$color-panel",
+                  "fontFamily": "$font-body",
+                  "fontSize": 11,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "PDGwd",
+              "name": "Token Mint Focus",
+              "width": "fill_container",
+              "height": 144,
+              "fill": "$color-mint",
+              "cornerRadius": [
+                7,
+                3,
+                8,
+                4
+              ],
+              "stroke": "$color-ivory",
+              "strokeWidth": 2,
+              "layout": "vertical",
+              "gap": 6,
+              "padding": 14,
+              "justifyContent": "end",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Zv3VI",
+                  "name": "Mint Focus Name",
+                  "fill": "$color-ivory",
+                  "content": "Mint Focus",
+                  "fontFamily": "$font-body",
+                  "fontSize": 14,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "N1RO6",
+                  "name": "Mint Focus Role",
+                  "fill": "$color-muted",
+                  "content": "$color-mint",
+                  "fontFamily": "$font-body",
+                  "fontSize": 11,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "I6w4Y",
+              "name": "Token Ivory Ink",
+              "width": "fill_container",
+              "height": 144,
+              "fill": "$color-ivory",
+              "cornerRadius": [
+                7,
+                3,
+                8,
+                4
+              ],
+              "stroke": "$color-ivory",
+              "strokeWidth": 2,
+              "layout": "vertical",
+              "gap": 6,
+              "padding": 14,
+              "justifyContent": "end",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "EiZkg",
+                  "name": "Ivory Ink Name",
+                  "fill": "$color-bg",
+                  "content": "Ivory Ink",
+                  "fontFamily": "$font-body",
+                  "fontSize": 14,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "C9sB0",
+                  "name": "Ivory Ink Role",
+                  "fill": "$color-bg",
+                  "content": "$color-ivory",
+                  "fontFamily": "$font-body",
+                  "fontSize": 11,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "MZcFA",
+              "name": "Token Muted",
+              "width": "fill_container",
+              "height": 144,
+              "fill": "$color-muted",
+              "cornerRadius": [
+                7,
+                3,
+                8,
+                4
+              ],
+              "stroke": "$color-ivory",
+              "strokeWidth": 2,
+              "layout": "vertical",
+              "gap": 6,
+              "padding": 14,
+              "justifyContent": "end",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "E27O1",
+                  "name": "Muted Name",
+                  "fill": "$color-ivory",
+                  "content": "Muted",
+                  "fontFamily": "$font-body",
+                  "fontSize": 14,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "bBElU",
+                  "name": "Muted Role",
+                  "fill": "$color-muted",
+                  "content": "$color-muted",
+                  "fontFamily": "$font-body",
+                  "fontSize": 11,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "mIeCk",
+              "name": "Token Gold",
+              "width": "fill_container",
+              "height": 144,
+              "fill": "$color-gold",
+              "cornerRadius": [
+                7,
+                3,
+                8,
+                4
+              ],
+              "stroke": "$color-ivory",
+              "strokeWidth": 2,
+              "layout": "vertical",
+              "gap": 6,
+              "padding": 14,
+              "justifyContent": "end",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "l6PAv",
+                  "name": "Gold Name",
+                  "fill": "$color-ivory",
+                  "content": "Gold",
+                  "fontFamily": "$font-body",
+                  "fontSize": 14,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "efw4j",
+                  "name": "Gold Role",
+                  "fill": "$color-muted",
+                  "content": "$color-gold",
+                  "fontFamily": "$font-body",
+                  "fontSize": 11,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Ns1Vp",
+              "name": "Token Danger",
+              "width": "fill_container",
+              "height": 144,
+              "fill": "$color-danger",
+              "cornerRadius": [
+                7,
+                3,
+                8,
+                4
+              ],
+              "stroke": "$color-ivory",
+              "strokeWidth": 2,
+              "layout": "vertical",
+              "gap": 6,
+              "padding": 14,
+              "justifyContent": "end",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "g8y6xt",
+                  "name": "Danger Name",
+                  "fill": "$color-ivory",
+                  "content": "Danger",
+                  "fontFamily": "$font-body",
+                  "fontSize": 14,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "PepkI",
+                  "name": "Danger Role",
+                  "fill": "$color-muted",
+                  "content": "$color-danger",
+                  "fontFamily": "$font-body",
+                  "fontSize": 11,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "bmh3W",
+          "name": "Typography and Material Rules",
+          "width": "fill_container",
+          "height": 150,
+          "gap": 20,
+          "children": [
+            {
+              "type": "frame",
+              "id": "j9d95",
+              "name": "Type Scale",
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": "$color-panel",
+              "cornerRadius": [
+                7,
+                3,
+                8,
+                4
+              ],
+              "stroke": "$color-ivory",
+              "strokeWidth": 3,
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 20,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "ZqIC8",
+                  "name": "Display Sample",
+                  "fill": "$color-ivory",
+                  "content": "설정 SETTINGS",
+                  "fontFamily": "$font-display",
+                  "fontSize": 34,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "BIaCt",
+                  "name": "Body Sample",
+                  "fill": "$color-mint",
+                  "content": "본문 18 / 보조 14 / 수치 16",
+                  "fontFamily": "$font-body",
+                  "fontSize": 18,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "pOmUh",
+                  "name": "Caption Sample",
+                  "fill": "$color-muted",
+                  "content": "Noto Sans KR · 명료한 계층 · 짧은 피드백",
+                  "fontFamily": "$font-body",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "u467p",
+              "name": "Shape Material",
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": "$color-surface",
+              "cornerRadius": [
+                8,
+                4,
+                7,
+                3
+              ],
+              "stroke": "$color-ivory",
+              "strokeWidth": 3,
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 20,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "N2vShW",
+                  "name": "Shape Rule Title",
+                  "fill": "$color-ivory",
+                  "content": "SHAPE / MATERIAL",
+                  "fontFamily": "$font-display",
+                  "fontSize": 26,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "iG72p",
+                  "name": "Shape Rule Body",
+                  "fill": "$color-muted",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "3px ivory ink outline · 비대칭 radius 7/3/8/4 · gradient 없음 · mint는 선택과 포커스에만",
+                  "fontFamily": "$font-body",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "YJsTP",
+          "name": "Component Gallery Title",
+          "fill": "$color-gold",
+          "content": "REUSABLE COMPONENTS & STATES",
+          "fontFamily": "$font-display",
+          "fontSize": 30,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "hocXH",
+          "name": "Component Gallery",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 18,
+          "children": [
+            {
+              "type": "frame",
+              "id": "LZHeU",
+              "name": "Component / Slider",
+              "reusable": true,
+              "width": 360,
+              "height": 32,
+              "layout": "none",
+              "children": [
+                {
+                  "type": "rectangle",
+                  "cornerRadius": [
+                    4,
+                    2,
+                    4,
+                    2
+                  ],
+                  "id": "aRf2P",
+                  "x": 0,
+                  "y": 12,
+                  "name": "Slider Track",
+                  "fill": "$color-bg",
+                  "width": 360,
+                  "height": 8,
+                  "stroke": "$color-muted",
+                  "strokeWidth": 2
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 2,
+                  "id": "U4iqtQ",
+                  "x": 2,
+                  "y": 14,
+                  "name": "Slider Active",
+                  "fill": "$color-mint",
+                  "width": 248,
+                  "height": 4
+                },
+                {
+                  "type": "ellipse",
+                  "id": "VISkZ",
+                  "x": 238,
+                  "y": 4,
+                  "name": "Slider Knob",
+                  "fill": "$color-ivory",
+                  "width": 24,
+                  "height": 24,
+                  "stroke": "$color-bg",
+                  "strokeWidth": 3
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": [
+                    7,
+                    3,
+                    8,
+                    4
+                  ],
+                  "id": "SyYhu",
+                  "x": 0,
+                  "y": 3,
+                  "name": "Slider Focus Ring",
+                  "enabled": false,
+                  "fill": "#00000000",
+                  "width": 360,
+                  "height": 26,
+                  "stroke": "$color-mint",
+                  "strokeWidth": 2
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "qrwFq",
+              "name": "Component / TabButton",
+              "reusable": true,
+              "width": 170,
+              "height": 48,
+              "fill": "$color-surface",
+              "cornerRadius": [
+                7,
+                3,
+                8,
+                4
+              ],
+              "stroke": "$color-muted",
+              "strokeWidth": 2,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "xixUf",
+                  "name": "Tab Label",
+                  "fill": "$color-muted",
+                  "content": "사운드",
+                  "fontFamily": "$font-body",
+                  "fontSize": 17,
+                  "fontWeight": "800"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "pU9ef",
+              "name": "Component / Button",
+              "reusable": true,
+              "width": 180,
+              "height": 48,
+              "fill": "$color-surface",
+              "cornerRadius": [
+                7,
+                3,
+                8,
+                4
+              ],
+              "stroke": "$color-ivory",
+              "strokeWidth": 3,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "v3WfbC",
+                  "name": "Button Label",
+                  "fill": "$color-ivory",
+                  "content": "버튼",
+                  "fontFamily": "$font-body",
+                  "fontSize": 16,
+                  "fontWeight": "800"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "PUZHN",
+              "name": "Component / IconClose",
+              "reusable": true,
+              "width": 44,
+              "height": 44,
+              "fill": "$color-panel",
+              "cornerRadius": [
+                7,
+                3,
+                8,
+                4
+              ],
+              "stroke": "$color-ivory",
+              "strokeWidth": 3,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "rj4Js",
+                  "name": "Close Icon",
+                  "width": 24,
+                  "height": 24,
+                  "icon": "close",
+                  "library": "Material Symbols Rounded",
+                  "weight": 700,
+                  "fill": "$color-ivory"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "oULgJ",
+              "name": "Component / PopupShell",
+              "reusable": true,
+              "width": 920,
+              "height": 660,
+              "fill": "$color-panel",
+              "cornerRadius": [
+                9,
+                4,
+                11,
+                5
+              ],
+              "stroke": "$color-ivory",
+              "strokeWidth": 3,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#020B0FA6",
+                "offset": {
+                  "x": 0,
+                  "y": 14
+                }
+              },
+              "layout": "none"
+            },
+            {
+              "type": "frame",
+              "id": "m0Jx9d",
+              "name": "Component / Gameplay Background",
+              "reusable": true,
+              "width": 1920,
+              "height": 1080,
+              "fill": "$color-bg",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "rectangle",
+                  "cornerRadius": [
+                    30,
+                    12,
+                    38,
+                    18
+                  ],
+                  "id": "oVBqZ",
+                  "x": 640,
+                  "y": 72,
+                  "name": "Board Field",
+                  "fill": "$color-surface",
+                  "width": 640,
+                  "height": 960,
+                  "stroke": "$color-gold-dark",
+                  "strokeWidth": 4
+                },
+                {
+                  "type": "text",
+                  "id": "MaOrZ",
+                  "x": 730,
+                  "y": 490,
+                  "name": "Gameplay Placeholder Label",
+                  "fill": "$color-muted",
+                  "content": "배경 게임플레이 PLACEHOLDER",
+                  "fontFamily": "$font-display",
+                  "fontSize": 28,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "ellipse",
+                  "id": "no83k",
+                  "x": 944,
+                  "y": 680,
+                  "name": "Gameplay Ball",
+                  "fill": "$color-ivory",
+                  "width": 34,
+                  "height": 34,
+                  "stroke": "$color-gold",
+                  "strokeWidth": 3
+                },
+                {
+                  "type": "frame",
+                  "id": "d0ld2",
+                  "x": 48,
+                  "y": 42,
+                  "name": "HUD Top Left",
+                  "width": 260,
+                  "height": 76,
+                  "fill": "#0B272FCC",
+                  "cornerRadius": [
+                    7,
+                    3,
+                    8,
+                    4
+                  ],
+                  "stroke": "$color-ivory",
+                  "strokeWidth": 2,
+                  "layout": "vertical",
+                  "gap": 4,
+                  "padding": 12,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "ryL1w",
+                      "name": "Wave Label",
+                      "fill": "$color-mint",
+                      "content": "WAVE 06",
+                      "fontFamily": "Noto Sans KR",
+                      "fontSize": 17,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "text",
+                      "id": "SZwfu",
+                      "name": "Score Label",
+                      "fill": "$color-ivory",
+                      "content": "125,480",
+                      "fontFamily": "Noto Sans KR",
+                      "fontSize": 24,
+                      "fontWeight": "900"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "XnmLD",
+                  "x": 1812,
+                  "y": 44,
+                  "name": "Settings HUD Button",
+                  "width": 60,
+                  "height": 60,
+                  "fill": "$color-panel",
+                  "cornerRadius": [
+                    7,
+                    3,
+                    8,
+                    4
+                  ],
+                  "stroke": "$color-ivory",
+                  "strokeWidth": 3,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "zBXnL",
+                      "name": "Settings HUD Icon",
+                      "width": 28,
+                      "height": 28,
+                      "icon": "settings",
+                      "library": "Material Symbols Rounded",
+                      "weight": 700,
+                      "fill": "$color-ivory"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "v3LEac",
+              "name": "Component / VolumeRow",
+              "reusable": true,
+              "width": 820,
+              "height": 56,
+              "fill": "#00000000",
+              "gap": 16,
+              "padding": [
+                8,
+                12
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "rectangle",
+                  "id": "L942P",
+                  "x": 0,
+                  "y": 0,
+                  "name": "Volume Hierarchy Line",
+                  "enabled": false,
+                  "fill": "$color-gold-dark",
+                  "width": 2,
+                  "height": 30
+                },
+                {
+                  "type": "text",
+                  "id": "x7oda",
+                  "name": "Volume Label",
+                  "fill": "$color-ivory",
+                  "textGrowth": "fixed-width",
+                  "width": 250,
+                  "content": "마스터 사운드",
+                  "fontFamily": "$font-body",
+                  "fontSize": 17,
+                  "fontWeight": "800"
+                },
+                {
+                  "id": "euRCb",
+                  "type": "ref",
+                  "ref": "LZHeU",
+                  "name": "Volume Slider",
+                  "width": 360,
+                  "height": 32
+                },
+                {
+                  "type": "text",
+                  "id": "O76VEC",
+                  "name": "Volume Value",
+                  "fill": "$color-mint",
+                  "textGrowth": "fixed-width",
+                  "width": 64,
+                  "content": "70%",
+                  "textAlign": "right",
+                  "fontFamily": "$font-body",
+                  "fontSize": 16,
+                  "fontWeight": "900"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Vh8dv",
+              "name": "Component / LicenseRow",
+              "reusable": true,
+              "width": 820,
+              "height": 80,
+              "fill": "$color-surface",
+              "cornerRadius": [
+                7,
+                3,
+                8,
+                4
+              ],
+              "gap": 16,
+              "padding": [
+                12,
+                16
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "spobd",
+                  "name": "License Copy",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "mrXeI",
+                      "name": "License Name",
+                      "fill": "$color-ivory",
+                      "content": "Black Han Sans",
+                      "fontFamily": "$font-body",
+                      "fontSize": 17,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "text",
+                      "id": "GdH1M",
+                      "name": "License Type",
+                      "fill": "$color-muted",
+                      "content": "SIL Open Font License 1.1",
+                      "fontFamily": "$font-body",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "id": "xotkW",
+                  "type": "ref",
+                  "ref": "pU9ef",
+                  "name": "License Detail Button",
+                  "width": 132,
+                  "height": 42,
+                  "descendants": {
+                    "v3WfbC": {
+                      "content": "전문 보기",
+                      "fontSize": 14
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "VnJ7q",
+              "name": "Component / ExitConfirmDialog",
+              "reusable": true,
+              "width": 520,
+              "height": 280,
+              "fill": "$color-panel",
+              "cornerRadius": [
+                9,
+                4,
+                11,
+                5
+              ],
+              "stroke": "$color-ivory",
+              "strokeWidth": 3,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#020B0FCC",
+                "offset": {
+                  "x": 0,
+                  "y": 12
+                }
+              },
+              "layout": "vertical",
+              "gap": 18,
+              "padding": 30,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "VEtVG",
+                  "name": "Exit Dialog Title",
+                  "fill": "$color-ivory",
+                  "content": "게임을 종료하시겠습니까?",
+                  "fontFamily": "$font-display",
+                  "fontSize": 30,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "VNMbk",
+                  "name": "Exit Dialog Description",
+                  "fill": "$color-muted",
+                  "content": "저장된 설정은 유지됩니다.",
+                  "fontFamily": "$font-body",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "A20KKP",
+                  "name": "Exit Dialog Spacer",
+                  "width": "fill_container",
+                  "height": "fill_container"
+                },
+                {
+                  "type": "frame",
+                  "id": "A27jL1",
+                  "name": "Exit Dialog Actions",
+                  "width": "fill_container",
+                  "height": 50,
+                  "gap": 12,
+                  "justifyContent": "end",
+                  "children": [
+                    {
+                      "id": "eKrF9",
+                      "type": "ref",
+                      "ref": "pU9ef",
+                      "name": "Exit Cancel Button",
+                      "width": 150,
+                      "height": 48,
+                      "descendants": {
+                        "v3WfbC": {
+                          "content": "취소"
+                        }
+                      }
+                    },
+                    {
+                      "id": "W1uhmU",
+                      "type": "ref",
+                      "ref": "pU9ef",
+                      "name": "Exit Quit Button",
+                      "width": 170,
+                      "height": 48,
+                      "fill": "$color-danger",
+                      "stroke": "$color-ivory",
+                      "descendants": {
+                        "v3WfbC": {
+                          "content": "게임 종료"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "GihfE",
+              "name": "Component State Matrix",
+              "width": "fill_container",
+              "height": 620,
+              "fill": "$color-surface",
+              "cornerRadius": [
+                8,
+                4,
+                7,
+                3
+              ],
+              "stroke": "$color-gold-dark",
+              "strokeWidth": 2,
+              "layout": "vertical",
+              "gap": 14,
+              "padding": 22,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "kHum5",
+                  "name": "State Matrix Title",
+                  "fill": "$color-ivory",
+                  "content": "상태는 색·외곽선·짧은 피드백만으로 구분",
+                  "fontFamily": "$font-body",
+                  "fontSize": 16,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "frame",
+                  "id": "Gu8c8",
+                  "name": "Tab States",
+                  "width": "fill_container",
+                  "height": 52,
+                  "gap": 12,
+                  "children": [
+                    {
+                      "id": "TSF0T",
+                      "type": "ref",
+                      "ref": "qrwFq",
+                      "name": "Tab Active Instance",
+                      "fill": "$color-mint",
+                      "stroke": "$color-ivory",
+                      "descendants": {
+                        "xixUf": {
+                          "content": "사운드",
+                          "fill": "$color-bg"
+                        }
+                      }
+                    },
+                    {
+                      "id": "R27861",
+                      "type": "ref",
+                      "ref": "qrwFq",
+                      "name": "Tab Inactive Instance",
+                      "descendants": {
+                        "xixUf": {
+                          "content": "라이선스"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "eIGIY",
+                  "name": "Button States",
+                  "width": "fill_container",
+                  "height": 52,
+                  "gap": 12,
+                  "children": [
+                    {
+                      "id": "isQOr",
+                      "type": "ref",
+                      "ref": "pU9ef",
+                      "name": "Button Primary Instance",
+                      "width": 160,
+                      "height": 48,
+                      "fill": "$color-mint",
+                      "stroke": "$color-ivory",
+                      "opacity": 1,
+                      "descendants": {
+                        "v3WfbC": {
+                          "content": "적용",
+                          "fill": "$color-bg",
+                          "fontSize": 14
+                        }
+                      }
+                    },
+                    {
+                      "id": "bJ314",
+                      "type": "ref",
+                      "ref": "pU9ef",
+                      "name": "Button Secondary Instance",
+                      "width": 160,
+                      "height": 48,
+                      "fill": "$color-surface",
+                      "stroke": "$color-ivory",
+                      "opacity": 1,
+                      "descendants": {
+                        "v3WfbC": {
+                          "content": "전문 보기",
+                          "fill": "$color-ivory",
+                          "fontSize": 14
+                        }
+                      }
+                    },
+                    {
+                      "id": "O0ygk",
+                      "type": "ref",
+                      "ref": "pU9ef",
+                      "name": "Button Ghost Instance",
+                      "width": 160,
+                      "height": 48,
+                      "fill": "#00000000",
+                      "stroke": "$color-muted",
+                      "opacity": 1,
+                      "descendants": {
+                        "v3WfbC": {
+                          "content": "기본값 복원",
+                          "fill": "$color-muted",
+                          "fontSize": 14
+                        }
+                      }
+                    },
+                    {
+                      "id": "y7aB4s",
+                      "type": "ref",
+                      "ref": "pU9ef",
+                      "name": "Button Danger Instance",
+                      "width": 160,
+                      "height": 48,
+                      "fill": "$color-danger",
+                      "stroke": "$color-ivory",
+                      "opacity": 1,
+                      "descendants": {
+                        "v3WfbC": {
+                          "content": "게임 종료",
+                          "fill": "$color-ivory",
+                          "fontSize": 14
+                        }
+                      }
+                    },
+                    {
+                      "id": "nTIWi",
+                      "type": "ref",
+                      "ref": "pU9ef",
+                      "name": "Button Hover Instance",
+                      "width": 160,
+                      "height": 48,
+                      "fill": "$color-gold",
+                      "stroke": "$color-ivory",
+                      "opacity": 1,
+                      "descendants": {
+                        "v3WfbC": {
+                          "content": "마우스 오버",
+                          "fill": "$color-bg",
+                          "fontSize": 14
+                        }
+                      }
+                    },
+                    {
+                      "id": "VHaf8",
+                      "type": "ref",
+                      "ref": "pU9ef",
+                      "name": "Button Pressed Instance",
+                      "width": 160,
+                      "height": 48,
+                      "fill": "$color-gold-dark",
+                      "stroke": "$color-mint",
+                      "opacity": 1,
+                      "descendants": {
+                        "v3WfbC": {
+                          "content": "누름",
+                          "fill": "$color-ivory",
+                          "fontSize": 14
+                        }
+                      }
+                    },
+                    {
+                      "id": "Tkdq4",
+                      "type": "ref",
+                      "ref": "pU9ef",
+                      "name": "Button Disabled Instance",
+                      "width": 160,
+                      "height": 48,
+                      "fill": "$color-surface",
+                      "stroke": "$color-muted",
+                      "opacity": 0.45,
+                      "descendants": {
+                        "v3WfbC": {
+                          "content": "비활성",
+                          "fill": "$color-muted",
+                          "fontSize": 14
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "mI4KT",
+                  "name": "Slider States",
+                  "width": "fill_container",
+                  "height": 52,
+                  "gap": 28,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "pBVht",
+                      "type": "ref",
+                      "ref": "LZHeU",
+                      "name": "Slider 100 Instance",
+                      "width": 360,
+                      "height": 32,
+                      "descendants": {
+                        "U4iqtQ": {
+                          "width": 356,
+                          "fill": "$color-mint"
+                        },
+                        "VISkZ": {
+                          "x": 336,
+                          "fill": "$color-ivory"
+                        },
+                        "SyYhu": {
+                          "enabled": false
+                        }
+                      }
+                    },
+                    {
+                      "id": "l0fc07",
+                      "type": "ref",
+                      "ref": "LZHeU",
+                      "name": "Slider 70 Instance",
+                      "width": 360,
+                      "height": 32,
+                      "descendants": {
+                        "U4iqtQ": {
+                          "width": 248,
+                          "fill": "$color-mint"
+                        },
+                        "VISkZ": {
+                          "x": 238,
+                          "fill": "$color-ivory"
+                        },
+                        "SyYhu": {
+                          "enabled": false
+                        }
+                      }
+                    },
+                    {
+                      "id": "IlzUK",
+                      "type": "ref",
+                      "ref": "LZHeU",
+                      "name": "Slider 0 Mute Instance",
+                      "width": 360,
+                      "height": 32,
+                      "descendants": {
+                        "U4iqtQ": {
+                          "width": 0,
+                          "fill": "$color-muted"
+                        },
+                        "VISkZ": {
+                          "x": 0,
+                          "fill": "$color-muted"
+                        },
+                        "SyYhu": {
+                          "enabled": false
+                        }
+                      }
+                    },
+                    {
+                      "id": "rnEs4",
+                      "type": "ref",
+                      "ref": "LZHeU",
+                      "name": "Slider Focus Instance",
+                      "width": 360,
+                      "height": 32,
+                      "descendants": {
+                        "U4iqtQ": {
+                          "width": 198,
+                          "fill": "$color-mint"
+                        },
+                        "VISkZ": {
+                          "x": 188,
+                          "fill": "$color-ivory"
+                        },
+                        "SyYhu": {
+                          "enabled": true
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Gq9qi",
+                  "name": "Volume Row Variants",
+                  "width": "fill_container",
+                  "height": 240,
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "id": "hnDvY",
+                      "type": "ref",
+                      "ref": "v3LEac",
+                      "name": "Volume Master Instance",
+                      "width": 820,
+                      "height": 56,
+                      "descendants": {
+                        "L942P": {
+                          "enabled": false
+                        },
+                        "x7oda": {
+                          "content": "마스터 사운드",
+                          "fontSize": 17,
+                          "fill": "$color-ivory"
+                        },
+                        "O76VEC": {
+                          "content": "100%"
+                        }
+                      }
+                    },
+                    {
+                      "id": "bPEQ8",
+                      "type": "ref",
+                      "ref": "v3LEac",
+                      "name": "Volume BGM Instance",
+                      "width": 820,
+                      "height": 56,
+                      "descendants": {
+                        "L942P": {
+                          "enabled": false
+                        },
+                        "x7oda": {
+                          "content": "BGM",
+                          "fontSize": 17,
+                          "fill": "$color-ivory"
+                        },
+                        "O76VEC": {
+                          "content": "70%"
+                        }
+                      }
+                    },
+                    {
+                      "id": "kKDAb",
+                      "type": "ref",
+                      "ref": "v3LEac",
+                      "name": "Volume SFX Instance",
+                      "width": 820,
+                      "height": 56,
+                      "descendants": {
+                        "L942P": {
+                          "enabled": false
+                        },
+                        "x7oda": {
+                          "content": "SFX 전체",
+                          "fontSize": 17,
+                          "fill": "$color-ivory"
+                        },
+                        "O76VEC": {
+                          "content": "80%"
+                        }
+                      }
+                    },
+                    {
+                      "id": "uwBkv",
+                      "type": "ref",
+                      "ref": "v3LEac",
+                      "name": "Volume Child Instance",
+                      "width": 820,
+                      "height": 56,
+                      "descendants": {
+                        "L942P": {
+                          "enabled": true
+                        },
+                        "x7oda": {
+                          "content": "공 사운드",
+                          "fontSize": 15,
+                          "fill": "$color-muted"
+                        },
+                        "O76VEC": {
+                          "content": "80%"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "APatF",
+      "x": 2160,
+      "y": 0,
+      "name": "01 Motion Spec",
+      "clip": true,
+      "width": 1920,
+      "height": 1080,
+      "fill": "$color-bg",
+      "layout": "none",
+      "children": [
+        {
+          "type": "text",
+          "id": "xwVVX",
+          "x": 56,
+          "y": 48,
+          "name": "Motion Title",
+          "fill": "$color-ivory",
+          "content": "SETTING POPUP · MOTION SPEC",
+          "fontFamily": "$font-display",
+          "fontSize": 42,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "yAENB",
+          "x": 56,
+          "y": 108,
+          "name": "Motion Principle",
+          "fill": "$color-muted",
+          "content": "게임은 즉시 pause · 패널은 아래에서 위로 24px · 딤 클릭 무시",
+          "fontFamily": "$font-body",
+          "fontSize": 17,
+          "fontWeight": "700"
+        },
+        {
+          "type": "frame",
+          "id": "IEE31",
+          "x": 56,
+          "y": 178,
+          "name": "Motion Keyframes",
+          "width": 1808,
+          "height": 310,
+          "gap": 22,
+          "children": [
+            {
+              "type": "frame",
+              "id": "grA09",
+              "name": "Keyframe CLOSED PLAY",
+              "width": "fill_container",
+              "height": 310,
+              "layout": "vertical",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "K81szo",
+                  "name": "Keyframe Label 0",
+                  "fill": "$color-ivory",
+                  "content": "CLOSED  PLAY",
+                  "fontFamily": "$font-body",
+                  "fontSize": 15,
+                  "fontWeight": "900"
+                },
+                {
+                  "type": "frame",
+                  "id": "T1SBRc",
+                  "name": "Keyframe Thumbnail 0",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": 186,
+                  "fill": "$color-bg",
+                  "cornerRadius": [
+                    7,
+                    3,
+                    8,
+                    4
+                  ],
+                  "stroke": "$color-muted",
+                  "strokeWidth": 2,
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": [
+                        12,
+                        4,
+                        14,
+                        6
+                      ],
+                      "id": "JTLCP",
+                      "x": 94,
+                      "y": 16,
+                      "name": "Thumbnail Board 0",
+                      "fill": "$color-surface",
+                      "width": 140,
+                      "height": 162,
+                      "stroke": "$color-gold-dark",
+                      "strokeWidth": 2
+                    },
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": [
+                        4,
+                        2,
+                        4,
+                        2
+                      ],
+                      "id": "K3DKNz",
+                      "x": 12,
+                      "y": 12,
+                      "name": "Thumbnail HUD 0",
+                      "fill": "$color-panel",
+                      "width": 58,
+                      "height": 24,
+                      "stroke": "$color-ivory",
+                      "strokeWidth": 1
+                    },
+                    {
+                      "type": "frame",
+                      "id": "zVPUb",
+                      "x": 288,
+                      "y": 12,
+                      "name": "Thumbnail Settings 0",
+                      "width": 28,
+                      "height": 28,
+                      "fill": "$color-panel",
+                      "cornerRadius": [
+                        4,
+                        2,
+                        4,
+                        2
+                      ],
+                      "stroke": "$color-ivory",
+                      "strokeWidth": 1,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "epc5A",
+                          "name": "Thumbnail Settings Icon 0",
+                          "width": 15,
+                          "height": 15,
+                          "icon": "settings",
+                          "library": "Material Symbols Rounded",
+                          "fill": "$color-ivory"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "w9t8I",
+                  "name": "Keyframe Note 0",
+                  "fill": "$color-muted",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "설정 버튼 대기",
+                  "fontFamily": "$font-body",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "shKyk",
+              "name": "Keyframe OPENING 0ms",
+              "width": "fill_container",
+              "height": 310,
+              "layout": "vertical",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "s1zq3",
+                  "name": "Keyframe Label 1",
+                  "fill": "$color-ivory",
+                  "content": "OPENING  0ms",
+                  "fontFamily": "$font-body",
+                  "fontSize": 15,
+                  "fontWeight": "900"
+                },
+                {
+                  "type": "frame",
+                  "id": "cVttu",
+                  "name": "Keyframe Thumbnail 1",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": 186,
+                  "fill": "$color-bg",
+                  "cornerRadius": [
+                    7,
+                    3,
+                    8,
+                    4
+                  ],
+                  "stroke": "$color-muted",
+                  "strokeWidth": 2,
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": [
+                        12,
+                        4,
+                        14,
+                        6
+                      ],
+                      "id": "z7TSs3",
+                      "x": 94,
+                      "y": 16,
+                      "name": "Thumbnail Board 1",
+                      "fill": "$color-surface",
+                      "width": 140,
+                      "height": 162,
+                      "stroke": "$color-gold-dark",
+                      "strokeWidth": 2
+                    },
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": [
+                        4,
+                        2,
+                        4,
+                        2
+                      ],
+                      "id": "m31cb1",
+                      "x": 12,
+                      "y": 12,
+                      "name": "Thumbnail HUD 1",
+                      "fill": "$color-panel",
+                      "width": 58,
+                      "height": 24,
+                      "stroke": "$color-ivory",
+                      "strokeWidth": 1
+                    },
+                    {
+                      "type": "frame",
+                      "id": "h5J6e",
+                      "x": 288,
+                      "y": 12,
+                      "name": "Thumbnail Settings 1",
+                      "width": 28,
+                      "height": 28,
+                      "fill": "$color-panel",
+                      "cornerRadius": [
+                        4,
+                        2,
+                        4,
+                        2
+                      ],
+                      "stroke": "$color-ivory",
+                      "strokeWidth": 1,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "b6VtYn",
+                          "name": "Thumbnail Settings Icon 1",
+                          "width": 15,
+                          "height": 15,
+                          "icon": "settings",
+                          "library": "Material Symbols Rounded",
+                          "fill": "$color-ivory"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "Bq1GR",
+                      "x": 0,
+                      "y": 0,
+                      "name": "Thumbnail Dim 1",
+                      "fill": "#020B0F00",
+                      "width": 328,
+                      "height": 186
+                    },
+                    {
+                      "type": "frame",
+                      "id": "E8nMvu",
+                      "x": 80,
+                      "y": 84,
+                      "name": "Thumbnail Panel 1",
+                      "width": 168,
+                      "height": 100,
+                      "fill": "$color-panel",
+                      "cornerRadius": [
+                        6,
+                        2,
+                        7,
+                        3
+                      ],
+                      "stroke": "$color-ivory",
+                      "strokeWidth": 2
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "lbBGK",
+                  "name": "Keyframe Note 1",
+                  "fill": "$color-muted",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "pause 즉시 · y+24 · scale .98",
+                  "fontFamily": "$font-body",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "V5LoI",
+              "name": "Keyframe OPENING 120ms",
+              "width": "fill_container",
+              "height": 310,
+              "layout": "vertical",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "F2S7j",
+                  "name": "Keyframe Label 2",
+                  "fill": "$color-ivory",
+                  "content": "OPENING  120ms",
+                  "fontFamily": "$font-body",
+                  "fontSize": 15,
+                  "fontWeight": "900"
+                },
+                {
+                  "type": "frame",
+                  "id": "bPn1w",
+                  "name": "Keyframe Thumbnail 2",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": 186,
+                  "fill": "$color-bg",
+                  "cornerRadius": [
+                    7,
+                    3,
+                    8,
+                    4
+                  ],
+                  "stroke": "$color-muted",
+                  "strokeWidth": 2,
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": [
+                        12,
+                        4,
+                        14,
+                        6
+                      ],
+                      "id": "HqfMa",
+                      "x": 94,
+                      "y": 16,
+                      "name": "Thumbnail Board 2",
+                      "fill": "$color-surface",
+                      "width": 140,
+                      "height": 162,
+                      "stroke": "$color-gold-dark",
+                      "strokeWidth": 2
+                    },
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": [
+                        4,
+                        2,
+                        4,
+                        2
+                      ],
+                      "id": "H1Wiz",
+                      "x": 12,
+                      "y": 12,
+                      "name": "Thumbnail HUD 2",
+                      "fill": "$color-panel",
+                      "width": 58,
+                      "height": 24,
+                      "stroke": "$color-ivory",
+                      "strokeWidth": 1
+                    },
+                    {
+                      "type": "frame",
+                      "id": "z1qN4v",
+                      "x": 288,
+                      "y": 12,
+                      "name": "Thumbnail Settings 2",
+                      "width": 28,
+                      "height": 28,
+                      "fill": "$color-panel",
+                      "cornerRadius": [
+                        4,
+                        2,
+                        4,
+                        2
+                      ],
+                      "stroke": "$color-ivory",
+                      "strokeWidth": 1,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "HJbE7",
+                          "name": "Thumbnail Settings Icon 2",
+                          "width": 15,
+                          "height": 15,
+                          "icon": "settings",
+                          "library": "Material Symbols Rounded",
+                          "fill": "$color-ivory"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "lZyuG",
+                      "x": 0,
+                      "y": 0,
+                      "name": "Thumbnail Dim 2",
+                      "fill": "#020B0F6B",
+                      "width": 328,
+                      "height": 186
+                    },
+                    {
+                      "type": "frame",
+                      "id": "sgp0e",
+                      "x": 80,
+                      "y": 70,
+                      "name": "Thumbnail Panel 2",
+                      "width": 168,
+                      "height": 100,
+                      "fill": "$color-panel",
+                      "cornerRadius": [
+                        6,
+                        2,
+                        7,
+                        3
+                      ],
+                      "stroke": "$color-ivory",
+                      "strokeWidth": 2
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "C1alK",
+                  "name": "Keyframe Note 2",
+                  "fill": "$color-muted",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "dim 42% · y+10",
+                  "fontFamily": "$font-body",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "u0XhEC",
+              "name": "Keyframe OPEN 240ms",
+              "width": "fill_container",
+              "height": 310,
+              "layout": "vertical",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "jxo2O",
+                  "name": "Keyframe Label 3",
+                  "fill": "$color-mint",
+                  "content": "OPEN  240ms",
+                  "fontFamily": "$font-body",
+                  "fontSize": 15,
+                  "fontWeight": "900"
+                },
+                {
+                  "type": "frame",
+                  "id": "mJwOM",
+                  "name": "Keyframe Thumbnail 3",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": 186,
+                  "fill": "$color-bg",
+                  "cornerRadius": [
+                    7,
+                    3,
+                    8,
+                    4
+                  ],
+                  "stroke": "$color-mint",
+                  "strokeWidth": 2,
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": [
+                        12,
+                        4,
+                        14,
+                        6
+                      ],
+                      "id": "LExXx",
+                      "x": 94,
+                      "y": 16,
+                      "name": "Thumbnail Board 3",
+                      "fill": "$color-surface",
+                      "width": 140,
+                      "height": 162,
+                      "stroke": "$color-gold-dark",
+                      "strokeWidth": 2
+                    },
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": [
+                        4,
+                        2,
+                        4,
+                        2
+                      ],
+                      "id": "qbOtc",
+                      "x": 12,
+                      "y": 12,
+                      "name": "Thumbnail HUD 3",
+                      "fill": "$color-panel",
+                      "width": 58,
+                      "height": 24,
+                      "stroke": "$color-ivory",
+                      "strokeWidth": 1
+                    },
+                    {
+                      "type": "frame",
+                      "id": "WTyeO",
+                      "x": 288,
+                      "y": 12,
+                      "name": "Thumbnail Settings 3",
+                      "width": 28,
+                      "height": 28,
+                      "fill": "$color-panel",
+                      "cornerRadius": [
+                        4,
+                        2,
+                        4,
+                        2
+                      ],
+                      "stroke": "$color-ivory",
+                      "strokeWidth": 1,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "B0Lx4",
+                          "name": "Thumbnail Settings Icon 3",
+                          "width": 15,
+                          "height": 15,
+                          "icon": "settings",
+                          "library": "Material Symbols Rounded",
+                          "fill": "$color-ivory"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "XzMrI",
+                      "x": 0,
+                      "y": 0,
+                      "name": "Thumbnail Dim 3",
+                      "fill": "#020B0FAD",
+                      "width": 328,
+                      "height": 186
+                    },
+                    {
+                      "type": "frame",
+                      "id": "S9BwN",
+                      "x": 80,
+                      "y": 60,
+                      "name": "Thumbnail Panel 3",
+                      "width": 168,
+                      "height": 100,
+                      "fill": "$color-panel",
+                      "cornerRadius": [
+                        6,
+                        2,
+                        7,
+                        3
+                      ],
+                      "stroke": "$color-ivory",
+                      "strokeWidth": 2
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "rUxRg",
+                  "name": "Keyframe Note 3",
+                  "fill": "$color-muted",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "dim 68% · Quad Out",
+                  "fontFamily": "$font-body",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "nIHUF",
+              "name": "Keyframe CLOSING 160ms",
+              "width": "fill_container",
+              "height": 310,
+              "layout": "vertical",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "f6xFDV",
+                  "name": "Keyframe Label 4",
+                  "fill": "$color-ivory",
+                  "content": "CLOSING  160ms",
+                  "fontFamily": "$font-body",
+                  "fontSize": 15,
+                  "fontWeight": "900"
+                },
+                {
+                  "type": "frame",
+                  "id": "JI4aG",
+                  "name": "Keyframe Thumbnail 4",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": 186,
+                  "fill": "$color-bg",
+                  "cornerRadius": [
+                    7,
+                    3,
+                    8,
+                    4
+                  ],
+                  "stroke": "$color-muted",
+                  "strokeWidth": 2,
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": [
+                        12,
+                        4,
+                        14,
+                        6
+                      ],
+                      "id": "FtozH",
+                      "x": 94,
+                      "y": 16,
+                      "name": "Thumbnail Board 4",
+                      "fill": "$color-surface",
+                      "width": 140,
+                      "height": 162,
+                      "stroke": "$color-gold-dark",
+                      "strokeWidth": 2
+                    },
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": [
+                        4,
+                        2,
+                        4,
+                        2
+                      ],
+                      "id": "zrGOO",
+                      "x": 12,
+                      "y": 12,
+                      "name": "Thumbnail HUD 4",
+                      "fill": "$color-panel",
+                      "width": 58,
+                      "height": 24,
+                      "stroke": "$color-ivory",
+                      "strokeWidth": 1
+                    },
+                    {
+                      "type": "frame",
+                      "id": "AAQcv",
+                      "x": 288,
+                      "y": 12,
+                      "name": "Thumbnail Settings 4",
+                      "width": 28,
+                      "height": 28,
+                      "fill": "$color-panel",
+                      "cornerRadius": [
+                        4,
+                        2,
+                        4,
+                        2
+                      ],
+                      "stroke": "$color-ivory",
+                      "strokeWidth": 1,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "obfbi",
+                          "name": "Thumbnail Settings Icon 4",
+                          "width": 15,
+                          "height": 15,
+                          "icon": "settings",
+                          "library": "Material Symbols Rounded",
+                          "fill": "$color-ivory"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "HVfMI",
+                      "x": 0,
+                      "y": 0,
+                      "name": "Thumbnail Dim 4",
+                      "fill": "#020B0F55",
+                      "width": 328,
+                      "height": 186
+                    },
+                    {
+                      "type": "frame",
+                      "id": "wHUBa",
+                      "x": 80,
+                      "y": 78,
+                      "name": "Thumbnail Panel 4",
+                      "width": 168,
+                      "height": 100,
+                      "fill": "$color-panel",
+                      "cornerRadius": [
+                        6,
+                        2,
+                        7,
+                        3
+                      ],
+                      "stroke": "$color-ivory",
+                      "strokeWidth": 2
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "KLKDB",
+                  "name": "Keyframe Note 4",
+                  "fill": "$color-muted",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "reverse · Quad In",
+                  "fontFamily": "$font-body",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "S8sHA",
+          "x": 56,
+          "y": 540,
+          "name": "Motion Runtime Rules",
+          "width": 1808,
+          "height": 420,
+          "fill": "$color-panel",
+          "cornerRadius": [
+            9,
+            4,
+            11,
+            5
+          ],
+          "stroke": "$color-ivory",
+          "strokeWidth": 3,
+          "layout": "vertical",
+          "gap": 14,
+          "padding": 26,
+          "children": [
+            {
+              "type": "text",
+              "id": "X4UWh",
+              "name": "Motion Rules Title",
+              "fill": "$color-gold",
+              "content": "RUNTIME CONTRACT",
+              "fontFamily": "$font-display",
+              "fontSize": 28,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "wcFnQ",
+              "name": "Motion Rule Open Timing",
+              "width": "fill_container",
+              "height": 54,
+              "gap": 18,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "i5ker",
+                  "name": "Motion Rule Label Open Timing",
+                  "fill": "$color-mint",
+                  "textGrowth": "fixed-width",
+                  "width": 180,
+                  "content": "Open Timing",
+                  "fontFamily": "$font-body",
+                  "fontSize": 14,
+                  "fontWeight": "900"
+                },
+                {
+                  "type": "text",
+                  "id": "b0ljhO",
+                  "name": "Motion Rule Value Open Timing",
+                  "fill": "$color-ivory",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "OPEN 240ms · Quad Out · dim 0→68% · panel y+24→0 · scale .98→1",
+                  "fontFamily": "$font-body",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "EiddB",
+              "name": "Motion Rule Close Timing",
+              "width": "fill_container",
+              "height": 54,
+              "gap": 18,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "n3E7vz",
+                  "name": "Motion Rule Label Close Timing",
+                  "fill": "$color-mint",
+                  "textGrowth": "fixed-width",
+                  "width": 180,
+                  "content": "Close Timing",
+                  "fontFamily": "$font-body",
+                  "fontSize": 14,
+                  "fontWeight": "900"
+                },
+                {
+                  "type": "text",
+                  "id": "i6BRT",
+                  "name": "Motion Rule Value Close Timing",
+                  "fill": "$color-ivory",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "CLOSE 160ms · Quad In · 역재생 · 완료 뒤에만 입력/상태 복원",
+                  "fontFamily": "$font-body",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "J7MWD",
+              "name": "Motion Rule Pause Restore",
+              "width": "fill_container",
+              "height": 54,
+              "gap": 18,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "F7Z04",
+                  "name": "Motion Rule Label Pause Restore",
+                  "fill": "$color-mint",
+                  "textGrowth": "fixed-width",
+                  "width": 180,
+                  "content": "Pause Restore",
+                  "fontFamily": "$font-body",
+                  "fontSize": 14,
+                  "fontWeight": "900"
+                },
+                {
+                  "type": "text",
+                  "id": "SDLrP",
+                  "name": "Motion Rule Value Pause Restore",
+                  "fill": "$color-ivory",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "무조건 unpause 금지: 열기 전 pause 및 phase 상태를 그대로 복원",
+                  "fontFamily": "$font-body",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "D2r39",
+              "name": "Motion Rule Layering",
+              "width": "fill_container",
+              "height": 54,
+              "gap": 18,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "UkpRf",
+                  "name": "Motion Rule Label Layering",
+                  "fill": "$color-mint",
+                  "textGrowth": "fixed-width",
+                  "width": 180,
+                  "content": "Layering",
+                  "fontFamily": "$font-body",
+                  "fontSize": 14,
+                  "fontWeight": "900"
+                },
+                {
+                  "type": "text",
+                  "id": "CMoRE",
+                  "name": "Motion Rule Value Layering",
+                  "fill": "$color-ivory",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Settings 전용 CanvasLayer 100 · RepairPlacementHUD 50보다 위 · ExitConfirm은 nested layer",
+                  "fontFamily": "$font-body",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "i1ldQa",
+              "name": "Motion Rule Input Hierarchy",
+              "width": "fill_container",
+              "height": 54,
+              "gap": 18,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "H2yfh",
+                  "name": "Motion Rule Label Input Hierarchy",
+                  "fill": "$color-mint",
+                  "textGrowth": "fixed-width",
+                  "width": 180,
+                  "content": "Input Hierarchy",
+                  "fontFamily": "$font-body",
+                  "fontSize": 14,
+                  "fontWeight": "900"
+                },
+                {
+                  "type": "text",
+                  "id": "Cndsk",
+                  "name": "Motion Rule Value Input Hierarchy",
+                  "fill": "$color-ivory",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "딤 클릭은 무시 · ESC: 종료 확인→취소 / 라이선스 상세→목록 / 루트→닫기",
+                  "fontFamily": "$font-body",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "kHk6z",
+      "x": 4200,
+      "y": 0,
+      "name": "02 Sound Default",
+      "clip": true,
+      "width": 1920,
+      "height": 1080,
+      "fill": "$color-bg",
+      "layout": "none",
+      "children": [
+        {
+          "id": "rd5vo",
+          "type": "ref",
+          "ref": "m0Jx9d",
+          "name": "02 Gameplay Background Instance",
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "type": "rectangle",
+          "id": "CEkiK",
+          "x": 0,
+          "y": 0,
+          "name": "02 Dim 68",
+          "fill": "$color-dim",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "type": "frame",
+          "id": "e1Xb6z",
+          "x": 500,
+          "y": 210,
+          "name": "02 Settings Modal",
+          "width": 920,
+          "height": 660,
+          "layout": "none",
+          "children": [
+            {
+              "id": "HLanM",
+              "type": "ref",
+              "ref": "oULgJ",
+              "name": "02 PopupShell Instance",
+              "x": 0,
+              "y": 0,
+              "width": 920,
+              "height": 660
+            },
+            {
+              "type": "text",
+              "id": "WkxC9",
+              "x": 42,
+              "y": 30,
+              "name": "02 Settings Title",
+              "fill": "$color-ivory",
+              "content": "설정",
+              "fontFamily": "$font-display",
+              "fontSize": 40,
+              "fontWeight": "normal"
+            },
+            {
+              "id": "J9JMQO",
+              "type": "ref",
+              "ref": "PUZHN",
+              "name": "02 Close Instance",
+              "x": 834,
+              "y": 28,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "id": "L04i8",
+              "type": "ref",
+              "ref": "qrwFq",
+              "name": "02 Sound Tab Active",
+              "x": 42,
+              "y": 96,
+              "width": 170,
+              "height": 48,
+              "fill": "$color-mint",
+              "stroke": "$color-ivory",
+              "descendants": {
+                "xixUf": {
+                  "content": "사운드",
+                  "fill": "$color-bg"
+                }
+              }
+            },
+            {
+              "id": "DAW0M",
+              "type": "ref",
+              "ref": "qrwFq",
+              "name": "02 License Tab Inactive",
+              "x": 224,
+              "y": 96,
+              "width": 170,
+              "height": 48,
+              "descendants": {
+                "xixUf": {
+                  "content": "라이선스"
+                }
+              }
+            },
+            {
+              "type": "rectangle",
+              "id": "KB9dH",
+              "x": 42,
+              "y": 160,
+              "name": "02 Header Divider",
+              "fill": "$color-gold-dark",
+              "width": 836,
+              "height": 2
+            },
+            {
+              "id": "vYhAF",
+              "type": "ref",
+              "ref": "v3LEac",
+              "name": "02 Master Volume",
+              "x": 50,
+              "y": 184,
+              "width": 820,
+              "height": 56,
+              "descendants": {
+                "x7oda": {
+                  "content": "마스터 사운드"
+                },
+                "euRCb/U4iqtQ": {
+                  "width": 356
+                },
+                "euRCb/VISkZ": {
+                  "x": 336
+                },
+                "O76VEC": {
+                  "content": "100%"
+                }
+              }
+            },
+            {
+              "id": "pNe8E",
+              "type": "ref",
+              "ref": "v3LEac",
+              "name": "02 BGM Volume",
+              "x": 50,
+              "y": 246,
+              "width": 820,
+              "height": 56,
+              "descendants": {
+                "x7oda": {
+                  "content": "BGM"
+                },
+                "euRCb/U4iqtQ": {
+                  "width": 249
+                },
+                "euRCb/VISkZ": {
+                  "x": 241
+                },
+                "O76VEC": {
+                  "content": "70%"
+                }
+              }
+            },
+            {
+              "id": "q0HqX",
+              "type": "ref",
+              "ref": "v3LEac",
+              "name": "02 SFX Volume",
+              "x": 50,
+              "y": 308,
+              "width": 820,
+              "height": 56,
+              "descendants": {
+                "x7oda": {
+                  "content": "SFX 전체"
+                },
+                "euRCb/U4iqtQ": {
+                  "width": 285
+                },
+                "euRCb/VISkZ": {
+                  "x": 275
+                },
+                "O76VEC": {
+                  "content": "80%"
+                }
+              }
+            },
+            {
+              "type": "frame",
+              "id": "aDqk6",
+              "x": 50,
+              "y": 380,
+              "name": "02 SFX Detail Disclosure",
+              "width": 820,
+              "height": 54,
+              "fill": "#15333B88",
+              "cornerRadius": [
+                7,
+                3,
+                8,
+                4
+              ],
+              "gap": 12,
+              "padding": [
+                0,
+                12
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "rectangle",
+                  "id": "WOYeX",
+                  "name": "02 Disclosure Hierarchy",
+                  "fill": "$color-gold-dark",
+                  "width": 2,
+                  "height": 28
+                },
+                {
+                  "type": "text",
+                  "id": "TPuND",
+                  "name": "02 Disclosure Label",
+                  "fill": "$color-ivory",
+                  "content": "효과음 세부 설정",
+                  "fontFamily": "$font-body",
+                  "fontSize": 16,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "frame",
+                  "id": "Wh7WN",
+                  "name": "02 Disclosure Spacer",
+                  "width": "fill_container",
+                  "height": 1
+                },
+                {
+                  "type": "icon",
+                  "id": "Htf1C",
+                  "name": "02 Disclosure Arrow",
+                  "width": 26,
+                  "height": 26,
+                  "icon": "chevron_right",
+                  "library": "Material Symbols Rounded",
+                  "fill": "$color-mint"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "r4Nqro",
+              "x": 62,
+              "y": 452,
+              "name": "02 Hint",
+              "fill": "$color-muted",
+              "content": "변경 즉시 미리듣기 및 자동 저장",
+              "fontFamily": "$font-body",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            },
+            {
+              "id": "Q5sa9T",
+              "type": "ref",
+              "ref": "pU9ef",
+              "name": "02 Reset Ghost",
+              "x": 50,
+              "y": 574,
+              "width": 170,
+              "height": 48,
+              "fill": "#00000000",
+              "stroke": "$color-muted",
+              "descendants": {
+                "v3WfbC": {
+                  "content": "기본값 복원",
+                  "fill": "$color-muted",
+                  "fontSize": 14
+                }
+              }
+            },
+            {
+              "id": "RoYc1",
+              "type": "ref",
+              "ref": "pU9ef",
+              "name": "02 Exit Danger",
+              "x": 700,
+              "y": 574,
+              "width": 170,
+              "height": 48,
+              "fill": "$color-danger",
+              "descendants": {
+                "v3WfbC": {
+                  "content": "게임 종료"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "zaYxu",
+          "x": 60,
+          "y": 1008,
+          "name": "02 Input Note",
+          "fill": "$color-muted",
+          "content": "X / ESC 닫기 · 딤 클릭 무시 · 열기 전 상태 복원",
+          "fontFamily": "$font-body",
+          "fontSize": 14,
+          "fontWeight": "normal"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "YXIkS",
+      "x": 6240,
+      "y": 0,
+      "name": "03 SFX Detail",
+      "clip": true,
+      "width": 1920,
+      "height": 1080,
+      "fill": "$color-bg",
+      "layout": "none",
+      "children": [
+        {
+          "id": "w2geu",
+          "type": "ref",
+          "ref": "m0Jx9d",
+          "name": "03 Gameplay Background Instance",
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "type": "rectangle",
+          "id": "BdPx0",
+          "x": 0,
+          "y": 0,
+          "name": "03 Dim 68",
+          "fill": "$color-dim",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "type": "frame",
+          "id": "xf4J5",
+          "x": 500,
+          "y": 210,
+          "name": "03 Settings Modal",
+          "width": 920,
+          "height": 660,
+          "layout": "none",
+          "children": [
+            {
+              "id": "DeBIg",
+              "type": "ref",
+              "ref": "oULgJ",
+              "name": "03 PopupShell Instance",
+              "x": 0,
+              "y": 0,
+              "width": 920,
+              "height": 660
+            },
+            {
+              "type": "frame",
+              "id": "WX4T3",
+              "x": 40,
+              "y": 30,
+              "name": "03 Back Control",
+              "width": 52,
+              "height": 44,
+              "fill": "#00000000",
+              "cornerRadius": [
+                7,
+                3,
+                8,
+                4
+              ],
+              "stroke": "$color-muted",
+              "strokeWidth": 2,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "JuarX",
+                  "name": "03 Back Icon",
+                  "width": 24,
+                  "height": 24,
+                  "icon": "arrow_back",
+                  "library": "Material Symbols Rounded",
+                  "fill": "$color-ivory"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "wPwxT",
+              "x": 108,
+              "y": 31,
+              "name": "03 Detail Title",
+              "fill": "$color-ivory",
+              "content": "효과음 세부 설정",
+              "fontFamily": "$font-display",
+              "fontSize": 36,
+              "fontWeight": "normal"
+            },
+            {
+              "id": "rh1Hm",
+              "type": "ref",
+              "ref": "PUZHN",
+              "name": "03 Close Instance",
+              "x": 834,
+              "y": 28,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "type": "rectangle",
+              "id": "yb9ad",
+              "x": 42,
+              "y": 92,
+              "name": "03 Header Divider",
+              "fill": "$color-gold-dark",
+              "width": 836,
+              "height": 2
+            },
+            {
+              "id": "q2PhT",
+              "type": "ref",
+              "ref": "v3LEac",
+              "name": "03 SFX Context",
+              "x": 50,
+              "y": 112,
+              "width": 820,
+              "height": 56,
+              "fill": "#15333B88",
+              "descendants": {
+                "x7oda": {
+                  "content": "SFX 전체"
+                },
+                "euRCb/U4iqtQ": {
+                  "width": 196
+                },
+                "euRCb/VISkZ": {
+                  "x": 185
+                },
+                "O76VEC": {
+                  "content": "55%"
+                }
+              }
+            },
+            {
+              "type": "text",
+              "id": "t07ADr",
+              "x": 62,
+              "y": 181,
+              "name": "03 Child Group Label",
+              "fill": "$color-gold",
+              "content": "개별 효과음",
+              "fontFamily": "$font-body",
+              "fontSize": 13,
+              "fontWeight": "800"
+            },
+            {
+              "id": "c2IxBV",
+              "type": "ref",
+              "ref": "v3LEac",
+              "name": "03 Ball SFX",
+              "x": 50,
+              "y": 208,
+              "width": 820,
+              "height": 56,
+              "descendants": {
+                "L942P": {
+                  "enabled": true,
+                  "fill": "$color-gold-dark"
+                },
+                "x7oda": {
+                  "content": "공 사운드",
+                  "fontSize": 15,
+                  "fill": "$color-muted"
+                },
+                "euRCb/U4iqtQ": {
+                  "width": 142
+                },
+                "euRCb/VISkZ": {
+                  "x": 134
+                },
+                "euRCb/SyYhu": {
+                  "enabled": false
+                },
+                "O76VEC": {
+                  "content": "40%"
+                }
+              }
+            },
+            {
+              "id": "vrJrw",
+              "type": "ref",
+              "ref": "v3LEac",
+              "name": "03 Bumper SFX Focused",
+              "x": 50,
+              "y": 270,
+              "width": 820,
+              "height": 56,
+              "descendants": {
+                "L942P": {
+                  "enabled": true,
+                  "fill": "$color-mint"
+                },
+                "x7oda": {
+                  "content": "범퍼 사운드",
+                  "fontSize": 16,
+                  "fill": "$color-ivory"
+                },
+                "euRCb/U4iqtQ": {
+                  "width": 231
+                },
+                "euRCb/VISkZ": {
+                  "x": 218
+                },
+                "euRCb/SyYhu": {
+                  "enabled": true
+                },
+                "O76VEC": {
+                  "content": "65%"
+                }
+              }
+            },
+            {
+              "id": "hPk6g",
+              "type": "ref",
+              "ref": "v3LEac",
+              "name": "03 Flipper SFX",
+              "x": 50,
+              "y": 332,
+              "width": 820,
+              "height": 56,
+              "descendants": {
+                "L942P": {
+                  "enabled": true,
+                  "fill": "$color-gold-dark"
+                },
+                "x7oda": {
+                  "content": "플리퍼 사운드",
+                  "fontSize": 15,
+                  "fill": "$color-muted"
+                },
+                "euRCb/U4iqtQ": {
+                  "width": 178
+                },
+                "euRCb/VISkZ": {
+                  "x": 168
+                },
+                "euRCb/SyYhu": {
+                  "enabled": false
+                },
+                "O76VEC": {
+                  "content": "50%"
+                }
+              }
+            },
+            {
+              "id": "O9cbK",
+              "type": "ref",
+              "ref": "v3LEac",
+              "name": "03 Wall SFX",
+              "x": 50,
+              "y": 394,
+              "width": 820,
+              "height": 56,
+              "descendants": {
+                "L942P": {
+                  "enabled": true,
+                  "fill": "$color-gold-dark"
+                },
+                "x7oda": {
+                  "content": "벽 사운드",
+                  "fontSize": 15,
+                  "fill": "$color-muted"
+                },
+                "euRCb/U4iqtQ": {
+                  "width": 196
+                },
+                "euRCb/VISkZ": {
+                  "x": 185
+                },
+                "euRCb/SyYhu": {
+                  "enabled": false
+                },
+                "O76VEC": {
+                  "content": "55%"
+                }
+              }
+            },
+            {
+              "type": "frame",
+              "id": "oOVIE",
+              "x": 600,
+              "y": 474,
+              "name": "03 Saved Toast",
+              "width": 270,
+              "height": 40,
+              "fill": "$color-surface",
+              "cornerRadius": [
+                7,
+                3,
+                8,
+                4
+              ],
+              "stroke": "$color-mint",
+              "strokeWidth": 2,
+              "gap": 8,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "FVPg6",
+                  "name": "03 Saved Icon",
+                  "width": 18,
+                  "height": 18,
+                  "icon": "check",
+                  "library": "Material Symbols Rounded",
+                  "fill": "$color-mint"
+                },
+                {
+                  "type": "text",
+                  "id": "nqMfI",
+                  "name": "03 Saved Text",
+                  "fill": "$color-ivory",
+                  "content": "설정이 저장되었습니다",
+                  "fontFamily": "$font-body",
+                  "fontSize": 13,
+                  "fontWeight": "800"
+                }
+              ]
+            },
+            {
+              "id": "d2zs5",
+              "type": "ref",
+              "ref": "pU9ef",
+              "name": "03 Back Ghost",
+              "x": 50,
+              "y": 574,
+              "width": 170,
+              "height": 48,
+              "fill": "#00000000",
+              "stroke": "$color-muted",
+              "descendants": {
+                "v3WfbC": {
+                  "content": "사운드로 돌아가기",
+                  "fill": "$color-muted",
+                  "fontSize": 13
+                }
+              }
+            },
+            {
+              "id": "W3C8d2",
+              "type": "ref",
+              "ref": "pU9ef",
+              "name": "03 Exit Danger",
+              "x": 700,
+              "y": 574,
+              "width": 170,
+              "height": 48,
+              "fill": "$color-danger",
+              "descendants": {
+                "v3WfbC": {
+                  "content": "게임 종료"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "X0pEL",
+          "x": 60,
+          "y": 1008,
+          "name": "03 Interaction Note",
+          "fill": "$color-muted",
+          "content": "드래그 중 민트 포커스 · 값 즉시 미리듣기 및 자동 저장",
+          "fontFamily": "$font-body",
+          "fontSize": 14,
+          "fontWeight": "normal"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "J8Wr4",
+      "x": 2160,
+      "y": 1200,
+      "name": "04 Licenses",
+      "clip": true,
+      "width": 1920,
+      "height": 1080,
+      "fill": "$color-bg",
+      "layout": "none",
+      "children": [
+        {
+          "id": "R1qUJ",
+          "type": "ref",
+          "ref": "m0Jx9d",
+          "name": "04 Gameplay Background Instance",
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080,
+          "opacity": 1
+        },
+        {
+          "type": "rectangle",
+          "id": "M7LdL",
+          "x": 0,
+          "y": 0,
+          "name": "04 Dim 68",
+          "fill": "$color-dim",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "type": "frame",
+          "id": "GrjQt",
+          "x": 500,
+          "y": 210,
+          "name": "04 Settings Modal",
+          "width": 920,
+          "height": 660,
+          "layout": "none",
+          "children": [
+            {
+              "id": "dkwrV",
+              "type": "ref",
+              "ref": "oULgJ",
+              "name": "04 PopupShell Instance",
+              "x": 0,
+              "y": 0,
+              "width": 920,
+              "height": 660,
+              "fill": "$color-panel",
+              "stroke": "$color-ivory",
+              "strokeWidth": 3
+            },
+            {
+              "type": "text",
+              "id": "A93uqu",
+              "x": 42,
+              "y": 30,
+              "name": "04 Settings Title",
+              "fill": "$color-ivory",
+              "content": "설정",
+              "fontFamily": "$font-display",
+              "fontSize": 40,
+              "fontWeight": "normal"
+            },
+            {
+              "id": "s9ZsL",
+              "type": "ref",
+              "ref": "PUZHN",
+              "name": "04 Close Instance",
+              "x": 834,
+              "y": 28,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "id": "tP3Pg",
+              "type": "ref",
+              "ref": "qrwFq",
+              "name": "04 Sound Tab Inactive",
+              "x": 42,
+              "y": 96,
+              "width": 170,
+              "height": 48,
+              "descendants": {
+                "xixUf": {
+                  "content": "사운드"
+                }
+              }
+            },
+            {
+              "id": "ljRDx",
+              "type": "ref",
+              "ref": "qrwFq",
+              "name": "04 License Tab Active",
+              "x": 224,
+              "y": 96,
+              "width": 170,
+              "height": 48,
+              "fill": "$color-mint",
+              "stroke": "$color-ivory",
+              "descendants": {
+                "xixUf": {
+                  "content": "라이선스",
+                  "fill": "$color-bg"
+                }
+              }
+            },
+            {
+              "type": "rectangle",
+              "id": "U04fj",
+              "x": 42,
+              "y": 160,
+              "name": "04 Header Divider",
+              "fill": "$color-gold-dark",
+              "width": 836,
+              "height": 2
+            },
+            {
+              "id": "XDbKi",
+              "type": "ref",
+              "ref": "Vh8dv",
+              "name": "04 License Black Han Sans",
+              "x": 50,
+              "y": 176,
+              "width": 820,
+              "height": 80,
+              "descendants": {
+                "mrXeI": {
+                  "content": "Black Han Sans"
+                },
+                "GdH1M": {
+                  "content": "SIL Open Font License 1.1"
+                },
+                "xotkW/v3WfbC": {
+                  "content": "전문 보기"
+                }
+              }
+            },
+            {
+              "id": "Par8p",
+              "type": "ref",
+              "ref": "Vh8dv",
+              "name": "04 License Noto Sans KR",
+              "x": 50,
+              "y": 264,
+              "width": 820,
+              "height": 80,
+              "descendants": {
+                "mrXeI": {
+                  "content": "Noto Sans KR"
+                },
+                "GdH1M": {
+                  "content": "SIL Open Font License 1.1"
+                },
+                "xotkW/v3WfbC": {
+                  "content": "전문 보기"
+                }
+              }
+            },
+            {
+              "id": "NuP8D",
+              "type": "ref",
+              "ref": "Vh8dv",
+              "name": "04 License Black And White Picture",
+              "x": 50,
+              "y": 352,
+              "width": 820,
+              "height": 80,
+              "descendants": {
+                "mrXeI": {
+                  "content": "Black And White Picture"
+                },
+                "GdH1M": {
+                  "content": "SIL Open Font License 1.1"
+                },
+                "xotkW/v3WfbC": {
+                  "content": "전문 보기"
+                }
+              }
+            },
+            {
+              "id": "zWl3I",
+              "type": "ref",
+              "ref": "Vh8dv",
+              "name": "04 License Godot Engine 4.7",
+              "x": 50,
+              "y": 440,
+              "width": 820,
+              "height": 80,
+              "descendants": {
+                "mrXeI": {
+                  "content": "Godot Engine 4.7"
+                },
+                "GdH1M": {
+                  "content": "MIT License"
+                },
+                "xotkW/v3WfbC": {
+                  "content": "전문 보기"
+                }
+              }
+            },
+            {
+              "type": "text",
+              "id": "W1ecJ",
+              "x": 62,
+              "y": 542,
+              "name": "04 License Footer Note",
+              "fill": "$color-muted",
+              "content": "라이선스 전문은 별도 스크롤 패널에서 확인",
+              "fontFamily": "$font-body",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            },
+            {
+              "id": "gabs3",
+              "type": "ref",
+              "ref": "pU9ef",
+              "name": "04 Exit Danger",
+              "x": 700,
+              "y": 574,
+              "width": 170,
+              "height": 48,
+              "fill": "$color-danger",
+              "descendants": {
+                "v3WfbC": {
+                  "content": "게임 종료"
+                }
+              }
+            },
+            {
+              "type": "rectangle",
+              "id": "Y8ezO1",
+              "x": 42,
+              "y": 560,
+              "name": "04 Footer Divider",
+              "fill": "$color-gold-dark",
+              "width": 836,
+              "height": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "IvKNU",
+      "x": 4200,
+      "y": 1200,
+      "name": "05 License Detail",
+      "clip": true,
+      "width": 1920,
+      "height": 1080,
+      "fill": "$color-bg",
+      "layout": "none",
+      "children": [
+        {
+          "id": "lERyy",
+          "type": "ref",
+          "ref": "m0Jx9d",
+          "name": "05 Gameplay Background Instance",
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080,
+          "opacity": 1
+        },
+        {
+          "type": "rectangle",
+          "id": "V3eGQ",
+          "x": 0,
+          "y": 0,
+          "name": "05 Dim 68",
+          "fill": "$color-dim",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "type": "frame",
+          "id": "SsTwl",
+          "x": 500,
+          "y": 210,
+          "name": "05 License Detail Modal",
+          "width": 920,
+          "height": 660,
+          "layout": "none",
+          "children": [
+            {
+              "id": "GP7t8",
+              "type": "ref",
+              "ref": "oULgJ",
+              "name": "05 PopupShell Instance",
+              "x": 0,
+              "y": 0,
+              "width": 920,
+              "height": 660,
+              "fill": "$color-panel",
+              "stroke": "$color-ivory",
+              "strokeWidth": 3
+            },
+            {
+              "type": "frame",
+              "id": "YYOOM",
+              "x": 50,
+              "y": 176,
+              "name": "05 Back Control",
+              "width": 190,
+              "height": 40,
+              "fill": "#00000000",
+              "cornerRadius": [
+                7,
+                3,
+                8,
+                4
+              ],
+              "stroke": "$color-muted",
+              "strokeWidth": 2,
+              "gap": 8,
+              "padding": [
+                0,
+                12
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "lNoeN",
+                  "name": "05 Back Icon",
+                  "width": 24,
+                  "height": 24,
+                  "icon": "arrow_back",
+                  "library": "Material Symbols Rounded",
+                  "fill": "$color-ivory"
+                },
+                {
+                  "type": "text",
+                  "id": "bUyIl",
+                  "name": "05 Back Label",
+                  "fill": "$color-ivory",
+                  "content": "라이선스 목록",
+                  "fontFamily": "$font-body",
+                  "fontSize": 14,
+                  "fontWeight": "800"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "MN09d",
+              "x": 42,
+              "y": 30,
+              "name": "05 Detail Title",
+              "fill": "$color-ivory",
+              "content": "설정",
+              "fontFamily": "$font-display",
+              "fontSize": 40,
+              "fontWeight": "normal"
+            },
+            {
+              "id": "lGA2H",
+              "type": "ref",
+              "ref": "PUZHN",
+              "name": "05 Close Instance",
+              "x": 834,
+              "y": 28,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "type": "rectangle",
+              "id": "GFmZo",
+              "x": 42,
+              "y": 160,
+              "name": "05 Header Divider",
+              "fill": "$color-gold-dark",
+              "width": 836,
+              "height": 2
+            },
+            {
+              "type": "text",
+              "id": "ClOCB",
+              "x": 50,
+              "y": 228,
+              "name": "05 License Name",
+              "fill": "$color-mint",
+              "content": "Black Han Sans · SIL Open Font License 1.1",
+              "fontFamily": "$font-body",
+              "fontSize": 17,
+              "fontWeight": "900"
+            },
+            {
+              "type": "text",
+              "id": "liqhR",
+              "x": 50,
+              "y": 256,
+              "name": "05 Copyright",
+              "fill": "$color-muted",
+              "content": "Copyright 2015 The Black Han Sans Project Authors",
+              "fontFamily": "$font-body",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "MYC58",
+              "x": 50,
+              "y": 284,
+              "name": "05 Scroll Detail Area",
+              "clip": true,
+              "width": 820,
+              "height": 270,
+              "fill": "$color-surface",
+              "cornerRadius": [
+                7,
+                3,
+                8,
+                4
+              ],
+              "layout": "none",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "LQQ0m",
+                  "x": 20,
+                  "y": 16,
+                  "name": "05 License Text",
+                  "fill": "$color-ivory",
+                  "textGrowth": "fixed-width",
+                  "width": 744,
+                  "content": "SIL OPEN FONT LICENSE Version 1.1\n\nPREAMBLE\n이 라이선스는 공동 폰트 개발과 자유로운 공유·개선을 지원합니다.\n\nPERMISSION & CONDITIONS\n폰트 소프트웨어는 저작권 및 라이선스 고지를 포함하는 조건으로 사용, 연구, 수정 및 재배포할 수 있습니다. 예약된 폰트 이름과 단독 판매 제한 등 나머지 조건은 스크롤하여 확인합니다.",
+                  "lineHeight": 1.45,
+                  "fontFamily": "$font-body",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 3,
+                  "id": "T2TKW",
+                  "x": 790,
+                  "y": 14,
+                  "name": "05 Scroll Rail",
+                  "fill": "$color-bg",
+                  "width": 6,
+                  "height": 242
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 3,
+                  "id": "RwoSa",
+                  "x": 790,
+                  "y": 14,
+                  "name": "05 Scroll Thumb",
+                  "fill": "$color-mint",
+                  "width": 6,
+                  "height": 82
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "y7Cas",
+              "x": 62,
+              "y": 566,
+              "name": "05 Detail Hint",
+              "fill": "$color-muted",
+              "content": "스크롤 가능한 라이선스 전문",
+              "fontFamily": "$font-body",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            },
+            {
+              "id": "d2QPnL",
+              "type": "ref",
+              "ref": "qrwFq",
+              "name": "05 Sound Tab Inactive",
+              "x": 42,
+              "y": 96,
+              "width": 170,
+              "height": 48,
+              "descendants": {
+                "xixUf": {
+                  "content": "사운드"
+                }
+              }
+            },
+            {
+              "id": "FFM4D",
+              "type": "ref",
+              "ref": "qrwFq",
+              "name": "05 License Tab Active",
+              "x": 224,
+              "y": 96,
+              "width": 170,
+              "height": 48,
+              "fill": "$color-mint",
+              "stroke": "$color-ivory",
+              "descendants": {
+                "xixUf": {
+                  "content": "라이선스",
+                  "fill": "$color-bg"
+                }
+              }
+            },
+            {
+              "id": "WxqLp",
+              "type": "ref",
+              "ref": "pU9ef",
+              "name": "05 Exit Danger",
+              "x": 700,
+              "y": 588,
+              "width": 170,
+              "height": 48,
+              "fill": "$color-danger",
+              "descendants": {
+                "v3WfbC": {
+                  "content": "게임 종료"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "y9JfkI",
+      "x": 6240,
+      "y": 1200,
+      "name": "06 Exit Confirm",
+      "clip": true,
+      "width": 1920,
+      "height": 1080,
+      "fill": "$color-bg",
+      "layout": "none",
+      "children": [
+        {
+          "id": "X7mka3",
+          "type": "ref",
+          "ref": "m0Jx9d",
+          "name": "06 Gameplay Background Instance",
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "type": "rectangle",
+          "id": "sbmxC",
+          "x": 0,
+          "y": 0,
+          "name": "06 Base Dim",
+          "fill": "$color-dim",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "type": "frame",
+          "id": "AOu2O",
+          "x": 500,
+          "y": 210,
+          "name": "06 Settings Behind",
+          "width": 920,
+          "height": 660,
+          "layout": "none",
+          "children": [
+            {
+              "id": "Mj9lK",
+              "type": "ref",
+              "ref": "oULgJ",
+              "name": "06 PopupShell Instance",
+              "x": 0,
+              "y": 0,
+              "width": 920,
+              "height": 660
+            },
+            {
+              "type": "text",
+              "id": "hOlgp",
+              "x": 42,
+              "y": 30,
+              "name": "06 Settings Behind Title",
+              "fill": "$color-ivory",
+              "content": "설정",
+              "fontFamily": "$font-display",
+              "fontSize": 40,
+              "fontWeight": "normal"
+            },
+            {
+              "id": "McBJS",
+              "type": "ref",
+              "ref": "PUZHN",
+              "name": "06 Close Behind",
+              "x": 834,
+              "y": 28,
+              "width": 44,
+              "height": 44
+            },
+            {
+              "id": "i73FM",
+              "type": "ref",
+              "ref": "qrwFq",
+              "name": "06 Sound Tab Behind",
+              "x": 42,
+              "y": 96,
+              "width": 170,
+              "height": 48,
+              "fill": "$color-mint",
+              "descendants": {
+                "xixUf": {
+                  "content": "사운드",
+                  "fill": "$color-bg"
+                }
+              }
+            },
+            {
+              "id": "dD56l",
+              "type": "ref",
+              "ref": "qrwFq",
+              "name": "06 License Tab Behind",
+              "x": 224,
+              "y": 96,
+              "width": 170,
+              "height": 48,
+              "descendants": {
+                "xixUf": {
+                  "content": "라이선스"
+                }
+              }
+            },
+            {
+              "id": "c93jn",
+              "type": "ref",
+              "ref": "v3LEac",
+              "name": "06 Master Behind",
+              "x": 50,
+              "y": 184,
+              "width": 820,
+              "height": 56,
+              "descendants": {
+                "x7oda": {
+                  "content": "마스터 사운드"
+                },
+                "euRCb/U4iqtQ": {
+                  "width": 356
+                },
+                "euRCb/VISkZ": {
+                  "x": 336
+                },
+                "O76VEC": {
+                  "content": "100%"
+                }
+              }
+            },
+            {
+              "id": "wGUJA",
+              "type": "ref",
+              "ref": "v3LEac",
+              "name": "06 BGM Behind",
+              "x": 50,
+              "y": 246,
+              "width": 820,
+              "height": 56,
+              "descendants": {
+                "x7oda": {
+                  "content": "BGM"
+                },
+                "O76VEC": {
+                  "content": "70%"
+                }
+              }
+            },
+            {
+              "id": "vp306",
+              "type": "ref",
+              "ref": "pU9ef",
+              "name": "06 Exit Behind",
+              "x": 700,
+              "y": 574,
+              "width": 170,
+              "height": 48,
+              "fill": "$color-danger",
+              "descendants": {
+                "v3WfbC": {
+                  "content": "게임 종료"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "rectangle",
+          "id": "c4k6eW",
+          "x": 0,
+          "y": 0,
+          "name": "06 Nested Dim",
+          "fill": "#020B0FD6",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "id": "R8uuN",
+          "type": "ref",
+          "ref": "VnJ7q",
+          "name": "06 ExitConfirmDialog Instance",
+          "x": 700,
+          "y": 400,
+          "width": 520,
+          "height": 280
+        },
+        {
+          "type": "text",
+          "id": "Vm3WB",
+          "x": 60,
+          "y": 1008,
+          "name": "06 Layer Note",
+          "fill": "$color-muted",
+          "content": "ExitConfirm nested layer · ESC는 취소 · 딤 클릭 무시",
+          "fontFamily": "$font-body",
+          "fontSize": 14,
+          "fontWeight": "normal"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "Qbehe",
+      "x": 2160,
+      "y": 2400,
+      "name": "07 Interaction Flow",
+      "clip": true,
+      "width": 1920,
+      "height": 1080,
+      "fill": "$color-bg",
+      "layout": "none",
+      "children": [
+        {
+          "type": "text",
+          "id": "TpBzP",
+          "x": 56,
+          "y": 48,
+          "name": "07 Flow Title",
+          "fill": "$color-ivory",
+          "content": "SETTINGS · INTERACTION FLOW",
+          "fontFamily": "$font-display",
+          "fontSize": 42,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "tm0Zc",
+          "x": 56,
+          "y": 108,
+          "name": "07 Flow Subtitle",
+          "fill": "$color-muted",
+          "content": "입력은 짧게, 상태 복원은 정확하게.",
+          "fontFamily": "$font-body",
+          "fontSize": 17,
+          "fontWeight": "700"
+        },
+        {
+          "type": "frame",
+          "id": "YveWk",
+          "x": 56,
+          "y": 178,
+          "name": "07 Settings Click Node",
+          "width": 250,
+          "height": 100,
+          "fill": "$color-panel",
+          "cornerRadius": [
+            7,
+            3,
+            8,
+            4
+          ],
+          "stroke": "$color-ivory",
+          "strokeWidth": 2,
+          "layout": "vertical",
+          "gap": 7,
+          "padding": [
+            12,
+            16
+          ],
+          "justifyContent": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "Tvun3",
+              "name": "07 Settings Click Node Title",
+              "fill": "$color-mint",
+              "content": "SETTINGS CLICK",
+              "fontFamily": "$font-body",
+              "fontSize": 15,
+              "fontWeight": "900"
+            },
+            {
+              "type": "text",
+              "id": "GAely",
+              "name": "07 Settings Click Node Body",
+              "fill": "$color-muted",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "현재 pause / phase 상태 캡처",
+              "lineHeight": 1.35,
+              "fontFamily": "$font-body",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "icon",
+          "id": "MFmRE",
+          "x": 320,
+          "y": 214,
+          "name": "07 Arrow Capture",
+          "width": 28,
+          "height": 28,
+          "icon": "arrow_forward",
+          "library": "Material Symbols Rounded",
+          "weight": 700,
+          "fill": "$color-gold"
+        },
+        {
+          "type": "frame",
+          "id": "AVd51",
+          "x": 360,
+          "y": 178,
+          "name": "07 Pause Open Node",
+          "width": 250,
+          "height": 100,
+          "fill": "$color-panel",
+          "cornerRadius": [
+            7,
+            3,
+            8,
+            4
+          ],
+          "stroke": "$color-ivory",
+          "strokeWidth": 2,
+          "layout": "vertical",
+          "gap": 7,
+          "padding": [
+            12,
+            16
+          ],
+          "justifyContent": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "kRtav",
+              "name": "07 Pause Open Node Title",
+              "fill": "$color-mint",
+              "content": "PAUSE + OPEN",
+              "fontFamily": "$font-body",
+              "fontSize": 15,
+              "fontWeight": "900"
+            },
+            {
+              "type": "text",
+              "id": "A5RK3j",
+              "name": "07 Pause Open Node Body",
+              "fill": "$color-muted",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "즉시 pause · layer 100",
+              "lineHeight": 1.35,
+              "fontFamily": "$font-body",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "icon",
+          "id": "mkkCa",
+          "x": 624,
+          "y": 214,
+          "name": "07 Arrow Motion",
+          "width": 28,
+          "height": 28,
+          "icon": "arrow_forward",
+          "library": "Material Symbols Rounded",
+          "weight": 700,
+          "fill": "$color-gold"
+        },
+        {
+          "type": "frame",
+          "id": "X3o1wv",
+          "x": 664,
+          "y": 178,
+          "name": "07 Motion Node",
+          "width": 250,
+          "height": 100,
+          "fill": "$color-panel",
+          "cornerRadius": [
+            7,
+            3,
+            8,
+            4
+          ],
+          "stroke": "$color-ivory",
+          "strokeWidth": 2,
+          "layout": "vertical",
+          "gap": 7,
+          "padding": [
+            12,
+            16
+          ],
+          "justifyContent": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "U2ZQe",
+              "name": "07 Motion Node Title",
+              "fill": "$color-mint",
+              "content": "OPEN 240ms",
+              "fontFamily": "$font-body",
+              "fontSize": 15,
+              "fontWeight": "900"
+            },
+            {
+              "type": "text",
+              "id": "S2Dpl",
+              "name": "07 Motion Node Body",
+              "fill": "$color-muted",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Quad Out · dim 68% · y+24→0",
+              "lineHeight": 1.35,
+              "fontFamily": "$font-body",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "icon",
+          "id": "zYMmd",
+          "x": 928,
+          "y": 214,
+          "name": "07 Arrow Root",
+          "width": 28,
+          "height": 28,
+          "icon": "arrow_forward",
+          "library": "Material Symbols Rounded",
+          "weight": 700,
+          "fill": "$color-gold"
+        },
+        {
+          "type": "frame",
+          "id": "Z6JWO",
+          "x": 968,
+          "y": 178,
+          "name": "07 Root Node",
+          "width": 250,
+          "height": 100,
+          "fill": "$color-panel",
+          "cornerRadius": [
+            7,
+            3,
+            8,
+            4
+          ],
+          "stroke": "$color-ivory",
+          "strokeWidth": 2,
+          "layout": "vertical",
+          "gap": 7,
+          "padding": [
+            12,
+            16
+          ],
+          "justifyContent": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "jhTYs",
+              "name": "07 Root Node Title",
+              "fill": "$color-mint",
+              "content": "SETTINGS ROOT",
+              "fontFamily": "$font-body",
+              "fontSize": 15,
+              "fontWeight": "900"
+            },
+            {
+              "type": "text",
+              "id": "B0ExYg",
+              "name": "07 Root Node Body",
+              "fill": "$color-muted",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "사운드 / 라이선스 / 종료",
+              "lineHeight": 1.35,
+              "fontFamily": "$font-body",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "K07HTe",
+          "x": 1216,
+          "y": 226,
+          "name": "07 Branch Marker",
+          "width": 34,
+          "height": 560,
+          "layout": "none",
+          "children": [
+            {
+              "type": "rectangle",
+              "id": "JtMFJ",
+              "x": 13,
+              "y": 0,
+              "name": "07 Branch Vertical",
+              "fill": "$color-gold-dark",
+              "width": 2,
+              "height": 560
+            },
+            {
+              "type": "rectangle",
+              "id": "BXOL3",
+              "x": 13,
+              "y": 90,
+              "name": "07 Branch Tick 90",
+              "fill": "$color-gold-dark",
+              "width": 18,
+              "height": 2
+            },
+            {
+              "type": "rectangle",
+              "id": "WwPvZ",
+              "x": 13,
+              "y": 220,
+              "name": "07 Branch Tick 220",
+              "fill": "$color-gold-dark",
+              "width": 18,
+              "height": 2
+            },
+            {
+              "type": "rectangle",
+              "id": "wQVSQ",
+              "x": 13,
+              "y": 350,
+              "name": "07 Branch Tick 350",
+              "fill": "$color-gold-dark",
+              "width": 18,
+              "height": 2
+            },
+            {
+              "type": "rectangle",
+              "id": "KJudB",
+              "x": 13,
+              "y": 480,
+              "name": "07 Branch Tick 480",
+              "fill": "$color-gold-dark",
+              "width": 18,
+              "height": 2
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "N1oEm",
+          "x": 1270,
+          "y": 266,
+          "name": "07 Sound Node",
+          "width": 260,
+          "height": 100,
+          "fill": "$color-panel",
+          "cornerRadius": [
+            7,
+            3,
+            8,
+            4
+          ],
+          "stroke": "$color-ivory",
+          "strokeWidth": 2,
+          "layout": "vertical",
+          "gap": 7,
+          "padding": [
+            12,
+            16
+          ],
+          "justifyContent": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "RreOj",
+              "name": "07 Sound Node Title",
+              "fill": "$color-mint",
+              "content": "SOUND CONTROL",
+              "fontFamily": "$font-body",
+              "fontSize": 15,
+              "fontWeight": "900"
+            },
+            {
+              "type": "text",
+              "id": "Peh67",
+              "name": "07 Sound Node Body",
+              "fill": "$color-muted",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "변경 즉시 미리듣기 + 자동 저장",
+              "lineHeight": 1.35,
+              "fontFamily": "$font-body",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "icon",
+          "id": "jp2Jo",
+          "x": 1544,
+          "y": 302,
+          "name": "07 Sound Arrow",
+          "width": 28,
+          "height": 28,
+          "icon": "arrow_forward",
+          "library": "Material Symbols Rounded",
+          "weight": 700,
+          "fill": "$color-gold"
+        },
+        {
+          "type": "frame",
+          "id": "u63Kf",
+          "x": 1584,
+          "y": 266,
+          "name": "07 Sound Result",
+          "width": 270,
+          "height": 100,
+          "fill": "$color-panel",
+          "cornerRadius": [
+            7,
+            3,
+            8,
+            4
+          ],
+          "stroke": "$color-mint",
+          "strokeWidth": 2,
+          "layout": "vertical",
+          "gap": 7,
+          "padding": [
+            12,
+            16
+          ],
+          "justifyContent": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "YaLVM",
+              "name": "07 Sound Result Title",
+              "fill": "$color-mint",
+              "content": "SAVE FEEDBACK",
+              "fontFamily": "$font-body",
+              "fontSize": 15,
+              "fontWeight": "900"
+            },
+            {
+              "type": "text",
+              "id": "uaZXa",
+              "name": "07 Sound Result Body",
+              "fill": "$color-muted",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "짧은 저장 토스트만 표시",
+              "lineHeight": 1.35,
+              "fontFamily": "$font-body",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "tB70x",
+          "x": 1270,
+          "y": 396,
+          "name": "07 License Node",
+          "width": 260,
+          "height": 100,
+          "fill": "$color-panel",
+          "cornerRadius": [
+            7,
+            3,
+            8,
+            4
+          ],
+          "stroke": "$color-ivory",
+          "strokeWidth": 2,
+          "layout": "vertical",
+          "gap": 7,
+          "padding": [
+            12,
+            16
+          ],
+          "justifyContent": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "qcuvF",
+              "name": "07 License Node Title",
+              "fill": "$color-mint",
+              "content": "LICENSE",
+              "fontFamily": "$font-body",
+              "fontSize": 15,
+              "fontWeight": "900"
+            },
+            {
+              "type": "text",
+              "id": "QLiuD",
+              "name": "07 License Node Body",
+              "fill": "$color-muted",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "목록 → 전문 상세",
+              "lineHeight": 1.35,
+              "fontFamily": "$font-body",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "icon",
+          "id": "fVsM1",
+          "x": 1544,
+          "y": 432,
+          "name": "07 License Arrow",
+          "width": 28,
+          "height": 28,
+          "icon": "arrow_forward",
+          "library": "Material Symbols Rounded",
+          "weight": 700,
+          "fill": "$color-gold"
+        },
+        {
+          "type": "frame",
+          "id": "q9gPUV",
+          "x": 1584,
+          "y": 396,
+          "name": "07 License Result",
+          "width": 270,
+          "height": 100,
+          "fill": "$color-panel",
+          "cornerRadius": [
+            7,
+            3,
+            8,
+            4
+          ],
+          "stroke": "$color-mint",
+          "strokeWidth": 2,
+          "layout": "vertical",
+          "gap": 7,
+          "padding": [
+            12,
+            16
+          ],
+          "justifyContent": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "zlZmb",
+              "name": "07 License Result Title",
+              "fill": "$color-mint",
+              "content": "BACK / ESC",
+              "fontFamily": "$font-body",
+              "fontSize": 15,
+              "fontWeight": "900"
+            },
+            {
+              "type": "text",
+              "id": "XYyuh",
+              "name": "07 License Result Body",
+              "fill": "$color-muted",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "상세 → 목록",
+              "lineHeight": 1.35,
+              "fontFamily": "$font-body",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "MERon",
+          "x": 1270,
+          "y": 526,
+          "name": "07 Exit Node",
+          "width": 260,
+          "height": 100,
+          "fill": "$color-panel",
+          "cornerRadius": [
+            7,
+            3,
+            8,
+            4
+          ],
+          "stroke": "$color-ivory",
+          "strokeWidth": 2,
+          "layout": "vertical",
+          "gap": 7,
+          "padding": [
+            12,
+            16
+          ],
+          "justifyContent": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "nM8bu",
+              "name": "07 Exit Node Title",
+              "fill": "$color-mint",
+              "content": "EXIT",
+              "fontFamily": "$font-body",
+              "fontSize": 15,
+              "fontWeight": "900"
+            },
+            {
+              "type": "text",
+              "id": "inCrx",
+              "name": "07 Exit Node Body",
+              "fill": "$color-muted",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "작은 확인 다이얼로그",
+              "lineHeight": 1.35,
+              "fontFamily": "$font-body",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "icon",
+          "id": "E2poJZ",
+          "x": 1544,
+          "y": 562,
+          "name": "07 Exit Arrow",
+          "width": 28,
+          "height": 28,
+          "icon": "arrow_forward",
+          "library": "Material Symbols Rounded",
+          "weight": 700,
+          "fill": "$color-gold"
+        },
+        {
+          "type": "frame",
+          "id": "zFcHV",
+          "x": 1584,
+          "y": 526,
+          "name": "07 Exit Result",
+          "width": 270,
+          "height": 100,
+          "fill": "$color-panel",
+          "cornerRadius": [
+            7,
+            3,
+            8,
+            4
+          ],
+          "stroke": "$color-danger",
+          "strokeWidth": 2,
+          "layout": "vertical",
+          "gap": 7,
+          "padding": [
+            12,
+            16
+          ],
+          "justifyContent": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "P5uMV",
+              "name": "07 Exit Result Title",
+              "fill": "$color-danger",
+              "content": "CANCEL / QUIT",
+              "fontFamily": "$font-body",
+              "fontSize": 15,
+              "fontWeight": "900"
+            },
+            {
+              "type": "text",
+              "id": "G0pE5y",
+              "name": "07 Exit Result Body",
+              "fill": "$color-muted",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "ESC=취소 · 확인=종료",
+              "lineHeight": 1.35,
+              "fontFamily": "$font-body",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "PkaWL",
+          "x": 1270,
+          "y": 656,
+          "name": "07 Close Node",
+          "width": 260,
+          "height": 100,
+          "fill": "$color-panel",
+          "cornerRadius": [
+            7,
+            3,
+            8,
+            4
+          ],
+          "stroke": "$color-ivory",
+          "strokeWidth": 2,
+          "layout": "vertical",
+          "gap": 7,
+          "padding": [
+            12,
+            16
+          ],
+          "justifyContent": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "Y3orSk",
+              "name": "07 Close Node Title",
+              "fill": "$color-mint",
+              "content": "X / SETTINGS / ESC",
+              "fontFamily": "$font-body",
+              "fontSize": 15,
+              "fontWeight": "900"
+            },
+            {
+              "type": "text",
+              "id": "sHrZV",
+              "name": "07 Close Node Body",
+              "fill": "$color-muted",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "루트에서 close 시작",
+              "lineHeight": 1.35,
+              "fontFamily": "$font-body",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "icon",
+          "id": "M6Lgvm",
+          "x": 1544,
+          "y": 692,
+          "name": "07 Close Arrow",
+          "width": 28,
+          "height": 28,
+          "icon": "arrow_forward",
+          "library": "Material Symbols Rounded",
+          "weight": 700,
+          "fill": "$color-gold"
+        },
+        {
+          "type": "frame",
+          "id": "lY0GG",
+          "x": 1584,
+          "y": 656,
+          "name": "07 Restore Result",
+          "width": 270,
+          "height": 100,
+          "fill": "$color-panel",
+          "cornerRadius": [
+            7,
+            3,
+            8,
+            4
+          ],
+          "stroke": "$color-mint",
+          "strokeWidth": 2,
+          "layout": "vertical",
+          "gap": 7,
+          "padding": [
+            12,
+            16
+          ],
+          "justifyContent": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "b0rOqC",
+              "name": "07 Restore Result Title",
+              "fill": "$color-mint",
+              "content": "CLOSE 160ms",
+              "fontFamily": "$font-body",
+              "fontSize": 15,
+              "fontWeight": "900"
+            },
+            {
+              "type": "text",
+              "id": "fPuMM",
+              "name": "07 Restore Result Body",
+              "fill": "$color-muted",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Quad In 뒤 캡처 상태 복원",
+              "lineHeight": 1.35,
+              "fontFamily": "$font-body",
+              "fontSize": 12,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "kVreF",
+          "x": 56,
+          "y": 350,
+          "name": "07 Runtime Notes",
+          "width": 1100,
+          "height": 392,
+          "fill": "$color-surface",
+          "cornerRadius": [
+            8,
+            4,
+            7,
+            3
+          ],
+          "stroke": "$color-gold-dark",
+          "strokeWidth": 2,
+          "layout": "vertical",
+          "gap": 14,
+          "padding": 24,
+          "children": [
+            {
+              "type": "text",
+              "id": "w93hG1",
+              "name": "07 Runtime Notes Title",
+              "fill": "$color-gold",
+              "content": "INPUT & LAYER RULES",
+              "fontFamily": "$font-display",
+              "fontSize": 28,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "n3Fq4y",
+              "name": "07 Rule DIM",
+              "width": "fill_container",
+              "height": 58,
+              "gap": 18,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "R3i8Pd",
+                  "name": "07 Rule Label DIM",
+                  "fill": "$color-mint",
+                  "textGrowth": "fixed-width",
+                  "width": 110,
+                  "content": "DIM",
+                  "fontFamily": "$font-body",
+                  "fontSize": 14,
+                  "fontWeight": "900"
+                },
+                {
+                  "type": "text",
+                  "id": "SBCKL",
+                  "name": "07 Rule Value DIM",
+                  "fill": "$color-ivory",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "클릭 무시 — 의도치 않은 닫기 방지",
+                  "fontFamily": "$font-body",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "nwKdp",
+              "name": "07 Rule ESC",
+              "width": "fill_container",
+              "height": 58,
+              "gap": 18,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "QzY9j",
+                  "name": "07 Rule Label ESC",
+                  "fill": "$color-mint",
+                  "textGrowth": "fixed-width",
+                  "width": 110,
+                  "content": "ESC",
+                  "fontFamily": "$font-body",
+                  "fontSize": 14,
+                  "fontWeight": "900"
+                },
+                {
+                  "type": "text",
+                  "id": "oiFFp",
+                  "name": "07 Rule Value ESC",
+                  "fill": "$color-ivory",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "종료 확인→취소 / 라이선스 상세→목록 / 루트→닫기",
+                  "fontFamily": "$font-body",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Rf5VK",
+              "name": "07 Rule LAYER",
+              "width": "fill_container",
+              "height": 58,
+              "gap": 18,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "amz8V",
+                  "name": "07 Rule Label LAYER",
+                  "fill": "$color-mint",
+                  "textGrowth": "fixed-width",
+                  "width": 110,
+                  "content": "LAYER",
+                  "fontFamily": "$font-body",
+                  "fontSize": 14,
+                  "fontWeight": "900"
+                },
+                {
+                  "type": "text",
+                  "id": "d46qDk",
+                  "name": "07 Rule Value LAYER",
+                  "fill": "$color-ivory",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Settings CanvasLayer 100 / RepairPlacementHUD 50 / ExitConfirm nested",
+                  "fontFamily": "$font-body",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "RuV5Z",
+              "name": "07 Rule RESTORE",
+              "width": "fill_container",
+              "height": 58,
+              "gap": 18,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "g8EC3W",
+                  "name": "07 Rule Label RESTORE",
+                  "fill": "$color-mint",
+                  "textGrowth": "fixed-width",
+                  "width": 110,
+                  "content": "RESTORE",
+                  "fontFamily": "$font-body",
+                  "fontSize": 14,
+                  "fontWeight": "900"
+                },
+                {
+                  "type": "text",
+                  "id": "LnsKI",
+                  "name": "07 Rule Value RESTORE",
+                  "fill": "$color-ivory",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "무조건 unpause 금지 — 열기 전 pause 및 phase 상태로 복귀",
+                  "fontFamily": "$font-body",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "ZcgV1",
+          "x": 56,
+          "y": 790,
+          "name": "07 Minimal UI Checklist",
+          "width": 1100,
+          "height": 216,
+          "fill": "$color-panel",
+          "cornerRadius": [
+            7,
+            3,
+            8,
+            4
+          ],
+          "stroke": "$color-ivory",
+          "strokeWidth": 2,
+          "layout": "vertical",
+          "gap": 10,
+          "padding": 22,
+          "children": [
+            {
+              "type": "text",
+              "id": "kMf7N",
+              "name": "07 Checklist Title",
+              "fill": "$color-ivory",
+              "content": "MINIMUM INFORMATION CHECK",
+              "fontFamily": "$font-display",
+              "fontSize": 24,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "xUocZ",
+              "name": "07 Check ✓ 루트에는 마스터 / BGM / SFX 전체만",
+              "fill": "$color-muted",
+              "content": "✓ 루트에는 마스터 / BGM / SFX 전체만",
+              "fontFamily": "$font-body",
+              "fontSize": 13,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "mj4l5",
+              "name": "07 Check ✓ 하위 효과음은 한 단계 들어가서 조절",
+              "fill": "$color-muted",
+              "content": "✓ 하위 효과음은 한 단계 들어가서 조절",
+              "fontFamily": "$font-body",
+              "fontSize": 13,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "Mh0ht",
+              "name": "07 Check ✓ 큰 돌아가기 버튼 없음 — X와 ESC",
+              "fill": "$color-muted",
+              "content": "✓ 큰 돌아가기 버튼 없음 — X와 ESC",
+              "fontFamily": "$font-body",
+              "fontSize": 13,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "n46mif",
+              "name": "07 Check ✓ 라이선스 4행 · AI/팀 크레딧 분리",
+              "fill": "$color-muted",
+              "content": "✓ 라이선스 4행 · AI/팀 크레딧 분리",
+              "fontFamily": "$font-body",
+              "fontSize": 13,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "RjUTE",
+              "name": "07 Check ✓ 장식보다 플레이 보드 주변 인지 우선",
+              "fill": "$color-muted",
+              "content": "✓ 장식보다 플레이 보드 주변 인지 우선",
+              "fontFamily": "$font-body",
+              "fontSize": 13,
+              "fontWeight": "700"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variables": {
+    "color-bg": {
+      "type": "color",
+      "value": "#071C24"
+    },
+    "color-surface": {
+      "type": "color",
+      "value": "#15333B"
+    },
+    "color-panel": {
+      "type": "color",
+      "value": "#0B272F"
+    },
+    "color-mint": {
+      "type": "color",
+      "value": "#67D8D0"
+    },
+    "color-ivory": {
+      "type": "color",
+      "value": "#F1E6CB"
+    },
+    "color-muted": {
+      "type": "color",
+      "value": "#829B99"
+    },
+    "color-gold": {
+      "type": "color",
+      "value": "#E1B84A"
+    },
+    "color-gold-dark": {
+      "type": "color",
+      "value": "#A98245"
+    },
+    "color-danger": {
+      "type": "color",
+      "value": "#A349A4"
+    },
+    "color-dim": {
+      "type": "color",
+      "value": "#020B0FAD"
+    },
+    "font-display": {
+      "type": "string",
+      "value": "Black And White Picture"
+    },
+    "font-body": {
+      "type": "string",
+      "value": "Noto Sans KR"
+    },
+    "space-xs": {
+      "type": "number",
+      "value": 8
+    },
+    "space-sm": {
+      "type": "number",
+      "value": 12
+    },
+    "space-md": {
+      "type": "number",
+      "value": 20
+    },
+    "space-lg": {
+      "type": "number",
+      "value": 32
+    },
+    "radius-a": {
+      "type": "number",
+      "value": 7
+    }
+  },
+  "fileToken": "994837c8-d8c0-41cb-9411-b1fb23084abd"
+}

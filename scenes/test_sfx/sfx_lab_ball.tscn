@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3]
+[gd_scene load_steps=21 format=3]
 
 ; ★ 사운드 연구실.
 ;
@@ -25,6 +25,8 @@
 [ext_resource type="Script" path="res://scripts/flipper_system/flipper_controller.gd" id="11_controller"]
 [ext_resource type="PackedScene" uid="uid://ris3ga3vl6ci" path="res://Resources/flippers/sub_flipper/normal_flipper_left.tscn" id="12_left"]
 [ext_resource type="PackedScene" uid="uid://u4e8s8havfkw" path="res://Resources/flippers/sub_flipper/normal_flipper_right.tscn" id="13_right"]
+[ext_resource type="Resource" path="res://settings/sfx/ComboSfxRules.tres" id="90_combo"]
+[ext_resource type="Resource" path="res://settings/sfx/BossSfxRules.tres" id="91_boss"]
 
 [sub_resource type="RectangleShape2D" id="Rect_horizontal"]
 size = Vector2(1520, 60)
@@ -44,6 +46,8 @@ flipper_rules = ExtResource("8_flipper")
 wall_rules = ExtResource("80_wall")
 ball_flow_rules = ExtResource("81_flow")
 bumper_rules = ExtResource("82_bumper")
+combo_rules = ExtResource("90_combo")
+boss_rules = ExtResource("91_boss")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(0.62, 0.62)
@@ -130,6 +134,8 @@ flipper_rules = ExtResource("8_flipper")
 wall_rules = ExtResource("80_wall")
 ball_flow_rules = ExtResource("81_flow")
 bumper_rules = ExtResource("82_bumper")
+combo_rules = ExtResource("90_combo")
+boss_rules = ExtResource("91_boss")
 
 [node name="_SfxDebugHud" type="CanvasLayer" parent="."]
 script = ExtResource("9_hud")

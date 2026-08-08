@@ -142,8 +142,11 @@ func _test_bumper_kind_mapping() -> void:
 	_expect(unknown != null and not unknown.streams.is_empty(),
 		"모르는 범퍼에도 대체음이 나야 한다. 새 범퍼가 조용히 무음이 되면 안 된다.")
 
-	_expect(rules.destroy_cue != null and rules.respawn_telegraph_cue != null,
-		"파괴음과 리스폰 예고음이 있어야 한다.")
+	# ★ 파괴음은 지시로 뺐다 (2026-08-07). 다시 생기면 안 된다 — 화면 연출만 남는다.
+	_expect(rules.destroy_cue == null,
+		"파괴음은 뺐는데 규칙에 다시 물려 있다.")
+	_expect(rules.respawn_telegraph_cue != null,
+		"리스폰 예고음이 있어야 한다.")
 
 
 ## ★ 핵심 — 실제 씬에서 시그널을 쏘면 소리가 나는가

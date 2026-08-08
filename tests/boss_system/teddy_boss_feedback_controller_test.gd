@@ -73,6 +73,10 @@ func _test_production_scene_composition() -> void:
 		^"Audio/BossDefeat",
 	]:
 		_expect(ports.has_node(path), "Missing Feedback slot: %s" % path)
+		if String(path).begins_with("Audio/"):
+			var player := ports.get_node_or_null(path) as AudioStreamPlayer
+			_expect(player != null and player.bus == &"SFX",
+				"Boss feedback audio must use the settings SFX bus: %s" % path)
 	runtime.queue_free()
 	await process_frame
 

@@ -44,8 +44,8 @@ func _run() -> void:
 			and wallet_icon != null
 			and wallet_icon.texture != null
 			and wallet_icon.texture.resource_path
-				== "res://Resources/wave_hud/coin_wallet_icon.png",
-		"우측 상단 코인 HUD는 생성 아이콘과 간결한 × 보유량 표기를 사용해야 한다."
+				== "res://Resources/Art/coin/coin.png",
+		"우측 상단 코인 HUD는 pre-main 태엽 토큰과 간결한 × 보유량 표기를 사용해야 한다."
 	)
 	_expect(
 		wallet_hud.position.x + wallet_hud.size.x < settings_button.position.x,

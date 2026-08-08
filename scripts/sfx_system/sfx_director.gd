@@ -26,6 +26,9 @@ signal cue_dropped(cue_id: StringName, priority: int, outcome: int)
 const DEFAULT_RULES: SfxDirectorRules = preload(
 	"res://settings/sfx/SfxDirectorRules.tres"
 )
+const SETTINGS_BUS_ROUTER := preload(
+	"res://scripts/settings/settings_sfx_bus_router.gd"
+)
 
 ## 스트림 길이를 못 읽었을 때 쓰는 값입니다. 회수가 영영 안 되는 것보다 낫습니다.
 const FALLBACK_LENGTH_SEC: float = 0.25
@@ -176,6 +179,13 @@ func get_voice_priority(index: int) -> int:
 	return _voices[index].priority
 
 
+## 목소리가 출력 중인 세부 설정 버스입니다. 테스트·디버그용입니다.
+func get_voice_bus(index: int) -> StringName:
+	if index < 0 or index >= _voices.size():
+		return &""
+	return _voices[index].player.bus
+
+
 ## 전부 멈춥니다. 웨이브 리셋·일시정지에서 씁니다.
 func stop_all() -> void:
 	for i in _voices.size():
@@ -292,6 +302,7 @@ func _assign(
 
 	var player := voice.player
 	if is_instance_valid(player):
+		player.bus = SETTINGS_BUS_ROUTER.bus_for_cue(cue.cue_id, _rules.bus)
 		player.stream = stream
 		player.volume_db = volume_db
 		player.pitch_scale = pitch_scale

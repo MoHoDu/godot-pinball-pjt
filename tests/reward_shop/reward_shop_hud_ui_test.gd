@@ -53,6 +53,28 @@ func _run() -> void:
 		"보상 패널에 장난감 부스 볼트 장식이 있어야 한다.")
 	_expect(hud.find_child("WaveClearBadge", true, false) is PanelContainer,
 		"웨이브 결과가 빨간 간판 배지로 표시되어야 한다.")
+	var wallet_coin_icon := hud.find_child(
+		"WalletCoinIcon", true, false
+	) as TextureRect
+	_expect(
+		wallet_coin_icon != null
+			and wallet_coin_icon.texture != null
+			and wallet_coin_icon.texture.resource_path
+				== "res://Resources/Art/coin/coin.png",
+		"상점 지갑은 pre-main 코인 아트를 사용해야 한다."
+	)
+	var price_coin_icons := hud.find_children(
+		"PriceCoinIcon", "TextureRect", true, false
+	)
+	_expect(price_coin_icons.size() == 6,
+		"모든 상점 가격에 pre-main 코인 아트가 있어야 한다.")
+	for price_coin_icon: TextureRect in price_coin_icons:
+		_expect(
+			price_coin_icon.texture != null
+				and price_coin_icon.texture.resource_path
+					== "res://Resources/Art/coin/coin.png",
+			"상점 가격 아이콘은 pre-main 코인 아트를 사용해야 한다."
+		)
 	_expect(hud.find_child("EarnedCoinLabel", true, false) == null,
 		"설계에 없는 웨이브 획득량 보조 문구는 표시하지 않아야 한다.")
 	_expect(not _has_exact_label(hud, "BALL") and not _has_exact_label(hud, "PART"),
