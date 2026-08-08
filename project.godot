@@ -26,7 +26,7 @@ window/stretch/mode="canvas_items"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/bumper_direction_editor/plugin.cfg", "res://addons/stage_database_sync/plugin.cfg")
+enabled=PackedStringArray("res://addons/bumper_direction_editor/plugin.cfg", "res://addons/game_settings_catalog/plugin.cfg", "res://addons/stage_database_sync/plugin.cfg")
 
 [input]
 

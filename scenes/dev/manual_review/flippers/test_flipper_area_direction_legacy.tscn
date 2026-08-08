@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dy7qnl2vawihs"]
 
-[ext_resource type="PackedScene" uid="uid://ca7jfhva110hi" path="res://scenes/test_flipper/test_flipper.tscn" id="1_f64m1"]
+[ext_resource type="PackedScene" path="res://scenes/dev/manual_review/flippers/test_flipper_legacy.tscn" id="1_f64m1"]
 [ext_resource type="Script" uid="uid://d068jln3lvom4" path="res://tests/flipper_system/test_flipper_area_direction.gd" id="2_area_test"]
 [ext_resource type="Script" uid="uid://ce2wax7g2gio8" path="res://scripts/ball_base_system/pinball_stats.gd" id="3_kl36y"]
 

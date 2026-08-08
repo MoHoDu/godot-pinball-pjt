@@ -1,10 +1,10 @@
 [gd_scene format=3 uid="uid://ca7jfhva110hi"]
 
 [ext_resource type="Script" uid="uid://byppywgsavdei" path="res://tests/flipper_system/test_flipper_scene.gd" id="1_jgvd2"]
-[ext_resource type="PackedScene" path="res://Resources/balls/base/base_ball.tscn" id="2_1ovb5"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/balls/base/base_ball.tscn" id="2_1ovb5"]
 [ext_resource type="Script" uid="uid://ce2wax7g2gio8" path="res://scripts/ball_base_system/pinball_stats.gd" id="3_jbmqe"]
 [ext_resource type="Script" uid="uid://58k0flhnlg3" path="res://scripts/flipper_system/flipper_selector.gd" id="4_ad2m8"]
-[ext_resource type="PackedScene" path="res://Resources/flippers/flipper/flipper_controller_sample.tscn" id="5_rxxuw"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/flippers/controllers/flipper_controller_sample.tscn" id="5_rxxuw"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_jgvd2"]
 resource_local_to_scene = true
