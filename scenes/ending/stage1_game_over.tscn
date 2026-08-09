@@ -1,0 +1,56 @@
+[gd_scene format=3 uid="uid://ftw2yj5ujjld"]
+
+[ext_resource type="Script" uid="uid://cf200d2h32xu" path="res://scripts/ending/stage1_game_over.gd" id="1_script"]
+
+[node name="Stage1GameOver" type="CanvasLayer" unique_id=322504232]
+layer = 200
+script = ExtResource("1_script")
+
+[node name="Root" type="Control" parent="." unique_id=844366073]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="BlackBackground" type="ColorRect" parent="Root" unique_id=32502694]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+
+[node name="GameOverLogo" type="CenterContainer" parent="Root" unique_id=1287585975]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -360.0
+offset_top = -70.0
+offset_right = 360.0
+offset_bottom = 70.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LogoTexture" type="TextureRect" parent="Root/GameOverLogo" unique_id=592852068]
+custom_minimum_size = Vector2(720, 140)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="FallbackLabel" type="Label" parent="Root/GameOverLogo" unique_id=816967678]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.9, 0.78, 1)
+theme_override_font_sizes/font_size = 72
+text = "GAME OVER"
+horizontal_alignment = 1
+vertical_alignment = 1
