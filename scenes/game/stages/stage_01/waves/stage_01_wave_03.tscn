@@ -61,7 +61,7 @@ position = Vector2(0, -26)
 position = Vector2(-598, 320)
 
 [node name="Risk01" parent="CoinSystem/SpawnPoints" index="10"]
-position = Vector2(-2, -500)
+position = Vector2(-606, -344)
 
 [node name="Risk02" parent="CoinSystem/SpawnPoints" index="11"]
 position = Vector2(964, -2)

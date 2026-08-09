@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" path="res://Resources/Prefabs/wave/base/wave_unique.tscn" id="1_wave"]
 [ext_resource type="Script" uid="uid://d1ru6gfxnmw1r" path="res://scripts/combo_system/combo_stage_settings.gd" id="2_settings"]
 [ext_resource type="Resource" path="res://settings/sfx/SfxDirectorRules.tres" id="3_sewou"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/presented/button_bumper_vfx.tscn" id="4_button"]
 
 [sub_resource type="Resource" id="StageSettings"]
 script = ExtResource("2_settings")
@@ -20,6 +21,10 @@ size = Vector2(160, 1600)
 [node name="Stage01Wave01" unique_id=950300865 instance=ExtResource("1_wave")]
 minimum_full_bleed_aspect = 1.45
 wave_stage_settings = SubResource("StageSettings")
+authored_bumper_wave_index = 0
+expected_bumper_kind_ids = Array[StringName]([&"stage01_button", &"stage01_button", &"stage01_button", &"stage01_button", &"stage01_button", &"stage01_cotton"])
+enforce_stage_bumper_limits = false
+disabled_bumper_paths = Array[NodePath]([NodePath("BumperLowerLeft"), NodePath("BumperLowerRight"), NodePath("BumperCannon")])
 
 [node name="TopDrain" parent="BallDrainArea" index="0"]
 shape = SubResource("RectangleShape2D_sewou")
@@ -32,6 +37,9 @@ shape = SubResource("RectangleShape2D_wvv06")
 
 [node name="RightDrain" parent="BallDrainArea" index="3"]
 shape = SubResource("RectangleShape2D_wvv06")
+
+[node name="RepairBoardLayout" parent="." index="10"]
+new_zone_allowed_kind_ids = PackedStringArray()
 
 [node name="Main01" parent="CoinSystem/SpawnPoints" index="0"]
 position = Vector2(-814, -261)
@@ -60,14 +68,32 @@ position = Vector2(-606, 344)
 [node name="Risk02" parent="CoinSystem/SpawnPoints" index="11"]
 position = Vector2(606, -336)
 
-[node name="WaveHud" parent="HUD" parent_id_path=PackedInt32Array(739204287) index="1" unique_id=414747941]
+[node name="HUD" parent="." index="19" unique_id=739204287]
+visible = false
+
+[node name="WaveHud" parent="HUD" index="1" unique_id=414747941]
 panel_fill_opacity = 0.68
 panel_shadow_opacity = 0.28
 
-[node name="SfxDirector" parent="." index="24"]
+[node name="RepairPlacementHUD" parent="." index="20"]
+visible = false
+
+[node name="SfxDirector" parent="." index="25"]
 rules = ExtResource("3_sewou")
 
-[node name="_BackgroundDecor" parent="." index="28"]
+[node name="_BackgroundDecor" parent="." index="29"]
 top_level = true
 z_index = -19
 z_as_relative = false
+
+[node name="BumperW1LowerLeft" parent="Bumpers" instance=ExtResource("4_button")]
+position = Vector2(-432, 144)
+bumper_id = &"button_w1_lower_left"
+
+[node name="BumperW1LowerRight" parent="Bumpers" instance=ExtResource("4_button")]
+position = Vector2(432, 144)
+bumper_id = &"button_w1_lower_right"
+
+[node name="BumperW1LaunchAnchor" parent="Bumpers" instance=ExtResource("4_button")]
+position = Vector2(0, 144)
+bumper_id = &"button_w1_center_low"

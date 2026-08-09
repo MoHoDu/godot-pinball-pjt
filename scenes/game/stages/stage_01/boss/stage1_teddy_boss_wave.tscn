@@ -1,13 +1,20 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="PackedScene" path="res://Resources/Prefabs/wave/base/wave_unique.tscn" id="1_wave"]
 [ext_resource type="PackedScene" path="res://Resources/Prefabs/boss/runtime/stage1_teddy_boss_runtime.tscn" id="2_boss"]
 [ext_resource type="Script" path="res://scripts/boss_system/stage1_teddy_boss_wave_bridge.gd" id="3_bridge"]
 [ext_resource type="AudioStream" path="res://Resources/sfx/bgm/BGM_Boss_Loop.wav" id="4_boss_bgm"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/presented/clockwork_toy_cannon_vfx.tscn" id="5_cannon"]
 
 [node name="Stage1TeddyBossWave" instance=ExtResource("1_wave")]
+authored_bumper_wave_index = 3
+expected_bumper_kind_ids = Array[StringName]([&"stage01_button", &"stage01_cotton", &"stage01_toy_drum", &"stage01_clockwork_cannon", &"stage01_clockwork_cannon"])
+disabled_bumper_paths = Array[NodePath]([NodePath("BumperCenter"), NodePath("BumperLowerLeft")])
 
 [node name="Stage1TeddyBossRuntime" parent="." instance=ExtResource("2_boss")]
+
+[node name="Main10" parent="CoinSystem/SpawnPoints" index="9"]
+position = Vector2(287, 148)
 
 [node name="BgmPlayer" parent="." index="34"]
 stream = ExtResource("4_boss_bgm")
@@ -28,3 +35,7 @@ left_left_flipper = NodePath("../FlipperSelector/LeftController/LeftFlipper")
 left_right_flipper = NodePath("../FlipperSelector/LeftController/RightFlipper")
 right_left_flipper = NodePath("../FlipperSelector/RightController/LeftFlipper")
 right_right_flipper = NodePath("../FlipperSelector/RightController/RightFlipper")
+
+[node name="BumperCannonLeft" parent="Bumpers" instance=ExtResource("5_cannon")]
+position = Vector2(-432, 144)
+bumper_id = &"clockwork_cannon_boss_left"
