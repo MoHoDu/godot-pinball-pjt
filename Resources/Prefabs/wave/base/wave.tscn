@@ -680,7 +680,7 @@ script = ExtResource("56_coin_point")
 point_id = &"main_08"
 
 [node name="Main09" type="Marker2D" parent="CoinSystem/SpawnPoints"]
-position = Vector2(-280, 146)
+position = Vector2(-324, -48)
 script = ExtResource("56_coin_point")
 point_id = &"main_09"
 

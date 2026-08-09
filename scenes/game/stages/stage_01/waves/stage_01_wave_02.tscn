@@ -48,7 +48,7 @@ position = Vector2(-850, -299)
 position = Vector2(0, 2)
 
 [node name="Main10" parent="CoinSystem/SpawnPoints" index="9"]
-position = Vector2(290, 147)
+position = Vector2(300, -72)
 
 [node name="Risk01" parent="CoinSystem/SpawnPoints" index="10"]
 position = Vector2(-606, 344)
@@ -69,17 +69,17 @@ z_index = -19
 z_as_relative = false
 
 [node name="BumperUpperLeft" parent="Bumpers" instance=ExtResource("7_cotton")]
-position = Vector2(-432, -144)
+position = Vector2(-576, -144)
 
 [node name="BumperUpperRight" parent="Bumpers" instance=ExtResource("4_button")]
-position = Vector2(432, -144)
+position = Vector2(576, -144)
 bumper_id = &"button_bumper_right"
 
 [node name="BumperLowerLeft" parent="Bumpers" instance=ExtResource("5_spring")]
-position = Vector2(-432, 144)
+position = Vector2(-576, 144)
 
 [node name="BumperW2SpringRight" parent="Bumpers" instance=ExtResource("5_spring")]
-position = Vector2(432, 144)
+position = Vector2(576, 144)
 bumper_id = &"spring_doll_w2_right"
 
 [node name="BumperW2UpperVLeft" parent="Bumpers" instance=ExtResource("4_button")]

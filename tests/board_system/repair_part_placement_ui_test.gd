@@ -201,8 +201,8 @@ func _test_inventory_states(
 		"The controller must expose socket selection without scene-path coupling.")
 	_expect(not brooch.disabled,
 		"The middle zone must enable its remaining v0.3 repair part.")
-	_expect(gears.disabled and bell.disabled,
-		"Parts incompatible with the selected zone must remain disabled.")
+	_expect(not gears.disabled and not bell.disabled,
+		"모든 존이 전 부품에 개방되어 카드가 활성이어야 한다 (2026-08-10 형락님 확정).")
 
 
 func _test_place_remove_and_replace(

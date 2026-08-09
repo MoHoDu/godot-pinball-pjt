@@ -42,11 +42,11 @@ shape = SubResource("RectangleShape2D_miopi")
 shape = SubResource("RectangleShape2D_miopi")
 
 [node name="BumperW1LowerLeft" parent="Bumpers" parent_id_path=PackedInt32Array(1144402446) index="0" unique_id=2018638395 instance=ExtResource("4_button")]
-position = Vector2(-432, 144)
+position = Vector2(-576, 144)
 bumper_id = &"button_w1_lower_left"
 
 [node name="BumperW1LowerRight" parent="Bumpers" parent_id_path=PackedInt32Array(1144402446) index="1" unique_id=1024660885 instance=ExtResource("4_button")]
-position = Vector2(432, 144)
+position = Vector2(576, 144)
 bumper_id = &"button_w1_lower_right"
 
 [node name="BumperW1UpperVLeft" parent="Bumpers" parent_id_path=PackedInt32Array(1144402446) index="2" unique_id=832607122 instance=ExtResource("4_button")]
@@ -79,7 +79,7 @@ position = Vector2(-4, -435)
 position = Vector2(292, -138)
 
 [node name="Main10" parent="CoinSystem/SpawnPoints" index="9"]
-position = Vector2(287, 148)
+position = Vector2(300, -72)
 
 [node name="Risk01" parent="CoinSystem/SpawnPoints" index="10"]
 position = Vector2(-606, 344)

@@ -19,7 +19,7 @@ disabled_bumper_paths = Array[NodePath]([])
 [node name="Stage1TeddyBossRuntime" parent="." instance=ExtResource("2_boss")]
 
 [node name="Main10" parent="CoinSystem/SpawnPoints" index="9"]
-position = Vector2(287, 148)
+position = Vector2(552, 0)
 
 [node name="BgmPlayer" parent="." index="34"]
 stream = ExtResource("4_boss_bgm")
@@ -42,18 +42,18 @@ right_left_flipper = NodePath("../FlipperSelector/RightController/LeftFlipper")
 right_right_flipper = NodePath("../FlipperSelector/RightController/RightFlipper")
 
 [node name="BumperUpperLeft" parent="Bumpers" instance=ExtResource("8_cotton")]
-position = Vector2(-432, -144)
+position = Vector2(-576, -144)
 
 [node name="BumperUpperRight" parent="Bumpers" instance=ExtResource("7_button")]
-position = Vector2(432, -144)
+position = Vector2(576, -144)
 bumper_id = &"button_bumper_right"
 
 [node name="BumperLowerRight" parent="Bumpers" instance=ExtResource("9_drum")]
-position = Vector2(432, 144)
+position = Vector2(576, 144)
 
 [node name="BumperCannon" parent="Bumpers" instance=ExtResource("5_cannon")]
-position = Vector2(288, 0)
+position = Vector2(288, -144)
 
 [node name="BumperCannonLeft" parent="Bumpers" instance=ExtResource("5_cannon")]
-position = Vector2(-288, 0)
+position = Vector2(-288, -144)
 bumper_id = &"clockwork_cannon_boss_left"

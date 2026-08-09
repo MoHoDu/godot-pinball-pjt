@@ -28,14 +28,14 @@ color = Color(0.18, 0.52, 0.68, 0.16)
 polygon = PackedVector2Array(-664, -520, 1.7346191, -520, 664, -520, 663.99994, -429.7298, 664, -344, -664, -344)
 script = ExtResource("3_zone")
 zone_id = &"upper"
-allowed_kind_ids = PackedStringArray("starlight_brooch", "forgotten_star_bell")
+allowed_kind_ids = PackedStringArray("starlight_brooch", "forgotten_star_bell", "golden_gears", "crescent_needle")
 
 [node name="Middle" type="Polygon2D" parent="Zones" unique_id=1569770718]
 color = Color(0.25, 0.68, 0.52, 0.14)
 polygon = PackedVector2Array(-808, -232, 808, -232, 808, 232, -808, 232)
 script = ExtResource("3_zone")
 zone_id = &"middle"
-allowed_kind_ids = PackedStringArray("starlight_brooch", "crescent_needle")
+allowed_kind_ids = PackedStringArray("starlight_brooch", "forgotten_star_bell", "golden_gears", "crescent_needle")
 
 [node name="Lower" type="Polygon2D" parent="Zones" unique_id=1015387499]
 position = Vector2(-1.5000229, -78.22742)
@@ -44,7 +44,7 @@ color = Color(0.66, 0.45, 0.2, 0.15)
 polygon = PackedVector2Array(-664, 344, 19.367798, 344, 664, 344, 664, 520, -664, 520, -664, 444.80865)
 script = ExtResource("3_zone")
 zone_id = &"lower"
-allowed_kind_ids = PackedStringArray("golden_gears", "crescent_needle")
+allowed_kind_ids = PackedStringArray("starlight_brooch", "forgotten_star_bell", "golden_gears", "crescent_needle")
 
 [node name="Sockets" type="Node2D" parent="." unique_id=1670589526]
 z_index = 4
@@ -62,63 +62,63 @@ socket_id = &"upper_02"
 zone_id = &"upper"
 
 [node name="Upper03" type="Marker2D" parent="Sockets" unique_id=502719177]
-position = Vector2(-288, -288)
+position = Vector2(-144, -288)
 script = ExtResource("4_socket")
 socket_id = &"upper_03"
 zone_id = &"upper"
 
 [node name="Upper04" type="Marker2D" parent="Sockets" unique_id=79305099]
-position = Vector2(288, -288)
+position = Vector2(144, -288)
 script = ExtResource("4_socket")
 socket_id = &"upper_04"
 zone_id = &"upper"
 
 [node name="Middle01" type="Marker2D" parent="Sockets" unique_id=1860355628]
-position = Vector2(-720, -144)
+position = Vector2(-720, 0)
 script = ExtResource("4_socket")
 socket_id = &"middle_01"
 zone_id = &"middle"
 
 [node name="Middle02" type="Marker2D" parent="Sockets" unique_id=784293462]
-position = Vector2(720, -144)
+position = Vector2(720, 0)
 script = ExtResource("4_socket")
 socket_id = &"middle_02"
 zone_id = &"middle"
 
 [node name="Middle03" type="Marker2D" parent="Sockets" unique_id=686733230]
-position = Vector2(-720, 144)
+position = Vector2(-288, 144)
 script = ExtResource("4_socket")
 socket_id = &"middle_03"
 zone_id = &"middle"
 
 [node name="Middle04" type="Marker2D" parent="Sockets" unique_id=73288951]
-position = Vector2(720, 144)
+position = Vector2(288, 144)
 script = ExtResource("4_socket")
 socket_id = &"middle_04"
 zone_id = &"middle"
 
-[node name="Lower01" type="Marker2D" parent="Sockets" unique_id=1643962724]
+[node name="MiddleLeft" type="Marker2D" parent="Sockets" unique_id=1643962724]
+position = Vector2(-432, 0)
+script = ExtResource("4_socket")
+socket_id = &"middle_05"
+zone_id = &"middle"
+
+[node name="MiddleRight" type="Marker2D" parent="Sockets" unique_id=91171217]
+position = Vector2(432, 0)
+script = ExtResource("4_socket")
+socket_id = &"middle_06"
+zone_id = &"middle"
+
+[node name="Lower01" type="Marker2D" parent="Sockets" unique_id=899855227]
 position = Vector2(-432, 288)
 script = ExtResource("4_socket")
 socket_id = &"lower_01"
 zone_id = &"lower"
 
-[node name="Lower02" type="Marker2D" parent="Sockets" unique_id=91171217]
+[node name="Lower02" type="Marker2D" parent="Sockets" unique_id=1969743896]
 position = Vector2(432, 288)
 script = ExtResource("4_socket")
 socket_id = &"lower_02"
-zone_id = &"lower"
-
-[node name="Lower03" type="Marker2D" parent="Sockets" unique_id=899855227]
-position = Vector2(-288, 288)
-script = ExtResource("4_socket")
-socket_id = &"lower_03"
-zone_id = &"lower"
-
-[node name="Lower04" type="Marker2D" parent="Sockets" unique_id=1969743896]
-position = Vector2(288, 288)
-script = ExtResource("4_socket")
-socket_id = &"lower_04"
 zone_id = &"lower"
 
 [node name="ForbiddenAreas" type="Node2D" parent="." unique_id=1398669034]
