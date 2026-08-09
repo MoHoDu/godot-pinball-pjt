@@ -124,6 +124,7 @@
 [ext_resource type="Script" path="res://scripts/coin_system/wave_clear_delay_controller.gd" id="54_clear_delay"]
 [ext_resource type="Script" path="res://scripts/coin_system/wave_coin_session.gd" id="55_coin_session"]
 [ext_resource type="Script" path="res://scripts/coin_system/coin_spawn_point.gd" id="56_coin_point"]
+[ext_resource type="Script" path="res://scripts/editor/wave_authoring_tools.gd" id="57_authoring_tools"]
 [sub_resource type="Resource" id="StageSettings_wave"]
 script = ExtResource("3_combo_stage")
 stage_id = &"cursed_toy_demo"
@@ -248,6 +249,16 @@ hud_state = NodePath("WaveHudStateSource")
 wave_hud = NodePath("HUD/WaveHud")
 board_camera = NodePath("Camera2D")
 bumpers_root = NodePath("Bumpers")
+
+[node name="WaveAuthoringTools" type="Node" parent="." node_paths=PackedStringArray("coordinator", "coin_field", "default_board_layout", "board_placement_bridge", "repair_placement_controller", "reward_shop_bridge", "repair_effect_router")]
+script = ExtResource("57_authoring_tools")
+coordinator = NodePath("..")
+coin_field = NodePath("../CoinSystem")
+default_board_layout = NodePath("../RepairBoardLayout")
+board_placement_bridge = NodePath("../BoardWavePlacementBridge")
+repair_placement_controller = NodePath("../RepairPartPlacementController")
+reward_shop_bridge = NodePath("../WaveRewardShopBridge")
+repair_effect_router = NodePath("../WaveRepairEffects/RepairEffectRouter")
 
 [node name="OutsideBackground" type="Sprite2D" parent="." unique_id=996418904]
 modulate = Color(0.82, 0.82, 0.82, 1)

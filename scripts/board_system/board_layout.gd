@@ -9,7 +9,6 @@ signal editing_changed(is_editing: bool)
 
 const GRID_CELL_SIZE := 144.0
 const MAXIMUM_SIMULTANEOUS_PLACEMENTS := 6
-const REQUIRED_CANDIDATE_SOCKETS := 12
 
 
 @export_category("Board Nodes")
@@ -24,6 +23,8 @@ const REQUIRED_CANDIDATE_SOCKETS := 12
 	set(value):
 		grid_origin = value
 		queue_redraw()
+## 레이아웃에 필요한 후보 소켓 수입니다. 추가·삭제 버튼이 자동으로 동기화합니다.
+@export_range(0, 128, 1) var required_candidate_sockets := 12
 
 
 var grid_cell_size: float:
@@ -33,10 +34,6 @@ var grid_cell_size: float:
 var maximum_simultaneous_placements: int:
 	get:
 		return MAXIMUM_SIMULTANEOUS_PLACEMENTS
-
-var required_candidate_sockets: int:
-	get:
-		return REQUIRED_CANDIDATE_SOCKETS
 
 @export_category("Editor Preflight")
 @export var show_grid := true:
@@ -50,6 +47,30 @@ var required_candidate_sockets: int:
 		if value and is_inside_tree():
 			call_deferred(&"validate_and_report")
 @export_tool_button("Validate & Save") var validate_and_save_button = validate_and_save
+
+@export_category("Editor Add Zone")
+@export var new_zone_id: StringName = &"new_zone"
+@export var new_zone_center := Vector2.ZERO
+@export var new_zone_size := Vector2(576.0, 288.0)
+@export var new_zone_allowed_kind_ids := PackedStringArray()
+## Scene 트리의 영역을 이 슬롯으로 드래그한 뒤 삭제 버튼을 누릅니다.
+@export var zone_to_delete: BoardPlacementZone
+@export_tool_button("Add Zone", "Add") var add_zone_button = add_zone_from_inspector
+@export_tool_button("Delete Selected Zone", "Remove")
+var delete_zone_button = delete_selected_zone
+
+@export_category("Editor Add Socket")
+@export var new_socket_id: StringName = &"new_socket"
+@export var new_socket_zone_id: StringName = &"new_zone"
+@export var new_socket_position := Vector2.ZERO
+@export_range(1.0, 512.0, 1.0, "suffix:px") var new_socket_reserve_radius := 72.0
+## Scene 트리의 소켓을 이 슬롯으로 드래그한 뒤 삭제 버튼을 누릅니다.
+@export var socket_to_delete: BoardPlacementSocket
+@export_tool_button("Add Socket", "Add") var add_socket_button = add_socket_from_inspector
+@export_tool_button("Delete Selected Socket", "Remove")
+var delete_socket_button = delete_selected_socket
+@export_tool_button("Sync Expected Socket Count", "Reload")
+var sync_socket_count_button = sync_required_socket_count
 
 
 var editing_enabled := true
@@ -151,6 +172,170 @@ func validate_and_save() -> bool:
 		push_error("Board layout passed validation but the editor could not save the scene.")
 		return false
 	return true
+
+
+func add_zone_from_inspector() -> BoardPlacementZone:
+	return create_zone(
+		new_zone_id,
+		new_zone_center,
+		new_zone_size,
+		new_zone_allowed_kind_ids
+	)
+
+
+func create_zone(
+	zone_id: StringName,
+	center: Vector2,
+	size: Vector2,
+	allowed_kind_ids := PackedStringArray()
+) -> BoardPlacementZone:
+	var root := get_node_or_null(zones_path) as Node2D
+	if root == null or zone_id.is_empty() or size.x <= 0.0 or size.y <= 0.0:
+		push_warning("Zone requires a target root, non-empty id, and positive size.")
+		return null
+	for existing: BoardPlacementZone in get_zones():
+		if existing.zone_id == zone_id:
+			push_warning("Zone id '%s' already exists." % zone_id)
+			return null
+	var zone := BoardPlacementZone.new()
+	zone.name = _unique_child_name(root, _pascal_case(String(zone_id)))
+	zone.zone_id = zone_id
+	zone.allowed_kind_ids = allowed_kind_ids
+	zone.position = center
+	var half := size * 0.5
+	zone.polygon = PackedVector2Array([
+		Vector2(-half.x, -half.y),
+		Vector2(half.x, -half.y),
+		Vector2(half.x, half.y),
+		Vector2(-half.x, half.y),
+	])
+	root.add_child(zone)
+	_assign_editor_owner(zone)
+	queue_redraw()
+	update_configuration_warnings()
+	return zone
+
+
+func delete_selected_zone() -> bool:
+	var zone := zone_to_delete
+	if zone == null:
+		zone = _get_editor_selected_node() as BoardPlacementZone
+	if zone == null or zone not in get_zones():
+		push_warning("Select a zone under Zones before pressing Delete Selected Zone.")
+		return false
+	for socket: BoardPlacementSocket in get_sockets():
+		if socket.zone_id == zone.zone_id:
+			push_warning(
+				"Reassign or delete sockets that still reference zone '%s'." % zone.zone_id
+			)
+			return false
+	zone.get_parent().remove_child(zone)
+	zone.free()
+	zone_to_delete = null
+	queue_redraw()
+	update_configuration_warnings()
+	return true
+
+
+func add_socket_from_inspector() -> BoardPlacementSocket:
+	return create_socket(
+		new_socket_id,
+		new_socket_zone_id,
+		new_socket_position,
+		new_socket_reserve_radius
+	)
+
+
+func create_socket(
+	socket_id: StringName,
+	zone_id: StringName,
+	position_value: Vector2,
+	reserve_radius := 72.0
+) -> BoardPlacementSocket:
+	var root := get_node_or_null(sockets_path) as Node2D
+	if root == null or socket_id.is_empty() or zone_id.is_empty():
+		push_warning("Socket requires a target root, socket id, and zone id.")
+		return null
+	for existing: BoardPlacementSocket in get_sockets():
+		if existing.socket_id == socket_id:
+			push_warning("Socket id '%s' already exists." % socket_id)
+			return null
+	var has_zone := false
+	for zone: BoardPlacementZone in get_zones():
+		if zone.zone_id == zone_id:
+			has_zone = true
+			break
+	if not has_zone:
+		push_warning("Socket target zone '%s' does not exist." % zone_id)
+		return null
+	var socket := BoardPlacementSocket.new()
+	socket.name = _unique_child_name(root, _pascal_case(String(socket_id)))
+	socket.socket_id = socket_id
+	socket.zone_id = zone_id
+	socket.reserve_radius = reserve_radius
+	socket.position = snap_point_to_grid(position_value)
+	root.add_child(socket)
+	_assign_editor_owner(socket)
+	sync_required_socket_count()
+	queue_redraw()
+	update_configuration_warnings()
+	return socket
+
+
+func delete_selected_socket() -> bool:
+	var socket := socket_to_delete
+	if socket == null:
+		socket = _get_editor_selected_node() as BoardPlacementSocket
+	if socket == null or socket not in get_sockets():
+		push_warning("Select a socket under Sockets before pressing Delete Selected Socket.")
+		return false
+	socket.get_parent().remove_child(socket)
+	socket.free()
+	socket_to_delete = null
+	sync_required_socket_count()
+	queue_redraw()
+	update_configuration_warnings()
+	return true
+
+
+func sync_required_socket_count() -> void:
+	required_candidate_sockets = get_sockets().size()
+	update_configuration_warnings()
+
+
+func _get_editor_selected_node() -> Node:
+	if not Engine.is_editor_hint() or not Engine.has_singleton(&"EditorInterface"):
+		return null
+	var editor_interface: Object = Engine.get_singleton(&"EditorInterface")
+	var selection: Object = editor_interface.call(&"get_selection")
+	if selection == null:
+		return null
+	var nodes: Array = selection.call(&"get_selected_nodes")
+	return nodes[0] as Node if not nodes.is_empty() else null
+
+
+func _assign_editor_owner(node: Node) -> void:
+	if not Engine.is_editor_hint() or node == null:
+		return
+	var edited_root := get_tree().edited_scene_root
+	if edited_root != null:
+		node.owner = edited_root
+
+
+func _unique_child_name(parent: Node, base_name: String) -> String:
+	var candidate := base_name if not base_name.is_empty() else "Item"
+	var suffix := 2
+	while parent.has_node(NodePath(candidate)):
+		candidate = "%s%d" % [base_name, suffix]
+		suffix += 1
+	return candidate
+
+
+func _pascal_case(value: String) -> String:
+	var result := ""
+	for part: String in value.split("_", false):
+		result += part.capitalize().replace(" ", "")
+	return result
 
 
 func set_editing_enabled(value: bool) -> void:
