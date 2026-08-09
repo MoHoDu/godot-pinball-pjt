@@ -71,6 +71,7 @@ var _target_completion_deferred := false
 var _boss_ball_cycle_started := false
 var _boss_ball_cycle_active := false
 var _boss_phase_completion_ready := false
+var _boss_entry_waiting_for_placement := false
 
 
 var current_state: State:
@@ -199,6 +200,7 @@ func enter_stage(stage_settings: Resource, start_wave_index := 0) -> bool:
 	_boss_ball_cycle_started = false
 	_boss_ball_cycle_active = false
 	_boss_phase_completion_ready = false
+	_boss_entry_waiting_for_placement = false
 	combo_system.reset_wave()
 	_set_state(State.INACTIVE)
 	_set_stage_phase(StagePhase.REPAIR_PLACEMENT)
@@ -209,7 +211,10 @@ func enter_stage(stage_settings: Resource, start_wave_index := 0) -> bool:
 	return true
 
 
-func enter_boss_stage(stage_settings: Resource) -> bool:
+func enter_boss_stage(
+	stage_settings: Resource,
+	start_with_repair_placement := false
+) -> bool:
 	if stage_settings == null \
 			or not stage_settings.has_method(&"get_wave_target_score") \
 			or ball_flow == null \
@@ -230,9 +235,14 @@ func enter_boss_stage(stage_settings: Resource) -> bool:
 	_boss_ball_cycle_started = false
 	_boss_ball_cycle_active = false
 	_boss_phase_completion_ready = false
+	_boss_entry_waiting_for_placement = start_with_repair_placement
 	combo_system.reset_wave()
 	_set_state(State.INACTIVE)
-	_set_stage_phase(StagePhase.BOSS)
+	_set_stage_phase(
+		StagePhase.REPAIR_PLACEMENT
+		if _boss_entry_waiting_for_placement
+		else StagePhase.BOSS
+	)
 	stage_entered.emit(
 		StringName(stage_settings.get(&"stage_id")),
 		_wave_index
@@ -245,6 +255,10 @@ func advance_stage_phase() -> bool:
 		return false
 	match _stage_phase:
 		StagePhase.REPAIR_PLACEMENT:
+			if _boss_entry_waiting_for_placement:
+				_boss_entry_waiting_for_placement = false
+				_set_stage_phase(StagePhase.BOSS)
+				return true
 			return enter_wave(_stage_settings, _wave_index, true)
 		StagePhase.WAVE_RESULT:
 			if _last_wave_was_won:
@@ -260,6 +274,7 @@ func advance_stage_phase() -> bool:
 				_boss_ball_cycle_started = false
 				_boss_ball_cycle_active = false
 				_boss_phase_completion_ready = false
+				_boss_entry_waiting_for_placement = false
 				_set_stage_phase(StagePhase.BOSS)
 			return true
 		StagePhase.BOSS:
@@ -674,6 +689,7 @@ func _finish_boss_lost() -> void:
 	_boss_ball_cycle_active = false
 	_boss_ball_cycle_started = false
 	_boss_phase_completion_ready = false
+	_boss_entry_waiting_for_placement = false
 	_clear_after_drain = false
 	_last_wave_was_won = false
 	_set_state(State.LOST)
