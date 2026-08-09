@@ -19,8 +19,8 @@
 [ext_resource type="Texture2D" uid="uid://otcnra2gkcar" path="res://Resources/Art/repair_parts/starlight_brooch.png" id="17_brooch_icon"]
 [ext_resource type="Texture2D" uid="uid://t7vnh830fts1" path="res://Resources/Art/repair_parts/golden_gears.png" id="18_gears_icon"]
 [ext_resource type="Texture2D" uid="uid://ccavogccu0rxu" path="res://Resources/Art/repair_parts/forgotten_star_bell.png" id="19_bell_icon"]
-[ext_resource type="PackedScene" path="res://scenes/ending/stage1_ending.tscn" id="20_nduym"]
-[ext_resource type="PackedScene" path="res://scenes/ending/stage1_game_over.tscn" id="21_game_over"]
+[ext_resource type="PackedScene" uid="uid://dt1vtdy4vk4cn" path="res://scenes/ending/stage1_ending.tscn" id="20_nduym"]
+[ext_resource type="PackedScene" uid="uid://ftw2yj5ujjld" path="res://scenes/ending/stage1_game_over.tscn" id="21_game_over"]
 
 [sub_resource type="Resource" id="InitialBall_light"]
 script = ExtResource("6_ball_entry")
