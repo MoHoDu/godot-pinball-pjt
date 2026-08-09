@@ -416,6 +416,7 @@ func _test_stage_reward_purchase_persistence() -> void:
 	await _wait_for_transition()
 	var manager := stage.get_node(^"StageFlowManager") as StageFlowManager
 	manager.defeat_destination_scene = null
+	manager.failure_overlay_scene = null
 	manager.coin_wallet.add(999)
 	_complete_active_wave(manager, 1000)
 	await _wait_for_transition()
@@ -607,10 +608,11 @@ func _test_stage_01_scene_configuration() -> void:
 		"Stage 01 클리어는 Stage 1 엔딩 씬으로 이동해야 한다."
 	)
 	_expect(
-		manager.defeat_destination_scene != null
-			and manager.defeat_destination_scene.resource_path
-				== "res://scenes/ending/stage1_ending.tscn",
-		"임시 Stage 01 패배 목적지도 Stage 1 엔딩 씬으로 이동해야 한다."
+		manager.defeat_destination_scene == null
+			and manager.failure_overlay_scene != null
+			and manager.failure_overlay_scene.resource_path
+				== "res://scenes/ending/stage1_game_over.tscn",
+		"Stage 01 패배는 엔딩 대신 GAME OVER Overlay를 사용해야 한다."
 	)
 	for index in mini(manager.wave_scenes.size(), expected_scores.size()):
 		var wave := manager.wave_scenes[index].instantiate()

@@ -2,6 +2,8 @@ extends SceneTree
 
 
 const WAVE_SCENE := "res://Resources/Prefabs/wave/base/wave.tscn"
+const WAVE3_SCENE := \
+	"res://scenes/game/stages/stage_01/waves/stage_01_wave_03.tscn"
 const WAVE_NORMAL_BALL_SCENE := \
 	"res://Resources/Prefabs/balls/variants/mass/normal_ball.tscn"
 
@@ -21,6 +23,7 @@ func _run() -> void:
 		return
 
 	var wave := packed.instantiate() as WaveRuntimeCoordinator
+	_inject_probe_bumpers(wave)
 	root.add_child(wave)
 	await process_frame
 	await process_frame
@@ -29,7 +32,13 @@ func _run() -> void:
 	_test_repair_content_configuration(wave)
 	_test_scene_structure(wave)
 	_test_korean_selection_hud(wave)
-	_test_bumper_loadout(wave)
+	var wave3 := (load(WAVE3_SCENE) as PackedScene).instantiate() \
+		as WaveRuntimeCoordinator
+	root.add_child(wave3)
+	await process_frame
+	await process_frame
+	_test_bumper_loadout(wave3)
+	wave3.free()
 	await _test_low_speed_wave_balls_release_from_flipper(wave)
 	await _test_board_camera_safe_area(wave)
 	_test_combo_and_score_connection(wave)
@@ -229,10 +238,29 @@ func _test_korean_selection_hud(wave: WaveRuntimeCoordinator) -> void:
 		"Ball selection guide must separate confirmation from aiming and launch.")
 
 
+## 이관 후 베이스 보드는 빈 무대라, 통합 검사에 쓰는 프로덕션 범퍼
+## (단추 BumperCenter · 대포 BumperCannon)를 _ready 전에 주입한다.
+func _inject_probe_bumpers(wave: WaveRuntimeCoordinator) -> void:
+	var bumpers_root := wave.get_node("Bumpers")
+	var button := (load(
+		"res://Resources/Prefabs/bumpers/presented/button_bumper_vfx.tscn"
+	) as PackedScene).instantiate() as Node2D
+	button.name = "BumperCenter"
+	button.position = Vector2(0.0, -288.0)
+	bumpers_root.add_child(button)
+	var cannon := (load(
+		"res://Resources/Prefabs/bumpers/presented/clockwork_toy_cannon_vfx.tscn"
+	) as PackedScene).instantiate() as Node2D
+	cannon.name = "BumperCannon"
+	cannon.position = Vector2(0.0, 144.0)
+	bumpers_root.add_child(cannon)
+	wave.sync_expected_bumper_roster()
+
+
 func _test_bumper_loadout(wave: WaveRuntimeCoordinator) -> void:
 	var bumpers := wave.get_bumpers()
-	_expect(bumpers.size() == 6,
-		"Standalone Wave 3 board must contain six production bumpers.")
+	_expect(bumpers.size() == 8,
+		"Production Wave 3 scene must contain eight bumpers.")
 	_expect(wave.is_current_bumper_loadout_valid(),
 		"Authored bumpers must satisfy the Stage 01 Wave 3 loadout contract.")
 	var normal_count := 0
@@ -260,12 +288,12 @@ func _test_bumper_loadout(wave: WaveRuntimeCoordinator) -> void:
 				shot_count += 1
 				if bumper is ShotBumper:
 					wave_cannon = bumper as ShotBumper
-	_expect(normal_count == 3 and bounce_count == 2 and shot_count == 1,
-		"Wave 3 must expose three Normal, two Bounce, and one Shot bumper.")
+	_expect(normal_count == 4 and bounce_count == 3 and shot_count == 1,
+		"Wave 3 must expose four Normal, three Bounce, and one Shot bumper.")
 	_expect(kind_counts == {
-		&"stage01_button": 2,
+		&"stage01_button": 3,
 		&"stage01_cotton": 1,
-		&"stage01_spring_doll": 1,
+		&"stage01_spring_doll": 2,
 		&"stage01_toy_drum": 1,
 		&"stage01_clockwork_cannon": 1,
 	}, "Wave 3 must contain the exact authored Stage 01 bumper kinds.")

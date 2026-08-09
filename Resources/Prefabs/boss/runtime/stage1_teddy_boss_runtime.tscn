@@ -1,4 +1,4 @@
-[gd_scene load_steps=41 format=3]
+[gd_scene load_steps=44 format=3]
 
 [ext_resource type="Script" path="res://scripts/boss_system/stage1_teddy_boss_runtime.gd" id="1_runtime"]
 [ext_resource type="Resource" path="res://settings/bosses/Stage1BossPhase1Rules.tres" id="2_phase1_rules"]
@@ -39,6 +39,9 @@
 [ext_resource type="Texture2D" path="res://Resources/Art/boss/boss_heart.png" id="37_heart"]
 [ext_resource type="Texture2D" path="res://Resources/Art/boss/boss_eye_left.png" id="38_eye_left"]
 [ext_resource type="Texture2D" path="res://Resources/Art/boss/boss_eye_right.png" id="39_eye_right"]
+[ext_resource type="Texture2D" path="res://Resources/ui/ending/stage1/stage1_clear_ui.png" id="40_clear_ui"]
+[ext_resource type="AudioStream" path="res://Resources/sfx/stage1/sfx_boss_final_hit.wav" id="41_final_hit"]
+[ext_resource type="AudioStream" path="res://Resources/sfx/stage1/sfx_stage1_clear.wav" id="42_stage_clear"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape_boss_hurtbox"]
 size = Vector2(300, 330)
@@ -198,3 +201,33 @@ script = ExtResource("29_presentation_bridge")
 feedback = NodePath("../TeddyBossFeedbackController")
 rig = NodePath("../../Presentation/Rig")
 vfx = NodePath("../../Presentation/Vfx")
+
+[node name="ClearCanvas" type="CanvasLayer" parent="."]
+layer = 100
+
+[node name="StageClearUI" type="TextureRect" parent="ClearCanvas"]
+unique_name_in_owner = true
+visible = false
+modulate = Color(1, 1, 1, 0)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -384.0
+offset_top = -256.0
+offset_right = 384.0
+offset_bottom = 256.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("40_clear_ui")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="FinalHitSfx" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("41_final_hit")
+
+[node name="StageClearSfx" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("42_stage_clear")

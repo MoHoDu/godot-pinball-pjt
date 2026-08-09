@@ -89,8 +89,8 @@ func _test_initial_phase(
 		"Wave entry must stop at repair placement before ball selection.")
 	_expect(session.current_state == BoardPlacementSession.State.EDITING,
 		"Repair placement session must be editable during the first stage phase.")
-	_expect(hud.visible and hud.is_drawer_open(),
-		"Placement drawer must start open while its tab remains available.")
+	_expect(hud.visible and not hud.is_drawer_open(),
+		"배치 서랍은 접힌 채 시작해 보드부터 보여야 한다 (2026-08-10 형락님 확정).")
 	var settings_button := wave.get_node(
 		"HUD/WaveHud/DesignSpace/SettingsButton"
 	) as Control
@@ -166,6 +166,9 @@ func _test_inventory_states(
 	_expect(gears.get_stack_text() == "×2" and gears.has_layered_stack(),
 		"Duplicate repair parts must use a layered corner stack with exact count.")
 	hud.toggle_drawer()
+	_expect(hud.is_drawer_open() and hud.visible,
+		"The fixed tab must open the sliding inventory drawer.")
+	hud.toggle_drawer()
 	_expect(not hud.is_drawer_open() and hud.visible,
 		"Closing the drawer must keep the placement UI and fixed tab available.")
 	hud.toggle_drawer()
@@ -201,8 +204,8 @@ func _test_inventory_states(
 		"The controller must expose socket selection without scene-path coupling.")
 	_expect(not brooch.disabled,
 		"The middle zone must enable its remaining v0.3 repair part.")
-	_expect(gears.disabled and bell.disabled,
-		"Parts incompatible with the selected zone must remain disabled.")
+	_expect(not gears.disabled and not bell.disabled,
+		"모든 존이 전 부품에 개방되어 카드가 활성이어야 한다 (2026-08-10 형락님 확정).")
 
 
 func _test_place_remove_and_replace(

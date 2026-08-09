@@ -86,6 +86,8 @@
 
 ## 제외
 
-- `scenes/wave/wave01.tscn`, `scenes/wave/wave01_triangle.tscn`
+- `scenes/wave/wave01.tscn`
   어디서도 참조되지 않는 프로토타입이라 정렬 대상에서 뺐다.
+- `wave01_triangle.tscn`(삼각형 보드 프로토타입)은 2026-08-09 형락님 결정으로
+  **전면 삭제**했다. 스테이지 01은 8각 보드 확정.
 - 보스 웨이브는 아직 전용 씬이 없다 (`Stage01BumperLayout` 에 로드아웃만 존재).

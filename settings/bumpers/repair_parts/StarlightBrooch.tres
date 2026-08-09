@@ -27,6 +27,8 @@ presentation = ExtResource("2")
 
 [sub_resource type="Resource" id="Resource_xp01c"]
 script = ExtResource("6_haq0e")
+speed_multiplier = 1.1
+minimum_release_speed = 500.0
 add_shot_direction_button = Callable()
 
 [resource]
@@ -42,6 +44,8 @@ concept_role = "완성과 장식"
 theme_keywords = PackedStringArray("별", "마감", "완성", "축복")
 base_score = 0
 score_weight = 0.0
+speed_multiplier = 1.1
+minimum_release_speed = 500.0
 collision_diameter = 80.0
 visual_diameter = 88.0
 respawn_safe_margin = 36.0
