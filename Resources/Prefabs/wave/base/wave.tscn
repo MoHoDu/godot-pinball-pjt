@@ -27,6 +27,7 @@
 [ext_resource type="PackedScene" uid="uid://u4e8s8havfkw" path="res://Resources/Prefabs/flippers/variants/normal_flipper_right.tscn" id="12_right_flipper"]
 
 [ext_resource type="Script" uid="uid://c1n1lurdkbtkj" path="res://scripts/ball_base_system/pinball_launcher.gd" id="13_launcher"]
+[ext_resource type="Script" path="res://scripts/ball_base_system/pinball_launcher_offset_aim.gd" id="99_launcher_aim"]
 
 [ext_resource type="Script" uid="uid://dirv1p0s1sce1" path="res://scripts/combo_system/combo_system.gd" id="14_combo_system"]
 
@@ -132,9 +133,6 @@ wave_target_scores = PackedInt32Array(250000, 400000, 650000, 1000000)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape_diagonal"]
 size = Vector2(819.329, 24)
-
-[sub_resource type="Resource" id="Resource_jkexw"]
-script = ExtResource("12_jealc")
 
 [sub_resource type="Resource" id="BallDefinition_light"]
 script = ExtResource("20_definition")
@@ -258,7 +256,8 @@ script = ExtResource("1_coordinator")
 wave_stage_settings = SubResource("StageSettings_wave")
 bumper_stage_settings = ExtResource("4_bumper_stage")
 authored_bumper_wave_index = 2
-expected_bumper_kind_ids = Array[StringName]([&"stage01_button", &"stage01_button", &"stage01_cotton", &"stage01_spring_doll", &"stage01_toy_drum", &"stage01_clockwork_cannon"])
+expected_bumper_kind_ids = Array[StringName]([])
+enforce_stage_bumper_limits = false
 launcher = NodePath("PinballLauncher")
 combo_system = NodePath("ComboSystem")
 combo_collision_bridge = NodePath("ComboCollisionBridge")
@@ -309,7 +308,7 @@ debug_color = Color(0.94972855, 0.16442639, 0.39801326, 0.41960785)
 [node name="PinballLauncher" type="Node2D" parent="."]
 position = Vector2(0, 372)
 rotation = -1.5707964
-script = ExtResource("13_launcher")
+script = ExtResource("99_launcher_aim")
 minimum_launch_angle_degrees = -45.0
 maximum_launch_angle_degrees = 45.0
 
@@ -583,26 +582,6 @@ rotation = -0.348772
 bumper_id = &"rebound_wall_bottom_right"
 
 [node name="Bumpers" type="Node2D" parent="." unique_id=1144402446]
-
-[node name="BumperCenter" parent="Bumpers" unique_id=1184156493 instance=ExtResource("26_button_bumper")]
-position = Vector2(0, -288)
-
-[node name="BumperUpperLeft" parent="Bumpers" unique_id=2016466414 instance=ExtResource("27_cotton_bumper")]
-position = Vector2(-432, -144)
-
-[node name="BumperUpperRight" parent="Bumpers" unique_id=976731568 instance=ExtResource("26_button_bumper")]
-position = Vector2(432, -144)
-bumper_id = &"button_bumper_right"
-
-[node name="BumperLowerLeft" parent="Bumpers" unique_id=1155343190 instance=ExtResource("28_spring_bumper")]
-position = Vector2(-432, 144)
-
-[node name="BumperLowerRight" parent="Bumpers" unique_id=1847381481 instance=ExtResource("29_drum_bumper")]
-position = Vector2(432, 144)
-
-[node name="BumperCannon" parent="Bumpers" unique_id=1628015170 instance=ExtResource("30_cannon_bumper")]
-position = Vector2(0, 144)
-response_strategy = SubResource("Resource_jkexw")
 
 [node name="RepairBoardLayout" parent="." instance=ExtResource("31_repair_layout")]
 

@@ -25,8 +25,6 @@ minimum_full_bleed_aspect = 1.45
 wave_stage_settings = SubResource("StageSettings")
 authored_bumper_wave_index = 0
 expected_bumper_kind_ids = Array[StringName]([&"stage01_button", &"stage01_button", &"stage01_button", &"stage01_button"])
-enforce_stage_bumper_limits = false
-disabled_bumper_paths = Array[NodePath]([NodePath("BumperCenter"), NodePath("BumperUpperLeft"), NodePath("BumperUpperRight"), NodePath("BumperLowerLeft"), NodePath("BumperLowerRight"), NodePath("BumperCannon")])
 
 [node name="BallDrainArea" parent="." index="5"]
 visible = true
@@ -60,7 +58,6 @@ position = Vector2(144, 0)
 bumper_id = &"button_w1_v_right"
 
 [node name="RepairBoardLayout" parent="." index="10"]
-visible = false
 new_zone_allowed_kind_ids = PackedStringArray()
 
 [node name="Main01" parent="CoinSystem/SpawnPoints" index="0"]
@@ -90,15 +87,9 @@ position = Vector2(-606, 344)
 [node name="Risk02" parent="CoinSystem/SpawnPoints" index="11"]
 position = Vector2(606, -336)
 
-[node name="HUD" parent="." index="19" unique_id=739204287]
-visible = false
-
-[node name="WaveHud" parent="HUD" index="1" unique_id=414747941]
+[node name="WaveHud" parent="HUD" parent_id_path=PackedInt32Array(739204287) index="1" unique_id=414747941]
 panel_fill_opacity = 0.68
 panel_shadow_opacity = 0.28
-
-[node name="RepairPlacementHUD" parent="." index="20"]
-visible = false
 
 [node name="SfxDirector" parent="." index="25"]
 rules = ExtResource("3_sewou")
