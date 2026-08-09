@@ -1,3 +1,4 @@
+@tool
 class_name CoinFieldController
 extends Node2D
 
@@ -31,6 +32,10 @@ const DEFAULT_PICKUP_SCENE := preload("res://Resources/Prefabs/coin/coin_pickup.
 @export var spawn_points_root: Node2D
 @export var board_layout: BoardLayout
 @export var bumpers_root: Node2D
+
+## 상속 씬에서 직접 지울 수 없는 기본 코인 마커를 웨이브별로 제외합니다.
+## 경로는 SpawnPoints 기준 상대 경로입니다.
+@export var disabled_spawn_point_paths: Array[NodePath] = []
 
 @export_category("Authoring Validation")
 ## -1이면 개수를 제한하지 않습니다. 빈 코인 시스템도 유효하게 둘 수 있습니다.
@@ -120,9 +125,55 @@ func get_spawn_points() -> Array[CoinSpawnPoint]:
 	if spawn_points_root == null:
 		return points
 	for child: Node in spawn_points_root.get_children():
-		if child is CoinSpawnPoint:
+		if child is CoinSpawnPoint and not _is_spawn_point_disabled(child):
 			points.append(child as CoinSpawnPoint)
 	return points
+
+
+func sync_expected_counts_to_authored_points() -> void:
+	var points := get_spawn_points()
+	var main_count := 0
+	var risk_count := 0
+	for point: CoinSpawnPoint in points:
+		if point.route_kind == CoinSpawnPoint.RouteKind.MAIN:
+			main_count += 1
+		else:
+			risk_count += 1
+	expected_spawn_count = points.size()
+	expected_main_count = main_count
+	expected_risk_count = risk_count
+	update_configuration_warnings()
+
+
+func set_spawn_point_disabled(point: CoinSpawnPoint, disabled: bool) -> bool:
+	if point == null or spawn_points_root == null \
+			or not spawn_points_root.is_ancestor_of(point):
+		return false
+	var path := spawn_points_root.get_path_to(point)
+	if disabled:
+		if path not in disabled_spawn_point_paths:
+			disabled_spawn_point_paths.append(path)
+	else:
+		disabled_spawn_point_paths.erase(path)
+	point.visible = not disabled
+	sync_expected_counts_to_authored_points()
+	return true
+
+
+func restore_disabled_spawn_points() -> void:
+	if spawn_points_root != null:
+		for path: NodePath in disabled_spawn_point_paths:
+			var point := spawn_points_root.get_node_or_null(path) as CoinSpawnPoint
+			if point != null:
+				point.visible = true
+	disabled_spawn_point_paths.clear()
+	sync_expected_counts_to_authored_points()
+
+
+func _is_spawn_point_disabled(point: Node) -> bool:
+	if point == null or spawn_points_root == null:
+		return false
+	return spawn_points_root.get_path_to(point) in disabled_spawn_point_paths
 
 
 func validate_authored_placement() -> PackedStringArray:
