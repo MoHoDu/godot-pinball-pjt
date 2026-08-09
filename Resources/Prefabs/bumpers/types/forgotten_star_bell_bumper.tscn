@@ -1,8 +1,13 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/base/bumper_base.tscn" id="1"]
 [ext_resource type="Resource" path="res://settings/bumpers/repair_parts/ForgottenStarBell.tres" id="2"]
+[ext_resource type="Script" path="res://scripts/bumper-system/pop_normal_response_strategy.gd" id="3_pop"]
+
+[sub_resource type="Resource" id="PopStrategy"]
+script = ExtResource("3_pop")
 
 [node name="ForgottenStarBellBumper" instance=ExtResource("1")]
 bumper_id = &"forgotten_star_bell"
 settings = ExtResource("2")
+response_strategy = SubResource("PopStrategy")

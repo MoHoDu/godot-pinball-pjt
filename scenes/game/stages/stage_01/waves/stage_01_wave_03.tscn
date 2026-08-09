@@ -3,6 +3,12 @@
 [ext_resource type="PackedScene" path="res://Resources/Prefabs/wave/base/wave_unique.tscn" id="1_wave"]
 [ext_resource type="Script" uid="uid://d1ru6gfxnmw1r" path="res://scripts/combo_system/combo_stage_settings.gd" id="2_settings"]
 [ext_resource type="Resource" path="res://settings/sfx/SfxDirectorRules.tres" id="3_0c2fo"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/presented/button_bumper_vfx.tscn" id="4_button"]
+[ext_resource type="Script" path="res://scripts/wave_hud/wave_runtime_coordinator_full_bleed_tool.gd" id="5_tool"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/presented/cotton_bumper_vfx.tscn" id="6_cotton"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/presented/spring_doll_bumper_vfx.tscn" id="7_spring"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/presented/toy_drum_bumper_vfx.tscn" id="8_drum"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/presented/clockwork_toy_cannon_vfx.tscn" id="9_cannon"]
 
 [sub_resource type="Resource" id="StageSettings"]
 script = ExtResource("2_settings")
@@ -18,8 +24,11 @@ resource_local_to_scene = true
 size = Vector2(160, 1600)
 
 [node name="Stage01Wave03" unique_id=1270421128 instance=ExtResource("1_wave")]
+script = ExtResource("5_tool")
 minimum_full_bleed_aspect = 1.45
 wave_stage_settings = SubResource("StageSettings")
+expected_bumper_kind_ids = Array[StringName]([&"stage01_button", &"stage01_button", &"stage01_button", &"stage01_cotton", &"stage01_spring_doll", &"stage01_spring_doll", &"stage01_toy_drum", &"stage01_clockwork_cannon"])
+disabled_bumper_paths = Array[NodePath]([])
 
 [node name="TopDrain" parent="BallDrainArea" index="0"]
 shape = SubResource("RectangleShape2D_0c2fo")
@@ -43,7 +52,7 @@ position = Vector2(712, -272)
 position = Vector2(-586, 12)
 
 [node name="Main04" parent="CoinSystem/SpawnPoints" index="3"]
-position = Vector2(716, 6)
+position = Vector2(880, 120)
 
 [node name="Main05" parent="CoinSystem/SpawnPoints" index="4"]
 position = Vector2(-148, -150)
@@ -52,7 +61,7 @@ position = Vector2(-148, -150)
 position = Vector2(592, 308)
 
 [node name="Main07" parent="CoinSystem/SpawnPoints" index="6"]
-position = Vector2(288, -134)
+position = Vector2(0, -192)
 
 [node name="Main08" parent="CoinSystem/SpawnPoints" index="7"]
 position = Vector2(0, -26)
@@ -61,7 +70,7 @@ position = Vector2(0, -26)
 position = Vector2(-598, 320)
 
 [node name="Risk01" parent="CoinSystem/SpawnPoints" index="10"]
-position = Vector2(-2, -500)
+position = Vector2(-606, -344)
 
 [node name="Risk02" parent="CoinSystem/SpawnPoints" index="11"]
 position = Vector2(964, -2)
@@ -77,3 +86,31 @@ rules = ExtResource("3_0c2fo")
 top_level = true
 z_index = -19
 z_as_relative = false
+
+[node name="BumperUpperLeft" parent="Bumpers" instance=ExtResource("6_cotton")]
+position = Vector2(-576, -144)
+
+[node name="BumperUpperRight" parent="Bumpers" instance=ExtResource("4_button")]
+position = Vector2(576, -144)
+bumper_id = &"button_bumper_right"
+
+[node name="BumperLowerLeft" parent="Bumpers" instance=ExtResource("7_spring")]
+position = Vector2(-576, 144)
+
+[node name="BumperLowerRight" parent="Bumpers" instance=ExtResource("8_drum")]
+position = Vector2(576, 144)
+
+[node name="BumperW3InnerSpringLeft" parent="Bumpers" instance=ExtResource("7_spring")]
+position = Vector2(-288, -144)
+bumper_id = &"spring_doll_w3_inner_left"
+
+[node name="BumperCannon" parent="Bumpers" instance=ExtResource("9_cannon")]
+position = Vector2(288, -144)
+
+[node name="BumperW3UpperVLeft" parent="Bumpers" instance=ExtResource("4_button")]
+position = Vector2(-144, 0)
+bumper_id = &"button_w3_v_left"
+
+[node name="BumperW3UpperVRight" parent="Bumpers" instance=ExtResource("4_button")]
+position = Vector2(144, 0)
+bumper_id = &"button_w3_v_right"
