@@ -89,8 +89,8 @@ func _test_initial_phase(
 		"Wave entry must stop at repair placement before ball selection.")
 	_expect(session.current_state == BoardPlacementSession.State.EDITING,
 		"Repair placement session must be editable during the first stage phase.")
-	_expect(hud.visible and hud.is_drawer_open(),
-		"Placement drawer must start open while its tab remains available.")
+	_expect(hud.visible and not hud.is_drawer_open(),
+		"배치 서랍은 접힌 채 시작해 보드부터 보여야 한다 (2026-08-10 형락님 확정).")
 	var settings_button := wave.get_node(
 		"HUD/WaveHud/DesignSpace/SettingsButton"
 	) as Control
@@ -165,6 +165,9 @@ func _test_inventory_states(
 		"No repair part may be selected until a board socket is selected.")
 	_expect(gears.get_stack_text() == "×2" and gears.has_layered_stack(),
 		"Duplicate repair parts must use a layered corner stack with exact count.")
+	hud.toggle_drawer()
+	_expect(hud.is_drawer_open() and hud.visible,
+		"The fixed tab must open the sliding inventory drawer.")
 	hud.toggle_drawer()
 	_expect(not hud.is_drawer_open() and hud.visible,
 		"Closing the drawer must keep the placement UI and fixed tab available.")

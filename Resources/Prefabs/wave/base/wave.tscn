@@ -114,6 +114,8 @@
 [ext_resource type="Script" path="res://scripts/repair_parts/adapters/repair_ball_adapter.gd" id="47_repair_ball_adapter"]
 
 [ext_resource type="Script" path="res://scripts/repair_parts/runtime/repair_effect_router.gd" id="48_repair_effect_router"]
+[ext_resource type="Script" path="res://scripts/repair_parts/runtime/repair_effect_router_open_brooch.gd" id="98_open_brooch_router"]
+[ext_resource type="Script" path="res://scripts/board_system/repair_part_placement_hud_folded.gd" id="97_folded_hud"]
 
 [ext_resource type="Script" path="res://scripts/repair_parts/runtime/repair_session_controller.gd" id="49_repair_session_controller"]
 [ext_resource type="Resource" path="res://settings/sfx/BossSfxRules.tres" id="84_boss"]
@@ -714,6 +716,7 @@ script = ExtResource("2_state")
 layer = 50
 
 [node name="RepairPartPlacementHud" parent="RepairPlacementHUD" instance=ExtResource("32_repair_hud")]
+script = ExtResource("97_folded_hud")
 
 [node name="RepairPartInventory" type="Node" parent="."]
 script = ExtResource("35_repair_inventory")
@@ -776,7 +779,7 @@ combo_system_path = NodePath("../../ComboSystem")
 script = ExtResource("47_repair_ball_adapter")
 
 [node name="RepairEffectRouter" type="Node" parent="WaveRepairEffects"]
-script = ExtResource("48_repair_effect_router")
+script = ExtResource("98_open_brooch_router")
 combo_adapter_path = NodePath("../RepairComboAdapter")
 ball_adapter_path = NodePath("../RepairBallAdapter")
 runtime_root_path = NodePath("../../RepairBoardLayout")
