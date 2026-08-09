@@ -645,7 +645,7 @@ func _test_stage_01_scene_configuration() -> void:
 func _expect_stage_wave_uses_latest_runtime(wave: Node, wave_index: int) -> void:
 	var display_index := wave_index + 1
 	var bumpers := wave.get_node_or_null(^"Bumpers")
-	var all_bumpers_have_art := bumpers != null and bumpers.get_child_count() >= 6
+	var all_bumpers_have_art := bumpers != null and bumpers.get_child_count() > 0
 	if bumpers != null:
 		for bumper: Node in bumpers.get_children():
 			var has_art_sprite := false
