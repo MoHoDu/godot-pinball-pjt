@@ -133,8 +133,8 @@ func _test_stage01_settings_and_strategies() -> void:
 
 	_expect(button_response is BumperResponse,
 		"전략은 BumperResponse를 반환해야 한다.")
-	_expect_float(button_response.speed_multiplier, 1.10,
-		"단추 반사 배율은 1.10이어야 한다.")
+	_expect_float(button_response.speed_multiplier, 1.20,
+		"단추 반사 배율은 1.20이어야 한다.")
 	_expect_float(cotton_response.speed_multiplier, 0.90,
 		"솜 반사 배율은 0.90이어야 한다.")
 	_expect_float(spring_response.speed_multiplier, 1.25,

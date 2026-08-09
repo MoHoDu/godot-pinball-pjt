@@ -9,5 +9,5 @@ bumper_kind_id = &"stage01_button"
 display_name = "단추 범퍼"
 theme_keywords = PackedStringArray()
 max_durability = 2
-speed_multiplier = 1.1
+speed_multiplier = 1.2
 presentation = ExtResource("2")
