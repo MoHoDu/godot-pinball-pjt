@@ -206,6 +206,7 @@ func _test_stage_coin_wallet_continuity() -> void:
 	root.add_child(stage)
 	await _wait_for_transition()
 	var manager := stage.get_node(^"StageFlowManager") as StageFlowManager
+	manager.clear_destination_scene = null
 	_expect(manager.coin_wallet != null, "StageFlowManager는 공용 코인 지갑을 가져야 한다.")
 	_expect(manager.current_coin_balance == 0, "새 스테이지의 코인은 0으로 시작해야 한다.")
 
@@ -365,6 +366,7 @@ func _test_stage_reward_purchase_persistence() -> void:
 	root.add_child(stage)
 	await _wait_for_transition()
 	var manager := stage.get_node(^"StageFlowManager") as StageFlowManager
+	manager.defeat_destination_scene = null
 	manager.coin_wallet.add(999)
 	_complete_active_wave(manager, 1000)
 	await _wait_for_transition()
@@ -531,6 +533,18 @@ func _test_stage_01_scene_configuration() -> void:
 			and manager.boss_scenes[0].resource_path
 				== "res://scenes/game/stages/stage_01/boss/stage1_teddy_boss_scene.tscn",
 		"Stage 01은 실제 테디 보스 씬 하나를 보스 배열에 직접 연결해야 한다."
+	)
+	_expect(
+		manager.clear_destination_scene != null
+			and manager.clear_destination_scene.resource_path
+				== "res://scenes/ending/stage1_ending.tscn",
+		"Stage 01 클리어는 Stage 1 엔딩 씬으로 이동해야 한다."
+	)
+	_expect(
+		manager.defeat_destination_scene != null
+			and manager.defeat_destination_scene.resource_path
+				== "res://scenes/ending/stage1_ending.tscn",
+		"임시 Stage 01 패배 목적지도 Stage 1 엔딩 씬으로 이동해야 한다."
 	)
 	for index in mini(manager.wave_scenes.size(), expected_scores.size()):
 		var wave := manager.wave_scenes[index].instantiate()

@@ -8,7 +8,6 @@ extends Node
 @export var ball_flow: WaveBallFlowController = null
 @export var wave_hud: WaveHud = null
 @export var hud_state: WaveHudStateSource = null
-@export var ending_scene: PackedScene = null
 
 @export_category("Explicit Production Flippers")
 @export var bottom_left_flipper: PinballFlipper = null
@@ -195,9 +194,6 @@ func _on_battle_completed() -> void:
 	_boss_completion_in_progress = false
 	if wave_manager.current_stage_phase != WaveManager.StagePhase.BOSS:
 		_set_placeholder_advance_disabled(false)
-	if wave_manager.current_stage_phase == WaveManager.StagePhase.STAGE_COMPLETE \
-			and ending_scene != null:
-		get_tree().call_deferred(&"change_scene_to_packed", ending_scene)
 
 
 func _on_boss_lost() -> void:
