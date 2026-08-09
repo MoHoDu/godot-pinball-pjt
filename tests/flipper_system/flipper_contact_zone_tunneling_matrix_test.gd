@@ -10,7 +10,7 @@ const TEST_FLIPPER_LENGTH := 328.0
 const BALL_DIAMETER := 44.0
 const START_CLEARANCE := 100.0
 const MAX_ALLOWED_PENETRATION := 11.0
-const MAX_TEST_FRAMES := 20
+const MAX_TEST_DURATION_SECONDS := 20.0 / 60.0
 const ZONE_CASES := [
 	{&"name": "A20", &"percent": 20.0},
 	{&"name": "A30", &"percent": 30.0},
@@ -168,7 +168,10 @@ func _run_contact_case(
 	var collision_response := false
 	var maximum_penetration := 0.0
 	var center_entered_solid := false
-	for _frame in MAX_TEST_FRAMES:
+	var maximum_test_frames := ceili(
+		MAX_TEST_DURATION_SECONDS * Engine.physics_ticks_per_second
+	)
+	for _frame in maximum_test_frames:
 		await physics_frame
 		var current_polygon: PackedVector2Array = flipper.call(
 			&"_get_world_collision_polygon",

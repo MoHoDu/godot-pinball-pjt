@@ -12,8 +12,7 @@ const DEFAULT_LAUNCH_RULES: PinballLaunchRules = preload(
 	"res://settings/balls/PinballLaunchRules.tres"
 )
 const SPEED_EPSILON := 0.001
-const PREVIEW_PHYSICS_STEP := 1.0 / 60.0
-const PREVIEW_MAXIMUM_STEPS := 120
+const PREVIEW_MAXIMUM_DURATION := 2.0
 const PREVIEW_COLLISION_EPSILON := 0.001
 
 
@@ -318,7 +317,7 @@ func get_trajectory_preview_length() -> float:
 	return lerpf(minimum_preview_length, maximum_preview_length, power_ratio)
 
 
-## 공의 실제 발사 속도와 현재 중력을 60Hz로 적분한 초기 비행 경로입니다.
+## 공의 실제 물리 주기와 현재 중력으로 적분한 초기 비행 경로입니다.
 ## 첫 충돌 이후의 정답 경로는 노출하지 않도록 충돌 직전에서 가이드를 끝냅니다.
 func get_trajectory_preview_points() -> PackedVector2Array:
 	var points := PackedVector2Array()
@@ -330,15 +329,17 @@ func get_trajectory_preview_points() -> PackedVector2Array:
 	var gravity := prepared_ball.get_gravity()
 	var target_length := get_trajectory_preview_length()
 	var traveled_length := 0.0
+	var physics_step := 1.0 / maxf(float(Engine.physics_ticks_per_second), 1.0)
+	var maximum_steps := ceili(PREVIEW_MAXIMUM_DURATION / physics_step)
 	points.append(position)
 
-	for _step: int in PREVIEW_MAXIMUM_STEPS:
-		velocity += gravity * PREVIEW_PHYSICS_STEP
+	for _step: int in maximum_steps:
+		velocity += gravity * physics_step
 		velocity = _apply_preview_linear_damping(
 			velocity,
-			PREVIEW_PHYSICS_STEP
+			physics_step
 		)
-		var next_position := position + velocity * PREVIEW_PHYSICS_STEP
+		var next_position := position + velocity * physics_step
 		var segment_length := position.distance_to(next_position)
 		if segment_length <= PREVIEW_COLLISION_EPSILON:
 			break

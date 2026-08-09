@@ -70,7 +70,7 @@ func _run() -> void:
 	var inward_normal := wall_collision.global_transform \
 		.basis_xform(Vector2.DOWN).normalized()
 	var direction_to_board_center := (
-		wave.global_position - wall_collision.global_position
+		wave.global_position - _target_wall.global_position
 	).normalized()
 	if inward_normal.dot(direction_to_board_center) < 0.0:
 		inward_normal = -inward_normal

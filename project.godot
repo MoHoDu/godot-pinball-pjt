@@ -123,6 +123,7 @@ wave_choose_remaining_balls={
 [physics]
 
 3d/physics_engine="Jolt Physics"
+common/physics_ticks_per_second=120
 
 [rendering]
 
