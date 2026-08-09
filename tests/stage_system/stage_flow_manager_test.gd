@@ -348,7 +348,7 @@ func _test_stage_coin_wallet_continuity() -> void:
 			and manager.current_coin_balance == 12,
 		"마지막 보상 뒤 실제 보스가 공용 코인을 유지한 채 시작되어야 한다."
 	)
-	_defeat_active_boss(manager)
+	await _defeat_active_boss(manager)
 	await _wait_for_transition()
 	_expect(
 		manager.current_phase == StageFlowManager.Phase.COMPLETE
@@ -649,6 +649,7 @@ func _defeat_active_boss(manager: StageFlowManager) -> void:
 		^"Components/BossHealthComponent"
 	) as BossHealthComponent
 	health.apply_damage(health.get_current_health())
+	await runtime.battle_completed
 
 
 func _exhaust_active_boss_balls(manager: StageFlowManager) -> void:
