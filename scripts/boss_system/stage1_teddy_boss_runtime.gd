@@ -60,6 +60,10 @@ var _current_pattern: int = 1
 var _clear_sequence_running: bool = false
 var _base_modulate: Color = Color.WHITE
 
+@onready var _stage_clear_ui: TextureRect = %StageClearUI
+@onready var _final_hit_sfx: AudioStreamPlayer = %FinalHitSfx
+@onready var _stage_clear_sfx: AudioStreamPlayer = %StageClearSfx
+
 
 func _ready() -> void:
 	_base_modulate = modulate
@@ -113,6 +117,8 @@ func start_battle() -> bool:
 	_clear_sequence_running = false
 	modulate = _base_modulate
 	visible = true
+	_stage_clear_ui.visible = false
+	_stage_clear_ui.modulate.a = 0.0
 	boss_hurtbox.set_deferred(&"monitoring", true)
 	if not attack_runtime.start():
 		_battle_active = false
@@ -597,6 +603,7 @@ func _on_completion_reported() -> void:
 		return
 	_clear_sequence_running = true
 	_stop_battle_runtime(false)
+	_final_hit_sfx.play()
 	var clear_tween: Tween = create_tween()
 	clear_tween.tween_interval(0.15)
 	for flash_index: int in 3:
@@ -606,26 +613,10 @@ func _on_completion_reported() -> void:
 		clear_tween.tween_property(self, ^"modulate", _base_modulate, 0.15)
 	clear_tween.tween_property(self, ^"modulate:a", 0.0, 0.8)
 	await clear_tween.finished
-	var clear_label: Label = _create_stage_clear_label()
+	_stage_clear_ui.visible = true
+	_stage_clear_sfx.play()
 	var label_tween: Tween = create_tween()
-	label_tween.tween_property(clear_label, ^"modulate:a", 1.0, 0.2)
+	label_tween.tween_property(_stage_clear_ui, ^"modulate:a", 1.0, 0.2)
 	label_tween.tween_interval(1.2)
 	await label_tween.finished
 	battle_completed.emit()
-
-
-func _create_stage_clear_label() -> Label:
-	var canvas: CanvasLayer = CanvasLayer.new()
-	canvas.layer = 100
-	add_child(canvas)
-	var center: CenterContainer = CenterContainer.new()
-	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	canvas.add_child(center)
-	var label: Label = Label.new()
-	label.text = "STAGE 1 CLEAR"
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.add_theme_font_size_override(&"font_size", 72)
-	label.add_theme_color_override(&"font_color", Color(1.0, 0.9, 0.55))
-	label.modulate.a = 0.0
-	center.add_child(label)
-	return label

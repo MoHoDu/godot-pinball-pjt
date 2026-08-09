@@ -1,8 +1,150 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://dt1vtdy4vk4cn"]
 
-[ext_resource type="Script" path="res://scripts/ending/stage1_ending.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://s3qe2qio5eco" path="res://scripts/ending/stage1_ending.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://basvwjv4si7xv" path="res://Resources/ui/ending/stage1/stage1_ending_bg.png" id="2_background"]
+[ext_resource type="Texture2D" uid="uid://eh8m6hncn3l8" path="res://Resources/ui/ending/stage1/thanks_for_playing_logo.png" id="3_thanks"]
+[ext_resource type="Texture2D" uid="uid://dxk2hx1e6ukx2" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_000.png" id="10_frame_000"]
+[ext_resource type="Texture2D" uid="uid://r6a2p6u3njpe" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_001.png" id="11_frame_001"]
+[ext_resource type="Texture2D" uid="uid://barkwvqybra27" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_002.png" id="12_frame_002"]
+[ext_resource type="Texture2D" uid="uid://6kbrfh1mcop0" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_003.png" id="13_frame_003"]
+[ext_resource type="Texture2D" uid="uid://b6xvf6x5xs13j" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_004.png" id="14_frame_004"]
+[ext_resource type="Texture2D" uid="uid://bkvqrsexwbllo" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_005.png" id="15_frame_005"]
+[ext_resource type="Texture2D" uid="uid://b6xulnd66yugj" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_006.png" id="16_frame_006"]
+[ext_resource type="Texture2D" uid="uid://bjm30gv332gjo" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_007.png" id="17_frame_007"]
+[ext_resource type="Texture2D" uid="uid://cntg2sqi1wrif" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_008.png" id="18_frame_008"]
+[ext_resource type="Texture2D" uid="uid://dqy06x3q5kpuu" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_009.png" id="19_frame_009"]
+[ext_resource type="Texture2D" uid="uid://b8pmkk62xkuc2" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_010.png" id="20_frame_010"]
+[ext_resource type="Texture2D" uid="uid://vn4fipuent27" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_011.png" id="21_frame_011"]
+[ext_resource type="Texture2D" uid="uid://t38prdw6iwvl" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_012.png" id="22_frame_012"]
+[ext_resource type="Texture2D" uid="uid://cgel8ixmuii1o" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_013.png" id="23_frame_013"]
+[ext_resource type="Texture2D" uid="uid://k1v53iabor0n" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_014.png" id="24_frame_014"]
+[ext_resource type="Texture2D" uid="uid://cp7domuwv626v" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_015.png" id="25_frame_015"]
+[ext_resource type="Texture2D" uid="uid://gjemscflixjb" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_016.png" id="26_frame_016"]
+[ext_resource type="Texture2D" uid="uid://y2w7u8tdkqpp" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_017.png" id="27_frame_017"]
+[ext_resource type="Texture2D" uid="uid://dl2yspslx3van" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_018.png" id="28_frame_018"]
+[ext_resource type="Texture2D" uid="uid://ciyq2eqxyx86p" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_019.png" id="29_frame_019"]
+[ext_resource type="Texture2D" uid="uid://dbaocdbn0uxqk" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_020.png" id="30_frame_020"]
+[ext_resource type="Texture2D" uid="uid://bdkcera8bu3dv" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_021.png" id="31_frame_021"]
+[ext_resource type="Texture2D" uid="uid://bnpj7ssnr17fy" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_022.png" id="32_frame_022"]
+[ext_resource type="Texture2D" uid="uid://d2h8vc5pvdlww" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_023.png" id="33_frame_023"]
+[ext_resource type="Texture2D" uid="uid://dvnuxhcyi72m4" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_024.png" id="34_frame_024"]
+[ext_resource type="Texture2D" uid="uid://tosrgsfstlg7" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_025.png" id="35_frame_025"]
+[ext_resource type="Texture2D" uid="uid://dwaqq4avqvpvj" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_026.png" id="36_frame_026"]
+[ext_resource type="Texture2D" uid="uid://d02g7tav061g5" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_027.png" id="37_frame_027"]
+[ext_resource type="Texture2D" uid="uid://bgo2msm71u27u" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_028.png" id="38_frame_028"]
+[ext_resource type="Texture2D" uid="uid://dde48pt15hpov" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_029.png" id="39_frame_029"]
+[ext_resource type="Texture2D" uid="uid://13ypafdgsycp" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_030.png" id="40_frame_030"]
+[ext_resource type="Texture2D" uid="uid://6jx542kabtra" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_031.png" id="41_frame_031"]
+[ext_resource type="Texture2D" uid="uid://iinx4wo8foxp" path="res://Resources/ui/ending/stage1/generated/teddy_wave/teddy_wave_032.png" id="42_frame_032"]
 
-[node name="Stage1Ending" type="Control"]
+[sub_resource type="SpriteFrames" id="SpriteFrames_teddy_wave"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("10_frame_000")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_frame_001")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_frame_002")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_frame_003")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_frame_004")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_frame_005")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_frame_006")
+}, {
+"duration": 1.0,
+"texture": ExtResource("17_frame_007")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_frame_008")
+}, {
+"duration": 1.0,
+"texture": ExtResource("19_frame_009")
+}, {
+"duration": 1.0,
+"texture": ExtResource("20_frame_010")
+}, {
+"duration": 1.0,
+"texture": ExtResource("21_frame_011")
+}, {
+"duration": 1.0,
+"texture": ExtResource("22_frame_012")
+}, {
+"duration": 1.0,
+"texture": ExtResource("23_frame_013")
+}, {
+"duration": 1.0,
+"texture": ExtResource("24_frame_014")
+}, {
+"duration": 1.0,
+"texture": ExtResource("25_frame_015")
+}, {
+"duration": 1.0,
+"texture": ExtResource("26_frame_016")
+}, {
+"duration": 1.0,
+"texture": ExtResource("27_frame_017")
+}, {
+"duration": 1.0,
+"texture": ExtResource("28_frame_018")
+}, {
+"duration": 1.0,
+"texture": ExtResource("29_frame_019")
+}, {
+"duration": 1.0,
+"texture": ExtResource("30_frame_020")
+}, {
+"duration": 1.0,
+"texture": ExtResource("31_frame_021")
+}, {
+"duration": 1.0,
+"texture": ExtResource("32_frame_022")
+}, {
+"duration": 1.0,
+"texture": ExtResource("33_frame_023")
+}, {
+"duration": 1.0,
+"texture": ExtResource("34_frame_024")
+}, {
+"duration": 1.0,
+"texture": ExtResource("35_frame_025")
+}, {
+"duration": 1.0,
+"texture": ExtResource("36_frame_026")
+}, {
+"duration": 1.0,
+"texture": ExtResource("37_frame_027")
+}, {
+"duration": 1.0,
+"texture": ExtResource("38_frame_028")
+}, {
+"duration": 1.0,
+"texture": ExtResource("39_frame_029")
+}, {
+"duration": 1.0,
+"texture": ExtResource("40_frame_030")
+}, {
+"duration": 1.0,
+"texture": ExtResource("41_frame_031")
+}, {
+"duration": 1.0,
+"texture": ExtResource("42_frame_032")
+}],
+"loop": 1,
+"name": &"wave",
+"speed": 12.048193
+}]
+
+[node name="Stage1Ending" type="Control" unique_id=350884421]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -12,48 +154,40 @@ grow_vertical = 2
 script = ExtResource("1_script")
 return_scene_path = "res://scenes/game/start/start_screen.tscn"
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="TextureRect" parent="." unique_id=1152994437]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.06, 0.075, 0.11, 1)
+texture = ExtResource("2_background")
+expand_mode = 1
+stretch_mode = 6
 
-[node name="ThanksForPlaying" type="Label" parent="."]
+[node name="ThanksForPlaying" type="TextureRect" parent="." unique_id=2121250577]
+z_index = 10
 layout_mode = 1
-anchors_preset = 8
+anchors_preset = 5
 anchor_left = 0.5
-anchor_top = 0.5
 anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -360.0
-offset_top = -80.0
-offset_right = 360.0
-offset_bottom = 10.0
+offset_left = -346.0
+offset_top = 80.0
+offset_right = 354.0
+offset_bottom = 380.0
 grow_horizontal = 2
-grow_vertical = 2
-theme_override_font_sizes/font_size = 54
-text = "THANKS FOR PLAYING"
-horizontal_alignment = 1
-
-[node name="TeddyVisual" type="TextureRect" parent="."]
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -160.0
-offset_top = -330.0
-offset_right = 160.0
-offset_bottom = -30.0
-grow_horizontal = 2
+texture = ExtResource("3_thanks")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="FadeRect" type="ColorRect" parent="."]
+[node name="TeddyVisual" type="AnimatedSprite2D" parent="." unique_id=1799257308]
+position = Vector2(580, 600)
+scale = Vector2(0.5, 0.5)
+sprite_frames = SubResource("SpriteFrames_teddy_wave")
+animation = &"wave"
+autoplay = "wave"
+
+[node name="FadeRect" type="ColorRect" parent="." unique_id=1673750384]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15

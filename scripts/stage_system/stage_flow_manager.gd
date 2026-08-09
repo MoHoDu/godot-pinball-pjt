@@ -105,6 +105,9 @@ const DEFAULT_BOSS_FAILURE_SIGNALS: Array[StringName] = [
 ## 모든 웨이브와 보스를 클리어한 뒤 이동할 씬입니다. 비어 있으면 COMPLETE 상태에 머뭅니다.
 @export var clear_destination_scene: PackedScene
 
+## 실패 시 현재 Stage 위에 표시할 연출 Overlay입니다. 비어 있으면 기존 실패 처리를 사용합니다.
+@export var failure_overlay_scene: PackedScene
+
 @export_category("Runtime")
 
 ## 현재 웨이브·보상·보스 씬을 자식으로 붙일 컨테이너입니다.
@@ -154,6 +157,9 @@ var _failure_signal := StringName()
 var _failure_callable := Callable()
 var _transition_pending := false
 var _run_generation := 0
+var _failure_overlay: Node
+var _failure_sequence_active := false
+var _failure_restart_requested := false
 
 
 var current_phase: Phase:
@@ -424,11 +430,57 @@ func _rollback_after_failure(run_generation: int) -> void:
 			or _phase not in [Phase.WAVE, Phase.BOSS] \
 			or not _transition_pending:
 		return
+	if failure_overlay_scene != null:
+		_start_failure_overlay()
+		return
 	_transition_pending = false
 	if defeat_destination_scene != null:
 		_transition_to_destination(defeat_destination_scene)
 		return
 	restart_stage()
+
+
+func _start_failure_overlay() -> void:
+	if _failure_sequence_active:
+		return
+	var overlay := failure_overlay_scene.instantiate()
+	if overlay == null or not overlay.has_signal(&"restart_requested") \
+			or not overlay.has_signal(&"finished") \
+			or not overlay.has_method(&"play") \
+			or not overlay.has_method(&"reveal_restarted_stage"):
+		if overlay != null:
+			overlay.free()
+		_transition_pending = false
+		restart_stage()
+		return
+	_failure_sequence_active = true
+	_failure_restart_requested = false
+	_failure_overlay = overlay
+	add_child(_failure_overlay)
+	_failure_overlay.connect(
+		&"restart_requested", Callable(self, &"_on_failure_restart_requested")
+	)
+	_failure_overlay.connect(
+		&"finished", Callable(self, &"_on_failure_overlay_finished")
+	)
+	_failure_overlay.call_deferred(&"play")
+
+
+func _on_failure_restart_requested() -> void:
+	if not _failure_sequence_active or _failure_restart_requested:
+		return
+	_failure_restart_requested = true
+	var restarted := restart_stage()
+	if is_instance_valid(_failure_overlay):
+		_failure_overlay.call_deferred(&"reveal_restarted_stage")
+	if not restarted:
+		push_error("StageFlowManager failed to restart after GAME OVER.")
+
+
+func _on_failure_overlay_finished() -> void:
+	_failure_overlay = null
+	_failure_sequence_active = false
+	_failure_restart_requested = false
 
 
 func _advance_after_completion(
