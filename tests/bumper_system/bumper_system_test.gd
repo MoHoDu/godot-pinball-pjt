@@ -133,18 +133,18 @@ func _test_stage01_settings_and_strategies() -> void:
 
 	_expect(button_response is BumperResponse,
 		"전략은 BumperResponse를 반환해야 한다.")
-	_expect_float(button_response.speed_multiplier, 1.10,
-		"단추 반사 배율은 1.10이어야 한다.")
+	_expect_float(button_response.speed_multiplier, 1.20,
+		"단추 반사 배율은 1.20이어야 한다.")
 	_expect_float(cotton_response.speed_multiplier, 0.90,
 		"솜 반사 배율은 0.90이어야 한다.")
 	_expect_float(spring_response.speed_multiplier, 1.25,
 		"용수철 인형 반사 배율은 1.25여야 한다.")
-	_expect_float(spring_response.minimum_speed, 1150.0,
-		"용수철 인형 최저 방출 속력은 1150이어야 한다.")
+	_expect_float(spring_response.minimum_speed, 1250.0,
+		"용수철 인형 최저 방출 속력은 1250이어야 한다.")
 	_expect_float(drum_response.speed_multiplier, 1.50,
 		"장난감 북 반사 배율은 1.50이어야 한다.")
-	_expect_float(drum_response.minimum_speed, 1400.0,
-		"장난감 북 최저 방출 속력은 1400이어야 한다.")
+	_expect_float(drum_response.minimum_speed, 1500.0,
+		"장난감 북 최저 방출 속력은 1500이어야 한다.")
 	_expect(_ball.linear_velocity == original_velocity,
 		"전략 계산 자체는 공의 속도를 직접 변경하면 안 된다.")
 	_expect(button.response_strategy is NormalResponseStrategy,

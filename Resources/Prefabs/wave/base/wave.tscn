@@ -27,6 +27,7 @@
 [ext_resource type="PackedScene" uid="uid://u4e8s8havfkw" path="res://Resources/Prefabs/flippers/variants/normal_flipper_right.tscn" id="12_right_flipper"]
 
 [ext_resource type="Script" uid="uid://c1n1lurdkbtkj" path="res://scripts/ball_base_system/pinball_launcher.gd" id="13_launcher"]
+[ext_resource type="Script" path="res://scripts/ball_base_system/pinball_launcher_offset_aim.gd" id="99_launcher_aim"]
 
 [ext_resource type="Script" uid="uid://dirv1p0s1sce1" path="res://scripts/combo_system/combo_system.gd" id="14_combo_system"]
 
@@ -113,6 +114,8 @@
 [ext_resource type="Script" path="res://scripts/repair_parts/adapters/repair_ball_adapter.gd" id="47_repair_ball_adapter"]
 
 [ext_resource type="Script" path="res://scripts/repair_parts/runtime/repair_effect_router.gd" id="48_repair_effect_router"]
+[ext_resource type="Script" path="res://scripts/repair_parts/runtime/repair_effect_router_open_brooch.gd" id="98_open_brooch_router"]
+[ext_resource type="Script" path="res://scripts/board_system/repair_part_placement_hud_folded.gd" id="97_folded_hud"]
 
 [ext_resource type="Script" path="res://scripts/repair_parts/runtime/repair_session_controller.gd" id="49_repair_session_controller"]
 [ext_resource type="Resource" path="res://settings/sfx/BossSfxRules.tres" id="84_boss"]
@@ -132,9 +135,6 @@ wave_target_scores = PackedInt32Array(250000, 400000, 650000, 1000000)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape_diagonal"]
 size = Vector2(819.329, 24)
-
-[sub_resource type="Resource" id="Resource_jkexw"]
-script = ExtResource("12_jealc")
 
 [sub_resource type="Resource" id="BallDefinition_light"]
 script = ExtResource("20_definition")
@@ -258,7 +258,8 @@ script = ExtResource("1_coordinator")
 wave_stage_settings = SubResource("StageSettings_wave")
 bumper_stage_settings = ExtResource("4_bumper_stage")
 authored_bumper_wave_index = 2
-expected_bumper_kind_ids = Array[StringName]([&"stage01_button", &"stage01_button", &"stage01_cotton", &"stage01_spring_doll", &"stage01_toy_drum", &"stage01_clockwork_cannon"])
+expected_bumper_kind_ids = Array[StringName]([])
+enforce_stage_bumper_limits = false
 launcher = NodePath("PinballLauncher")
 combo_system = NodePath("ComboSystem")
 combo_collision_bridge = NodePath("ComboCollisionBridge")
@@ -309,7 +310,7 @@ debug_color = Color(0.94972855, 0.16442639, 0.39801326, 0.41960785)
 [node name="PinballLauncher" type="Node2D" parent="."]
 position = Vector2(0, 372)
 rotation = -1.5707964
-script = ExtResource("13_launcher")
+script = ExtResource("99_launcher_aim")
 minimum_launch_angle_degrees = -45.0
 maximum_launch_angle_degrees = 45.0
 
@@ -584,26 +585,6 @@ bumper_id = &"rebound_wall_bottom_right"
 
 [node name="Bumpers" type="Node2D" parent="." unique_id=1144402446]
 
-[node name="BumperCenter" parent="Bumpers" unique_id=1184156493 instance=ExtResource("26_button_bumper")]
-position = Vector2(0, -288)
-
-[node name="BumperUpperLeft" parent="Bumpers" unique_id=2016466414 instance=ExtResource("27_cotton_bumper")]
-position = Vector2(-432, -144)
-
-[node name="BumperUpperRight" parent="Bumpers" unique_id=976731568 instance=ExtResource("26_button_bumper")]
-position = Vector2(432, -144)
-bumper_id = &"button_bumper_right"
-
-[node name="BumperLowerLeft" parent="Bumpers" unique_id=1155343190 instance=ExtResource("28_spring_bumper")]
-position = Vector2(-432, 144)
-
-[node name="BumperLowerRight" parent="Bumpers" unique_id=1847381481 instance=ExtResource("29_drum_bumper")]
-position = Vector2(432, 144)
-
-[node name="BumperCannon" parent="Bumpers" unique_id=1628015170 instance=ExtResource("30_cannon_bumper")]
-position = Vector2(0, 144)
-response_strategy = SubResource("Resource_jkexw")
-
 [node name="RepairBoardLayout" parent="." instance=ExtResource("31_repair_layout")]
 
 [node name="ComboSystem" type="Node" parent="." unique_id=760287772]
@@ -701,7 +682,7 @@ script = ExtResource("56_coin_point")
 point_id = &"main_08"
 
 [node name="Main09" type="Marker2D" parent="CoinSystem/SpawnPoints"]
-position = Vector2(-280, 146)
+position = Vector2(-324, -48)
 script = ExtResource("56_coin_point")
 point_id = &"main_09"
 
@@ -735,6 +716,7 @@ script = ExtResource("2_state")
 layer = 50
 
 [node name="RepairPartPlacementHud" parent="RepairPlacementHUD" instance=ExtResource("32_repair_hud")]
+script = ExtResource("97_folded_hud")
 
 [node name="RepairPartInventory" type="Node" parent="."]
 script = ExtResource("35_repair_inventory")
@@ -797,7 +779,7 @@ combo_system_path = NodePath("../../ComboSystem")
 script = ExtResource("47_repair_ball_adapter")
 
 [node name="RepairEffectRouter" type="Node" parent="WaveRepairEffects"]
-script = ExtResource("48_repair_effect_router")
+script = ExtResource("98_open_brooch_router")
 combo_adapter_path = NodePath("../RepairComboAdapter")
 ball_adapter_path = NodePath("../RepairBallAdapter")
 runtime_root_path = NodePath("../../RepairBoardLayout")
