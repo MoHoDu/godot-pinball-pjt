@@ -5,6 +5,14 @@ extends SceneTree
 
 
 const WAVE_SCENE := preload("res://Resources/Prefabs/wave/base/wave.tscn")
+const STAGE_01_COIN_SCENES: Array[PackedScene] = [
+	preload("res://scenes/game/stages/stage_01/waves/stage_01_wave_01.tscn"),
+	preload("res://scenes/game/stages/stage_01/waves/stage_01_wave_02.tscn"),
+	preload("res://scenes/game/stages/stage_01/waves/stage_01_wave_03.tscn"),
+	preload(
+		"res://scenes/game/stages/stage_01/boss/stage1_teddy_boss_wave.tscn"
+	),
+]
 
 
 var _failures: Array[String] = []
@@ -15,6 +23,8 @@ func _init() -> void:
 
 
 func _run() -> void:
+	await _validate_stage_01_coin_layouts()
+
 	var scene := WAVE_SCENE.instantiate() as WaveRuntimeCoordinator
 	root.add_child(scene)
 	await process_frame
@@ -129,6 +139,28 @@ func _run() -> void:
 	await process_frame
 	await process_frame
 	_finish()
+
+
+func _validate_stage_01_coin_layouts() -> void:
+	for packed_scene: PackedScene in STAGE_01_COIN_SCENES:
+		var wave := packed_scene.instantiate()
+		root.add_child(wave)
+		await process_frame
+		await process_frame
+		var field := wave.get_node_or_null(^"CoinSystem") as CoinFieldController
+		_expect(
+			field != null,
+			"%s에 CoinSystem이 있어야 한다." % packed_scene.resource_path
+		)
+		if field != null:
+			var placement_errors := field.validate_authored_placement()
+			_expect(
+				placement_errors.is_empty(),
+				"%s의 코인 배치는 보드·범퍼·소켓·금지 영역과 겹치면 안 된다: %s"
+					% [packed_scene.resource_path, placement_errors]
+			)
+		wave.queue_free()
+		await process_frame
 
 
 func _count_route(field: CoinFieldController, route: CoinSpawnPoint.RouteKind) -> int:

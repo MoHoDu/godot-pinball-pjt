@@ -47,9 +47,7 @@ signal battle_completed
 var _combo_system: ComboSystem = null
 var _ball_flow: WaveBallFlowController = null
 var _flippers: Array[PinballFlipper] = []
-var _pending_ball_id: StringName = &""
 var _active_ball: Pinball = null
-var _active_ball_id: StringName = &""
 var _active_contact_ids: Dictionary[int, bool] = {}
 var _active_cottons: Array[CursedCottonAdd] = []
 var _is_setup: bool = false
@@ -94,10 +92,8 @@ func setup(
 		_rollback_setup()
 		return false
 	_connect_signals()
-	_pending_ball_id = &""
 	_active_ball = ball_flow.active_ball \
 		if is_instance_valid(ball_flow.active_ball) else null
-	_active_ball_id = &""
 	_active_contact_ids.clear()
 	_is_setup = true
 	_battle_active = false
@@ -184,8 +180,6 @@ func teardown() -> void:
 	_ball_flow = null
 	_flippers.clear()
 	_active_ball = null
-	_active_ball_id = &""
-	_pending_ball_id = &""
 	_is_setup = false
 
 
@@ -358,10 +352,6 @@ func _bindings_are_valid() -> bool:
 
 
 func _connect_signals() -> void:
-	if not _ball_flow.ball_selection_confirmed.is_connected(
-		_on_ball_selection_confirmed
-	):
-		_ball_flow.ball_selection_confirmed.connect(_on_ball_selection_confirmed)
 	if not _ball_flow.active_ball_changed.is_connected(_on_active_ball_changed):
 		_ball_flow.active_ball_changed.connect(_on_active_ball_changed)
 	if not boss_hurtbox.body_entered.is_connected(_on_hurtbox_body_entered):
@@ -386,12 +376,6 @@ func _connect_signals() -> void:
 
 func _disconnect_signals() -> void:
 	if is_instance_valid(_ball_flow):
-		if _ball_flow.ball_selection_confirmed.is_connected(
-			_on_ball_selection_confirmed
-		):
-			_ball_flow.ball_selection_confirmed.disconnect(
-				_on_ball_selection_confirmed
-			)
 		if _ball_flow.active_ball_changed.is_connected(_on_active_ball_changed):
 			_ball_flow.active_ball_changed.disconnect(_on_active_ball_changed)
 	if is_instance_valid(boss_hurtbox):
@@ -420,18 +404,9 @@ func _disconnect_signals() -> void:
 		completion_controller.battle_completed.disconnect(_on_completion_reported)
 
 
-func _on_ball_selection_confirmed(
-	definition: BallDefinition,
-	_remaining_balls: int
-) -> void:
-	_pending_ball_id = definition.ball_id if definition != null else &""
-
-
 func _on_active_ball_changed(ball: Pinball) -> void:
 	_active_contact_ids.clear()
 	_active_ball = ball if ball != null and is_instance_valid(ball) else null
-	_active_ball_id = _pending_ball_id if _active_ball != null else &""
-	_pending_ball_id = &""
 	if _battle_active and _active_ball != null and attack_runtime.is_running():
 		attack_runtime.begin_new_ball_grace()
 
@@ -447,9 +422,7 @@ func _on_hurtbox_body_entered(body: Node2D) -> void:
 	if _active_contact_ids.has(contact_id):
 		return
 	_active_contact_ids[contact_id] = true
-	if _active_ball_id.is_empty() or not weight_rules.has_profile(_active_ball_id):
-		return
-	var multiplier: float = weight_rules.get_damage_multiplier(_active_ball_id)
+	var multiplier: float = weight_rules.get_damage_multiplier(ball.mass)
 	if multiplier <= 0.0:
 		return
 	damage_applier.resolve_and_apply_hit(

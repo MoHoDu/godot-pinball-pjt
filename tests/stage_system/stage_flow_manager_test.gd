@@ -277,7 +277,7 @@ func _test_stage_coin_wallet_continuity() -> void:
 	)
 	test_ball.queue_free()
 	manager.coin_wallet.add(5)
-	_complete_active_wave(manager, 300)
+	_complete_active_wave(manager, 1000)
 	await _wait_for_transition()
 	var first_reward := manager.active_scene as StageRewardShopScreen
 	_expect(
@@ -302,7 +302,7 @@ func _test_stage_coin_wallet_continuity() -> void:
 		"보상 뒤 다음 웨이브도 같은 누적 지갑을 사용해야 한다."
 	)
 	manager.coin_wallet.add(5)
-	_complete_active_wave(manager, 500)
+	_complete_active_wave(manager, 1500)
 	await _wait_for_transition()
 	var second_reward := manager.active_scene as StageRewardShopScreen
 	_expect(
@@ -319,7 +319,7 @@ func _test_stage_coin_wallet_continuity() -> void:
 		third_session != null and third_session.wallet.balance == 12,
 		"마지막 웨이브 진입 전까지 누적 코인을 유지해야 한다."
 	)
-	_complete_active_wave(manager, 1000)
+	_complete_active_wave(manager, 3000)
 	await _wait_for_transition()
 	var final_reward := manager.active_scene as StageRewardShopScreen
 	_expect(
@@ -366,7 +366,7 @@ func _test_stage_reward_purchase_persistence() -> void:
 	await _wait_for_transition()
 	var manager := stage.get_node(^"StageFlowManager") as StageFlowManager
 	manager.coin_wallet.add(999)
-	_complete_active_wave(manager, 300)
+	_complete_active_wave(manager, 1000)
 	await _wait_for_transition()
 
 	var reward := manager.active_scene as StageRewardShopScreen
@@ -418,11 +418,11 @@ func _test_stage_reward_purchase_persistence() -> void:
 		embedded_bridge != null and not embedded_bridge.embedded_reward_enabled,
 		"StageFlowManager 웨이브에서는 내부 보상 브리지를 비활성화해야 한다."
 	)
-	_complete_active_wave(manager, 500)
+	_complete_active_wave(manager, 1500)
 	await _wait_for_transition()
 	(manager.active_scene as StageRewardShopScreen).continue_stage()
 	await _wait_for_transition()
-	_complete_active_wave(manager, 1000)
+	_complete_active_wave(manager, 3000)
 	await _wait_for_transition()
 	(manager.active_scene as StageRewardShopScreen).continue_stage()
 	await _wait_frames(6)
@@ -520,7 +520,7 @@ func _test_stage_01_scene_configuration() -> void:
 	)
 	var stage := STAGE_01_SCENE.instantiate()
 	var manager := stage.get_node(^"StageFlowManager") as StageFlowManager
-	var expected_scores := PackedInt32Array([300, 500, 1000])
+	var expected_scores := PackedInt32Array([1000, 1500, 3000])
 	_expect(manager != null, "Stage 01에 스테이지 진행 매니저가 있어야 한다.")
 	if manager == null:
 		stage.free()

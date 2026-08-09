@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=2 format=3]
+[gd_resource type="Theme" format=3 uid="uid://cpf7e5kjstnck"]
 
 [ext_resource type="FontVariation" path="res://Resources/ui/themes/web_safe_picture_font.tres" id="1_font"]
 
