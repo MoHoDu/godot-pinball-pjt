@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="PackedScene" path="res://Resources/Prefabs/wave/base/wave_unique.tscn" id="1_wave"]
 [ext_resource type="PackedScene" path="res://Resources/Prefabs/boss/runtime/stage1_teddy_boss_runtime.tscn" id="2_boss"]
@@ -9,11 +9,13 @@
 [ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/presented/button_bumper_vfx.tscn" id="7_button"]
 [ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/presented/cotton_bumper_vfx.tscn" id="8_cotton"]
 [ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/presented/toy_drum_bumper_vfx.tscn" id="9_drum"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/presented/spring_doll_bumper_vfx.tscn" id="10_spring"]
 
 [node name="Stage1TeddyBossWave" instance=ExtResource("1_wave")]
 script = ExtResource("6_tool")
 authored_bumper_wave_index = 3
-expected_bumper_kind_ids = Array[StringName]([&"stage01_button", &"stage01_cotton", &"stage01_toy_drum", &"stage01_clockwork_cannon", &"stage01_clockwork_cannon"])
+expected_bumper_kind_ids = Array[StringName]([&"stage01_button", &"stage01_cotton", &"stage01_spring_doll", &"stage01_spring_doll", &"stage01_spring_doll", &"stage01_toy_drum", &"stage01_clockwork_cannon", &"stage01_clockwork_cannon"])
+enforce_stage_bumper_limits = false
 disabled_bumper_paths = Array[NodePath]([])
 
 [node name="Stage1TeddyBossRuntime" parent="." instance=ExtResource("2_boss")]
@@ -50,6 +52,18 @@ bumper_id = &"button_bumper_right"
 
 [node name="BumperLowerRight" parent="Bumpers" instance=ExtResource("9_drum")]
 position = Vector2(576, 144)
+
+[node name="BumperBossSpringLeft" parent="Bumpers" instance=ExtResource("10_spring")]
+position = Vector2(-576, 144)
+bumper_id = &"spring_doll_boss_left"
+
+[node name="BumperBossSpringCenterLeft" parent="Bumpers" instance=ExtResource("10_spring")]
+position = Vector2(-144, 0)
+bumper_id = &"spring_doll_boss_center_left"
+
+[node name="BumperBossSpringCenterRight" parent="Bumpers" instance=ExtResource("10_spring")]
+position = Vector2(144, 0)
+bumper_id = &"spring_doll_boss_center_right"
 
 [node name="BumperCannon" parent="Bumpers" instance=ExtResource("5_cannon")]
 position = Vector2(288, -144)

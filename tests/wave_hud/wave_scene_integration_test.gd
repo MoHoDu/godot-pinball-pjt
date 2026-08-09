@@ -259,8 +259,8 @@ func _inject_probe_bumpers(wave: WaveRuntimeCoordinator) -> void:
 
 func _test_bumper_loadout(wave: WaveRuntimeCoordinator) -> void:
 	var bumpers := wave.get_bumpers()
-	_expect(bumpers.size() == 7,
-		"Production Wave 3 scene must contain seven bumpers.")
+	_expect(bumpers.size() == 8,
+		"Production Wave 3 scene must contain eight bumpers.")
 	_expect(wave.is_current_bumper_loadout_valid(),
 		"Authored bumpers must satisfy the Stage 01 Wave 3 loadout contract.")
 	var normal_count := 0
@@ -288,12 +288,12 @@ func _test_bumper_loadout(wave: WaveRuntimeCoordinator) -> void:
 				shot_count += 1
 				if bumper is ShotBumper:
 					wave_cannon = bumper as ShotBumper
-	_expect(normal_count == 4 and bounce_count == 2 and shot_count == 1,
-		"Wave 3 must expose four Normal, two Bounce, and one Shot bumper.")
+	_expect(normal_count == 4 and bounce_count == 3 and shot_count == 1,
+		"Wave 3 must expose four Normal, three Bounce, and one Shot bumper.")
 	_expect(kind_counts == {
 		&"stage01_button": 3,
 		&"stage01_cotton": 1,
-		&"stage01_spring_doll": 1,
+		&"stage01_spring_doll": 2,
 		&"stage01_toy_drum": 1,
 		&"stage01_clockwork_cannon": 1,
 	}, "Wave 3 must contain the exact authored Stage 01 bumper kinds.")

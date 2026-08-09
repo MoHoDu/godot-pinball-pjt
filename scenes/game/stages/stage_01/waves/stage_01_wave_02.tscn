@@ -26,7 +26,8 @@ script = ExtResource("6_tool")
 minimum_full_bleed_aspect = 1.45
 wave_stage_settings = SubResource("StageSettings")
 authored_bumper_wave_index = 1
-expected_bumper_kind_ids = Array[StringName]([&"stage01_button", &"stage01_button", &"stage01_button", &"stage01_cotton", &"stage01_spring_doll", &"stage01_spring_doll"])
+expected_bumper_kind_ids = Array[StringName]([&"stage01_button", &"stage01_button", &"stage01_button", &"stage01_cotton", &"stage01_spring_doll", &"stage01_spring_doll", &"stage01_spring_doll", &"stage01_spring_doll"])
+enforce_stage_bumper_limits = false
 disabled_bumper_paths = Array[NodePath]([])
 
 [node name="TopDrain" parent="BallDrainArea" index="0"]
@@ -48,7 +49,7 @@ position = Vector2(-850, -299)
 position = Vector2(0, 2)
 
 [node name="Main10" parent="CoinSystem/SpawnPoints" index="9"]
-position = Vector2(300, -72)
+position = Vector2(552, 0)
 
 [node name="Risk01" parent="CoinSystem/SpawnPoints" index="10"]
 position = Vector2(-606, 344)
@@ -77,6 +78,14 @@ bumper_id = &"button_bumper_right"
 
 [node name="BumperLowerLeft" parent="Bumpers" instance=ExtResource("5_spring")]
 position = Vector2(-576, 144)
+
+[node name="BumperW2InnerSpringLeft" parent="Bumpers" instance=ExtResource("5_spring")]
+position = Vector2(-288, -144)
+bumper_id = &"spring_doll_w2_inner_left"
+
+[node name="BumperW2InnerSpringRight" parent="Bumpers" instance=ExtResource("5_spring")]
+position = Vector2(288, -144)
+bumper_id = &"spring_doll_w2_inner_right"
 
 [node name="BumperW2SpringRight" parent="Bumpers" instance=ExtResource("5_spring")]
 position = Vector2(576, 144)

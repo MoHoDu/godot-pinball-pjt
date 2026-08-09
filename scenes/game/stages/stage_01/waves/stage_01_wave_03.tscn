@@ -27,7 +27,7 @@ size = Vector2(160, 1600)
 script = ExtResource("5_tool")
 minimum_full_bleed_aspect = 1.45
 wave_stage_settings = SubResource("StageSettings")
-expected_bumper_kind_ids = Array[StringName]([&"stage01_button", &"stage01_button", &"stage01_button", &"stage01_cotton", &"stage01_spring_doll", &"stage01_toy_drum", &"stage01_clockwork_cannon"])
+expected_bumper_kind_ids = Array[StringName]([&"stage01_button", &"stage01_button", &"stage01_button", &"stage01_cotton", &"stage01_spring_doll", &"stage01_spring_doll", &"stage01_toy_drum", &"stage01_clockwork_cannon"])
 disabled_bumper_paths = Array[NodePath]([])
 
 [node name="TopDrain" parent="BallDrainArea" index="0"]
@@ -99,6 +99,10 @@ position = Vector2(-576, 144)
 
 [node name="BumperLowerRight" parent="Bumpers" instance=ExtResource("8_drum")]
 position = Vector2(576, 144)
+
+[node name="BumperW3InnerSpringLeft" parent="Bumpers" instance=ExtResource("7_spring")]
+position = Vector2(-288, -144)
+bumper_id = &"spring_doll_w3_inner_left"
 
 [node name="BumperCannon" parent="Bumpers" instance=ExtResource("9_cannon")]
 position = Vector2(288, -144)
