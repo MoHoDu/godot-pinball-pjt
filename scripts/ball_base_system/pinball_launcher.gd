@@ -376,7 +376,8 @@ func get_effective_speed_range() -> Vector2:
 		return Vector2(board_minimum, board_maximum)
 
 	var ball_range := prepared_ball.physics_rules.get_effective_speed_range(
-		prepared_ball.stats
+		prepared_ball.stats,
+		prepared_ball.get_collision_diameter()
 	)
 	var effective_minimum := maxf(board_minimum, ball_range.x)
 	var effective_maximum := minf(board_maximum, ball_range.y)

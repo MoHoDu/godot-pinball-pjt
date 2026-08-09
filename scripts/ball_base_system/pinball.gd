@@ -27,6 +27,7 @@ var _minimum_speed_suppressed_by_gravity: bool = false
 var _temporary_maximum_speed := INF
 var _temporary_speed_limit_until_physics_frame := -1
 var _temporary_speed_limit_enforcement_queued := false
+var _stats_safety_clamp_in_progress := false
 var _stats: PinballStats = PinballStats.new()
 var _physics_rules: PinballPhysicsRules = DEFAULT_PHYSICS_RULES
 
@@ -60,6 +61,7 @@ var physics_rules: PinballPhysicsRules:
 var ball_diameter: float = DEFAULT_BALL_DIAMETER:
 	set(value):
 		ball_diameter = clampf(value, MIN_BALL_DIAMETER, MAX_BALL_DIAMETER)
+		_enforce_stats_size_safety_limit()
 		refresh_ball_size()
 
 
@@ -75,6 +77,7 @@ var collision_radius_ratio: float = DEFAULT_COLLISION_RADIUS_RATIO:
 			MIN_COLLISION_RADIUS_RATIO,
 			MAX_COLLISION_RADIUS_RATIO
 		)
+		_enforce_stats_size_safety_limit()
 		refresh_ball_size()
 
 ## 공 루트 원점에서 충돌 원 중심을 이동할 거리입니다.
@@ -121,6 +124,21 @@ func refresh_ball_size() -> void:
 		update_configuration_warnings()
 
 
+## 현재 공 설정이 만드는 실제 원형 충돌 지름입니다.
+func get_collision_diameter() -> float:
+	return ball_diameter * collision_radius_ratio
+
+
+## 개별 Stats나 공용 설정으로도 넘을 수 없는 크기별 최종 안전 상한입니다.
+func get_safe_maximum_speed() -> float:
+	if physics_rules == null:
+		return 0.0
+	return minf(
+		physics_rules.maximum_speed,
+		physics_rules.get_safe_maximum_speed(get_collision_diameter())
+	)
+
+
 # 에디터 속성 값 설정 시 에러 표시
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings := PackedStringArray()
@@ -143,10 +161,13 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if (
 		stats != null
 		and physics_rules != null
-		and not physics_rules.is_stats_within_rules(stats)
+		and not physics_rules.is_stats_within_rules(
+			stats,
+			get_collision_diameter()
+		)
 	):
 		warnings.append(
-			"개별 Stats 일부가 공용 물리 규칙 범위를 벗어났습니다. "
+			"개별 Stats 일부가 공용 물리 규칙 또는 크기별 안전 속도 범위를 벗어났습니다. "
 			+ "게임에서는 허용 범위로 보정됩니다."
 		)
 
@@ -179,10 +200,14 @@ func _set_stats(value: PinballStats) -> void:
 	if not _stats.changed.is_connected(_on_stats_changed):
 		_stats.changed.connect(_on_stats_changed)
 
+	_enforce_stats_size_safety_limit()
 	refresh_physics_properties()
 
 
 func _on_stats_changed() -> void:
+	if _stats_safety_clamp_in_progress:
+		return
+	_enforce_stats_size_safety_limit()
 	refresh_physics_properties()
 
 	if is_inside_tree():
@@ -201,6 +226,7 @@ func _set_physics_rules(value: PinballPhysicsRules) -> void:
 	if not _physics_rules.changed.is_connected(_on_physics_rules_changed):
 		_physics_rules.changed.connect(_on_physics_rules_changed)
 
+	_enforce_stats_size_safety_limit()
 	refresh_physics_properties()
 
 	if is_inside_tree():
@@ -208,10 +234,37 @@ func _set_physics_rules(value: PinballPhysicsRules) -> void:
 
 
 func _on_physics_rules_changed() -> void:
+	_enforce_stats_size_safety_limit()
 	refresh_physics_properties()
 
 	if is_inside_tree():
 		update_configuration_warnings()
+
+
+## 개별 Stats가 충돌 크기별 절대 안전 상한을 넘으면 입력 즉시 보정합니다.
+## 공용 maximum_speed가 더 낮은 경우에는 기존 계약대로 Stats 원본을 보존합니다.
+func _enforce_stats_size_safety_limit() -> void:
+	if (
+		_stats_safety_clamp_in_progress
+		or _stats == null
+		or _physics_rules == null
+	):
+		return
+	var size_safety_maximum := _physics_rules.get_safe_maximum_speed(
+		get_collision_diameter()
+	)
+	var clamped_maximum := minf(_stats.maximum_speed, size_safety_maximum)
+	var clamped_minimum := minf(_stats.minimum_speed, clamped_maximum)
+	if (
+		is_equal_approx(_stats.maximum_speed, clamped_maximum)
+		and is_equal_approx(_stats.minimum_speed, clamped_minimum)
+	):
+		return
+
+	_stats_safety_clamp_in_progress = true
+	_stats.minimum_speed = clamped_minimum
+	_stats.maximum_speed = clamped_maximum
+	_stats_safety_clamp_in_progress = false
 
 
 func _get_instance_circle_shape(collision: CollisionShape2D) -> CircleShape2D:
@@ -240,7 +293,10 @@ func launch(direction: Vector2, requested_speed: float = -1.0) -> bool:
 	):
 		return false
 
-	var launch_speed := physics_rules.get_effective_initial_speed(stats)
+	var launch_speed := physics_rules.get_effective_initial_speed(
+		stats,
+		get_collision_diameter()
+	)
 	if requested_speed >= 0.0:
 		launch_speed = requested_speed
 
@@ -263,7 +319,10 @@ func get_limited_velocity(
 	if speed <= STOPPED_SPEED_EPSILON:
 		return Vector2.ZERO
 
-	var speed_range := physics_rules.get_effective_speed_range(stats)
+	var speed_range := physics_rules.get_effective_speed_range(
+		stats,
+		get_collision_diameter()
+	)
 	var effective_maximum := minf(speed_range.y, maximum_speed_override)
 	var effective_minimum := minf(speed_range.x, effective_maximum)
 	var limited_speed := clampf(speed, effective_minimum, effective_maximum)
@@ -351,7 +410,10 @@ func _get_physics_limited_velocity(
 		_minimum_speed_suppressed_by_gravity = true
 
 	if _minimum_speed_suppressed_by_gravity:
-		var speed_range := physics_rules.get_effective_speed_range(stats)
+		var speed_range := physics_rules.get_effective_speed_range(
+			stats,
+			get_collision_diameter()
+		)
 		var recovered_minimum_speed := (
 			velocity.dot(gravity) >= 0.0
 			and speed >= speed_range.x
@@ -374,7 +436,10 @@ func _get_maximum_limited_velocity(
 ) -> Vector2:
 	var speed := velocity.length()
 	var maximum_speed := minf(
-		physics_rules.get_effective_speed_range(stats).y,
+		physics_rules.get_effective_speed_range(
+			stats,
+			get_collision_diameter()
+		).y,
 		maximum_speed_override
 	)
 

@@ -14,19 +14,28 @@ const BALL_CASES: Array[Dictionary] = [
 		&"name": &"dead_ball",
 		&"scene_path": DEAD_BALL_SCENE_PATH,
 		&"diameter": 34.0,
-		&"maximum_speed": 3000.0,
+		&"authored_maximum_speed": 3000.0,
+		&"configured_maximum_speed": 5000.0,
+		&"expected_effective_maximum_speed": 3000.0,
+		&"test_speed": 3000.0,
 	},
 	{
 		&"name": &"gel_ball",
 		&"scene_path": GEL_BALL_SCENE_PATH,
 		&"diameter": 34.0,
-		&"maximum_speed": 3000.0,
+		&"authored_maximum_speed": 3000.0,
+		&"configured_maximum_speed": 5000.0,
+		&"expected_effective_maximum_speed": 3000.0,
+		&"test_speed": 3000.0,
 	},
 	{
 		&"name": &"normal_ball",
 		&"scene_path": NORMAL_BALL_SCENE_PATH,
 		&"diameter": 64.0,
-		&"maximum_speed": 5000.0,
+		&"authored_maximum_speed": 5000.0,
+		&"configured_maximum_speed": 5000.0,
+		&"expected_effective_maximum_speed": 5000.0,
+		&"test_speed": 5000.0,
 	},
 ]
 const WALL_PATHS: Array[NodePath] = [
@@ -108,13 +117,28 @@ func _run_ball_matrix(
 ) -> void:
 	var ball_name := StringName(ball_case[&"name"])
 	var ball_diameter := float(ball_case[&"diameter"])
-	var maximum_speed := float(ball_case[&"maximum_speed"])
+	var authored_maximum_speed := float(
+		ball_case[&"authored_maximum_speed"]
+	)
+	var configured_maximum_speed := float(
+		ball_case[&"configured_maximum_speed"]
+	)
+	var expected_effective_maximum_speed := float(
+		ball_case[&"expected_effective_maximum_speed"]
+	)
+	var test_speed := float(ball_case[&"test_speed"])
 	var probe_ball := ball_scene.instantiate() as Pinball
 	probe_ball.freeze = true
 	probe_ball.global_position = Vector2(10000.0, 10000.0)
 	root.add_child(probe_ball)
 	await physics_frame
-	_configure_ball(probe_ball, ball_diameter, maximum_speed)
+	_configure_ball(
+		probe_ball,
+		ball_diameter,
+		authored_maximum_speed,
+		configured_maximum_speed,
+		expected_effective_maximum_speed
+	)
 	var ball_radius := _get_ball_radius(probe_ball)
 	probe_ball.queue_free()
 	await process_frame
@@ -165,7 +189,10 @@ func _run_ball_matrix(
 					SAMPLE_LABELS[sample_index],
 				]),
 				ball_diameter,
-				maximum_speed
+				authored_maximum_speed,
+				configured_maximum_speed,
+				expected_effective_maximum_speed,
+				test_speed
 			)
 
 		_activate_all_walls(walls)
@@ -181,7 +208,10 @@ func _run_ball_matrix(
 					SAMPLE_LABELS[sample_index],
 				]),
 				ball_diameter,
-				maximum_speed
+				authored_maximum_speed,
+				configured_maximum_speed,
+				expected_effective_maximum_speed,
+				test_speed
 			)
 
 
@@ -296,14 +326,23 @@ func _run_wall_case(
 	along_offset: float,
 	sample_label: StringName,
 	ball_diameter: float,
-	maximum_speed: float
+	authored_maximum_speed: float,
+	configured_maximum_speed: float,
+	expected_effective_maximum_speed: float,
+	test_speed: float
 ) -> void:
 	var ball := ball_scene.instantiate() as Pinball
 	ball.freeze = true
 	ball.global_position = Vector2(10000.0, 10000.0)
 	root.add_child(ball)
 	await physics_frame
-	_configure_ball(ball, ball_diameter, maximum_speed)
+	_configure_ball(
+		ball,
+		ball_diameter,
+		authored_maximum_speed,
+		configured_maximum_speed,
+		expected_effective_maximum_speed
+	)
 	var center: Vector2 = geometry[&"center"]
 	var along_axis: Vector2 = geometry[&"along_axis"]
 	var outward_normal: Vector2 = geometry[&"outward_normal"]
@@ -321,7 +360,7 @@ func _run_wall_case(
 
 	ball.freeze = false
 	ball.sleeping = false
-	ball.linear_velocity = outward_normal * maximum_speed
+	ball.linear_velocity = outward_normal * test_speed
 
 	var fully_crossed := false
 	var maximum_outward_projection := -INF
@@ -347,7 +386,7 @@ func _run_wall_case(
 	) % [
 		wall.name,
 		sample_label,
-		maximum_speed,
+		test_speed,
 		collision_limit,
 			maximum_outward_projection,
 			ball.global_position if is_instance_valid(ball) else Vector2(INF, INF),
@@ -361,14 +400,30 @@ func _run_wall_case(
 func _configure_ball(
 	ball: Pinball,
 	expected_diameter: float,
-	expected_maximum_speed: float
+	expected_authored_maximum_speed: float,
+	configured_maximum_speed: float,
+	expected_effective_maximum_speed: float
 ) -> void:
 	ball.stats = ball.stats.duplicate(true) as PinballStats
 	_expect(is_equal_approx(ball.ball_diameter, expected_diameter), \
 		"%s 지름은 %.0fpx여야 한다." % [ball.name, expected_diameter])
-	_expect(is_equal_approx(ball.stats.maximum_speed, expected_maximum_speed), \
-		"%s 최대 속력은 %.0fpx/s여야 한다." % [ball.name, expected_maximum_speed])
+	_expect(is_equal_approx(
+		ball.stats.maximum_speed,
+		expected_authored_maximum_speed
+	), "%s 씬 최대 속력은 %.0fpx/s여야 한다." % [
+		ball.name,
+		expected_authored_maximum_speed,
+	])
 	ball.stats.minimum_speed = 0.0
+	ball.stats.maximum_speed = configured_maximum_speed
+	_expect(is_equal_approx(
+		ball.stats.maximum_speed,
+		expected_effective_maximum_speed
+	), "%s에 %.0fpx/s를 입력해도 안전 상한 %.0fpx/s로 즉시 보정되어야 한다." % [
+		ball.name,
+		configured_maximum_speed,
+		expected_effective_maximum_speed,
+	])
 	ball.stats.gravity_scale = 0.0
 	ball.stats.elasticity = 1.0
 	ball.linear_damp_mode = RigidBody2D.DAMP_MODE_REPLACE

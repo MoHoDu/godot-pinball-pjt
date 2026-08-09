@@ -39,6 +39,7 @@ jobs:
           for scenario in \
             tests/resource_system/release_side_effect_guard_test.gd \
             tests/ball_base_system/pinball_wall_tunneling_matrix_test.gd \
+            tests/ball_base_system/pinball_speed_safety_test.gd \
             tests/ball_base_system/pinball_top_wall_drain_regression_test.gd \
             tests/ball_base_system/pinball_launcher_test.gd \
             tests/ball_base_system/ball_trail_test.gd \
