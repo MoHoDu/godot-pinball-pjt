@@ -2,6 +2,10 @@
 
 [ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/base/bumper_base.tscn" id="1"]
 [ext_resource type="Resource" uid="uid://qi7gh48soj6e" path="res://settings/bumpers/stage_01/ButtonBumper.tres" id="2"]
+[ext_resource type="Script" path="res://scripts/bumper-system/pop_normal_response_strategy.gd" id="3_pop"]
+
+[sub_resource type="Resource" id="PopStrategy"]
+script = ExtResource("3_pop")
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_jcm41"]
 resource_local_to_scene = true
@@ -18,6 +22,7 @@ radius = 84.0
 [node name="ButtonBumper" unique_id=1088338236 instance=ExtResource("1")]
 bumper_id = &"button_bumper"
 settings = ExtResource("2")
+response_strategy = SubResource("PopStrategy")
 
 [node name="CollisionShape2D" parent="." index="0"]
 shape = SubResource("CircleShape2D_jcm41")

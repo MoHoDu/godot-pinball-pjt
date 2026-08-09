@@ -62,9 +62,9 @@ func _run() -> void:
 			% hit_count[0])
 	# 속력 전략은 기본 물리가 반사 방향을 확정한 뒤 Deferred로 한 번 적용됩니다.
 	await process_frame
-	_expect(ball.linear_velocity.length() >= 1000.0 \
-			and ball.linear_velocity.length() <= 1050.0,
-		"940px/s 공은 단추에서 약 1,034px/s로 반사되어야 한다. (actual=%.2f)"
+	_expect(ball.linear_velocity.length() >= 1090.0 \
+			and ball.linear_velocity.length() <= 1160.0,
+		"940px/s 공은 단추(x1.2)에서 약 1,128px/s로 반사되어야 한다. (actual=%.2f)"
 			% ball.linear_velocity.length())
 	_expect(bumper.current_durability == 1,
 		"실제 접촉에서 내구도는 한 번만 감소해야 한다.")
