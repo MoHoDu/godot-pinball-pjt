@@ -33,17 +33,19 @@ func _test_bumper_authoring(wave: Node) -> void:
 	_expect(coordinator != null, "Stage wave must use WaveRuntimeCoordinator.")
 	if coordinator == null:
 		return
-	_expect(coordinator.get_bumpers().size() == 6, "Default wave must expose six bumpers.")
+	var initial_visible := coordinator.get_bumpers().size()
+	_expect(initial_visible > 0, "Stage wave must expose at least one bumper.")
 	var authored_disabled_count := coordinator.disabled_bumper_paths.size()
 	var bumper := coordinator.get_bumpers()[0]
 	_expect(coordinator.set_bumper_disabled(bumper, true), "Inherited bumper must be disableable.")
 	coordinator.enforce_stage_bumper_limits = false
 	coordinator.sync_expected_bumper_roster()
-	_expect(coordinator.get_bumpers().size() == 5, "Disabled bumper must leave the authored roster.")
+	_expect(coordinator.get_bumpers().size() == initial_visible - 1,
+		"Disabled bumper must leave the authored roster.")
 	_expect(coordinator.is_current_bumper_loadout_valid(), "Synced custom bumper roster must validate.")
 	coordinator.restore_disabled_bumpers()
 	coordinator.sync_expected_bumper_roster()
-	_expect(coordinator.get_bumpers().size() == 6 + authored_disabled_count,
+	_expect(coordinator.get_bumpers().size() == initial_visible + authored_disabled_count,
 		"Restored roster must equal the visible roster plus authored disabled bumpers.")
 
 

@@ -4,41 +4,63 @@
 [ext_resource type="Script" uid="uid://d1ru6gfxnmw1r" path="res://scripts/combo_system/combo_stage_settings.gd" id="2_settings"]
 [ext_resource type="Resource" path="res://settings/sfx/SfxDirectorRules.tres" id="3_sewou"]
 [ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/presented/button_bumper_vfx.tscn" id="4_button"]
+[ext_resource type="Script" uid="uid://beslhooq1ywbv" path="res://scripts/wave_hud/wave_runtime_coordinator_full_bleed_tool.gd" id="5_tool"]
 
 [sub_resource type="Resource" id="StageSettings"]
 script = ExtResource("2_settings")
 stage_id = &"stage_01_wave_01"
 wave_target_scores = PackedInt32Array(1000)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_sewou"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_j01hg"]
 resource_local_to_scene = true
 size = Vector2(2600, 160)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_wvv06"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_miopi"]
 resource_local_to_scene = true
 size = Vector2(160, 1600)
 
 [node name="Stage01Wave01" unique_id=950300865 instance=ExtResource("1_wave")]
+script = ExtResource("5_tool")
 minimum_full_bleed_aspect = 1.45
 wave_stage_settings = SubResource("StageSettings")
 authored_bumper_wave_index = 0
-expected_bumper_kind_ids = Array[StringName]([&"stage01_button", &"stage01_button", &"stage01_button", &"stage01_button", &"stage01_button", &"stage01_cotton"])
+expected_bumper_kind_ids = Array[StringName]([&"stage01_button", &"stage01_button", &"stage01_button", &"stage01_button"])
 enforce_stage_bumper_limits = false
-disabled_bumper_paths = Array[NodePath]([NodePath("BumperLowerLeft"), NodePath("BumperLowerRight"), NodePath("BumperCannon")])
+disabled_bumper_paths = Array[NodePath]([NodePath("BumperCenter"), NodePath("BumperUpperLeft"), NodePath("BumperUpperRight"), NodePath("BumperLowerLeft"), NodePath("BumperLowerRight"), NodePath("BumperCannon")])
+
+[node name="BallDrainArea" parent="." index="5"]
+visible = true
 
 [node name="TopDrain" parent="BallDrainArea" index="0"]
-shape = SubResource("RectangleShape2D_sewou")
+shape = SubResource("RectangleShape2D_j01hg")
 
 [node name="BottomDrain" parent="BallDrainArea" index="1"]
-shape = SubResource("RectangleShape2D_sewou")
+shape = SubResource("RectangleShape2D_j01hg")
 
 [node name="LeftDrain" parent="BallDrainArea" index="2"]
-shape = SubResource("RectangleShape2D_wvv06")
+shape = SubResource("RectangleShape2D_miopi")
 
 [node name="RightDrain" parent="BallDrainArea" index="3"]
-shape = SubResource("RectangleShape2D_wvv06")
+shape = SubResource("RectangleShape2D_miopi")
+
+[node name="BumperW1LowerLeft" parent="Bumpers" parent_id_path=PackedInt32Array(1144402446) index="0" unique_id=2018638395 instance=ExtResource("4_button")]
+position = Vector2(-432, 144)
+bumper_id = &"button_w1_lower_left"
+
+[node name="BumperW1LowerRight" parent="Bumpers" parent_id_path=PackedInt32Array(1144402446) index="1" unique_id=1024660885 instance=ExtResource("4_button")]
+position = Vector2(432, 144)
+bumper_id = &"button_w1_lower_right"
+
+[node name="BumperW1UpperVLeft" parent="Bumpers" parent_id_path=PackedInt32Array(1144402446) index="2" unique_id=832607122 instance=ExtResource("4_button")]
+position = Vector2(-144, 0)
+bumper_id = &"button_w1_v_left"
+
+[node name="BumperW1UpperVRight" parent="Bumpers" parent_id_path=PackedInt32Array(1144402446) index="3" unique_id=74668144 instance=ExtResource("4_button")]
+position = Vector2(144, 0)
+bumper_id = &"button_w1_v_right"
 
 [node name="RepairBoardLayout" parent="." index="10"]
+visible = false
 new_zone_allowed_kind_ids = PackedStringArray()
 
 [node name="Main01" parent="CoinSystem/SpawnPoints" index="0"]
@@ -85,15 +107,3 @@ rules = ExtResource("3_sewou")
 top_level = true
 z_index = -19
 z_as_relative = false
-
-[node name="BumperW1LowerLeft" parent="Bumpers" instance=ExtResource("4_button")]
-position = Vector2(-432, 144)
-bumper_id = &"button_w1_lower_left"
-
-[node name="BumperW1LowerRight" parent="Bumpers" instance=ExtResource("4_button")]
-position = Vector2(432, 144)
-bumper_id = &"button_w1_lower_right"
-
-[node name="BumperW1LaunchAnchor" parent="Bumpers" instance=ExtResource("4_button")]
-position = Vector2(0, 144)
-bumper_id = &"button_w1_center_low"

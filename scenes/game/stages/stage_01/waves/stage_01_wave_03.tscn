@@ -3,6 +3,8 @@
 [ext_resource type="PackedScene" path="res://Resources/Prefabs/wave/base/wave_unique.tscn" id="1_wave"]
 [ext_resource type="Script" uid="uid://d1ru6gfxnmw1r" path="res://scripts/combo_system/combo_stage_settings.gd" id="2_settings"]
 [ext_resource type="Resource" path="res://settings/sfx/SfxDirectorRules.tres" id="3_0c2fo"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/bumpers/presented/button_bumper_vfx.tscn" id="4_button"]
+[ext_resource type="Script" path="res://scripts/wave_hud/wave_runtime_coordinator_full_bleed_tool.gd" id="5_tool"]
 
 [sub_resource type="Resource" id="StageSettings"]
 script = ExtResource("2_settings")
@@ -18,8 +20,11 @@ resource_local_to_scene = true
 size = Vector2(160, 1600)
 
 [node name="Stage01Wave03" unique_id=1270421128 instance=ExtResource("1_wave")]
+script = ExtResource("5_tool")
 minimum_full_bleed_aspect = 1.45
 wave_stage_settings = SubResource("StageSettings")
+expected_bumper_kind_ids = Array[StringName]([&"stage01_button", &"stage01_button", &"stage01_button", &"stage01_cotton", &"stage01_spring_doll", &"stage01_toy_drum", &"stage01_clockwork_cannon"])
+disabled_bumper_paths = Array[NodePath]([NodePath("BumperCenter")])
 
 [node name="TopDrain" parent="BallDrainArea" index="0"]
 shape = SubResource("RectangleShape2D_0c2fo")
@@ -77,3 +82,14 @@ rules = ExtResource("3_0c2fo")
 top_level = true
 z_index = -19
 z_as_relative = false
+
+[node name="BumperCannon" parent="Bumpers" index="5"]
+position = Vector2(288, 0)
+
+[node name="BumperW3UpperVLeft" parent="Bumpers" instance=ExtResource("4_button")]
+position = Vector2(-144, 0)
+bumper_id = &"button_w3_v_left"
+
+[node name="BumperW3UpperVRight" parent="Bumpers" instance=ExtResource("4_button")]
+position = Vector2(144, 0)
+bumper_id = &"button_w3_v_right"
