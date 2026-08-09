@@ -51,14 +51,11 @@ position = Vector2(-4, -435)
 [node name="Main08" parent="CoinSystem/SpawnPoints" index="7"]
 position = Vector2(292, -138)
 
-[node name="Main09" parent="CoinSystem/SpawnPoints" index="8"]
-position = Vector2(-280, 146)
-
 [node name="Main10" parent="CoinSystem/SpawnPoints" index="9"]
-position = Vector2(290, 292)
+position = Vector2(287, 148)
 
 [node name="Risk01" parent="CoinSystem/SpawnPoints" index="10"]
-position = Vector2(-606, 346)
+position = Vector2(-606, 344)
 
 [node name="Risk02" parent="CoinSystem/SpawnPoints" index="11"]
 position = Vector2(606, -336)

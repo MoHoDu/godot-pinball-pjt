@@ -9,11 +9,11 @@ script = ExtResource("2_settings")
 stage_id = &"stage_01_wave_03"
 wave_target_scores = PackedInt32Array(3000)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_xamuc"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0c2fo"]
 resource_local_to_scene = true
 size = Vector2(2600, 160)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_0djml"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xamuc"]
 resource_local_to_scene = true
 size = Vector2(160, 1600)
 
@@ -22,16 +22,49 @@ minimum_full_bleed_aspect = 1.45
 wave_stage_settings = SubResource("StageSettings")
 
 [node name="TopDrain" parent="BallDrainArea" index="0"]
-shape = SubResource("RectangleShape2D_xamuc")
+shape = SubResource("RectangleShape2D_0c2fo")
 
 [node name="BottomDrain" parent="BallDrainArea" index="1"]
-shape = SubResource("RectangleShape2D_xamuc")
+shape = SubResource("RectangleShape2D_0c2fo")
 
 [node name="LeftDrain" parent="BallDrainArea" index="2"]
-shape = SubResource("RectangleShape2D_0djml")
+shape = SubResource("RectangleShape2D_xamuc")
 
 [node name="RightDrain" parent="BallDrainArea" index="3"]
-shape = SubResource("RectangleShape2D_0djml")
+shape = SubResource("RectangleShape2D_xamuc")
+
+[node name="Main01" parent="CoinSystem/SpawnPoints" index="0"]
+position = Vector2(-714, -268)
+
+[node name="Main02" parent="CoinSystem/SpawnPoints" index="1"]
+position = Vector2(712, -272)
+
+[node name="Main03" parent="CoinSystem/SpawnPoints" index="2"]
+position = Vector2(-586, 12)
+
+[node name="Main04" parent="CoinSystem/SpawnPoints" index="3"]
+position = Vector2(716, 6)
+
+[node name="Main05" parent="CoinSystem/SpawnPoints" index="4"]
+position = Vector2(-148, -150)
+
+[node name="Main06" parent="CoinSystem/SpawnPoints" index="5"]
+position = Vector2(592, 308)
+
+[node name="Main07" parent="CoinSystem/SpawnPoints" index="6"]
+position = Vector2(288, -134)
+
+[node name="Main08" parent="CoinSystem/SpawnPoints" index="7"]
+position = Vector2(0, -26)
+
+[node name="Main10" parent="CoinSystem/SpawnPoints" index="9"]
+position = Vector2(-598, 320)
+
+[node name="Risk01" parent="CoinSystem/SpawnPoints" index="10"]
+position = Vector2(-2, -500)
+
+[node name="Risk02" parent="CoinSystem/SpawnPoints" index="11"]
+position = Vector2(964, -2)
 
 [node name="WaveHud" parent="HUD" parent_id_path=PackedInt32Array(739204287) index="1" unique_id=414747941]
 panel_fill_opacity = 0.68

@@ -22,10 +22,10 @@ board_id = &"wave_repair_board"
 z_index = -3
 
 [node name="Upper" type="Polygon2D" parent="Zones" unique_id=1051392059]
-position = Vector2(-3.000023, 378.18182)
-scale = Vector2(0.76957834, 1.7272727)
+position = Vector2(-3.000023, 81.09091)
+scale = Vector2(0.76957834, 0.8636364)
 color = Color(0.18, 0.52, 0.68, 0.16)
-polygon = PackedVector2Array(-664, -520, 664, -520, 663.99994, -429.7298, 664, -344, -664, -344)
+polygon = PackedVector2Array(-664, -520, 1.7346191, -520, 664, -520, 663.99994, -429.7298, 664, -344, -664, -344)
 script = ExtResource("3_zone")
 zone_id = &"upper"
 allowed_kind_ids = PackedStringArray("starlight_brooch", "forgotten_star_bell")
@@ -38,8 +38,8 @@ zone_id = &"middle"
 allowed_kind_ids = PackedStringArray("starlight_brooch", "crescent_needle")
 
 [node name="Lower" type="Polygon2D" parent="Zones" unique_id=1015387499]
-position = Vector2(-1.5000229, -387.04547)
-scale = Vector2(0.76731926, 1.7443181)
+position = Vector2(-1.5000229, -78.22742)
+scale = Vector2(0.76731926, 0.84659123)
 color = Color(0.66, 0.45, 0.2, 0.15)
 polygon = PackedVector2Array(-664, 344, 19.367798, 344, 664, 344, 664, 520, -664, 520, -664, 444.80865)
 script = ExtResource("3_zone")
@@ -62,13 +62,13 @@ socket_id = &"upper_02"
 zone_id = &"upper"
 
 [node name="Upper03" type="Marker2D" parent="Sockets" unique_id=502719177]
-position = Vector2(-288, -432)
+position = Vector2(-288, -288)
 script = ExtResource("4_socket")
 socket_id = &"upper_03"
 zone_id = &"upper"
 
 [node name="Upper04" type="Marker2D" parent="Sockets" unique_id=79305099]
-position = Vector2(288, -432)
+position = Vector2(288, -288)
 script = ExtResource("4_socket")
 socket_id = &"upper_04"
 zone_id = &"upper"
@@ -110,13 +110,13 @@ socket_id = &"lower_02"
 zone_id = &"lower"
 
 [node name="Lower03" type="Marker2D" parent="Sockets" unique_id=899855227]
-position = Vector2(-288, 432)
+position = Vector2(-288, 288)
 script = ExtResource("4_socket")
 socket_id = &"lower_03"
 zone_id = &"lower"
 
 [node name="Lower04" type="Marker2D" parent="Sockets" unique_id=1969743896]
-position = Vector2(288, 432)
+position = Vector2(288, 288)
 script = ExtResource("4_socket")
 socket_id = &"lower_04"
 zone_id = &"lower"
