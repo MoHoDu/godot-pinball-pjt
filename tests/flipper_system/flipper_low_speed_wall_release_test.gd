@@ -12,7 +12,7 @@ const WALL_SIZE := Vector2(820.0, 24.0)
 const FLIPPER_POSITION := Vector2(-258.99988, 571.0)
 const START_WALL_LOCAL := Vector2(-250.0, 54.0)
 const ROLL_SPEED := 70.0
-const MAX_TEST_FRAMES := 180
+const MAX_TEST_DURATION_SECONDS := 3.0
 const RELEASE_DISTANCE := 150.0
 
 
@@ -62,7 +62,10 @@ func _run() -> void:
 	var maximum_distance_after_contact := 0.0
 	var maximum_nearby_speed := 0.0
 	var contacted_flipper := false
-	for _frame_index: int in MAX_TEST_FRAMES:
+	var maximum_test_frames := ceili(
+		MAX_TEST_DURATION_SECONDS * Engine.physics_ticks_per_second
+	)
+	for _frame_index: int in maximum_test_frames:
 		await physics_frame
 		var distance := ball.global_position.distance_to(flipper.global_position)
 		closest_distance = minf(closest_distance, distance)

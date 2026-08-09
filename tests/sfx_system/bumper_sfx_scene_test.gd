@@ -21,9 +21,9 @@ const EXPECTED_KINDS: Array[StringName] = [
 	&"stage01_clockwork_cannon",
 ]
 
-## 공이 낙하 높이에서 범퍼까지 떨어지기를 기다리는 최대 프레임입니다.
-## 60fps 기준 3초. 넉넉히 잡아도 소리가 나는 즉시 빠져나갑니다.
-const DROP_FRAMES := 180
+## 공이 낙하 높이에서 범퍼까지 떨어지기를 기다리는 최대 시간입니다.
+## 넉넉히 3초를 잡아도 소리가 나는 즉시 빠져나갑니다.
+const DROP_TIMEOUT_SECONDS := 3.0
 
 var _failed := false
 
@@ -81,7 +81,10 @@ func _run() -> void:
 		#   손으로 쏘면 공이 null 이라 속도별 음량도, 공별 연타 감쇠도 타지
 		#   않습니다. 게임에서 소리가 나는지는 그 경로로만 알 수 있습니다.
 		var before := played.size()
-		for _f in DROP_FRAMES:
+		var drop_frames := ceili(
+			DROP_TIMEOUT_SECONDS * Engine.physics_ticks_per_second
+		)
+		for _f in drop_frames:
 			if played.size() > before:
 				break
 			await physics_frame
@@ -91,7 +94,7 @@ func _run() -> void:
 			"늦게 생긴 공도 배선된다")
 
 		# 파괴·리스폰 예고까지 다 나오도록 조금 더 듣는다.
-		for _f in 30:
+		for _f in ceili(0.5 * Engine.physics_ticks_per_second):
 			await physics_frame
 
 		var heard: Array[StringName] = []

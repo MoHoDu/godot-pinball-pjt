@@ -156,6 +156,7 @@ func _test_scales_with_ball_diameter() -> void:
 	var small_width := (rig.trail.get_node("Trail") as Line2D).width
 
 	rig.ball.ball_diameter = 128.0
+	rig.ball.linear_velocity = Vector2(900.0, 0.0)
 	await physics_frame
 	await physics_frame
 
@@ -175,14 +176,16 @@ func _test_scales_with_ball_diameter() -> void:
 
 func _test_hides_when_stopped() -> void:
 	var rig: TrailRig = await _make_rig(44.0, Vector2(900.0, 0.0))
-	for _step in 20:
+	for _step in _frames_at_60hz(20):
 		await physics_frame
 
 	_expect(rig.trail.get_fade() > 0.9, "움직이는 공은 꼬리가 완전히 켜져 있어야 한다.")
 
 	# 정지 — 문서: "발사 대기·정지 중에는 꼬리를 표시하지 않는다"
 	rig.ball.linear_velocity = Vector2.ZERO
-	var frames := int(rig.trail.trail_rules.fade_out_time * 60.0) + 20
+	var frames := ceili((
+		rig.trail.trail_rules.fade_out_time + 20.0 / 60.0
+	) * Engine.physics_ticks_per_second)
 	for _step in frames:
 		await physics_frame
 
@@ -195,7 +198,7 @@ func _test_hides_when_stopped() -> void:
 
 func _test_records_path_and_respects_length() -> void:
 	var rig: TrailRig = await _make_rig(44.0, Vector2(900.0, 0.0))
-	for _step in 40:
+	for _step in _frames_at_60hz(40):
 		await physics_frame
 
 	_expect(rig.trail.get_point_count() >= 2, "궤적이 기록되어야 한다.")
@@ -204,7 +207,9 @@ func _test_records_path_and_respects_length() -> void:
 	var pts := line.points
 	if pts.size() >= 2:
 		# 머리는 공에 붙어 있어야 한다
-		_expect(pts[0].distance_to(rig.ball.global_position) < 4.0,
+		var maximum_head_lag := rig.ball.linear_velocity.length() \
+			/ float(Engine.physics_ticks_per_second) + 1.0
+		_expect(pts[0].distance_to(rig.ball.global_position) < maximum_head_lag,
 			"꼬리 머리는 공에 붙어 있어야 한다. (%.1f)"
 				% pts[0].distance_to(rig.ball.global_position))
 
@@ -251,10 +256,11 @@ func _test_does_not_touch_ball() -> void:
 	var rig: TrailRig = await _make_rig(44.0, Vector2(700.0, 300.0))
 	rig.ball.global_position = Vector2(123.0, -456.0)
 	rig.ball.rotation = 0.8
+	rig.ball.linear_velocity = Vector2.ZERO
 	var before_pos := rig.ball.global_position
 	var before_rot := rig.ball.rotation
 
-	for _step in 15:
+	for _step in _frames_at_60hz(15):
 		await physics_frame
 
 	_expect(rig.ball.global_position.distance_to(before_pos) < 0.01,
@@ -274,7 +280,7 @@ func _test_does_not_touch_ball() -> void:
 func _test_slow_ball_keeps_short_trail() -> void:
 	# hide_below_speed(60)보다는 빠르지만 아주 느린 속도
 	var rig: TrailRig = await _make_rig(44.0, Vector2(80.0, 0.0))
-	for _step in 90:
+	for _step in _frames_at_60hz(90):
 		await physics_frame
 
 	_expect(rig.trail.get_point_count() >= 3,
@@ -295,7 +301,7 @@ func _test_slow_ball_keeps_short_trail() -> void:
 ## 점에 수명이 없으면 옛 점이 월드 좌표에 얼어붙어 잔상으로 남습니다.
 func _test_trail_retracts_after_slowdown() -> void:
 	var rig: TrailRig = await _make_rig(44.0, Vector2(1100.0, 0.0))
-	for _step in 40:
+	for _step in _frames_at_60hz(40):
 		await physics_frame
 
 	var fast_span := _head_to_tail(rig)
@@ -303,7 +309,9 @@ func _test_trail_retracts_after_slowdown() -> void:
 
 	# 급감속 — 여전히 hide_below_speed 위라 꼬리는 켜져 있다
 	rig.ball.linear_velocity = Vector2(80.0, 0.0)
-	var frames := int(rig.trail.trail_rules.point_lifetime * 60.0) + 25
+	var frames := ceili((
+		rig.trail.trail_rules.point_lifetime + 25.0 / 60.0
+	) * Engine.physics_ticks_per_second)
 	for _step in frames:
 		await physics_frame
 
@@ -368,6 +376,12 @@ func _make_rig(diameter: float, velocity: Vector2) -> TrailRig:
 
 func _free_rig(rig: TrailRig) -> void:
 	rig.ball.queue_free()
+
+
+func _frames_at_60hz(frame_count: int) -> int:
+	return ceili(
+		float(frame_count) / 60.0 * Engine.physics_ticks_per_second
+	)
 
 
 func _expect_float(actual: float, expected: float, message: String) -> void:

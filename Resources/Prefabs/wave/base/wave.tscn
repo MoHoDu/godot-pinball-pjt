@@ -221,6 +221,30 @@ size = Vector2(160, 1600)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bin77"]
 size = Vector2(819.329, 24)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape_wall_top_right_vertical"]
+size = Vector2(229.41212, 25.008)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape_wall_top_left_vertical"]
+size = Vector2(208.928895, 25.008)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape_wall_top_left_side"]
+size = Vector2(409.6645, 24)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape_wall_top_right_side"]
+size = Vector2(409.6645, 24)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape_wall_bottom_right_vertical"]
+size = Vector2(204.83225, 24)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape_wall_bottom_left_vertical"]
+size = Vector2(204.83225, 25.008)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape_wall_bottom_left_side"]
+size = Vector2(409.6645, 24)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape_wall_bottom_right_side"]
+size = Vector2(409.6645, 24)
+
 [sub_resource type="RectangleShape2D" id="geo_RectangleShape_drain_horizontal"]
 resource_local_to_scene = true
 size = Vector2(2600, 160)
@@ -342,49 +366,49 @@ position = Vector2(6.6, 2.4)
 [node name="TopRigthVertical" type="StaticBody2D" parent="Walls/Top" groups=["combo_walls"]]
 position = Vector2(329, -665)
 rotation = 2.0943952
-scale = Vector2(0.28, 1.042)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/TopRigthVertical"]
-position = Vector2(0, 12)
-shape = SubResource("RectangleShape2D_bin77")
+position = Vector2(0, 12.504)
+shape = SubResource("RectangleShape_wall_top_right_vertical")
 
 [node name="Visual" parent="Walls/Top/TopRigthVertical" instance=ExtResource("8_wall_visual")]
+scale = Vector2(0.28, 1.042)
 
 [node name="TopLeftVertical" type="StaticBody2D" parent="Walls/Top" groups=["combo_walls"]]
 position = Vector2(-330, -673)
 rotation = -2.0943952
-scale = Vector2(0.255, 1.042)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/TopLeftVertical"]
-position = Vector2(0, 12)
-shape = SubResource("RectangleShape2D_bin77")
+position = Vector2(0, 12.504)
+shape = SubResource("RectangleShape_wall_top_left_vertical")
 
 [node name="Visual" parent="Walls/Top/TopLeftVertical" instance=ExtResource("8_wall_visual")]
-position = Vector2(0.00025431183, -7.278369e-13)
+position = Vector2(0.00006484951665, -7.583260458e-13)
+scale = Vector2(0.255, 1.042)
 
 [node name="TopLeftSide" type="StaticBody2D" parent="Walls/Top" groups=["combo_walls"]]
 position = Vector2(-1186, -313.00006)
 rotation = 0.20943952
-scale = Vector2(0.5, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/TopLeftSide"]
 position = Vector2(0, 12)
-shape = SubResource("RectangleShape2D_bin77")
+shape = SubResource("RectangleShape_wall_top_left_side")
 
 [node name="Visual" parent="Walls/Top/TopLeftSide" instance=ExtResource("8_wall_visual")]
-position = Vector2(0.00025431183, -7.278369e-13)
+position = Vector2(0.000127155915, -7.278369e-13)
+scale = Vector2(0.5, 1)
 
 [node name="TopRightSide" type="StaticBody2D" parent="Walls/Top" groups=["combo_walls"]]
 position = Vector2(-1185.9999, 329)
 rotation = 2.8797934
-scale = Vector2(0.5, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top/TopRightSide"]
 position = Vector2(0, 12)
-shape = SubResource("RectangleShape2D_bin77")
+shape = SubResource("RectangleShape_wall_top_right_side")
 
 [node name="Visual" parent="Walls/Top/TopRightSide" instance=ExtResource("8_wall_visual")]
-position = Vector2(0.00025431183, -7.278369e-13)
+position = Vector2(0.000127155915, -7.278369e-13)
+scale = Vector2(0.5, 1)
 
 [node name="Bottom" type="Node2D" parent="Walls"]
 
@@ -412,49 +436,49 @@ position = Vector2(-6.6, 2.4)
 [node name="BottomRightVertical" type="StaticBody2D" parent="Walls/Bottom" groups=["combo_walls"]]
 position = Vector2(313, 665)
 rotation = 1.0471976
-scale = Vector2(0.25, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom/BottomRightVertical"]
 position = Vector2(0, 12)
-shape = SubResource("RectangleShape2D_bin77")
+shape = SubResource("RectangleShape_wall_bottom_right_vertical")
 
 [node name="Visual" parent="Walls/Bottom/BottomRightVertical" instance=ExtResource("8_wall_visual")]
+scale = Vector2(0.25, 1)
 
 [node name="BottomLeftVertical" type="StaticBody2D" parent="Walls/Bottom" groups=["combo_walls"]]
 position = Vector2(-314, 665)
 rotation = -1.0471976
-scale = Vector2(0.25, 1.042)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom/BottomLeftVertical"]
-position = Vector2(0, 12)
-shape = SubResource("RectangleShape2D_bin77")
+position = Vector2(0, 12.504)
+shape = SubResource("RectangleShape_wall_bottom_left_vertical")
 
 [node name="Visual" parent="Walls/Bottom/BottomLeftVertical" instance=ExtResource("8_wall_visual")]
-position = Vector2(-24.999502, 0)
+position = Vector2(-6.2498755, 0)
+scale = Vector2(0.25, 1.042)
 
 [node name="BottomLeftSide" type="StaticBody2D" parent="Walls/Bottom" groups=["combo_walls"]]
 position = Vector2(1185, -305.00006)
 rotation = -0.20943952
-scale = Vector2(0.5, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom/BottomLeftSide"]
 position = Vector2(0, 12)
-shape = SubResource("RectangleShape2D_bin77")
+shape = SubResource("RectangleShape_wall_bottom_left_side")
 
 [node name="Visual" parent="Walls/Bottom/BottomLeftSide" instance=ExtResource("8_wall_visual")]
-position = Vector2(3.326577, -7.8251457)
+position = Vector2(1.6632885, -7.8251457)
+scale = Vector2(0.5, 1)
 
 [node name="BottomRightSide" type="StaticBody2D" parent="Walls/Bottom" groups=["combo_walls"]]
 position = Vector2(1169, 329.00003)
 rotation = 3.408628
-scale = Vector2(0.5, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom/BottomRightSide"]
 position = Vector2(0, 12)
-shape = SubResource("RectangleShape2D_bin77")
+shape = SubResource("RectangleShape_wall_bottom_right_side")
 
 [node name="Visual" parent="Walls/Bottom/BottomRightSide" instance=ExtResource("8_wall_visual")]
-position = Vector2(0.00025431183, -7.278369e-13)
+position = Vector2(0.000127155915, -7.278369e-13)
+scale = Vector2(0.5, 1)
 
 [node name="FlipperSelector" type="Node2D" parent="."]
 script = ExtResource("9_flipper_selector")

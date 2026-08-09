@@ -3,6 +3,14 @@ class_name PinballPhysicsRules
 extends Resource
 
 
+## 120Hz 보드에서 실제 검증된 충돌 지름별 절대 속도 상한입니다.
+## 개별 Stats와 공용 maximum_speed를 높여도 이 범위를 넘을 수 없습니다.
+const COMPACT_COLLISION_DIAMETER := 30.6
+const FULL_SPEED_COLLISION_DIAMETER := 57.6
+const COMPACT_SAFE_MAXIMUM_SPEED := 3000.0
+const FULL_SAFE_MAXIMUM_SPEED := 5000.0
+
+
 var _minimum_mass: float = PinballStats.MIN_MASS
 var _maximum_mass: float = PinballStats.MAX_MASS
 var _minimum_elasticity: float = PinballStats.MIN_ELASTICITY
@@ -156,17 +164,49 @@ func get_effective_gravity_scale(stats: PinballStats) -> float:
 	)
 
 
-## x에는 개별 최소 속력, y에는 개별 최대 속력의 유효값을 반환합니다.
-func get_effective_speed_range(stats: PinballStats) -> Vector2:
+## 실제 충돌 지름에 대응하는 최종 안전 속도 상한입니다.
+## 소형 기준보다 작으면 충돌 지름에 비례해 더 낮추고, 두 검증 기준 사이는
+## 선형 보간합니다. 일반 공 이상은 프로젝트 전체 상한을 사용합니다.
+func get_safe_maximum_speed(collision_diameter: float) -> float:
+	var safe_diameter := maxf(collision_diameter, 0.0)
+	if safe_diameter <= COMPACT_COLLISION_DIAMETER:
+		return COMPACT_SAFE_MAXIMUM_SPEED * (
+			safe_diameter / COMPACT_COLLISION_DIAMETER
+		)
+	if safe_diameter >= FULL_SPEED_COLLISION_DIAMETER:
+		return FULL_SAFE_MAXIMUM_SPEED
+	var diameter_ratio := inverse_lerp(
+		COMPACT_COLLISION_DIAMETER,
+		FULL_SPEED_COLLISION_DIAMETER,
+		safe_diameter
+	)
+	return lerpf(
+		COMPACT_SAFE_MAXIMUM_SPEED,
+		FULL_SAFE_MAXIMUM_SPEED,
+		diameter_ratio
+	)
+
+
+## x에는 개별 최소 속력, y에는 개별·공용·크기 안전 상한을 모두 적용한
+## 최종 속력 범위를 반환합니다.
+func get_effective_speed_range(
+	stats: PinballStats,
+	collision_diameter: float = FULL_SPEED_COLLISION_DIAMETER
+) -> Vector2:
+	var safety_maximum := minf(
+		maximum_speed,
+		get_safe_maximum_speed(collision_diameter)
+	)
+	var effective_common_minimum := minf(minimum_speed, safety_maximum)
 	var effective_minimum := clampf(
 		stats.minimum_speed,
-		minimum_speed,
-		maximum_speed
+		effective_common_minimum,
+		safety_maximum
 	)
 	var effective_maximum := clampf(
 		stats.maximum_speed,
-		minimum_speed,
-		maximum_speed
+		effective_common_minimum,
+		safety_maximum
 	)
 
 	if effective_maximum < effective_minimum:
@@ -175,15 +215,21 @@ func get_effective_speed_range(stats: PinballStats) -> Vector2:
 	return Vector2(effective_minimum, effective_maximum)
 
 
-func get_effective_initial_speed(stats: PinballStats) -> float:
+func get_effective_initial_speed(
+	stats: PinballStats,
+	collision_diameter: float = FULL_SPEED_COLLISION_DIAMETER
+) -> float:
 	if stats.initial_speed <= PinballStats.STOPPED_SPEED_EPSILON:
 		return 0.0
 
-	var speed_range := get_effective_speed_range(stats)
+	var speed_range := get_effective_speed_range(stats, collision_diameter)
 	return clampf(stats.initial_speed, speed_range.x, speed_range.y)
 
 
-func is_stats_within_rules(stats: PinballStats) -> bool:
+func is_stats_within_rules(
+	stats: PinballStats,
+	collision_diameter: float = FULL_SPEED_COLLISION_DIAMETER
+) -> bool:
 	if not is_equal_approx(stats.mass, get_effective_mass(stats)):
 		return false
 
@@ -196,7 +242,7 @@ func is_stats_within_rules(stats: PinballStats) -> bool:
 	):
 		return false
 
-	var speed_range := get_effective_speed_range(stats)
+	var speed_range := get_effective_speed_range(stats, collision_diameter)
 	if not is_equal_approx(stats.minimum_speed, speed_range.x):
 		return false
 
@@ -205,5 +251,5 @@ func is_stats_within_rules(stats: PinballStats) -> bool:
 
 	return is_equal_approx(
 		stats.initial_speed,
-		get_effective_initial_speed(stats)
+		get_effective_initial_speed(stats, collision_diameter)
 	)

@@ -63,7 +63,7 @@ func _test_pivot_safety_collider(flipper: PinballFlipper) -> void:
 func _test_ball_uses_shape_ccd(ball: Pinball) -> void:
 	_expect(
 		ball.continuous_cd == RigidBody2D.CCD_MODE_CAST_SHAPE,
-		"공은 대기 플리퍼와 벽을 건너뛰지 않도록 Shape CCD를 사용해야 한다."
+		"공은 스침 충돌의 원형 범위를 유지하도록 Shape CCD를 사용해야 한다."
 	)
 	_expect((ball.collision_mask & 1) != 0, "공이 플리퍼의 기본 충돌 레이어를 감지해야 한다.")
 
