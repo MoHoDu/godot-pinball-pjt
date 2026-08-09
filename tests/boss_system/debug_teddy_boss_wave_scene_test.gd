@@ -10,9 +10,6 @@ const ProductionWaveScene: PackedScene = preload(
 const ComboSystemScript: Script = preload(
 	"res://scripts/combo_system/combo_system.gd"
 )
-const FlipperScript: Script = preload(
-	"res://scripts/flipper_system/flipper.gd"
-)
 
 
 var _failures: Array[String] = []
@@ -46,7 +43,7 @@ func _run() -> void:
 		"Debug inheritance must keep one production ComboSystem.")
 	_expect(_count_ball_flows(wave) == 1,
 		"Debug inheritance must keep one production BallFlow.")
-	_expect(_count_script(wave, FlipperScript) == 8,
+	_expect(_count_flippers(wave) == 8,
 		"Debug inheritance must keep the eight production Flippers.")
 	_expect(manager.current_stage_phase == WaveManager.StagePhase.BOSS,
 		"Debug entry must reach BOSS through public stage transitions.")
@@ -74,6 +71,7 @@ func _run() -> void:
 		"BossDebugCanvas/BossDebugPanel/BossDebugVBox/DefeatButton"
 	) as Button
 	defeat_button.pressed.emit()
+	await boss.battle_completed
 	await process_frame
 	_expect(manager.current_stage_phase == WaveManager.StagePhase.STAGE_COMPLETE,
 		"HP zero debug action must preserve production battle completion.")
@@ -119,6 +117,13 @@ func _count_ball_flows(node: Node) -> int:
 	var count: int = 1 if node is WaveBallFlowController else 0
 	for child: Node in node.get_children():
 		count += _count_ball_flows(child)
+	return count
+
+
+func _count_flippers(node: Node) -> int:
+	var count: int = 1 if node is PinballFlipper else 0
+	for child: Node in node.get_children():
+		count += _count_flippers(child)
 	return count
 
 

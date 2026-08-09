@@ -16,6 +16,7 @@ func _run() -> void:
 	await _test_target_reached_ends_immediately_and_retry()
 	await _test_confirmed_stage_phase_sequence()
 	await _test_direct_boss_stage_entry()
+	await _test_boss_stage_repair_placement_entry()
 	await _test_boss_ball_cycle_preserves_phase()
 	await _test_boss_ball_exhaustion_defeat()
 	await _test_exhaustion_defeat()
@@ -205,6 +206,41 @@ func _test_direct_boss_stage_entry() -> void:
 		"Completed direct Boss must advance to stage completion.")
 	_expect(manager.current_stage_phase == WaveManager.StagePhase.STAGE_COMPLETE,
 		"Direct Boss completion must enter STAGE_COMPLETE.")
+	await _destroy_fixture(fixture)
+
+
+func _test_boss_stage_repair_placement_entry() -> void:
+	var fixture := await _create_fixture(3, 100)
+	var manager: WaveManager = fixture.manager
+	var visited_phases: Array[WaveManager.StagePhase] = []
+	manager.stage_phase_changed.connect(func(
+		_previous: WaveManager.StagePhase,
+		current: WaveManager.StagePhase
+	) -> void:
+		visited_phases.append(current)
+	)
+
+	_expect(manager.enter_boss_stage(fixture.settings, true),
+		"Production Boss entry must initialize before repair placement.")
+	_expect(
+		manager.current_stage_phase == WaveManager.StagePhase.REPAIR_PLACEMENT,
+		"Production Boss entry must begin with repair placement."
+	)
+	_expect(not manager.start_boss_ball_cycle(),
+		"Boss Ball selection must remain blocked during repair placement.")
+	_expect(manager.advance_stage_phase(),
+		"Committed Boss repair placement must advance the stage phase.")
+	_expect(manager.current_stage_phase == WaveManager.StagePhase.BOSS,
+		"Boss repair placement must advance directly to BOSS.")
+	_expect(
+		visited_phases == [
+			WaveManager.StagePhase.REPAIR_PLACEMENT,
+			WaveManager.StagePhase.BOSS,
+		],
+		"Production Boss entry must visit repair placement before BOSS."
+	)
+	_expect(manager.start_boss_ball_cycle(),
+		"Boss Ball selection must start after repair placement.")
 	await _destroy_fixture(fixture)
 
 

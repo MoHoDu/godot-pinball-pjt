@@ -215,7 +215,7 @@ func _test_follows_ball_without_rotating() -> void:
 		"테두리는 공의 회전을 바꾸면 안 된다.")
 
 	var before := rig.outline.get_drift_phase()
-	for _step in 20:
+	for _step in _frames_at_60hz(20):
 		await physics_frame
 
 	_expect(rig.outline.get_drift_phase() != before,
@@ -242,7 +242,9 @@ func _test_flash_raises_gain_and_decays() -> void:
 		"전체 점등에서는 안개가 밝아져야 한다. (%.2f -> %.2f)" % [idle_gain, flashed_gain])
 
 	var rules := rig.outline.outline_rules
-	var frames := int((rules.flash_hold_time + rules.flash_fade_time) * 60.0) + 12
+	var frames := ceili((
+		rules.flash_hold_time + rules.flash_fade_time + 12.0 / 60.0
+	) * Engine.physics_ticks_per_second)
 	for _step in frames:
 		await physics_frame
 
@@ -276,7 +278,7 @@ func _test_parry_grades_map_to_flash_strength() -> void:
 	# 다른 공의 패링에는 반응하지 않아야 한다
 	var other := RigidBody2D.new()
 	root.add_child(other)
-	for _step in 30:
+	for _step in _frames_at_60hz(30):
 		await physics_frame
 	flipper.emit_parry(other, BallGlowOutline.PARRY_GRADE_PERFECT)
 	await physics_frame
@@ -362,6 +364,12 @@ func _make_rig(diameter: float) -> GlowRig:
 
 func _free_rig(rig: GlowRig) -> void:
 	rig.ball.queue_free()
+
+
+func _frames_at_60hz(frame_count: int) -> int:
+	return ceili(
+		float(frame_count) / 60.0 * Engine.physics_ticks_per_second
+	)
 
 
 func _expect_float(actual: float, expected: float, message: String) -> void:

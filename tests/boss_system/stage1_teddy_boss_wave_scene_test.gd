@@ -392,6 +392,7 @@ func _test_battle_completion(
 		func(_stage_id: StringName) -> void: completion_count[0] += 1
 	)
 	health.apply_damage(health.get_current_health())
+	await boss.battle_completed
 	await process_frame
 	_expect(manager.current_stage_phase == WaveManager.StagePhase.STAGE_COMPLETE,
 		"Boss completion must advance BOSS to STAGE_COMPLETE.")

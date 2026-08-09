@@ -38,6 +38,17 @@ jobs:
           set -eu
           for scenario in \
             tests/resource_system/release_side_effect_guard_test.gd \
+            tests/ball_base_system/pinball_wall_tunneling_matrix_test.gd \
+            tests/ball_base_system/pinball_speed_safety_test.gd \
+            tests/ball_base_system/pinball_top_wall_drain_regression_test.gd \
+            tests/ball_base_system/pinball_launcher_test.gd \
+            tests/ball_base_system/ball_trail_test.gd \
+            tests/ball_base_system/ball_glow_outline_test.gd \
+            tests/flipper_system/flipper_idle_pivot_collision_test.gd \
+            tests/flipper_system/flipper_contact_zone_tunneling_matrix_test.gd \
+            tests/flipper_system/flipper_low_speed_wall_release_test.gd \
+            tests/flipper_system/pinball_flipper_velocity_limit_test.gd \
+            tests/bumper_system/bumper_physics_integration_test.gd \
             tests/stage_system/stage_initial_loadout_test.gd \
             tests/stage_system/stage_flow_manager_test.gd \
             tests/stage_system/stage_reward_shop_screen_recovery_test.gd \

@@ -206,6 +206,7 @@ func _test_stage_coin_wallet_continuity() -> void:
 	root.add_child(stage)
 	await _wait_for_transition()
 	var manager := stage.get_node(^"StageFlowManager") as StageFlowManager
+	manager.clear_destination_scene = null
 	_expect(manager.coin_wallet != null, "StageFlowManager는 공용 코인 지갑을 가져야 한다.")
 	_expect(manager.current_coin_balance == 0, "새 스테이지의 코인은 0으로 시작해야 한다.")
 
@@ -331,6 +332,55 @@ func _test_stage_coin_wallet_continuity() -> void:
 	final_reward.continue_stage()
 	await _wait_frames(6)
 	var boss_scene := manager.active_scene as Stage1TeddyBossScene
+	_expect(boss_scene != null, "마지막 보상 뒤 실제 보스 씬을 생성해야 한다.")
+	if boss_scene == null:
+		stage.queue_free()
+		await process_frame
+		return
+	var boss_placement_bridge := boss_scene.get_node(
+		^"BoardWavePlacementBridge"
+	) as BoardWavePlacementBridge
+	var boss_runtime := boss_scene.get_node(
+		^"Stage1TeddyBossRuntime"
+	) as Stage1TeddyBossRuntime
+	_expect(
+		boss_scene is WaveRuntimeCoordinatorFullBleed,
+		"보스 웨이브도 일반 웨이브의 전체 화면 카메라를 사용해야 한다."
+	)
+	boss_scene.call(&"_fit_board_camera", true)
+	var boss_viewport_size := boss_scene.get_viewport_rect().size
+	if boss_viewport_size.y > 0.0 \
+			and boss_viewport_size.x / boss_viewport_size.y \
+				>= boss_scene.minimum_full_bleed_aspect:
+		var expected_boss_zoom := maxf(
+			boss_viewport_size.x
+				/ maxf(boss_scene.board_world_bounds.size.x, 1.0),
+			boss_viewport_size.y
+				/ maxf(boss_scene.board_world_bounds.size.y, 1.0)
+		)
+		_expect(
+			is_equal_approx(boss_scene.board_camera.zoom.x, expected_boss_zoom)
+				and boss_scene.board_camera.position.is_equal_approx(
+					boss_scene.board_world_bounds.get_center()
+				),
+			"보스 카메라는 화면 전체를 채우는 확대율과 중앙 위치를 적용해야 한다."
+		)
+	_expect(
+		boss_scene.wave_manager.current_stage_phase
+			== WaveManager.StagePhase.REPAIR_PLACEMENT
+			and boss_placement_bridge.placement_session.current_state
+				== BoardPlacementSession.State.EDITING
+			and not boss_runtime.is_battle_active(),
+		"보스 전투 전 수리 부품 배치 화면을 먼저 열어야 한다."
+	)
+	_expect(boss_placement_bridge.commit_placement(),
+		"보스 수리 부품 배치를 확정할 수 있어야 한다.")
+	await _wait_for_transition()
+	_expect(
+		boss_scene.wave_manager.current_stage_phase == WaveManager.StagePhase.BOSS
+			and boss_runtime.is_battle_active(),
+		"수리 부품 배치를 확정한 뒤에만 보스 전투를 시작해야 한다."
+	)
 	var boss_coin_session := _get_active_coin_session(manager)
 	var boss_coin_field := manager.active_scene.get_node(
 		^"CoinSystem"
@@ -348,7 +398,7 @@ func _test_stage_coin_wallet_continuity() -> void:
 			and manager.current_coin_balance == 12,
 		"마지막 보상 뒤 실제 보스가 공용 코인을 유지한 채 시작되어야 한다."
 	)
-	_defeat_active_boss(manager)
+	await _defeat_active_boss(manager)
 	await _wait_for_transition()
 	_expect(
 		manager.current_phase == StageFlowManager.Phase.COMPLETE
@@ -365,6 +415,7 @@ func _test_stage_reward_purchase_persistence() -> void:
 	root.add_child(stage)
 	await _wait_for_transition()
 	var manager := stage.get_node(^"StageFlowManager") as StageFlowManager
+	manager.defeat_destination_scene = null
 	manager.coin_wallet.add(999)
 	_complete_active_wave(manager, 1000)
 	await _wait_for_transition()
@@ -426,6 +477,23 @@ func _test_stage_reward_purchase_persistence() -> void:
 	await _wait_for_transition()
 	(manager.active_scene as StageRewardShopScreen).continue_stage()
 	await _wait_frames(6)
+	var boss_scene := manager.active_scene as Stage1TeddyBossScene
+	_expect(boss_scene != null, "구매 상태를 이어받을 보스 씬을 생성해야 한다.")
+	if boss_scene == null:
+		stage.queue_free()
+		await process_frame
+		return
+	var boss_placement_bridge := boss_scene.get_node(
+		^"BoardWavePlacementBridge"
+	) as BoardWavePlacementBridge
+	_expect(
+		boss_scene.wave_manager.current_stage_phase
+			== WaveManager.StagePhase.REPAIR_PLACEMENT,
+		"보상 구매 상태를 유지한 채 보스 수리 부품 배치로 진입해야 한다."
+	)
+	_expect(boss_placement_bridge.commit_placement(),
+		"보스 전투 전에 구매한 수리 부품 배치를 확정할 수 있어야 한다.")
+	await _wait_for_transition()
 
 	var boss_inventory := manager.active_scene.get_node(
 		^"WaveBallInventory"
@@ -531,6 +599,18 @@ func _test_stage_01_scene_configuration() -> void:
 			and manager.boss_scenes[0].resource_path
 				== "res://scenes/game/stages/stage_01/boss/stage1_teddy_boss_scene.tscn",
 		"Stage 01은 실제 테디 보스 씬 하나를 보스 배열에 직접 연결해야 한다."
+	)
+	_expect(
+		manager.clear_destination_scene != null
+			and manager.clear_destination_scene.resource_path
+				== "res://scenes/ending/stage1_ending.tscn",
+		"Stage 01 클리어는 Stage 1 엔딩 씬으로 이동해야 한다."
+	)
+	_expect(
+		manager.defeat_destination_scene != null
+			and manager.defeat_destination_scene.resource_path
+				== "res://scenes/ending/stage1_ending.tscn",
+		"임시 Stage 01 패배 목적지도 Stage 1 엔딩 씬으로 이동해야 한다."
 	)
 	for index in mini(manager.wave_scenes.size(), expected_scores.size()):
 		var wave := manager.wave_scenes[index].instantiate()
@@ -649,6 +729,7 @@ func _defeat_active_boss(manager: StageFlowManager) -> void:
 		^"Components/BossHealthComponent"
 	) as BossHealthComponent
 	health.apply_damage(health.get_current_health())
+	await runtime.battle_completed
 
 
 func _exhaust_active_boss_balls(manager: StageFlowManager) -> void:

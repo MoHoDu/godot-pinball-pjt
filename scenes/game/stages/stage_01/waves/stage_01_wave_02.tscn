@@ -9,11 +9,11 @@ script = ExtResource("2_settings")
 stage_id = &"stage_01_wave_02"
 wave_target_scores = PackedInt32Array(1500)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_av0vc"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7glqs"]
 resource_local_to_scene = true
 size = Vector2(2600, 160)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_26ud8"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_av0vc"]
 resource_local_to_scene = true
 size = Vector2(160, 1600)
 
@@ -22,16 +22,31 @@ minimum_full_bleed_aspect = 1.45
 wave_stage_settings = SubResource("StageSettings")
 
 [node name="TopDrain" parent="BallDrainArea" index="0"]
-shape = SubResource("RectangleShape2D_av0vc")
+shape = SubResource("RectangleShape2D_7glqs")
 
 [node name="BottomDrain" parent="BallDrainArea" index="1"]
-shape = SubResource("RectangleShape2D_av0vc")
+shape = SubResource("RectangleShape2D_7glqs")
 
 [node name="LeftDrain" parent="BallDrainArea" index="2"]
-shape = SubResource("RectangleShape2D_26ud8")
+shape = SubResource("RectangleShape2D_av0vc")
 
 [node name="RightDrain" parent="BallDrainArea" index="3"]
-shape = SubResource("RectangleShape2D_26ud8")
+shape = SubResource("RectangleShape2D_av0vc")
+
+[node name="Main01" parent="CoinSystem/SpawnPoints" index="0"]
+position = Vector2(-850, -299)
+
+[node name="Main08" parent="CoinSystem/SpawnPoints" index="7"]
+position = Vector2(0, 2)
+
+[node name="Main10" parent="CoinSystem/SpawnPoints" index="9"]
+position = Vector2(290, 147)
+
+[node name="Risk01" parent="CoinSystem/SpawnPoints" index="10"]
+position = Vector2(3, 468)
+
+[node name="Risk02" parent="CoinSystem/SpawnPoints" index="11"]
+position = Vector2(606, 331)
 
 [node name="WaveHud" parent="HUD" parent_id_path=PackedInt32Array(739204287) index="1" unique_id=414747941]
 panel_fill_opacity = 0.68

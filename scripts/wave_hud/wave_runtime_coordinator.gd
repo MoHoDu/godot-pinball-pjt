@@ -17,6 +17,12 @@ const START_SCREEN_PATH := "res://scenes/game/start/start_screen.tscn"
 @export_range(0, 99, 1) var wave_stage_index := 0
 @export_range(0, 99, 1) var authored_bumper_wave_index := 0
 @export var expected_bumper_kind_ids: Array[StringName] = []
+## false이면 이 씬의 Expected Bumper Kind Ids를 최종 로스터로 사용합니다.
+## Inspector 편집 도구로 범퍼를 추가·삭제하면 자동으로 false가 됩니다.
+@export var enforce_stage_bumper_limits := true
+## 상속 씬에서 직접 지울 수 없는 기본 범퍼를 웨이브별로 제외합니다.
+## 경로는 Bumpers 기준 상대 경로입니다.
+@export var disabled_bumper_paths: Array[NodePath] = []
 
 @export_category("Runtime Dependencies")
 @export var launcher: PinballLauncher
@@ -53,6 +59,7 @@ var _paused_before_settings := false
 
 
 func _ready() -> void:
+	_apply_disabled_bumpers()
 	_assert_required_nodes()
 	_bind_bumper_runtime()
 	_bind_wave_runtime()
@@ -127,19 +134,21 @@ func get_bumpers() -> Array[Bumper]:
 	if bumpers_root == null:
 		return result
 	for child: Node in bumpers_root.get_children():
-		if child is Bumper:
+		if child is Bumper and not _is_bumper_disabled(child):
 			result.append(child as Bumper)
 	return result
 
 
 func is_current_bumper_loadout_valid() -> bool:
-	if bumper_stage_settings == null:
-		return false
-	var loadout := bumper_stage_settings.get_wave(
-		authored_bumper_wave_index
-	) as BumperWaveLoadout
-	if loadout == null or not loadout.is_valid():
-		return false
+	var loadout: BumperWaveLoadout
+	if enforce_stage_bumper_limits:
+		if bumper_stage_settings == null:
+			return false
+		loadout = bumper_stage_settings.get_wave(
+			authored_bumper_wave_index
+		) as BumperWaveLoadout
+		if loadout == null or not loadout.is_valid():
+			return false
 
 	var bumpers := get_bumpers()
 	var normal_count := 0
@@ -167,6 +176,14 @@ func is_current_bumper_loadout_valid() -> bool:
 			expected_kind_counts.get(kind_id, 0)
 		) + 1
 
+	var expected_roster_matches := (
+		expected_kind_counts.is_empty() or kind_counts == expected_kind_counts
+	)
+	if not expected_roster_matches:
+		return false
+	if not enforce_stage_bumper_limits:
+		return true
+
 	return (
 		_is_count_in_range(bumpers.size(), loadout.total_count_range)
 		and _is_count_in_range(normal_count, loadout.normal_count_range)
@@ -175,8 +192,65 @@ func is_current_bumper_loadout_valid() -> bool:
 		and int(kind_counts.get(COTTON_KIND_ID, 0)) <= loadout.maximum_cotton_count
 		and int(kind_counts.get(TOY_DRUM_KIND_ID, 0))
 			<= loadout.maximum_toy_drum_count
-		and (expected_kind_counts.is_empty() or kind_counts == expected_kind_counts)
 	)
+
+
+func set_bumper_disabled(bumper: Bumper, disabled: bool) -> bool:
+	if bumper == null or bumpers_root == null \
+			or not bumpers_root.is_ancestor_of(bumper):
+		return false
+	var path := bumpers_root.get_path_to(bumper)
+	if disabled:
+		if path not in disabled_bumper_paths:
+			disabled_bumper_paths.append(path)
+	else:
+		disabled_bumper_paths.erase(path)
+	bumper.visible = not disabled
+	return true
+
+
+func restore_disabled_bumpers() -> void:
+	if bumpers_root != null:
+		for child: Node in bumpers_root.get_children():
+			if child is Bumper and _is_bumper_disabled(child):
+				(child as Bumper).visible = true
+	disabled_bumper_paths.clear()
+
+
+func sync_expected_bumper_roster() -> void:
+	expected_bumper_kind_ids.clear()
+	for bumper: Bumper in get_bumpers():
+		if bumper.settings != null:
+			expected_bumper_kind_ids.append(bumper.settings.bumper_kind_id)
+
+
+func _is_bumper_disabled(bumper: Node) -> bool:
+	if bumper == null or bumpers_root == null:
+		return false
+	return bumpers_root.get_path_to(bumper) in disabled_bumper_paths
+
+
+func _apply_disabled_bumpers() -> void:
+	if bumpers_root == null:
+		return
+	for child: Node in bumpers_root.get_children():
+		if not (child is Bumper) or not _is_bumper_disabled(child):
+			continue
+		var bumper := child as Bumper
+		bumper.visible = false
+		bumper.process_mode = Node.PROCESS_MODE_DISABLED
+		bumper.collision_layer = 0
+		bumper.collision_mask = 0
+		for collision_child: Node in bumper.find_children(
+			"*", "CollisionShape2D", true, false
+		):
+			(collision_child as CollisionShape2D).disabled = true
+		for area_child: Node in bumper.find_children("*", "Area2D", true, false):
+			var area := area_child as Area2D
+			area.monitoring = false
+			area.monitorable = false
+			area.collision_layer = 0
+			area.collision_mask = 0
 
 
 func _assert_required_nodes() -> void:

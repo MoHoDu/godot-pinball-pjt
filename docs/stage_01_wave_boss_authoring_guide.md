@@ -1,7 +1,8 @@
 # Stage 01 웨이브·보스 에디터 설정 가이드
 
-이 문서는 현재 시스템 구조를 변경하지 않고 Godot 에디터에서 Stage 01의 웨이브와
-보스를 조정하는 방법을 설명합니다.
+이 문서는 Godot 에디터에서 Stage 01의 웨이브와 보스를 조정하는 방법을 설명합니다.
+범퍼·코인·영역·소켓의 추가와 삭제에는 프로젝트에 포함된 Inspector 편집 버튼을
+사용합니다.
 
 ## 먼저 알아둘 현재 구조
 
@@ -9,9 +10,12 @@
 - Stage 01 구성 씬은 `scenes/game/stages/stage_01/stage_01.tscn`입니다.
 - 일반 웨이브 3개와 보스는 모두 `Resources/Prefabs/wave/base/wave_unique.tscn`을
   상속합니다.
-- 현재 일반 웨이브 3개는 목표 점수만 서로 다르고, 범퍼·수리 영역·소켓·기본 코인
-  배치는 공통 베이스에서 상속합니다.
-- 보스도 같은 웨이브 베이스를 상속하므로 기본 범퍼와 수리 영역·소켓을 공유합니다.
+- 일반 웨이브 3개와 보스는 기본 범퍼·수리 영역·소켓·코인을 공통 베이스에서
+  상속합니다.
+- 각 웨이브와 보스의 `WaveAuthoringTools` Inspector에서 상속된 범퍼·코인을 제외하거나
+  새 노드를 추가할 수 있습니다.
+- `WaveAuthoringTools`에 다른 `BoardLayout` 씬을 적용하면 공통 영역·소켓 대신
+  스테이지 전용 영역·소켓을 사용할 수 있습니다.
 
 씬이나 리소스를 수정하기 전에 Git 브랜치를 확인하고, 한 항목씩 수정한 뒤 해당 씬을
 F6으로 실행하여 확인하는 것을 권장합니다.
@@ -34,8 +38,8 @@ F6으로 실행하여 확인하는 것을 권장합니다.
    `Transform > Position`을 수정합니다.
 4. 범퍼끼리 겹치거나 플리퍼 스윕·발사구를 막지 않는지 F6으로 확인합니다.
 
-위치 변경은 열린 웨이브 씬의 오버라이드로 저장할 수 있습니다. 다만 상속된 범퍼의
-삭제·종류 교체·구성 전체 변경은 현재 씬 구조에서 편하지 않습니다.
+위치 변경은 열린 웨이브 씬의 오버라이드로 저장할 수 있습니다. 상속된 범퍼의 추가·삭제와
+종류 교체는 아래의 `WaveAuthoringTools`를 사용합니다.
 
 ### 크기 설정
 
@@ -77,6 +81,42 @@ F6으로 실행하여 확인하는 것을 권장합니다.
 특정 웨이브의 한 범퍼만 밸런스를 바꾸려면 공유 `Common/Type Settings`보다
 `Instance Overrides`를 우선 사용합니다.
 
+## 웨이브 범퍼 추가와 삭제
+
+범퍼 추가·삭제는 수정할 웨이브 씬의 `WaveAuthoringTools` Inspector에서 진행합니다.
+보스도 `stage1_teddy_boss_wave.tscn`에서 같은 방법을 사용합니다.
+
+### 범퍼 추가
+
+1. 수정할 `stage_01_wave_0N.tscn` 또는 `stage1_teddy_boss_wave.tscn`을 엽니다.
+2. Scene 트리에서 루트 바로 아래의 `WaveAuthoringTools`를 선택합니다.
+3. Inspector의 `Bumper Add Delete > Bumper Scene`에 범퍼 프리팹을 지정합니다.
+   - 일반 범퍼 프리팹 위치: `Resources/Prefabs/bumpers/presented/`
+4. `Bumper Position`에 최초 생성 위치를 입력합니다.
+5. `Add Bumper` 버튼을 누릅니다.
+6. 새 범퍼가 자동 선택되면 2D 화면에서 마우스로 드래그합니다.
+7. `Ctrl+S` 또는 `Cmd+S`로 현재 웨이브 씬을 저장합니다.
+
+추가된 범퍼는 현재 웨이브 씬의 로컬 인스턴스입니다. 다른 웨이브에는 영향을 주지
+않습니다. `Bumper Id`와 `Expected Bumper Kind Ids`는 도구가 자동으로 맞춥니다.
+
+### 범퍼 삭제
+
+1. `WaveAuthoringTools`를 선택합니다.
+2. 삭제할 범퍼를 Scene 트리에서 `Bumper To Delete` 슬롯으로 드래그합니다.
+3. `Delete Selected Bumper` 버튼을 누릅니다.
+4. 씬을 저장합니다.
+
+현재 웨이브에서 추가한 로컬 범퍼는 Scene 트리에서 실제로 제거됩니다. 공통 베이스에서
+상속한 범퍼는 원본 씬을 훼손하지 않고 현재 웨이브의 `Disabled Bumper Paths`에
+등록됩니다. 실행 시 충돌·타격·표시가 모두 비활성화됩니다.
+
+잘못 삭제한 상속 범퍼는 `Restore Inherited Bumpers`로 한 번에 복원할 수 있습니다.
+복원 버튼은 현재 웨이브에서 추가했다가 실제 삭제한 로컬 범퍼까지 복구하지는 않습니다.
+
+범퍼 구성을 추가·삭제하면 해당 씬의 `Enforce Stage Bumper Limits`가 자동으로 꺼집니다.
+대신 도구가 동기화한 `Expected Bumper Kind Ids`가 현재 웨이브의 정확한 로스터가 됩니다.
+
 ## 웨이브 영역과 소켓 위치 설정
 
 현재 실제 웨이브들이 사용하는 공통 레이아웃은 다음 씬입니다.
@@ -108,12 +148,87 @@ F6으로 실행하여 확인하는 것을 권장합니다.
 
 현재 검증 규칙은 다음과 같습니다.
 
-- 소켓은 정확히 12개여야 합니다.
+- 소켓 수는 레이아웃의 `Required Candidate Sockets`와 같아야 합니다. 기본값은 12개입니다.
 - 소켓 중심은 144px 그리드에 정렬되어야 합니다.
 - 소켓 예약 원 전체가 보드 및 대상 영역 안에 있어야 합니다.
 - 소켓끼리, 금지 영역, 플리퍼 스윕, 발사구와 겹치면 안 됩니다.
 
 공통 레이아웃을 수정하면 웨이브 1·2·3과 보스에 함께 반영됩니다.
+
+## 영역과 소켓 추가·삭제
+
+영역과 소켓은 `BoardLayout` 씬을 직접 열어 수정합니다. 공통 배치를 바꾸려면
+`wave_repair_board_layout.tscn`을 열고, 웨이브별 배치를 만들려면 먼저 아래 레이아웃 중
+하나를 복제하여 새 `.tscn`으로 저장합니다.
+
+- `Resources/Prefabs/boards/layouts/wave_01_repair_layout.tscn`
+- `Resources/Prefabs/boards/layouts/wave_02_repair_layout.tscn`
+- `Resources/Prefabs/boards/layouts/wave_03_repair_layout.tscn`
+
+### 영역 추가
+
+1. 레이아웃 루트 `BoardLayout`을 선택합니다.
+2. `Editor Add Zone`에서 다음 값을 설정합니다.
+   - `New Zone Id`: 중복되지 않는 영역 ID
+   - `New Zone Center`: 최초 생성 중심
+   - `New Zone Size`: 최초 사각형 크기
+   - `New Zone Allowed Kind Ids`: 배치 가능한 수리 부품 ID
+3. `Add Zone`을 누릅니다.
+4. 생성된 `Zones` 하위 `Polygon2D`를 선택합니다.
+5. 2D 폴리곤 편집 도구로 꼭짓점을 마우스로 이동합니다.
+
+### 영역 삭제
+
+1. 레이아웃 루트를 선택합니다.
+2. 삭제할 영역을 Scene 트리에서 `Zone To Delete` 슬롯으로 드래그합니다.
+3. `Delete Selected Zone`을 누릅니다.
+
+해당 `Zone Id`를 참조하는 소켓이 남아 있으면 삭제가 거부됩니다. 소켓의 `Zone Id`를
+다른 영역으로 바꾸거나 해당 소켓을 먼저 삭제합니다.
+
+### 소켓 추가
+
+1. 레이아웃 루트의 `Editor Add Socket`을 펼칩니다.
+2. 다음 값을 설정합니다.
+   - `New Socket Id`: 중복되지 않는 소켓 ID
+   - `New Socket Zone Id`: 이미 존재하는 영역 ID
+   - `New Socket Position`: 최초 생성 위치
+   - `New Socket Reserve Radius`: 부품 예약 반경
+3. `Add Socket`을 누릅니다.
+4. 새 소켓이 144 월드 유닛 격자에 자동 정렬됩니다.
+5. 필요하면 2D 화면에서 마우스로 이동합니다.
+
+### 소켓 삭제
+
+1. 레이아웃 루트를 선택합니다.
+2. 삭제할 소켓을 Scene 트리에서 `Socket To Delete` 슬롯으로 드래그합니다.
+3. `Delete Selected Socket`을 누릅니다.
+
+소켓 추가·삭제 시 `Required Candidate Sockets`가 현재 개수로 자동 동기화됩니다. Scene
+트리에서 직접 복제하거나 삭제했다면 `Sync Expected Socket Count`를 누릅니다. 마지막에는
+반드시 `Validate & Save`를 실행합니다.
+
+## 새 영역 레이아웃을 스테이지에 갈아끼우기
+
+새 영역을 추가한 `BoardLayout` 씬을 만든 뒤 다음 순서로 웨이브 또는 보스에 적용합니다.
+
+1. 적용할 `stage_01_wave_0N.tscn` 또는 `stage1_teddy_boss_wave.tscn`을 엽니다.
+2. `WaveAuthoringTools`를 선택합니다.
+3. `Stage Board Layout > Board Layout Scene`에 새 레이아웃 `.tscn`을 지정합니다.
+4. `Apply Board Layout Scene`을 누릅니다.
+5. Scene 트리에 `StageRepairBoardLayout`이 추가되었는지 확인합니다.
+6. 씬을 저장하고 F6으로 실행합니다.
+
+버튼은 다음 연결을 새 레이아웃으로 함께 교체합니다.
+
+- 코인 배치 검증의 `Board Layout`
+- 수리 부품 배치 세션
+- 보상 화면의 수리 부품 배치 세션
+- 수리 부품 효과 검색 루트
+
+원래 공통 레이아웃으로 돌아가려면 `Use Default Board Layout`을 누릅니다. 새 레이아웃을
+다른 레이아웃으로 교체할 때는 `Board Layout Scene`을 바꾼 뒤 `Apply Board Layout Scene`을
+다시 누르면 됩니다.
 
 ## 웨이브 코인 위치 설정
 
@@ -133,8 +248,8 @@ F6으로 실행하여 확인하는 것을 권장합니다.
 
 ### 코인 개수 변경 시
 
-코인 마커를 추가·복제·삭제했다면 `CoinSystem` 루트 Inspector의 다음 기대값도 실제
-배치와 맞춰야 합니다.
+`WaveAuthoringTools`로 코인을 추가·삭제하면 다음 기대값도 실제 배치와 자동으로
+맞춰집니다. Scene 트리에서 직접 복제·삭제했다면 수동으로 맞춥니다.
 
 - `Expected Spawn Count`: 전체 코인 수
 - `Expected Main Count`: MAIN 코인 수
@@ -142,7 +257,7 @@ F6으로 실행하여 확인하는 것을 권장합니다.
 
 현재 기본값은 전체 12개, MAIN 10개, RISK 2개입니다.
 
-코인 배치는 코드상 다음 항목을 검증할 수 있지만, 현재 Inspector에 실행 버튼은 없습니다.
+`WaveAuthoringTools > Validate Coin Placement`는 다음 항목을 검사합니다.
 
 - 보드 밖 배치
 - 코인끼리의 겹침
@@ -150,7 +265,35 @@ F6으로 실행하여 확인하는 것을 권장합니다.
 - 소켓 예약 반경과의 겹침
 - 금지 영역과의 겹침
 
-변경 후 해당 웨이브를 F6으로 실행하여 실제 생성 위치와 획득 동작을 확인합니다.
+검증을 통과한 뒤 해당 웨이브를 F6으로 실행하여 실제 생성 위치와 획득 동작을 확인합니다.
+
+## 웨이브 코인 추가와 삭제
+
+코인 추가·삭제도 수정할 웨이브 씬의 `WaveAuthoringTools` Inspector에서 진행합니다.
+
+### 코인 추가
+
+1. `WaveAuthoringTools`를 선택합니다.
+2. `Coin Add Delete > Coin Route Kind`에서 `MAIN` 또는 `RISK`를 선택합니다.
+3. `Coin Position`에 최초 생성 위치를 입력합니다.
+4. `Add Coin`을 누릅니다.
+5. 새 `CoinSystem/SpawnPoints` 마커가 자동 선택되면 2D 화면에서 드래그합니다.
+6. `Validate Coin Placement`를 누릅니다.
+7. 씬을 저장합니다.
+
+`Point Id`, 노드 이름, `Expected Spawn/Main/Risk Count`는 자동으로 갱신됩니다.
+
+### 코인 삭제
+
+1. `WaveAuthoringTools`를 선택합니다.
+2. 삭제할 `CoinSystem/SpawnPoints` 마커를 `Coin To Delete` 슬롯으로 드래그합니다.
+3. `Delete Selected Coin`을 누릅니다.
+4. `Validate Coin Placement`를 누릅니다.
+5. 씬을 저장합니다.
+
+현재 웨이브에서 추가한 코인은 Scene 트리에서 실제로 제거됩니다. 상속한 기본 코인은
+현재 웨이브의 `Disabled Spawn Point Paths`에 등록되어 생성 대상에서 제외됩니다.
+`Restore Inherited Coins`로 제외한 기본 코인을 한 번에 복원할 수 있습니다.
 
 ## 웨이브 타겟 스코어 설정
 
@@ -213,17 +356,19 @@ F6으로 실행하여 확인하는 것을 권장합니다.
 보스만의 범퍼 크기를 만들기 위해 공용 `Object Settings`를 수정하면 일반 웨이브도 함께
 바뀝니다. 현재 크기에는 인스턴스 전용 오버라이드가 없습니다.
 
+보스 범퍼의 추가·삭제는 앞의 **웨이브 범퍼 추가와 삭제** 절차를 그대로 사용합니다.
+작업 대상만 `stage1_teddy_boss_wave.tscn`으로 바꿉니다.
+
 ## 보스 영역과 소켓 위치 설정
 
-현재 보스 전용 영역·소켓 레이아웃은 없습니다. 보스도 다음 공통 레이아웃을 사용합니다.
+기본 상태의 보스는 다음 공통 레이아웃을 사용합니다.
 
 `Resources/Prefabs/boards/wave_repair_board_layout.tscn`
 
-따라서 설정 방법은 앞의 **웨이브 영역과 소켓 위치 설정**과 동일합니다. 이 레이아웃을
-수정하면 일반 웨이브와 보스가 모두 변경됩니다.
-
-보스에만 다른 영역이나 소켓을 사용하려면 전용 레이아웃을 보스 씬에 연결하는 추가 구현이
-필요합니다.
+공통 레이아웃을 직접 수정하면 일반 웨이브와 보스가 모두 변경됩니다. 보스에만 다른 영역과
+소켓을 사용하려면 보스 전용 `BoardLayout` 씬을 만든 뒤
+`stage1_teddy_boss_wave.tscn > WaveAuthoringTools > Stage Board Layout`에서 적용합니다.
+방법은 앞의 **새 영역 레이아웃을 스테이지에 갈아끼우기**와 같습니다.
 
 ## 보스 HP 설정
 
@@ -292,47 +437,41 @@ F6으로 실행하여 확인하는 것을 권장합니다.
 
 ## 에디터에서 어렵거나 현재 구현되지 않은 항목
 
-1. **웨이브별 범퍼 구성 완전 분리**
-   - 웨이브 1·2·3이 공통 베이스의 같은 범퍼 6개를 상속합니다.
-   - 위치 오버라이드는 가능하지만 상속된 범퍼의 삭제·종류 교체·서로 다른 로스터 구성은
-     편하지 않습니다.
-
-2. **웨이브별 범퍼 크기 오버라이드**
+1. **웨이브별 범퍼 크기 오버라이드**
    - 크기는 공유 `Object Settings`에만 있습니다.
    - 특정 웨이브 또는 보스의 범퍼 하나만 다른 충돌/표시 지름을 쓰는 인스턴스 설정은
      구현되어 있지 않습니다.
 
-3. **웨이브별 영역·소켓 연결**
-   - `wave_01_repair_layout.tscn`, `wave_02_repair_layout.tscn`,
-     `wave_03_repair_layout.tscn` 파일은 존재하지만 현재 실제 Stage 01 웨이브에는 연결되어
-     있지 않습니다.
-   - 현재는 `wave_repair_board_layout.tscn` 하나를 웨이브와 보스가 공유합니다.
+2. **상속 범퍼·코인의 물리적 노드 삭제**
+   - 상속한 기본 노드는 Godot 상속 씬 제약 때문에 Scene 트리에서 실제 제거할 수 없습니다.
+   - 삭제 버튼은 현재 스테이지의 제외 목록에 등록하여 실행·검증 대상에서 완전히 뺍니다.
+   - 현재 스테이지에서 새로 추가한 로컬 노드는 실제로 삭제됩니다.
 
-4. **보스 전용 영역·소켓**
-   - 보스 전용 레이아웃은 구현되어 있지 않습니다.
-   - 공통 레이아웃을 수정하면 일반 웨이브도 함께 변경됩니다.
+3. **적용한 레이아웃의 내부 편집**
+   - 스테이지에 적용한 `StageRepairBoardLayout`은 PackedScene 인스턴스입니다.
+   - 영역 폴리곤과 소켓 구성을 바꾸려면 원본 `BoardLayout` `.tscn`을 직접 열어 수정합니다.
+   - 스테이지 씬에서는 레이아웃 교체와 전체 위치 이동만 담당합니다.
 
-5. **코인 배치 Inspector 검증 버튼**
-   - 코인 겹침 검증 코드는 있지만 에디터 Inspector에서 바로 실행할 버튼과 구성 경고가
-     없습니다.
-   - 현재는 F6 실행 또는 자동 테스트로 확인해야 합니다.
+4. **새 영역의 최초 모양**
+   - `Add Zone`은 사각형 폴리곤을 생성합니다.
+   - 삼각형·오목 다각형 등은 생성 후 2D 폴리곤 편집 도구로 꼭짓점을 수정합니다.
 
-6. **코인별 가치·종류 설정**
+5. **코인별 가치·종류 설정**
    - 각 SpawnPoint에는 위치와 경로 종류만 있습니다.
    - 코인 가치와 그래픽 정의는 `CoinSystem` 전체가 하나의 `CoinDefinition`을 공유합니다.
 
-7. **보스 기본 데미지 단일 필드**
+6. **보스 기본 데미지 단일 필드**
    - 독립적인 `Base Damage` 설정은 구현되어 있지 않습니다.
    - HP, 목표 타격 수, 공 무게, 콤보 배율을 조합해 간접 조정해야 합니다.
 
-8. **Stage 01의 모든 공에 대한 보스 피해 프로필**
+7. **Stage 01의 모든 공에 대한 보스 피해 프로필**
    - 현재 `BossBallDamageWeightRules.tres`에는 `light`, `normal`, `heavy` ID만 등록되어
      있습니다.
    - Stage 01 초기 공의 `gel`과 보상으로 얻는 다른 공 ID는 피해 무게 프로필이 없어
      보스 피해가 0이 될 수 있습니다. 사용할 모든 공 ID를 한 무게 등급 배열에 등록해야
      합니다.
 
-9. **웨이브 2·3 통합 상태로 바로 시작하는 테스트 옵션**
+8. **웨이브 2·3 통합 상태로 바로 시작하는 테스트 옵션**
    - 각 웨이브 씬을 F6으로 단독 실행할 수는 있지만 Stage 01이 주입하는 누적 코인·구매
      공·수리 부품 상태와 동일하지 않습니다.
    - 실제 통합 상태 확인은 현재 시작 화면부터 순서대로 진행해야 합니다.
