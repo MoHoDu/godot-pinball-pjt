@@ -36,12 +36,24 @@ func _run() -> void:
 	popup.show_licenses()
 	_expect(popup.get_current_screen() == 2,
 		"라이선스 목록 화면으로 전환되어야 한다.")
-	popup.show_license_detail(&"black_han_sans")
-	_expect(popup.get_current_screen() == 3,
-		"라이선스 상세 화면으로 전환되어야 한다.")
 	var license_text := popup.find_child("LicenseText", true, false) as RichTextLabel
-	_expect(license_text != null and license_text.text.contains("SIL OPEN FONT LICENSE"),
-		"폰트의 실제 OFL 문서를 상세 화면에 표시해야 한다.")
+	var expected_license_markers := {
+		&"black_han_sans": "Copyright 2015 The Black Han Sans Project Authors",
+		&"noto_sans_kr": "Copyright 2014-2021 Adobe",
+		&"black_and_white_picture": "Copyright (c) 1992-2018 AsiaSoft Inc.",
+		&"godot_engine": "Permission is hereby granted, free of charge",
+	}
+	for entry_id: StringName in expected_license_markers:
+		popup.show_license_detail(entry_id)
+		_expect(popup.get_current_screen() == 3,
+			"%s 라이선스 상세 화면으로 전환되어야 한다." % entry_id)
+		_expect(
+			license_text != null and license_text.text.contains(
+				expected_license_markers[entry_id]
+			),
+			"%s의 실제 라이선스 전문을 표시해야 한다." % entry_id
+		)
+		popup.show_licenses()
 
 	popup.show_exit_confirmation()
 	_expect(popup.is_exit_confirmation_visible(),

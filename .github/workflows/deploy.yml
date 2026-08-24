@@ -74,6 +74,13 @@ jobs:
           test -s build/web/index.html
           test -s build/web/index.pck
           test -s build/web/index.wasm
+          for license_path in \
+            Resources/ui/fonts/black_han_sans/OFL.txt \
+            Resources/ui/fonts/noto_sans_kr/OFL.txt \
+            Resources/fonts/black_and_white_picture/OFL.txt
+          do
+            grep -a -F -q "$license_path" build/web/index.pck
+          done
 
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
