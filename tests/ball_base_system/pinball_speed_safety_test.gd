@@ -85,6 +85,9 @@ func _test_ball_case(ball_case: Dictionary) -> void:
 
 	ball.linear_velocity = Vector2.RIGHT * OUT_OF_RANGE_SPEED
 	await physics_frame
+	# physics_frame은 물리 스텝 시작 전에 발생하므로, 다음 physics_frame까지
+	# 기다려 그 사이에 한 번의 물리 적분이 완료되도록 합니다.
+	await physics_frame
 	_expect(ball.linear_velocity.length() <= expected_safety_maximum + EPSILON,
 		"%s 물리 프레임 속도도 안전 상한을 넘으면 안 된다. (actual=%.2f)" % [
 			ball_case[&"name"],
