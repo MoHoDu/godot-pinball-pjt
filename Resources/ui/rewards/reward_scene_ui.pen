@@ -2606,8 +2606,16 @@
                   "name": "Ball Shelf",
                   "width": "fill_container",
                   "height": 340,
+                  "fill": "#081D2B99",
+                  "cornerRadius": 18,
+                  "stroke": "#55BFAF",
+                  "strokeWidth": 4,
                   "layout": "vertical",
                   "gap": 10,
+                  "padding": [
+                    0,
+                    12
+                  ],
                   "children": [
                     {
                       "type": "frame",
@@ -2677,13 +2685,15 @@
                       "name": "Ball Shelf Cards",
                       "width": "fill_container",
                       "height": "fill_container",
-                      "gap": 16,
+                      "gap": 32,
+                      "justifyContent": "center",
+                      "alignItems": "center",
                       "children": [
                         {
                           "type": "frame",
                           "id": "JngFS",
                           "name": "Clockwork / available",
-                          "width": "fill_container",
+                          "width": 220,
                           "height": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 16,
@@ -2857,7 +2867,7 @@
                           "type": "frame",
                           "id": "K5UJMi",
                           "name": "Gel / available",
-                          "width": "fill_container",
+                          "width": 220,
                           "height": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 16,
@@ -3031,7 +3041,7 @@
                           "type": "frame",
                           "id": "kyRJD",
                           "name": "Hollow Bell / available",
-                          "width": "fill_container",
+                          "width": 220,
                           "height": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 16,
@@ -3211,8 +3221,16 @@
                   "name": "Part Shelf",
                   "width": "fill_container",
                   "height": 330,
+                  "fill": "#081D2B99",
+                  "cornerRadius": 18,
+                  "stroke": "#E9A83D",
+                  "strokeWidth": 4,
                   "layout": "vertical",
                   "gap": 10,
+                  "padding": [
+                    0,
+                    12
+                  ],
                   "children": [
                     {
                       "type": "frame",
@@ -3282,13 +3300,15 @@
                       "name": "Part Shelf Cards",
                       "width": "fill_container",
                       "height": "fill_container",
-                      "gap": 16,
+                      "gap": 32,
+                      "justifyContent": "center",
+                      "alignItems": "center",
                       "children": [
                         {
                           "type": "frame",
                           "id": "rY1ES",
                           "name": "Brooch / available",
-                          "width": "fill_container",
+                          "width": 220,
                           "height": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 16,
@@ -3462,7 +3482,7 @@
                           "type": "frame",
                           "id": "ZNTgR",
                           "name": "Gears / available",
-                          "width": "fill_container",
+                          "width": 220,
                           "height": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 16,
@@ -3636,7 +3656,7 @@
                           "type": "frame",
                           "id": "pudEX",
                           "name": "Bell / available",
-                          "width": "fill_container",
+                          "width": 220,
                           "height": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 16,
@@ -4205,8 +4225,16 @@
                   "name": "Ball Shelf",
                   "width": "fill_container",
                   "height": 340,
+                  "fill": "#081D2B99",
+                  "cornerRadius": 18,
+                  "stroke": "#55BFAF",
+                  "strokeWidth": 4,
                   "layout": "vertical",
                   "gap": 10,
+                  "padding": [
+                    0,
+                    12
+                  ],
                   "children": [
                     {
                       "type": "frame",
@@ -4276,19 +4304,21 @@
                       "name": "Ball Shelf Cards",
                       "width": "fill_container",
                       "height": "fill_container",
-                      "gap": 16,
+                      "gap": 32,
                       "padding": [
                         0,
                         8,
                         0,
                         0
                       ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
                       "children": [
                         {
                           "type": "frame",
                           "id": "EpPkT",
                           "name": "Clockwork / selected",
-                          "width": "fill_container",
+                          "width": 220,
                           "height": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 16,
@@ -4499,7 +4529,7 @@
                           "type": "frame",
                           "id": "Kmrp6",
                           "name": "Gel / available",
-                          "width": "fill_container",
+                          "width": 220,
                           "height": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 16,
@@ -4674,7 +4704,7 @@
                           "type": "frame",
                           "id": "Aa1LA",
                           "name": "Hollow Bell / available",
-                          "width": "fill_container",
+                          "width": 220,
                           "height": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 16,
@@ -4855,8 +4885,16 @@
                   "name": "Part Shelf",
                   "width": "fill_container",
                   "height": 330,
+                  "fill": "#081D2B99",
+                  "cornerRadius": 18,
+                  "stroke": "#E9A83D",
+                  "strokeWidth": 4,
                   "layout": "vertical",
                   "gap": 10,
+                  "padding": [
+                    0,
+                    12
+                  ],
                   "children": [
                     {
                       "type": "frame",
@@ -4926,19 +4964,21 @@
                       "name": "Part Shelf Cards",
                       "width": "fill_container",
                       "height": "fill_container",
-                      "gap": 16,
+                      "gap": 32,
                       "padding": [
                         0,
                         8,
                         0,
                         0
                       ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
                       "children": [
                         {
                           "type": "frame",
                           "id": "f2XSQW",
                           "name": "Brooch / available",
-                          "width": "fill_container",
+                          "width": 220,
                           "height": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 16,
@@ -5113,7 +5153,7 @@
                           "type": "frame",
                           "id": "oAdjU",
                           "name": "Gears / available",
-                          "width": "fill_container",
+                          "width": 220,
                           "height": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 16,
@@ -5288,7 +5328,7 @@
                           "type": "frame",
                           "id": "wiXCP",
                           "name": "Bell / available",
-                          "width": "fill_container",
+                          "width": 220,
                           "height": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 16,
@@ -5526,7 +5566,7 @@
             {
               "type": "frame",
               "id": "HgzU3",
-              "x": 88,
+              "x": 388,
               "y": 514,
               "name": "Reward Detail Popup / Ball Hover",
               "width": 420,
@@ -5951,8 +5991,16 @@
                   "name": "Ball Shelf",
                   "width": "fill_container",
                   "height": 340,
+                  "fill": "#081D2B99",
+                  "cornerRadius": 18,
+                  "stroke": "#55BFAF",
+                  "strokeWidth": 4,
                   "layout": "vertical",
                   "gap": 10,
+                  "padding": [
+                    0,
+                    12
+                  ],
                   "children": [
                     {
                       "type": "frame",
@@ -6022,19 +6070,21 @@
                       "name": "Ball Shelf Cards",
                       "width": "fill_container",
                       "height": "fill_container",
-                      "gap": 16,
+                      "gap": 32,
                       "padding": [
                         0,
                         8,
                         0,
                         0
                       ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
                       "children": [
                         {
                           "type": "frame",
                           "id": "gsrwn",
                           "name": "Clockwork / purchased",
-                          "width": "fill_container",
+                          "width": 220,
                           "height": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 16,
@@ -6245,7 +6295,7 @@
                           "id": "P9QabP",
                           "name": "Gel / locked",
                           "opacity": 0.52,
-                          "width": "fill_container",
+                          "width": 220,
                           "height": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 16,
@@ -6447,7 +6497,7 @@
                           "id": "WRNPb",
                           "name": "Hollow Bell / locked",
                           "opacity": 0.52,
-                          "width": "fill_container",
+                          "width": 220,
                           "height": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 16,
@@ -6654,8 +6704,16 @@
                   "name": "Part Shelf",
                   "width": "fill_container",
                   "height": 330,
+                  "fill": "#081D2B99",
+                  "cornerRadius": 18,
+                  "stroke": "#E9A83D",
+                  "strokeWidth": 4,
                   "layout": "vertical",
                   "gap": 10,
+                  "padding": [
+                    0,
+                    12
+                  ],
                   "children": [
                     {
                       "type": "frame",
@@ -6725,19 +6783,21 @@
                       "name": "Part Shelf Cards",
                       "width": "fill_container",
                       "height": "fill_container",
-                      "gap": 16,
+                      "gap": 32,
                       "padding": [
                         0,
                         8,
                         0,
                         0
                       ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
                       "children": [
                         {
                           "type": "frame",
                           "id": "i8KhB",
                           "name": "Brooch / available",
-                          "width": "fill_container",
+                          "width": 220,
                           "height": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 16,
@@ -6912,7 +6972,7 @@
                           "id": "plc25",
                           "name": "Gears / insufficient",
                           "opacity": 0.72,
-                          "width": "fill_container",
+                          "width": 220,
                           "height": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 16,
@@ -7113,7 +7173,7 @@
                           "type": "frame",
                           "id": "nYJwv",
                           "name": "Bell / available",
-                          "width": "fill_container",
+                          "width": 220,
                           "height": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 16,
@@ -7682,8 +7742,16 @@
                   "name": "Ball Shelf",
                   "width": "fill_container",
                   "height": 340,
+                  "fill": "#081D2B99",
+                  "cornerRadius": 18,
+                  "stroke": "#55BFAF",
+                  "strokeWidth": 4,
                   "layout": "vertical",
                   "gap": 10,
+                  "padding": [
+                    0,
+                    12
+                  ],
                   "children": [
                     {
                       "type": "frame",
@@ -7753,19 +7821,21 @@
                       "name": "Ball Shelf Cards",
                       "width": "fill_container",
                       "height": "fill_container",
-                      "gap": 16,
+                      "gap": 32,
                       "padding": [
                         0,
                         8,
                         0,
                         0
                       ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
                       "children": [
                         {
                           "type": "frame",
                           "id": "ZKAKo",
                           "name": "Clockwork / purchased",
-                          "width": "fill_container",
+                          "width": 220,
                           "height": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 16,
@@ -7976,7 +8046,7 @@
                           "id": "z4xUcJ",
                           "name": "Gel / locked",
                           "opacity": 0.52,
-                          "width": "fill_container",
+                          "width": 220,
                           "height": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 16,
@@ -8178,7 +8248,7 @@
                           "id": "Q3KjXb",
                           "name": "Hollow Bell / locked",
                           "opacity": 0.52,
-                          "width": "fill_container",
+                          "width": 220,
                           "height": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 16,
@@ -8385,8 +8455,16 @@
                   "name": "Part Shelf",
                   "width": "fill_container",
                   "height": 330,
+                  "fill": "#081D2B99",
+                  "cornerRadius": 18,
+                  "stroke": "#E9A83D",
+                  "strokeWidth": 4,
                   "layout": "vertical",
                   "gap": 10,
+                  "padding": [
+                    0,
+                    12
+                  ],
                   "children": [
                     {
                       "type": "frame",
@@ -8456,19 +8534,21 @@
                       "name": "Part Shelf Cards",
                       "width": "fill_container",
                       "height": "fill_container",
-                      "gap": 16,
+                      "gap": 32,
                       "padding": [
                         0,
                         8,
                         0,
                         0
                       ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
                       "children": [
                         {
                           "type": "frame",
                           "id": "juKc3",
                           "name": "Brooch / available",
-                          "width": "fill_container",
+                          "width": 220,
                           "height": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 16,
@@ -8643,7 +8723,7 @@
                           "id": "vzYyn",
                           "name": "Gears / insufficient",
                           "opacity": 0.72,
-                          "width": "fill_container",
+                          "width": 220,
                           "height": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 16,
@@ -8844,7 +8924,7 @@
                           "type": "frame",
                           "id": "Z0gj1E",
                           "name": "Bell / selected",
-                          "width": "fill_container",
+                          "width": 220,
                           "height": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 16,
@@ -9117,7 +9197,7 @@
             {
               "type": "frame",
               "id": "MU5Wf",
-              "x": 1176,
+              "x": 892,
               "y": 410,
               "name": "Reward Detail Popup / Part Hover",
               "width": 420,
@@ -9555,8 +9635,16 @@
                   "name": "Ball Shelf",
                   "width": "fill_container",
                   "height": 340,
+                  "fill": "#081D2B99",
+                  "cornerRadius": 18,
+                  "stroke": "#55BFAF",
+                  "strokeWidth": 4,
                   "layout": "vertical",
                   "gap": 10,
+                  "padding": [
+                    0,
+                    12
+                  ],
                   "children": [
                     {
                       "type": "frame",
@@ -9626,19 +9714,21 @@
                       "name": "Ball Shelf Cards",
                       "width": "fill_container",
                       "height": "fill_container",
-                      "gap": 16,
+                      "gap": 32,
                       "padding": [
                         0,
                         8,
                         0,
                         0
                       ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
                       "children": [
                         {
                           "type": "frame",
                           "id": "leuLt",
                           "name": "Clockwork / purchased",
-                          "width": "fill_container",
+                          "width": 220,
                           "height": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 16,
@@ -9848,7 +9938,7 @@
                           "id": "a1NwcV",
                           "name": "Gel / locked",
                           "opacity": 0.52,
-                          "width": "fill_container",
+                          "width": 220,
                           "height": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 16,
@@ -10049,7 +10139,7 @@
                           "id": "Dku8d",
                           "name": "Hollow Bell / locked",
                           "opacity": 0.52,
-                          "width": "fill_container",
+                          "width": 220,
                           "height": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 16,
@@ -10255,8 +10345,16 @@
                   "name": "Part Shelf",
                   "width": "fill_container",
                   "height": 330,
+                  "fill": "#081D2B99",
+                  "cornerRadius": 18,
+                  "stroke": "#E9A83D",
+                  "strokeWidth": 4,
                   "layout": "vertical",
                   "gap": 10,
+                  "padding": [
+                    0,
+                    12
+                  ],
                   "children": [
                     {
                       "type": "frame",
@@ -10326,20 +10424,22 @@
                       "name": "Part Shelf Cards",
                       "width": "fill_container",
                       "height": "fill_container",
-                      "gap": 16,
+                      "gap": 32,
                       "padding": [
                         0,
                         8,
                         0,
                         0
                       ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
                       "children": [
                         {
                           "type": "frame",
                           "id": "A8w9g7",
                           "name": "Brooch / locked",
                           "opacity": 0.52,
-                          "width": "fill_container",
+                          "width": 220,
                           "height": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 16,
@@ -10540,7 +10640,7 @@
                           "id": "MEvVe",
                           "name": "Gears / locked",
                           "opacity": 0.52,
-                          "width": "fill_container",
+                          "width": 220,
                           "height": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 16,
@@ -10740,7 +10840,7 @@
                           "type": "frame",
                           "id": "JbgGa",
                           "name": "Bell / purchased",
-                          "width": "fill_container",
+                          "width": 220,
                           "height": "fill_container",
                           "fill": "#00000000",
                           "cornerRadius": 16,

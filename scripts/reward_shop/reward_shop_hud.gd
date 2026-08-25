@@ -43,6 +43,8 @@ const ROW_HEADER_HEIGHT := 48
 const ROW_TITLE_FONT_SIZE := 21
 const ROW_TITLE_PADDING_HORIZONTAL := 18
 const ROW_TITLE_PADDING_VERTICAL := 8
+const OFFER_CARD_WIDTH := 220
+const OFFER_CARD_GAP := 32
 const OFFER_ART_WELL_SIZE := 176
 const BALL_ICON_SIZE := 148
 const PART_ICON_SIZE := 148
@@ -247,11 +249,15 @@ func _build_layout() -> void:
 
 	column.add_child(_build_header())
 
+	var ball_group := _make_reward_group(
+		"BallRewardGroup", 340.0, COLOR_TEAL
+	)
+	column.add_child(ball_group)
 	var ball_shelf := VBoxContainer.new()
 	ball_shelf.name = "BallShelf"
 	ball_shelf.custom_minimum_size.y = _d(340.0)
 	ball_shelf.add_theme_constant_override(&"separation", _di(10))
-	column.add_child(ball_shelf)
+	ball_group.add_child(ball_shelf)
 	ball_shelf.add_child(_make_row_header(
 		BALL_ROW_TITLE,
 		"이 화면에서 최대 1개",
@@ -262,14 +268,19 @@ func _build_layout() -> void:
 	_ball_row.name = "BallOfferRow"
 	_ball_row.custom_minimum_size.y = _d(282.0)
 	_ball_row.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_ball_row.add_theme_constant_override(&"separation", _di(16))
+	_ball_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	_ball_row.add_theme_constant_override(&"separation", _di(OFFER_CARD_GAP))
 	ball_shelf.add_child(_ball_row)
 
+	var part_group := _make_reward_group(
+		"PartRewardGroup", 330.0, COLOR_GOLD
+	)
+	column.add_child(part_group)
 	var part_shelf := VBoxContainer.new()
 	part_shelf.name = "PartShelf"
 	part_shelf.custom_minimum_size.y = _d(330.0)
 	part_shelf.add_theme_constant_override(&"separation", _di(10))
-	column.add_child(part_shelf)
+	part_group.add_child(part_shelf)
 	part_shelf.add_child(_make_row_header(
 		PART_ROW_TITLE,
 		"이 화면에서 최대 1개",
@@ -280,7 +291,8 @@ func _build_layout() -> void:
 	_part_row.name = "PartOfferRow"
 	_part_row.custom_minimum_size.y = _d(272.0)
 	_part_row.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_part_row.add_theme_constant_override(&"separation", _di(16))
+	_part_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	_part_row.add_theme_constant_override(&"separation", _di(OFFER_CARD_GAP))
 	part_shelf.add_child(_part_row)
 
 	var footer := HBoxContainer.new()
@@ -315,6 +327,28 @@ func _build_layout() -> void:
 	_refresh_proceed_button()
 	_build_detail_popup()
 	_build_handoff_overlay()
+
+
+func _make_reward_group(
+	group_name: String,
+	minimum_height: float,
+	accent: Color
+) -> PanelContainer:
+	var group := PanelContainer.new()
+	group.name = group_name
+	group.custom_minimum_size.y = _d(minimum_height)
+	group.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	group.mouse_filter = Control.MOUSE_FILTER_PASS
+	var group_style := _make_style(
+		Color(COLOR_NAVY_DEEP, 0.60),
+		accent,
+		_di(4),
+		_di(18)
+	)
+	group_style.content_margin_left = _d(12.0)
+	group_style.content_margin_right = _d(12.0)
+	group.add_theme_stylebox_override(&"panel", group_style)
+	return group
 
 
 func _refresh_safe_margin() -> void:
@@ -882,9 +916,9 @@ func _make_card_shell(card_index: int) -> Button:
 	card.text = ""
 	card.clip_contents = true
 	card.focus_mode = Control.FOCUS_ALL
-	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	card.custom_minimum_size.x = _d(OFFER_CARD_WIDTH)
+	card.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	card.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	card.size_flags_stretch_ratio = 1.0
 	card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	var empty_style := StyleBoxEmpty.new()
 	for style_name in [&"normal", &"hover", &"pressed", &"disabled", &"focus"]:

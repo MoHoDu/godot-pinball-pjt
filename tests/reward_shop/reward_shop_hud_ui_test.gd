@@ -80,6 +80,28 @@ func _run() -> void:
 	_expect(not _has_exact_label(hud, "BALL") and not _has_exact_label(hud, "PART"),
 		"설계에 없는 영문 카테고리 보조 배지는 없어야 한다.")
 	var design_scale := minf(hud.size.x / 1920.0, hud.size.y / 1080.0)
+	var ball_group := hud.find_child(
+		"BallRewardGroup", true, false
+	) as PanelContainer
+	var part_group := hud.find_child(
+		"PartRewardGroup", true, false
+	) as PanelContainer
+	var ball_group_style := (
+		ball_group.get_theme_stylebox(&"panel") as StyleBoxFlat
+		if ball_group != null
+		else null
+	)
+	var part_group_style := (
+		part_group.get_theme_stylebox(&"panel") as StyleBoxFlat
+		if part_group != null
+		else null
+	)
+	_expect(ball_group_style != null
+		and ball_group_style.border_color == Color("55bfaf"),
+		"공 보상 요소는 청록색 네모 그룹 박스로 묶여야 한다.")
+	_expect(part_group_style != null
+		and part_group_style.border_color == Color("e9a83d"),
+		"수리 부품 요소는 금색 네모 그룹 박스로 묶여야 한다.")
 	var ball_shelf := hud.find_child("BallShelf", true, false) as Control
 	var ball_shelf_header := hud.find_child(
 		"BallShelfHeader", true, false
@@ -100,6 +122,12 @@ func _run() -> void:
 	_expect(ball_row != null and is_equal_approx(
 		ball_row.custom_minimum_size.y, 282.0 * design_scale
 	), "공 카드 행 높이가 설계 비율과 같아야 한다.")
+	_expect(ball_row != null
+		and (ball_row as HBoxContainer).alignment
+			== BoxContainer.ALIGNMENT_CENTER
+		and ball_row.get_theme_constant(&"separation")
+			== roundi(32.0 * design_scale),
+		"공 보상은 그룹 중앙에서 32px 간격으로 배치되어야 한다.")
 	_expect(ball_shelf_title != null and ball_shelf_title.get_theme_font_size(
 		&"font_size"
 	) == roundi(21.0 * design_scale),
@@ -130,6 +158,12 @@ func _run() -> void:
 	_expect(part_row != null and is_equal_approx(
 		part_row.custom_minimum_size.y, 272.0 * design_scale
 	), "수리 부품 카드 행 높이가 설계 비율과 같아야 한다.")
+	_expect(part_row != null
+		and (part_row as HBoxContainer).alignment
+			== BoxContainer.ALIGNMENT_CENTER
+		and part_row.get_theme_constant(&"separation")
+			== roundi(32.0 * design_scale),
+		"수리 부품은 그룹 중앙에서 32px 간격으로 배치되어야 한다.")
 	_expect(part_shelf_title != null and part_shelf_title.get_theme_font_size(
 		&"font_size"
 	) == roundi(21.0 * design_scale),
@@ -197,6 +231,10 @@ func _run() -> void:
 		and first_card.get_theme_stylebox(&"normal") is StyleBoxEmpty
 		and first_card.get_theme_stylebox(&"hover") is StyleBoxEmpty,
 		"큰 카드 박스는 투명한 클릭·포커스 영역으로만 남아야 한다.")
+	_expect(first_card != null and is_equal_approx(
+		first_card.custom_minimum_size.x, 220.0 * design_scale
+	) and first_card.size_flags_horizontal == Control.SIZE_SHRINK_CENTER,
+		"각 보상 클릭 영역은 220px 고정 폭으로 밀집 배치되어야 한다.")
 	var detail_popup := hud.find_child(
 		"RewardDetailPopup", true, false
 	) as PanelContainer
