@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="BallHitSparkRules" format=3]
+
+[ext_resource type="Script" path="res://scripts/ball_base_system/vfx/ball_hit_spark_rules.gd" id="1_spark"]
+
+[resource]
+script = ExtResource("1_spark")
+tick_color = Color(0.72, 0.92, 0.85, 0.95)
+chip_color = Color(0.498, 0.788, 0.706, 0.9)
+flash_color = Color(0.941, 0.878, 0.765, 0.8)

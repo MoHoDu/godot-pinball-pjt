@@ -1,8 +1,12 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="PackedScene" uid="uid://5v4byhqjcnno" path="res://Resources/Prefabs/balls/variants/mass/light_ball.tscn" id="1_base"]
 [ext_resource type="Texture2D" path="res://Resources/Art/balls/variants/Ball_HollowBell_Body.png" id="2_body"]
 [ext_resource type="Texture2D" path="res://Resources/Art/balls/variants/Ball_HollowBell_Pupil.png" id="3_pupil"]
+[ext_resource type="Resource" path="res://settings/balls/glow/BallGlowOutlineRules_HollowBell.tres" id="4_glow"]
+[ext_resource type="Resource" path="res://settings/balls/trail/BallTrailRules_HollowBell.tres" id="5_trail"]
+[ext_resource type="Script" path="res://scripts/ball_base_system/vfx/ball_hit_spark.gd" id="6_spark"]
+[ext_resource type="Resource" path="res://settings/balls/spark/BallHitSparkRules_HollowBell.tres" id="7_spark_rules"]
 
 [node name="PinballBall" instance=ExtResource("1_base")]
 
@@ -11,3 +15,13 @@ texture = ExtResource("2_body")
 
 [node name="PupilSprite" type="Sprite2D" parent="Visual/Sprite2D"]
 texture = ExtResource("3_pupil")
+
+[node name="_GlowOutline" parent="." index="2"]
+outline_rules = ExtResource("4_glow")
+
+[node name="_Trail" parent="." index="3"]
+trail_rules = ExtResource("5_trail")
+
+[node name="_HitSpark" type="Node2D" parent="."]
+script = ExtResource("6_spark")
+spark_rules = ExtResource("7_spark_rules")
