@@ -192,6 +192,11 @@ func _run() -> void:
 		and hud.find_child("OfferTitle", true, false) == null
 		and hud.find_child("OfferKindTag", true, false) == null,
 		"기본 카드에는 이름·유형·설명 정보를 노출하지 않아야 한다.")
+	var first_card := hud.find_child("OfferCard00", true, false) as Button
+	_expect(first_card != null
+		and first_card.get_theme_stylebox(&"normal") is StyleBoxEmpty
+		and first_card.get_theme_stylebox(&"hover") is StyleBoxEmpty,
+		"큰 카드 박스는 투명한 클릭·포커스 영역으로만 남아야 한다.")
 	var detail_popup := hud.find_child(
 		"RewardDetailPopup", true, false
 	) as PanelContainer
@@ -237,8 +242,11 @@ func _run() -> void:
 	var cards := hud.find_children("OfferCard*", "Button", true, false)
 	_expect(cards.size() == 6, "상호작용 가능한 카드 버튼이 6개여야 한다.")
 	if not cards.is_empty():
+		var hovered_art_well := (cards[0] as Button).find_child(
+			"OfferArtWell", true, false
+		) as Control
 		(cards[0] as Button).mouse_entered.emit()
-		await process_frame
+		await create_timer(0.12).timeout
 		var detail_title := hud.find_child(
 			"RewardDetailTitle", true, false
 		) as Label
@@ -250,10 +258,15 @@ func _run() -> void:
 		_expect(detail_title != null and not detail_title.text.is_empty()
 			and detail_primary != null and not detail_primary.text.is_empty(),
 			"상세 팝오버에 이름과 핵심 설명이 표시되어야 한다.")
+		_expect(hovered_art_well != null and hovered_art_well.scale.x > 1.0,
+			"카드 호버 시 아이콘 프레임만 확대되어야 한다.")
 		(cards[0] as Button).mouse_exited.emit()
-		await process_frame
+		await create_timer(0.12).timeout
 		_expect(detail_popup != null and not detail_popup.visible,
 			"선택 전 카드에서 마우스가 벗어나면 팝오버가 숨겨져야 한다.")
+		_expect(hovered_art_well != null and is_equal_approx(
+			hovered_art_well.scale.x, 1.0
+		), "호버가 끝나면 아이콘 프레임 크기가 복원되어야 한다.")
 		(cards[0] as Button).grab_focus()
 		await process_frame
 		_expect(detail_popup != null and detail_popup.visible,
@@ -265,6 +278,14 @@ func _run() -> void:
 		(cards[0] as Button).pressed.emit()
 		_expect(_state_texts(hud).has("선택!"),
 			"카드 선택 시 설계와 같은 선택 도장이 보여야 한다.")
+		var selected_well_style := (
+			hovered_art_well.get_theme_stylebox(&"panel") as StyleBoxFlat
+			if hovered_art_well != null
+			else null
+		)
+		_expect(selected_well_style != null
+			and selected_well_style.border_color == Color("76e3d0"),
+			"선택 상태 외곽선은 큰 카드가 아니라 아이콘 프레임에 표시되어야 한다.")
 		if proceed != null:
 			_expect(proceed.text.contains("구매 ·"),
 				"선택 후 하단 버튼이 해당 카드 구매 확인으로 바뀌어야 한다.")

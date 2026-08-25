@@ -2685,19 +2685,9 @@
                           "name": "Clockwork / available",
                           "width": "fill_container",
                           "height": "fill_container",
-                          "fill": "$cream",
+                          "fill": "#00000000",
                           "cornerRadius": 16,
-                          "stroke": "$ink",
-                          "strokeWidth": 5,
-                          "effect": {
-                            "type": "shadow",
-                            "shadowType": "outer",
-                            "color": "#00000066",
-                            "offset": {
-                              "x": 6,
-                              "y": 7
-                            }
-                          },
+                          "stroke": "#00000000",
                           "layout": "vertical",
                           "gap": 8,
                           "padding": 14,
@@ -2869,19 +2859,9 @@
                           "name": "Gel / available",
                           "width": "fill_container",
                           "height": "fill_container",
-                          "fill": "$cream",
+                          "fill": "#00000000",
                           "cornerRadius": 16,
-                          "stroke": "$ink",
-                          "strokeWidth": 5,
-                          "effect": {
-                            "type": "shadow",
-                            "shadowType": "outer",
-                            "color": "#00000066",
-                            "offset": {
-                              "x": 6,
-                              "y": 7
-                            }
-                          },
+                          "stroke": "#00000000",
                           "layout": "vertical",
                           "gap": 8,
                           "padding": 14,
@@ -3053,19 +3033,9 @@
                           "name": "Hollow Bell / available",
                           "width": "fill_container",
                           "height": "fill_container",
-                          "fill": "$cream",
+                          "fill": "#00000000",
                           "cornerRadius": 16,
-                          "stroke": "$ink",
-                          "strokeWidth": 5,
-                          "effect": {
-                            "type": "shadow",
-                            "shadowType": "outer",
-                            "color": "#00000066",
-                            "offset": {
-                              "x": 6,
-                              "y": 7
-                            }
-                          },
+                          "stroke": "#00000000",
                           "layout": "vertical",
                           "gap": 8,
                           "padding": 14,
@@ -3320,19 +3290,9 @@
                           "name": "Brooch / available",
                           "width": "fill_container",
                           "height": "fill_container",
-                          "fill": "$cream",
+                          "fill": "#00000000",
                           "cornerRadius": 16,
-                          "stroke": "$ink",
-                          "strokeWidth": 5,
-                          "effect": {
-                            "type": "shadow",
-                            "shadowType": "outer",
-                            "color": "#00000066",
-                            "offset": {
-                              "x": 6,
-                              "y": 7
-                            }
-                          },
+                          "stroke": "#00000000",
                           "layout": "vertical",
                           "gap": 8,
                           "padding": 14,
@@ -3504,19 +3464,9 @@
                           "name": "Gears / available",
                           "width": "fill_container",
                           "height": "fill_container",
-                          "fill": "$cream",
+                          "fill": "#00000000",
                           "cornerRadius": 16,
-                          "stroke": "$ink",
-                          "strokeWidth": 5,
-                          "effect": {
-                            "type": "shadow",
-                            "shadowType": "outer",
-                            "color": "#00000066",
-                            "offset": {
-                              "x": 6,
-                              "y": 7
-                            }
-                          },
+                          "stroke": "#00000000",
                           "layout": "vertical",
                           "gap": 8,
                           "padding": 14,
@@ -3688,19 +3638,9 @@
                           "name": "Bell / available",
                           "width": "fill_container",
                           "height": "fill_container",
-                          "fill": "$cream",
+                          "fill": "#00000000",
                           "cornerRadius": 16,
-                          "stroke": "$ink",
-                          "strokeWidth": 5,
-                          "effect": {
-                            "type": "shadow",
-                            "shadowType": "outer",
-                            "color": "#00000066",
-                            "offset": {
-                              "x": 6,
-                              "y": 7
-                            }
-                          },
+                          "stroke": "#00000000",
                           "layout": "vertical",
                           "gap": 8,
                           "padding": 14,
@@ -4350,20 +4290,10 @@
                           "name": "Clockwork / selected",
                           "width": "fill_container",
                           "height": "fill_container",
-                          "fill": "$cream-light",
+                          "fill": "#00000000",
                           "cornerRadius": 16,
-                          "stroke": "$teal-bright",
-                          "strokeWidth": 8,
+                          "stroke": "#00000000",
                           "strokeAlignment": "inner",
-                          "effect": {
-                            "type": "shadow",
-                            "shadowType": "outer",
-                            "color": "#00000066",
-                            "offset": {
-                              "x": 6,
-                              "y": 7
-                            }
-                          },
                           "layout": "vertical",
                           "gap": 8,
                           "padding": 14,
@@ -4378,8 +4308,17 @@
                               "height": 176,
                               "fill": "$cream-light",
                               "cornerRadius": 13,
-                              "stroke": "$ink",
-                              "strokeWidth": 4,
+                              "stroke": "$teal-bright",
+                              "strokeWidth": 7,
+                              "effect": {
+                                "type": "shadow",
+                                "shadowType": "outer",
+                                "color": "#00000055",
+                                "offset": {
+                                  "x": 5,
+                                  "y": 6
+                                }
+                              },
                               "layout": "vertical",
                               "justifyContent": "center",
                               "alignItems": "center",
@@ -4562,20 +4501,10 @@
                           "name": "Gel / available",
                           "width": "fill_container",
                           "height": "fill_container",
-                          "fill": "$cream",
+                          "fill": "#00000000",
                           "cornerRadius": 16,
-                          "stroke": "$ink",
-                          "strokeWidth": 5,
+                          "stroke": "#00000000",
                           "strokeAlignment": "inner",
-                          "effect": {
-                            "type": "shadow",
-                            "shadowType": "outer",
-                            "color": "#00000066",
-                            "offset": {
-                              "x": 6,
-                              "y": 7
-                            }
-                          },
                           "layout": "vertical",
                           "gap": 8,
                           "padding": 14,
@@ -4747,17 +4676,10 @@
                           "name": "Hollow Bell / available",
                           "width": "fill_container",
                           "height": "fill_container",
-                          "fill": "$cream",
+                          "fill": "#00000000",
                           "cornerRadius": 16,
-                          "stroke": "$ink",
-                          "strokeWidth": 5,
+                          "stroke": "#00000000",
                           "strokeAlignment": "inner",
-                          "effect": {
-                            "type": "shadow",
-                            "shadowType": "outer",
-                            "enabled": false,
-                            "color": "#000000"
-                          },
                           "layout": "vertical",
                           "gap": 8,
                           "padding": 14,
@@ -5018,20 +4940,10 @@
                           "name": "Brooch / available",
                           "width": "fill_container",
                           "height": "fill_container",
-                          "fill": "$cream",
+                          "fill": "#00000000",
                           "cornerRadius": 16,
-                          "stroke": "$ink",
-                          "strokeWidth": 5,
+                          "stroke": "#00000000",
                           "strokeAlignment": "inner",
-                          "effect": {
-                            "type": "shadow",
-                            "shadowType": "outer",
-                            "color": "#00000066",
-                            "offset": {
-                              "x": 6,
-                              "y": 7
-                            }
-                          },
                           "layout": "vertical",
                           "gap": 8,
                           "padding": 14,
@@ -5203,20 +5115,10 @@
                           "name": "Gears / available",
                           "width": "fill_container",
                           "height": "fill_container",
-                          "fill": "$cream",
+                          "fill": "#00000000",
                           "cornerRadius": 16,
-                          "stroke": "$ink",
-                          "strokeWidth": 5,
+                          "stroke": "#00000000",
                           "strokeAlignment": "inner",
-                          "effect": {
-                            "type": "shadow",
-                            "shadowType": "outer",
-                            "color": "#00000066",
-                            "offset": {
-                              "x": 6,
-                              "y": 7
-                            }
-                          },
                           "layout": "vertical",
                           "gap": 8,
                           "padding": 14,
@@ -5388,17 +5290,10 @@
                           "name": "Bell / available",
                           "width": "fill_container",
                           "height": "fill_container",
-                          "fill": "$cream",
+                          "fill": "#00000000",
                           "cornerRadius": 16,
-                          "stroke": "$ink",
-                          "strokeWidth": 5,
+                          "stroke": "#00000000",
                           "strokeAlignment": "inner",
-                          "effect": {
-                            "type": "shadow",
-                            "shadowType": "outer",
-                            "enabled": false,
-                            "color": "#000000"
-                          },
                           "layout": "vertical",
                           "gap": 8,
                           "padding": 14,
@@ -6141,19 +6036,9 @@
                           "name": "Clockwork / purchased",
                           "width": "fill_container",
                           "height": "fill_container",
-                          "fill": "$gold",
+                          "fill": "#00000000",
                           "cornerRadius": 16,
-                          "stroke": "$ink",
-                          "strokeWidth": 6,
-                          "effect": {
-                            "type": "shadow",
-                            "shadowType": "outer",
-                            "color": "#00000066",
-                            "offset": {
-                              "x": 6,
-                              "y": 7
-                            }
-                          },
+                          "stroke": "#00000000",
                           "layout": "vertical",
                           "gap": 8,
                           "padding": 14,
@@ -6166,10 +6051,19 @@
                               "name": "Clockwork Art Well",
                               "width": 176,
                               "height": 176,
-                              "fill": "$cream-light",
+                              "fill": "$gold",
                               "cornerRadius": 13,
                               "stroke": "$ink",
-                              "strokeWidth": 4,
+                              "strokeWidth": 5,
+                              "effect": {
+                                "type": "shadow",
+                                "shadowType": "outer",
+                                "color": "#00000055",
+                                "offset": {
+                                  "x": 5,
+                                  "y": 6
+                                }
+                              },
                               "layout": "vertical",
                               "justifyContent": "center",
                               "alignItems": "center",
@@ -6353,19 +6247,9 @@
                           "opacity": 0.52,
                           "width": "fill_container",
                           "height": "fill_container",
-                          "fill": "#304A59",
+                          "fill": "#00000000",
                           "cornerRadius": 16,
-                          "stroke": "$ink",
-                          "strokeWidth": 5,
-                          "effect": {
-                            "type": "shadow",
-                            "shadowType": "outer",
-                            "color": "#00000066",
-                            "offset": {
-                              "x": 6,
-                              "y": 7
-                            }
-                          },
+                          "stroke": "#00000000",
                           "layout": "vertical",
                           "gap": 8,
                           "padding": 14,
@@ -6565,19 +6449,9 @@
                           "opacity": 0.52,
                           "width": "fill_container",
                           "height": "fill_container",
-                          "fill": "#304A59",
+                          "fill": "#00000000",
                           "cornerRadius": 16,
-                          "stroke": "$ink",
-                          "strokeWidth": 5,
-                          "effect": {
-                            "type": "shadow",
-                            "shadowType": "outer",
-                            "color": "#00000066",
-                            "offset": {
-                              "x": 6,
-                              "y": 7
-                            }
-                          },
+                          "stroke": "#00000000",
                           "layout": "vertical",
                           "gap": 8,
                           "padding": 14,
@@ -6865,19 +6739,9 @@
                           "name": "Brooch / available",
                           "width": "fill_container",
                           "height": "fill_container",
-                          "fill": "$cream",
+                          "fill": "#00000000",
                           "cornerRadius": 16,
-                          "stroke": "$ink",
-                          "strokeWidth": 5,
-                          "effect": {
-                            "type": "shadow",
-                            "shadowType": "outer",
-                            "color": "#00000066",
-                            "offset": {
-                              "x": 6,
-                              "y": 7
-                            }
-                          },
+                          "stroke": "#00000000",
                           "layout": "vertical",
                           "gap": 8,
                           "padding": 14,
@@ -7047,21 +6911,12 @@
                           "type": "frame",
                           "id": "plc25",
                           "name": "Gears / insufficient",
+                          "opacity": 0.72,
                           "width": "fill_container",
                           "height": "fill_container",
-                          "fill": "$cream",
+                          "fill": "#00000000",
                           "cornerRadius": 16,
-                          "stroke": "$red",
-                          "strokeWidth": 7,
-                          "effect": {
-                            "type": "shadow",
-                            "shadowType": "outer",
-                            "color": "#00000066",
-                            "offset": {
-                              "x": 6,
-                              "y": 7
-                            }
-                          },
+                          "stroke": "#00000000",
                           "layout": "vertical",
                           "gap": 8,
                           "padding": 14,
@@ -7076,8 +6931,8 @@
                               "height": 176,
                               "fill": "$cream-light",
                               "cornerRadius": 13,
-                              "stroke": "$ink",
-                              "strokeWidth": 4,
+                              "stroke": "$red",
+                              "strokeWidth": 5,
                               "layout": "vertical",
                               "justifyContent": "center",
                               "alignItems": "center",
@@ -7260,19 +7115,9 @@
                           "name": "Bell / available",
                           "width": "fill_container",
                           "height": "fill_container",
-                          "fill": "$cream",
+                          "fill": "#00000000",
                           "cornerRadius": 16,
-                          "stroke": "$ink",
-                          "strokeWidth": 5,
-                          "effect": {
-                            "type": "shadow",
-                            "shadowType": "outer",
-                            "color": "#00000066",
-                            "offset": {
-                              "x": 6,
-                              "y": 7
-                            }
-                          },
+                          "stroke": "#00000000",
                           "layout": "vertical",
                           "gap": 8,
                           "padding": 14,
@@ -7922,19 +7767,9 @@
                           "name": "Clockwork / purchased",
                           "width": "fill_container",
                           "height": "fill_container",
-                          "fill": "$gold",
+                          "fill": "#00000000",
                           "cornerRadius": 16,
-                          "stroke": "$ink",
-                          "strokeWidth": 6,
-                          "effect": {
-                            "type": "shadow",
-                            "shadowType": "outer",
-                            "color": "#00000066",
-                            "offset": {
-                              "x": 6,
-                              "y": 7
-                            }
-                          },
+                          "stroke": "#00000000",
                           "layout": "vertical",
                           "gap": 8,
                           "padding": 14,
@@ -7947,10 +7782,19 @@
                               "name": "Clockwork Art Well",
                               "width": 176,
                               "height": 176,
-                              "fill": "$cream-light",
+                              "fill": "$gold",
                               "cornerRadius": 13,
                               "stroke": "$ink",
-                              "strokeWidth": 4,
+                              "strokeWidth": 5,
+                              "effect": {
+                                "type": "shadow",
+                                "shadowType": "outer",
+                                "color": "#00000055",
+                                "offset": {
+                                  "x": 5,
+                                  "y": 6
+                                }
+                              },
                               "layout": "vertical",
                               "justifyContent": "center",
                               "alignItems": "center",
@@ -8134,19 +7978,9 @@
                           "opacity": 0.52,
                           "width": "fill_container",
                           "height": "fill_container",
-                          "fill": "#304A59",
+                          "fill": "#00000000",
                           "cornerRadius": 16,
-                          "stroke": "$ink",
-                          "strokeWidth": 5,
-                          "effect": {
-                            "type": "shadow",
-                            "shadowType": "outer",
-                            "color": "#00000066",
-                            "offset": {
-                              "x": 6,
-                              "y": 7
-                            }
-                          },
+                          "stroke": "#00000000",
                           "layout": "vertical",
                           "gap": 8,
                           "padding": 14,
@@ -8346,19 +8180,9 @@
                           "opacity": 0.52,
                           "width": "fill_container",
                           "height": "fill_container",
-                          "fill": "#304A59",
+                          "fill": "#00000000",
                           "cornerRadius": 16,
-                          "stroke": "$ink",
-                          "strokeWidth": 5,
-                          "effect": {
-                            "type": "shadow",
-                            "shadowType": "outer",
-                            "color": "#00000066",
-                            "offset": {
-                              "x": 6,
-                              "y": 7
-                            }
-                          },
+                          "stroke": "#00000000",
                           "layout": "vertical",
                           "gap": 8,
                           "padding": 14,
@@ -8646,19 +8470,9 @@
                           "name": "Brooch / available",
                           "width": "fill_container",
                           "height": "fill_container",
-                          "fill": "$cream",
+                          "fill": "#00000000",
                           "cornerRadius": 16,
-                          "stroke": "$ink",
-                          "strokeWidth": 5,
-                          "effect": {
-                            "type": "shadow",
-                            "shadowType": "outer",
-                            "color": "#00000066",
-                            "offset": {
-                              "x": 6,
-                              "y": 7
-                            }
-                          },
+                          "stroke": "#00000000",
                           "layout": "vertical",
                           "gap": 8,
                           "padding": 14,
@@ -8828,21 +8642,12 @@
                           "type": "frame",
                           "id": "vzYyn",
                           "name": "Gears / insufficient",
+                          "opacity": 0.72,
                           "width": "fill_container",
                           "height": "fill_container",
-                          "fill": "$cream",
+                          "fill": "#00000000",
                           "cornerRadius": 16,
-                          "stroke": "$red",
-                          "strokeWidth": 7,
-                          "effect": {
-                            "type": "shadow",
-                            "shadowType": "outer",
-                            "color": "#00000066",
-                            "offset": {
-                              "x": 6,
-                              "y": 7
-                            }
-                          },
+                          "stroke": "#00000000",
                           "layout": "vertical",
                           "gap": 8,
                           "padding": 14,
@@ -8857,8 +8662,8 @@
                               "height": 176,
                               "fill": "$cream-light",
                               "cornerRadius": 13,
-                              "stroke": "$ink",
-                              "strokeWidth": 4,
+                              "stroke": "$red",
+                              "strokeWidth": 5,
                               "layout": "vertical",
                               "justifyContent": "center",
                               "alignItems": "center",
@@ -9041,19 +8846,9 @@
                           "name": "Bell / selected",
                           "width": "fill_container",
                           "height": "fill_container",
-                          "fill": "$cream-light",
+                          "fill": "#00000000",
                           "cornerRadius": 16,
-                          "stroke": "$teal-bright",
-                          "strokeWidth": 8,
-                          "effect": {
-                            "type": "shadow",
-                            "shadowType": "outer",
-                            "color": "#00000066",
-                            "offset": {
-                              "x": 6,
-                              "y": 7
-                            }
-                          },
+                          "stroke": "#00000000",
                           "layout": "vertical",
                           "gap": 8,
                           "padding": 14,
@@ -9068,8 +8863,17 @@
                               "height": 176,
                               "fill": "$cream-light",
                               "cornerRadius": 13,
-                              "stroke": "$ink",
-                              "strokeWidth": 4,
+                              "stroke": "$teal-bright",
+                              "strokeWidth": 7,
+                              "effect": {
+                                "type": "shadow",
+                                "shadowType": "outer",
+                                "color": "#00000055",
+                                "offset": {
+                                  "x": 5,
+                                  "y": 6
+                                }
+                              },
                               "layout": "vertical",
                               "justifyContent": "center",
                               "alignItems": "center",
@@ -9836,19 +9640,9 @@
                           "name": "Clockwork / purchased",
                           "width": "fill_container",
                           "height": "fill_container",
-                          "fill": "$gold",
+                          "fill": "#00000000",
                           "cornerRadius": 16,
-                          "stroke": "$ink",
-                          "strokeWidth": 6,
-                          "effect": {
-                            "type": "shadow",
-                            "shadowType": "outer",
-                            "color": "#00000066",
-                            "offset": {
-                              "x": 6,
-                              "y": 7
-                            }
-                          },
+                          "stroke": "#00000000",
                           "layout": "vertical",
                           "gap": 8,
                           "padding": 14,
@@ -9861,10 +9655,19 @@
                               "name": "Clockwork Art Well",
                               "width": 176,
                               "height": 176,
-                              "fill": "$cream-light",
+                              "fill": "$gold",
                               "cornerRadius": 13,
                               "stroke": "$ink",
-                              "strokeWidth": 4,
+                              "strokeWidth": 5,
+                              "effect": {
+                                "type": "shadow",
+                                "shadowType": "outer",
+                                "color": "#00000055",
+                                "offset": {
+                                  "x": 5,
+                                  "y": 6
+                                }
+                              },
                               "layout": "vertical",
                               "justifyContent": "center",
                               "alignItems": "center",
@@ -10047,19 +9850,9 @@
                           "opacity": 0.52,
                           "width": "fill_container",
                           "height": "fill_container",
-                          "fill": "#304A59",
+                          "fill": "#00000000",
                           "cornerRadius": 16,
-                          "stroke": "$ink",
-                          "strokeWidth": 5,
-                          "effect": {
-                            "type": "shadow",
-                            "shadowType": "outer",
-                            "color": "#00000066",
-                            "offset": {
-                              "x": 6,
-                              "y": 7
-                            }
-                          },
+                          "stroke": "#00000000",
                           "layout": "vertical",
                           "gap": 8,
                           "padding": 14,
@@ -10258,19 +10051,9 @@
                           "opacity": 0.52,
                           "width": "fill_container",
                           "height": "fill_container",
-                          "fill": "#304A59",
+                          "fill": "#00000000",
                           "cornerRadius": 16,
-                          "stroke": "$ink",
-                          "strokeWidth": 5,
-                          "effect": {
-                            "type": "shadow",
-                            "shadowType": "outer",
-                            "color": "#00000066",
-                            "offset": {
-                              "x": 6,
-                              "y": 7
-                            }
-                          },
+                          "stroke": "#00000000",
                           "layout": "vertical",
                           "gap": 8,
                           "padding": 14,
@@ -10558,19 +10341,9 @@
                           "opacity": 0.52,
                           "width": "fill_container",
                           "height": "fill_container",
-                          "fill": "#304A59",
+                          "fill": "#00000000",
                           "cornerRadius": 16,
-                          "stroke": "$ink",
-                          "strokeWidth": 5,
-                          "effect": {
-                            "type": "shadow",
-                            "shadowType": "outer",
-                            "color": "#00000066",
-                            "offset": {
-                              "x": 6,
-                              "y": 7
-                            }
-                          },
+                          "stroke": "#00000000",
                           "layout": "vertical",
                           "gap": 8,
                           "padding": 14,
@@ -10769,19 +10542,9 @@
                           "opacity": 0.52,
                           "width": "fill_container",
                           "height": "fill_container",
-                          "fill": "#304A59",
+                          "fill": "#00000000",
                           "cornerRadius": 16,
-                          "stroke": "$ink",
-                          "strokeWidth": 5,
-                          "effect": {
-                            "type": "shadow",
-                            "shadowType": "outer",
-                            "color": "#00000066",
-                            "offset": {
-                              "x": 6,
-                              "y": 7
-                            }
-                          },
+                          "stroke": "#00000000",
                           "layout": "vertical",
                           "gap": 8,
                           "padding": 14,
@@ -10979,19 +10742,9 @@
                           "name": "Bell / purchased",
                           "width": "fill_container",
                           "height": "fill_container",
-                          "fill": "$gold",
+                          "fill": "#00000000",
                           "cornerRadius": 16,
-                          "stroke": "$ink",
-                          "strokeWidth": 6,
-                          "effect": {
-                            "type": "shadow",
-                            "shadowType": "outer",
-                            "color": "#00000066",
-                            "offset": {
-                              "x": 6,
-                              "y": 7
-                            }
-                          },
+                          "stroke": "#00000000",
                           "layout": "vertical",
                           "gap": 8,
                           "padding": 14,
@@ -11004,10 +10757,19 @@
                               "name": "Bell Art Well",
                               "width": 176,
                               "height": 176,
-                              "fill": "$cream-light",
+                              "fill": "$gold",
                               "cornerRadius": 13,
                               "stroke": "$ink",
-                              "strokeWidth": 4,
+                              "strokeWidth": 5,
+                              "effect": {
+                                "type": "shadow",
+                                "shadowType": "outer",
+                                "color": "#00000055",
+                                "offset": {
+                                  "x": 5,
+                                  "y": 6
+                                }
+                              },
                               "layout": "vertical",
                               "justifyContent": "center",
                               "alignItems": "center",

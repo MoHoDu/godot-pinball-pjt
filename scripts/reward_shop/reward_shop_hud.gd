@@ -38,9 +38,6 @@ const COLOR_RED := Color("c93b3e")
 const COLOR_RED_DARK := Color("81262a")
 const COLOR_PURPLE := Color("8066aa")
 const COLOR_MUTED := Color("8b8173")
-const COLOR_LOCKED := Color("304a59")
-
-const CARD_RADIUS := 16
 const PANEL_RADIUS := 28
 const ROW_HEADER_HEIGHT := 48
 const ROW_TITLE_FONT_SIZE := 21
@@ -50,6 +47,7 @@ const OFFER_ART_WELL_SIZE := 176
 const BALL_ICON_SIZE := 148
 const PART_ICON_SIZE := 148
 const DETAIL_POPUP_WIDTH := 420
+const ART_HOVER_SCALE := 1.05
 const PERFORMANCE_NAMES: Array[String] = [
 	"안정형",
 	"완충형",
@@ -830,6 +828,7 @@ func _make_ball_card(offer: RewardBallOffer, card_index: int) -> Button:
 	var badge_data := _make_state_badge(content)
 	_card_views.append({
 		&"button": card,
+		&"art_well": art_well,
 		&"badge": badge_data[0],
 		&"state_label": badge_data[1],
 		&"price": offer.price,
@@ -861,6 +860,7 @@ func _make_part_card(offer: RepairPartOffer, card_index: int) -> Button:
 	var badge_data := _make_state_badge(content)
 	_card_views.append({
 		&"button": card,
+		&"art_well": art_well,
 		&"badge": badge_data[0],
 		&"state_label": badge_data[1],
 		&"price": offer.price,
@@ -886,6 +886,9 @@ func _make_card_shell(card_index: int) -> Button:
 	card.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	card.size_flags_stretch_ratio = 1.0
 	card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	var empty_style := StyleBoxEmpty.new()
+	for style_name in [&"normal", &"hover", &"pressed", &"disabled", &"focus"]:
+		card.add_theme_stylebox_override(style_name, empty_style)
 	card.pressed.connect(_on_card_pressed.bind(card_index))
 	card.mouse_entered.connect(_on_card_mouse_entered.bind(card_index))
 	card.mouse_exited.connect(_on_card_mouse_exited.bind(card_index))
@@ -1020,20 +1023,24 @@ func _on_card_pressed(card_index: int) -> void:
 func _on_card_mouse_entered(card_index: int) -> void:
 	_hovered_card_index = card_index
 	_show_card_detail(card_index)
+	_refresh_card_emphasis()
 
 
 func _on_card_mouse_exited(card_index: int) -> void:
 	if _hovered_card_index == card_index:
 		_hovered_card_index = -1
 	_restore_active_card_detail()
+	_refresh_card_emphasis()
 
 
 func _on_card_focus_entered(card_index: int) -> void:
 	_show_card_detail(card_index)
+	_refresh_card_emphasis()
 
 
 func _on_card_focus_exited(_card_index: int) -> void:
 	_restore_active_card_detail()
+	call_deferred(&"_refresh_card_emphasis")
 
 
 func _restore_active_card_detail() -> void:
@@ -1094,6 +1101,22 @@ func _position_card_detail(card_index: int) -> void:
 func _hide_card_detail() -> void:
 	if _detail_popup != null:
 		_detail_popup.visible = false
+
+
+func _refresh_card_emphasis() -> void:
+	for card_index in _card_views.size():
+		var view := _card_views[card_index]
+		var card := view[&"button"] as Button
+		var art_well := view[&"art_well"] as PanelContainer
+		if card == null or art_well == null:
+			continue
+		var emphasized := card_index == _hovered_card_index \
+				or card_index == _selected_index or card.has_focus()
+		var target_scale := Vector2.ONE * (ART_HOVER_SCALE if emphasized else 1.0)
+		art_well.pivot_offset = art_well.size * 0.5
+		var tween := art_well.create_tween()
+		tween.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tween.tween_property(art_well, ^"scale", target_scale, 0.10)
 
 
 func _on_proceed_pressed() -> void:
@@ -1200,6 +1223,7 @@ func _refresh_card_states() -> void:
 		_apply_card_state(card_index, state)
 	_refresh_row_rules()
 	_refresh_proceed_button()
+	_refresh_card_emphasis()
 
 
 func _refresh_row_rules() -> void:
@@ -1223,11 +1247,13 @@ func _refresh_row_rules() -> void:
 func _apply_card_state(card_index: int, state: CardState) -> void:
 	var view := _card_views[card_index]
 	var card := view[&"button"] as Button
+	var art_well := view[&"art_well"] as PanelContainer
 	var badge := view[&"badge"] as PanelContainer
 	var state_label := view[&"state_label"] as Label
-	var background := COLOR_CREAM
-	var border := COLOR_INK
-	var border_width := _di(5)
+	var well_background := COLOR_CREAM_LIGHT
+	var well_border := COLOR_INK
+	var well_border_width := _di(4)
+	var well_shadow_size := 0
 	var status_color := COLOR_INK
 	var badge_background := COLOR_TEAL
 	var status_text := "구매 가능"
@@ -1235,27 +1261,26 @@ func _apply_card_state(card_index: int, state: CardState) -> void:
 
 	match state:
 		CardState.SELECTED:
-			background = COLOR_CREAM_LIGHT
-			border = COLOR_TEAL_BRIGHT
-			border_width = _di(7)
+			well_border = COLOR_TEAL_BRIGHT
+			well_border_width = _di(7)
+			well_shadow_size = _di(5)
 			badge_background = COLOR_TEAL
 			status_text = "선택!"
 		CardState.PURCHASED:
-			background = COLOR_GOLD
-			border = COLOR_INK
-			border_width = _di(5)
+			well_background = COLOR_GOLD
+			well_border_width = _di(5)
+			well_shadow_size = _di(5)
 			badge_background = COLOR_RED
 			status_color = COLOR_CREAM_LIGHT
 			status_text = "GET!"
 		CardState.ROW_LOCKED:
-			background = COLOR_LOCKED
 			badge_background = COLOR_NAVY_DEEP
 			status_color = COLOR_CREAM_LIGHT
 			status_text = "잠김"
 			opacity = 0.52
 		CardState.INSUFFICIENT:
-			border = COLOR_RED
-			border_width = _di(5)
+			well_border = COLOR_RED
+			well_border_width = _di(5)
 			badge_background = COLOR_RED
 			status_color = COLOR_CREAM_LIGHT
 			status_text = "코인 부족"
@@ -1268,17 +1293,16 @@ func _apply_card_state(card_index: int, state: CardState) -> void:
 	]
 	card.modulate = Color(1.0, 1.0, 1.0, opacity)
 	badge.visible = state != CardState.AVAILABLE
-	var card_style := _make_style(
-		background,
-		border,
-		border_width,
-		_di(CARD_RADIUS),
+	var well_style := _make_style(
+		well_background,
+		well_border,
+		well_border_width,
+		_di(13),
 		0,
-		_di(4),
-		Vector2(_d(6.0), _d(7.0))
+		well_shadow_size,
+		Vector2(_d(5.0), _d(6.0))
 	)
-	for style_name in [&"normal", &"hover", &"pressed", &"disabled", &"focus"]:
-		card.add_theme_stylebox_override(style_name, card_style)
+	art_well.add_theme_stylebox_override(&"panel", well_style)
 	state_label.text = status_text
 	state_label.add_theme_color_override(&"font_color", status_color)
 	badge.add_theme_stylebox_override(
