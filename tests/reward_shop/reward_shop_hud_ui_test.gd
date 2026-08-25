@@ -80,6 +80,10 @@ func _run() -> void:
 	_expect(not _has_exact_label(hud, "BALL") and not _has_exact_label(hud, "PART"),
 		"설계에 없는 영문 카테고리 보조 배지는 없어야 한다.")
 	var design_scale := minf(hud.size.x / 1920.0, hud.size.y / 1080.0)
+	var shop_panel := hud.find_child("ShopPanel", true, false) as PanelContainer
+	_expect(shop_panel != null and is_equal_approx(
+		shop_panel.custom_minimum_size.x, 1040.0 * design_scale
+	), "보상 3개일 때 상점 패널은 1040px의 밀집 폭을 사용해야 한다.")
 	var ball_group := hud.find_child(
 		"BallRewardGroup", true, false
 	) as PanelContainer
@@ -235,6 +239,76 @@ func _run() -> void:
 		first_card.custom_minimum_size.x, 220.0 * design_scale
 	) and first_card.size_flags_horizontal == Control.SIZE_SHRINK_CENTER,
 		"각 보상 클릭 영역은 220px 고정 폭으로 밀집 배치되어야 한다.")
+	var ball_page_controls := hud.find_child(
+		"BallPageControls", true, false
+	) as HBoxContainer
+	_expect(ball_page_controls != null and not ball_page_controls.visible,
+		"공 보상이 4개 이하일 때 페이지 컨트롤은 숨겨져야 한다.")
+
+	var original_ball_offers: Array[RewardBallOffer] = []
+	for offer: RewardBallOffer in shop.ball_offers:
+		original_ball_offers.append(offer)
+	var overflow_ball_offers: Array[RewardBallOffer] = []
+	for offer: RewardBallOffer in (CATALOG as RewardShopCatalog).ball_offers:
+		overflow_ball_offers.append(offer)
+	shop._ball_offers = overflow_ball_offers
+	hud._rebuild_cards()
+	await process_frame
+	await create_timer(0.05).timeout
+
+	var ball_page_label := hud.find_child(
+		"BallPageLabel", true, false
+	) as Label
+	var ball_previous_page := hud.find_child(
+		"BallPreviousPageButton", true, false
+	) as Button
+	var ball_next_page := hud.find_child(
+		"BallNextPageButton", true, false
+	) as Button
+	_expect(shop_panel != null and is_equal_approx(
+		shop_panel.custom_minimum_size.x, 1136.0 * design_scale
+	), "보상 4개 이상에서는 상점 패널이 1136px까지만 확장되어야 한다.")
+	_expect(ball_page_controls != null and ball_page_controls.visible,
+		"공 보상이 5개이면 페이지 컨트롤이 보여야 한다.")
+	_expect(ball_page_label != null and ball_page_label.text == "1 / 2",
+		"첫 공 보상 페이지는 전체 페이지 수를 명확하게 표시해야 한다.")
+	_expect(ball_previous_page != null and ball_previous_page.disabled,
+		"첫 페이지의 이전 버튼은 비활성화되어야 한다.")
+	_expect(ball_next_page != null and ball_next_page.text == "→ +1"
+		and ball_next_page.tooltip_text == "다음 공 보상 1개",
+		"다음 버튼은 숨겨진 공 보상 수를 직접 알려야 한다.")
+	_expect(hud._pagination_hint_played,
+		"페이지가 생긴 상점은 처음 열릴 때 방향 힌트를 한 번 재생해야 한다.")
+	_expect(_visible_offer_count(hud, 0, 5) == 4,
+		"첫 페이지에는 공 보상을 최대 4개만 보여야 한다.")
+
+	ball_next_page.pressed.emit()
+	await process_frame
+	_expect(ball_page_label.text == "2 / 2"
+		and ball_next_page.disabled
+		and not ball_previous_page.disabled,
+		"다음 페이지에서는 2/2 위치와 이동 가능 방향이 갱신되어야 한다.")
+	_expect(_visible_offer_count(hud, 0, 5) == 1,
+		"두 번째 페이지에는 남은 공 보상 1개만 보여야 한다.")
+
+	ball_previous_page.pressed.emit()
+	await process_frame
+	hud._on_card_pressed(3)
+	hud._move_selection(1)
+	await process_frame
+	var fifth_ball_card := hud.find_child("OfferCard04", true, false) as Button
+	_expect(ball_page_label.text == "2 / 2"
+		and fifth_ball_card != null and fifth_ball_card.visible
+		and fifth_ball_card.has_focus(),
+		"마지막 보상에서 오른쪽으로 이동하면 다음 페이지와 보상에 연결되어야 한다.")
+
+	shop._ball_offers = original_ball_offers
+	hud._ball_page = 0
+	hud._rebuild_cards()
+	await process_frame
+	_expect(hud.get_card_count() == 6
+		and ball_page_controls != null and not ball_page_controls.visible,
+		"검증 후 기본 3개 보상 레이아웃으로 복원되어야 한다.")
 	var detail_popup := hud.find_child(
 		"RewardDetailPopup", true, false
 	) as PanelContainer
@@ -380,6 +454,17 @@ func _state_texts(hud: RewardShopHud) -> Array[String]:
 	for node in hud.find_children("StateLabel", "Label", true, false):
 		texts.append((node as Label).text)
 	return texts
+
+
+func _visible_offer_count(hud: RewardShopHud, first: int, count: int) -> int:
+	var visible_count := 0
+	for card_index in range(first, first + count):
+		var card := hud.find_child(
+			"OfferCard%02d" % card_index, true, false
+		) as Button
+		if card != null and card.visible:
+			visible_count += 1
+	return visible_count
 
 
 func _has_control_guide(hud: RewardShopHud) -> bool:

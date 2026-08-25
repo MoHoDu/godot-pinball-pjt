@@ -2338,10 +2338,10 @@
         {
           "type": "frame",
           "id": "aNyAp",
-          "x": 110,
+          "x": 440,
           "y": 44,
           "name": "Cartoon Reward Booth",
-          "width": 1700,
+          "width": 1040,
           "height": 990,
           "fill": "$navy-wood",
           "cornerRadius": 28,
@@ -2373,9 +2373,9 @@
             {
               "type": "ellipse",
               "id": "fqM2a",
-              "x": 1646,
+              "x": 986,
               "y": 20,
-              "name": "Booth Bolt 1646 20",
+              "name": "Booth Bolt 986 20",
               "fill": "$gold",
               "width": 30,
               "height": 30,
@@ -2397,9 +2397,9 @@
             {
               "type": "ellipse",
               "id": "X3glG9",
-              "x": 1646,
+              "x": 986,
               "y": 936,
-              "name": "Booth Bolt 1646 936",
+              "name": "Booth Bolt 986 936",
               "fill": "$gold",
               "width": 30,
               "height": 30,
@@ -2412,7 +2412,7 @@
               "x": 34,
               "y": 24,
               "name": "Booth Content",
-              "width": 1632,
+              "width": 972,
               "height": 942,
               "layout": "vertical",
               "gap": 12,
@@ -2430,6 +2430,7 @@
                       "type": "frame",
                       "id": "vfvxp",
                       "name": "Wave Clear Sign",
+                      "width": 420,
                       "gap": 20,
                       "alignItems": "center",
                       "children": [
@@ -3957,10 +3958,10 @@
         {
           "type": "frame",
           "id": "NeoyJ",
-          "x": 110,
+          "x": 440,
           "y": 44,
           "name": "Cartoon Reward Booth",
-          "width": 1700,
+          "width": 1040,
           "height": 990,
           "fill": "$navy-wood",
           "cornerRadius": 28,
@@ -3992,9 +3993,9 @@
             {
               "type": "ellipse",
               "id": "aH7cS",
-              "x": 1646,
+              "x": 986,
               "y": 20,
-              "name": "Booth Bolt 1646 20",
+              "name": "Booth Bolt 986 20",
               "fill": "$gold",
               "width": 30,
               "height": 30,
@@ -4016,9 +4017,9 @@
             {
               "type": "ellipse",
               "id": "Ni1NK",
-              "x": 1646,
+              "x": 986,
               "y": 936,
-              "name": "Booth Bolt 1646 936",
+              "name": "Booth Bolt 986 936",
               "fill": "$gold",
               "width": 30,
               "height": 30,
@@ -4031,7 +4032,7 @@
               "x": 34,
               "y": 24,
               "name": "Booth Content",
-              "width": 1632,
+              "width": 972,
               "height": 942,
               "layout": "vertical",
               "gap": 12,
@@ -4049,6 +4050,7 @@
                       "type": "frame",
                       "id": "b8R38u",
                       "name": "Wave Clear Sign",
+                      "width": 420,
                       "gap": 20,
                       "alignItems": "center",
                       "children": [
@@ -5566,7 +5568,7 @@
             {
               "type": "frame",
               "id": "HgzU3",
-              "x": 388,
+              "x": 498,
               "y": 514,
               "name": "Reward Detail Popup / Ball Hover",
               "width": 420,
@@ -5723,10 +5725,10 @@
         {
           "type": "frame",
           "id": "hG93Z",
-          "x": 110,
+          "x": 440,
           "y": 44,
           "name": "Cartoon Reward Booth",
-          "width": 1700,
+          "width": 1040,
           "height": 990,
           "fill": "$navy-wood",
           "cornerRadius": 28,
@@ -5758,9 +5760,9 @@
             {
               "type": "ellipse",
               "id": "aU1s5",
-              "x": 1646,
+              "x": 986,
               "y": 20,
-              "name": "Booth Bolt 1646 20",
+              "name": "Booth Bolt 986 20",
               "fill": "$gold",
               "width": 30,
               "height": 30,
@@ -5782,9 +5784,9 @@
             {
               "type": "ellipse",
               "id": "Eie6p",
-              "x": 1646,
+              "x": 986,
               "y": 936,
-              "name": "Booth Bolt 1646 936",
+              "name": "Booth Bolt 986 936",
               "fill": "$gold",
               "width": 30,
               "height": 30,
@@ -5797,7 +5799,7 @@
               "x": 34,
               "y": 24,
               "name": "Booth Content",
-              "width": 1632,
+              "width": 972,
               "height": 942,
               "layout": "vertical",
               "gap": 12,
@@ -5815,6 +5817,7 @@
                       "type": "frame",
                       "id": "zEZGh",
                       "name": "Wave Clear Sign",
+                      "width": 420,
                       "gap": 20,
                       "alignItems": "center",
                       "children": [
@@ -7474,10 +7477,10 @@
         {
           "type": "frame",
           "id": "akjHE",
-          "x": 110,
+          "x": 440,
           "y": 44,
           "name": "Cartoon Reward Booth",
-          "width": 1700,
+          "width": 1040,
           "height": 990,
           "fill": "$navy-wood",
           "cornerRadius": 28,
@@ -7509,9 +7512,9 @@
             {
               "type": "ellipse",
               "id": "z2nIrS",
-              "x": 1646,
+              "x": 986,
               "y": 20,
-              "name": "Booth Bolt 1646 20",
+              "name": "Booth Bolt 986 20",
               "fill": "$gold",
               "width": 30,
               "height": 30,
@@ -7533,9 +7536,9 @@
             {
               "type": "ellipse",
               "id": "GskNR",
-              "x": 1646,
+              "x": 986,
               "y": 936,
-              "name": "Booth Bolt 1646 936",
+              "name": "Booth Bolt 986 936",
               "fill": "$gold",
               "width": 30,
               "height": 30,
@@ -7548,7 +7551,7 @@
               "x": 34,
               "y": 24,
               "name": "Booth Content",
-              "width": 1632,
+              "width": 972,
               "height": 942,
               "layout": "vertical",
               "gap": 12,
@@ -7566,6 +7569,7 @@
                       "type": "frame",
                       "id": "vllpq",
                       "name": "Wave Clear Sign",
+                      "width": 420,
                       "gap": 20,
                       "alignItems": "center",
                       "children": [
@@ -9197,7 +9201,7 @@
             {
               "type": "frame",
               "id": "MU5Wf",
-              "x": 892,
+              "x": 1002,
               "y": 410,
               "name": "Reward Detail Popup / Part Hover",
               "width": 420,
@@ -9354,10 +9358,10 @@
         {
           "type": "frame",
           "id": "Tr03S",
-          "x": 110,
+          "x": 440,
           "y": 44,
           "name": "Cartoon Reward Booth",
-          "width": 1700,
+          "width": 1040,
           "height": 990,
           "fill": "$navy-wood",
           "cornerRadius": 28,
@@ -9389,9 +9393,9 @@
             {
               "type": "ellipse",
               "id": "r1B5ty",
-              "x": 1646,
+              "x": 986,
               "y": 20,
-              "name": "Booth Bolt 1646 20",
+              "name": "Booth Bolt 986 20",
               "fill": "$gold",
               "width": 30,
               "height": 30,
@@ -9413,9 +9417,9 @@
             {
               "type": "ellipse",
               "id": "E8C1Mj",
-              "x": 1646,
+              "x": 986,
               "y": 936,
-              "name": "Booth Bolt 1646 936",
+              "name": "Booth Bolt 986 936",
               "fill": "$gold",
               "width": 30,
               "height": 30,
@@ -9428,7 +9432,7 @@
               "x": 34,
               "y": 24,
               "name": "Booth Content",
-              "width": 1632,
+              "width": 972,
               "height": 942,
               "layout": "vertical",
               "gap": 12,
@@ -9452,6 +9456,7 @@
                       "type": "frame",
                       "id": "kqDu7",
                       "name": "Wave Clear Sign",
+                      "width": 420,
                       "gap": 20,
                       "alignItems": "center",
                       "children": [
@@ -11979,6 +11984,1873 @@
       },
       "width": 340,
       "height": 190
+    },
+    {
+      "type": "frame",
+      "id": "UuzhM",
+      "x": 10360,
+      "y": 1240,
+      "name": "SCREEN 06 · FIVE OFFERS / PAGE 1",
+      "clip": true,
+      "width": 1920,
+      "height": 1080,
+      "fill": "$navy-deep",
+      "layout": "none",
+      "children": [
+        {
+          "id": "aopez",
+          "type": "ref",
+          "ref": "moRVX",
+          "name": "Curtain Backdrop",
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "type": "rectangle",
+          "id": "La5xs",
+          "x": 0,
+          "y": 0,
+          "name": "Backdrop Tint",
+          "fill": "#081D2BCC",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "type": "polygon",
+          "polygonCount": 10,
+          "id": "Rr2Dk",
+          "x": 46,
+          "y": 95,
+          "name": "Left Confetti Star",
+          "rotation": 9,
+          "fill": "$gold",
+          "width": 100,
+          "height": 100,
+          "stroke": "$ink",
+          "strokeWidth": 5
+        },
+        {
+          "type": "polygon",
+          "polygonCount": 8,
+          "id": "FYHHM",
+          "x": 1765,
+          "y": 820,
+          "name": "Right Confetti Star",
+          "rotation": -7,
+          "fill": "$red",
+          "width": 86,
+          "height": 86,
+          "stroke": "$ink",
+          "strokeWidth": 5
+        },
+        {
+          "type": "frame",
+          "id": "a1wnu",
+          "x": 392,
+          "y": 44,
+          "name": "Cartoon Reward Booth",
+          "width": 1136,
+          "height": 990,
+          "fill": "$navy-wood",
+          "cornerRadius": 28,
+          "stroke": "$ink",
+          "strokeWidth": 8,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#00000088",
+            "offset": {
+              "x": 14,
+              "y": 16
+            }
+          },
+          "layout": "none",
+          "children": [
+            {
+              "type": "ellipse",
+              "id": "EsTym",
+              "x": 20,
+              "y": 20,
+              "name": "Booth Bolt 20 20",
+              "fill": "$gold",
+              "width": 30,
+              "height": 30,
+              "stroke": "$ink",
+              "strokeWidth": 4
+            },
+            {
+              "type": "ellipse",
+              "id": "Y03ZA3",
+              "x": 1082,
+              "y": 20,
+              "name": "Booth Bolt 1082 20",
+              "fill": "$gold",
+              "width": 30,
+              "height": 30,
+              "stroke": "$ink",
+              "strokeWidth": 4
+            },
+            {
+              "type": "ellipse",
+              "id": "C82HL1",
+              "x": 20,
+              "y": 936,
+              "name": "Booth Bolt 20 936",
+              "fill": "$gold",
+              "width": 30,
+              "height": 30,
+              "stroke": "$ink",
+              "strokeWidth": 4
+            },
+            {
+              "type": "ellipse",
+              "id": "ntXHY",
+              "x": 1082,
+              "y": 936,
+              "name": "Booth Bolt 1082 936",
+              "fill": "$gold",
+              "width": 30,
+              "height": 30,
+              "stroke": "$ink",
+              "strokeWidth": 4
+            },
+            {
+              "type": "frame",
+              "id": "Koi0F",
+              "x": 34,
+              "y": 24,
+              "name": "Booth Content",
+              "width": 1068,
+              "height": 942,
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "VGEfZ",
+                  "name": "Shop Marquee",
+                  "width": "fill_container",
+                  "height": 128,
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "uKd98",
+                      "name": "Wave Clear Sign",
+                      "width": 420,
+                      "gap": 20,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "isz4d",
+                          "name": "Wave Badge",
+                          "rotation": -2,
+                          "fill": "$red",
+                          "cornerRadius": 13,
+                          "stroke": "$ink",
+                          "strokeWidth": 5,
+                          "layout": "vertical",
+                          "padding": [
+                            13,
+                            18
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "q0y5a",
+                              "name": "Wave Badge Top",
+                              "fill": "$gold",
+                              "content": "WAVE 01",
+                              "fontFamily": "$font-body",
+                              "fontSize": 17,
+                              "fontWeight": "900"
+                            },
+                            {
+                              "type": "text",
+                              "id": "W0wrrp",
+                              "name": "Wave Badge Main",
+                              "fill": "$cream-light",
+                              "content": "CLEAR!",
+                              "fontFamily": "$font-display",
+                              "fontSize": 33,
+                              "fontWeight": "900"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "COAc7",
+                          "name": "Shop Title Copy",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "IRWG4",
+                              "name": "Shop Eyebrow",
+                              "fill": "$gold",
+                              "content": "오늘의 전리품",
+                              "fontFamily": "$font-body",
+                              "fontSize": 15,
+                              "fontWeight": "900"
+                            },
+                            {
+                              "type": "text",
+                              "id": "KswGR",
+                              "x": 0,
+                              "y": 23,
+                              "name": "Shop Title",
+                              "enabled": false,
+                              "fill": "$cream-light",
+                              "content": "보상 상점",
+                              "fontFamily": "$font-display",
+                              "fontSize": 54,
+                              "fontWeight": "900"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "imdFj",
+                      "name": "Wallet And Owned",
+                      "gap": 12,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "ok60K",
+                          "name": "Wallet Ticket",
+                          "rotation": 1,
+                          "fill": "$gold",
+                          "cornerRadius": 14,
+                          "stroke": "$ink",
+                          "strokeWidth": 5,
+                          "gap": 10,
+                          "padding": [
+                            10,
+                            17
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "id": "ZwiyO",
+                              "type": "ref",
+                              "ref": "k2akJp",
+                              "name": "Wallet Coin",
+                              "width": 46,
+                              "height": 46
+                            },
+                            {
+                              "type": "text",
+                              "id": "f3U7Za",
+                              "name": "Wallet Value",
+                              "fill": "$ink",
+                              "content": "24",
+                              "fontFamily": "$font-display",
+                              "fontSize": 35,
+                              "fontWeight": "900"
+                            },
+                            {
+                              "type": "text",
+                              "id": "Q8qZvq",
+                              "name": "Wallet Unit",
+                              "fill": "$ink",
+                              "content": "COIN",
+                              "fontFamily": "$font-body",
+                              "fontSize": 13,
+                              "fontWeight": "900"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "J0hPR",
+                          "name": "Owned Ticket",
+                          "fill": "$cream",
+                          "cornerRadius": 12,
+                          "stroke": "$ink",
+                          "strokeWidth": 4,
+                          "layout": "vertical",
+                          "gap": 2,
+                          "padding": [
+                            10,
+                            15
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "z7in0",
+                              "name": "Owned Ball",
+                              "fill": "$ink",
+                              "content": "보유 공 · 기본 유리눈",
+                              "fontFamily": "$font-body",
+                              "fontSize": 14,
+                              "fontWeight": "900"
+                            },
+                            {
+                              "type": "text",
+                              "id": "h5bW2C",
+                              "name": "Owned Parts",
+                              "fill": "$red-dark",
+                              "content": "부품 재고 · 없음",
+                              "fontFamily": "$font-body",
+                              "fontSize": 13,
+                              "fontWeight": "800"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "IONdh",
+                  "name": "Ball Shelf",
+                  "width": "fill_container",
+                  "height": 340,
+                  "fill": "#081D2B99",
+                  "cornerRadius": 18,
+                  "stroke": "#55BFAF",
+                  "strokeWidth": 4,
+                  "layout": "vertical",
+                  "gap": 10,
+                  "padding": [
+                    0,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "t2BeB",
+                      "name": "Ball Shelf Header",
+                      "width": "fill_container",
+                      "height": 48,
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "eUgEf",
+                          "name": "Ball Shelf Ribbon",
+                          "rotation": -1,
+                          "fill": "$teal",
+                          "cornerRadius": 10,
+                          "stroke": "$ink",
+                          "strokeWidth": 4,
+                          "padding": [
+                            8,
+                            18
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "N9hKw",
+                              "name": "Ball Shelf Title",
+                              "fill": "$ink",
+                              "content": "공 보상",
+                              "fontFamily": "$font-display",
+                              "fontSize": 21,
+                              "fontWeight": "900"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "YkNFk",
+                          "name": "Ball Shelf Rule Tag",
+                          "fill": "$cream",
+                          "cornerRadius": 9,
+                          "stroke": "$ink",
+                          "strokeWidth": 3,
+                          "padding": [
+                            6,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "uKBmB",
+                              "name": "Ball Shelf Rule",
+                              "fill": "$ink",
+                              "content": "이 화면에서 최대 1개",
+                              "fontFamily": "$font-body",
+                              "fontSize": 13,
+                              "fontWeight": "900"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "L8lkOt",
+                          "layoutPosition": "absolute",
+                          "x": 650,
+                          "y": 5,
+                          "name": "Ball Page Controls / Overflow Hint",
+                          "height": 38,
+                          "gap": 5,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "bRhL9",
+                              "name": "Previous Page / disabled",
+                              "width": 48,
+                              "height": 38,
+                              "fill": "#F7E7BF59",
+                              "cornerRadius": 9,
+                              "stroke": "#8B8173",
+                              "strokeWidth": 2,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "OPyba",
+                                  "name": "Previous Page Arrow",
+                                  "fill": "#8B8173",
+                                  "content": "←",
+                                  "fontFamily": "Noto Sans KR",
+                                  "fontSize": 15,
+                                  "fontWeight": "900"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "BPF25",
+                              "name": "Ball Page Position",
+                              "fill": "#FFF6DC",
+                              "content": "1 / 2",
+                              "fontFamily": "Noto Sans KR",
+                              "fontSize": 13,
+                              "fontWeight": "900"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "x8j6I",
+                              "name": "Next Page / 1 remaining",
+                              "width": 76,
+                              "height": 38,
+                              "fill": "#55BFAF",
+                              "cornerRadius": 9,
+                              "stroke": "#17120F",
+                              "strokeWidth": 3,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "z9Ib4",
+                                  "name": "Next Page Count",
+                                  "fill": "#17120F",
+                                  "content": "→ +1",
+                                  "fontFamily": "Noto Sans KR",
+                                  "fontSize": 15,
+                                  "fontWeight": "900"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "W2FuS",
+                      "name": "Ball Shelf Cards",
+                      "width": "fill_container",
+                      "height": "fill_container",
+                      "gap": 32,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "aIkdb",
+                          "name": "Clockwork / available",
+                          "width": 220,
+                          "height": "fill_container",
+                          "fill": "#00000000",
+                          "cornerRadius": 16,
+                          "stroke": "#00000000",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "padding": 14,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "TcwMB",
+                              "name": "Clockwork Art Well",
+                              "width": 176,
+                              "height": 176,
+                              "fill": "$cream-light",
+                              "cornerRadius": 13,
+                              "stroke": "$ink",
+                              "strokeWidth": 4,
+                              "layout": "vertical",
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "id": "za28Y",
+                                  "type": "ref",
+                                  "ref": "mBr1z",
+                                  "name": "Clockwork Art",
+                                  "width": 148,
+                                  "height": 148
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "U0pr2Z",
+                              "name": "Clockwork Copy",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 6,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "W3xgV",
+                                  "name": "Clockwork Top Line",
+                                  "width": "fill_container",
+                                  "justifyContent": "center",
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "frame",
+                                      "id": "FxH8l",
+                                      "x": 0,
+                                      "y": 5.141327450507163,
+                                      "name": "Clockwork Kind Tag",
+                                      "enabled": false,
+                                      "fill": "$teal",
+                                      "cornerRadius": 7,
+                                      "stroke": "$ink",
+                                      "strokeWidth": 3,
+                                      "padding": [
+                                        5,
+                                        8
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "a69sR",
+                                          "name": "Clockwork Kind",
+                                          "fill": "$ink",
+                                          "content": "안정형",
+                                          "fontFamily": "$font-body",
+                                          "fontSize": 11,
+                                          "fontWeight": "900"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "fikjG",
+                                      "name": "Clockwork Price",
+                                      "rotation": -2,
+                                      "fill": "$gold",
+                                      "cornerRadius": 9,
+                                      "stroke": "$ink",
+                                      "strokeWidth": 3,
+                                      "gap": 5,
+                                      "padding": [
+                                        5,
+                                        9
+                                      ],
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "id": "xMvWW",
+                                          "type": "ref",
+                                          "ref": "k2akJp",
+                                          "name": "Clockwork Coin",
+                                          "width": 24,
+                                          "height": 24
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "HkIk8",
+                                          "name": "Clockwork Price Text",
+                                          "fill": "$ink",
+                                          "content": "13",
+                                          "fontFamily": "$font-body",
+                                          "fontSize": 15,
+                                          "fontWeight": "900"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "HqQLf",
+                                  "x": 0,
+                                  "y": 44.282654901014325,
+                                  "name": "Clockwork Title",
+                                  "enabled": false,
+                                  "fill": "$ink",
+                                  "content": "정속 태엽눈",
+                                  "fontFamily": "$font-display",
+                                  "fontSize": 24,
+                                  "fontWeight": "900"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "uP8GP",
+                                  "x": 0,
+                                  "y": 82.28265490101433,
+                                  "name": "Clockwork Line 1",
+                                  "enabled": false,
+                                  "fill": "$navy-wood",
+                                  "content": "+ 경로를 읽기 쉬운 정속 주행",
+                                  "fontFamily": "$font-body",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "b7Qki",
+                                  "x": 0,
+                                  "y": 109.28265490101433,
+                                  "name": "Clockwork Line 2",
+                                  "enabled": false,
+                                  "fill": "$red-dark",
+                                  "content": "− 고속 콤보의 고점은 낮음",
+                                  "fontFamily": "$font-body",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "abet6",
+                                  "name": "Clockwork State Row",
+                                  "width": "fill_container",
+                                  "height": 1,
+                                  "justifyContent": "center",
+                                  "alignItems": "center"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "m6waqk",
+                          "name": "Gel / available",
+                          "width": 220,
+                          "height": "fill_container",
+                          "fill": "#00000000",
+                          "cornerRadius": 16,
+                          "stroke": "#00000000",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "padding": 14,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "DYPBP",
+                              "name": "Gel Art Well",
+                              "width": 176,
+                              "height": 176,
+                              "fill": "$cream-light",
+                              "cornerRadius": 13,
+                              "stroke": "$ink",
+                              "strokeWidth": 4,
+                              "layout": "vertical",
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "id": "F9wgxH",
+                                  "type": "ref",
+                                  "ref": "w7AF0D",
+                                  "name": "Gel Art",
+                                  "width": 148,
+                                  "height": 148
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "HIKJ9",
+                              "name": "Gel Copy",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 6,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "iSCSZ",
+                                  "name": "Gel Top Line",
+                                  "width": "fill_container",
+                                  "justifyContent": "center",
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "frame",
+                                      "id": "Ccbux",
+                                      "x": 0,
+                                      "y": 5.141327450507163,
+                                      "name": "Gel Kind Tag",
+                                      "enabled": false,
+                                      "fill": "$teal",
+                                      "cornerRadius": 7,
+                                      "stroke": "$ink",
+                                      "strokeWidth": 3,
+                                      "padding": [
+                                        5,
+                                        8
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "JLRrh",
+                                          "name": "Gel Kind",
+                                          "fill": "$ink",
+                                          "content": "완충형",
+                                          "fontFamily": "$font-body",
+                                          "fontSize": 11,
+                                          "fontWeight": "900"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "v6hZmA",
+                                      "name": "Gel Price",
+                                      "rotation": -2,
+                                      "fill": "$gold",
+                                      "cornerRadius": 9,
+                                      "stroke": "$ink",
+                                      "strokeWidth": 3,
+                                      "gap": 5,
+                                      "padding": [
+                                        5,
+                                        9
+                                      ],
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "id": "fDOtq",
+                                          "type": "ref",
+                                          "ref": "k2akJp",
+                                          "name": "Gel Coin",
+                                          "width": 24,
+                                          "height": 24
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "n5XUGc",
+                                          "name": "Gel Price Text",
+                                          "fill": "$ink",
+                                          "content": "11",
+                                          "fontFamily": "$font-body",
+                                          "fontSize": 15,
+                                          "fontWeight": "900"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "XJSUL",
+                                  "x": 0,
+                                  "y": 44.282654901014325,
+                                  "name": "Gel Title",
+                                  "enabled": false,
+                                  "fill": "$ink",
+                                  "content": "완충 젤 유리눈",
+                                  "fontFamily": "$font-display",
+                                  "fontSize": 24,
+                                  "fontWeight": "900"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "d5a5Gj",
+                                  "x": 0,
+                                  "y": 82.28265490101433,
+                                  "name": "Gel Line 1",
+                                  "enabled": false,
+                                  "fill": "$navy-wood",
+                                  "content": "+ 오래 살아남는 안정성",
+                                  "fontFamily": "$font-body",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "B9smb",
+                                  "x": 0,
+                                  "y": 109.28265490101433,
+                                  "name": "Gel Line 2",
+                                  "enabled": false,
+                                  "fill": "$red-dark",
+                                  "content": "− 목표 점수 생산은 느림",
+                                  "fontFamily": "$font-body",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "YfU77",
+                                  "name": "Gel State Row",
+                                  "width": "fill_container",
+                                  "height": 1,
+                                  "justifyContent": "center",
+                                  "alignItems": "center"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "rOMqU",
+                          "name": "Hollow Bell / available",
+                          "width": 220,
+                          "height": "fill_container",
+                          "fill": "#00000000",
+                          "cornerRadius": 16,
+                          "stroke": "#00000000",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "padding": 14,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "f3rM7",
+                              "name": "Hollow Bell Art Well",
+                              "width": 176,
+                              "height": 176,
+                              "fill": "$cream-light",
+                              "cornerRadius": 13,
+                              "stroke": "$ink",
+                              "strokeWidth": 4,
+                              "layout": "vertical",
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "id": "pNMMf",
+                                  "type": "ref",
+                                  "ref": "PCSIw",
+                                  "name": "Hollow Bell Art",
+                                  "width": 148,
+                                  "height": 148
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "nDJ61",
+                              "name": "Hollow Bell Copy",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 6,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "kirRU",
+                                  "name": "Hollow Bell Top Line",
+                                  "width": "fill_container",
+                                  "justifyContent": "center",
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "frame",
+                                      "id": "chscQ",
+                                      "x": 0,
+                                      "y": 4.984279715345906,
+                                      "name": "Hollow Bell Kind Tag",
+                                      "enabled": false,
+                                      "fill": "$purple",
+                                      "cornerRadius": 7,
+                                      "stroke": "$ink",
+                                      "strokeWidth": 3,
+                                      "padding": [
+                                        5,
+                                        8
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "K9pI2",
+                                          "name": "Hollow Bell Kind",
+                                          "fill": "$ink",
+                                          "content": "혼돈형",
+                                          "fontFamily": "$font-body",
+                                          "fontSize": 11,
+                                          "fontWeight": "900"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "aM5iK",
+                                      "name": "Hollow Bell Price",
+                                      "rotation": -2,
+                                      "fill": "$gold",
+                                      "cornerRadius": 9,
+                                      "stroke": "$ink",
+                                      "strokeWidth": 3,
+                                      "gap": 5,
+                                      "padding": [
+                                        5,
+                                        9
+                                      ],
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "id": "Y1zdN",
+                                          "type": "ref",
+                                          "ref": "k2akJp",
+                                          "name": "Hollow Bell Coin",
+                                          "width": 24,
+                                          "height": 24
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "ljBZJ",
+                                          "name": "Hollow Bell Price Text",
+                                          "fill": "$ink",
+                                          "content": "9",
+                                          "fontFamily": "$font-body",
+                                          "fontSize": 15,
+                                          "fontWeight": "900"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "Gxaeh",
+                                  "x": 0,
+                                  "y": 43.96855943069181,
+                                  "name": "Hollow Bell Title",
+                                  "enabled": false,
+                                  "fill": "$ink",
+                                  "content": "속빈 방울눈",
+                                  "fontFamily": "$font-display",
+                                  "fontSize": 24,
+                                  "fontWeight": "900"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "rWqVW",
+                                  "x": 0,
+                                  "y": 81.96855943069181,
+                                  "name": "Hollow Bell Line 1",
+                                  "enabled": false,
+                                  "fill": "$navy-wood",
+                                  "content": "+ 뜻밖의 반동과 고점",
+                                  "fontFamily": "$font-body",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "FnEDR",
+                                  "x": 0,
+                                  "y": 108.96855943069181,
+                                  "name": "Hollow Bell Line 2",
+                                  "enabled": false,
+                                  "fill": "$red-dark",
+                                  "content": "− 결과 편차와 통제 난도",
+                                  "fontFamily": "$font-body",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "qBlSR",
+                                  "name": "Hollow Bell State Row",
+                                  "width": "fill_container",
+                                  "height": 1,
+                                  "justifyContent": "center",
+                                  "alignItems": "center"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "RFnyf",
+                          "name": "Overflow Ball 4 / available",
+                          "width": 220,
+                          "height": "fill_container",
+                          "fill": "#00000000",
+                          "cornerRadius": 16,
+                          "stroke": "#00000000",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "padding": 14,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "EQ783",
+                              "name": "Clockwork Art Well",
+                              "width": 176,
+                              "height": 176,
+                              "fill": "$cream-light",
+                              "cornerRadius": 13,
+                              "stroke": "$ink",
+                              "strokeWidth": 4,
+                              "layout": "vertical",
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "id": "g2JS1",
+                                  "type": "ref",
+                                  "ref": "mBr1z",
+                                  "name": "Clockwork Art",
+                                  "width": 148,
+                                  "height": 148
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "FnCke",
+                              "name": "Clockwork Copy",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 6,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "pumbv",
+                                  "name": "Clockwork Top Line",
+                                  "width": "fill_container",
+                                  "justifyContent": "center",
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "frame",
+                                      "id": "N7GTCz",
+                                      "x": 0,
+                                      "y": 5.141327450507163,
+                                      "name": "Clockwork Kind Tag",
+                                      "enabled": false,
+                                      "fill": "$teal",
+                                      "cornerRadius": 7,
+                                      "stroke": "$ink",
+                                      "strokeWidth": 3,
+                                      "padding": [
+                                        5,
+                                        8
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "td3Eq",
+                                          "name": "Clockwork Kind",
+                                          "fill": "$ink",
+                                          "content": "안정형",
+                                          "fontFamily": "$font-body",
+                                          "fontSize": 11,
+                                          "fontWeight": "900"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "xS4KC",
+                                      "name": "Clockwork Price",
+                                      "rotation": -2,
+                                      "fill": "$gold",
+                                      "cornerRadius": 9,
+                                      "stroke": "$ink",
+                                      "strokeWidth": 3,
+                                      "gap": 5,
+                                      "padding": [
+                                        5,
+                                        9
+                                      ],
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "id": "UEg83",
+                                          "type": "ref",
+                                          "ref": "k2akJp",
+                                          "name": "Clockwork Coin",
+                                          "width": 24,
+                                          "height": 24
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "aEOPt",
+                                          "name": "Clockwork Price Text",
+                                          "fill": "$ink",
+                                          "content": "13",
+                                          "fontFamily": "$font-body",
+                                          "fontSize": 15,
+                                          "fontWeight": "900"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "uSOtj",
+                                  "x": 0,
+                                  "y": 44.282654901014325,
+                                  "name": "Clockwork Title",
+                                  "enabled": false,
+                                  "fill": "$ink",
+                                  "content": "정속 태엽눈",
+                                  "fontFamily": "$font-display",
+                                  "fontSize": 24,
+                                  "fontWeight": "900"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "hzvSU",
+                                  "x": 0,
+                                  "y": 82.28265490101433,
+                                  "name": "Clockwork Line 1",
+                                  "enabled": false,
+                                  "fill": "$navy-wood",
+                                  "content": "+ 경로를 읽기 쉬운 정속 주행",
+                                  "fontFamily": "$font-body",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "Wb6He",
+                                  "x": 0,
+                                  "y": 109.28265490101433,
+                                  "name": "Clockwork Line 2",
+                                  "enabled": false,
+                                  "fill": "$red-dark",
+                                  "content": "− 고속 콤보의 고점은 낮음",
+                                  "fontFamily": "$font-body",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "SETbh",
+                                  "name": "Clockwork State Row",
+                                  "width": "fill_container",
+                                  "height": 1,
+                                  "justifyContent": "center",
+                                  "alignItems": "center"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "OHyct",
+                  "name": "Part Shelf",
+                  "width": "fill_container",
+                  "height": 330,
+                  "fill": "#081D2B99",
+                  "cornerRadius": 18,
+                  "stroke": "#E9A83D",
+                  "strokeWidth": 4,
+                  "layout": "vertical",
+                  "gap": 10,
+                  "padding": [
+                    0,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "QORBg",
+                      "name": "Part Shelf Header",
+                      "width": "fill_container",
+                      "height": 48,
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "mzhNb",
+                          "name": "Part Shelf Ribbon",
+                          "rotation": -1,
+                          "fill": "$gold",
+                          "cornerRadius": 10,
+                          "stroke": "$ink",
+                          "strokeWidth": 4,
+                          "padding": [
+                            8,
+                            18
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "rW8PS",
+                              "name": "Part Shelf Title",
+                              "fill": "$ink",
+                              "content": "수리 부품",
+                              "fontFamily": "$font-display",
+                              "fontSize": 21,
+                              "fontWeight": "900"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "rhe04",
+                          "name": "Part Shelf Rule Tag",
+                          "fill": "$cream",
+                          "cornerRadius": 9,
+                          "stroke": "$ink",
+                          "strokeWidth": 3,
+                          "padding": [
+                            6,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "nDQ9v",
+                              "name": "Part Shelf Rule",
+                              "fill": "$ink",
+                              "content": "이 화면에서 최대 1개",
+                              "fontFamily": "$font-body",
+                              "fontSize": 13,
+                              "fontWeight": "900"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "yAScD",
+                      "name": "Part Shelf Cards",
+                      "width": "fill_container",
+                      "height": "fill_container",
+                      "gap": 32,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "I29pbV",
+                          "name": "Brooch / available",
+                          "width": 220,
+                          "height": "fill_container",
+                          "fill": "#00000000",
+                          "cornerRadius": 16,
+                          "stroke": "#00000000",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "padding": 14,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "xCnzE",
+                              "name": "Brooch Art Well",
+                              "width": 176,
+                              "height": 176,
+                              "fill": "$cream-light",
+                              "cornerRadius": 13,
+                              "stroke": "$ink",
+                              "strokeWidth": 4,
+                              "layout": "vertical",
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "id": "uxLVB",
+                                  "type": "ref",
+                                  "ref": "FmiWm",
+                                  "name": "Brooch Art",
+                                  "width": 148,
+                                  "height": 148
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "WXU1Q",
+                              "name": "Brooch Copy",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 6,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "wpByz",
+                                  "name": "Brooch Top Line",
+                                  "width": "fill_container",
+                                  "justifyContent": "center",
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "frame",
+                                      "id": "b8lhQR",
+                                      "x": 0,
+                                      "y": 5.141327450507163,
+                                      "name": "Brooch Kind Tag",
+                                      "enabled": false,
+                                      "fill": "$gold",
+                                      "cornerRadius": 7,
+                                      "stroke": "$ink",
+                                      "strokeWidth": 3,
+                                      "padding": [
+                                        5,
+                                        8
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "vbj75",
+                                          "name": "Brooch Kind",
+                                          "fill": "$ink",
+                                          "content": "x1 · 완성",
+                                          "fontFamily": "$font-body",
+                                          "fontSize": 11,
+                                          "fontWeight": "900"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "RFqee",
+                                      "name": "Brooch Price",
+                                      "rotation": -2,
+                                      "fill": "$gold",
+                                      "cornerRadius": 9,
+                                      "stroke": "$ink",
+                                      "strokeWidth": 3,
+                                      "gap": 5,
+                                      "padding": [
+                                        5,
+                                        9
+                                      ],
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "id": "D0sHN",
+                                          "type": "ref",
+                                          "ref": "k2akJp",
+                                          "name": "Brooch Coin",
+                                          "width": 24,
+                                          "height": 24
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "doBpt",
+                                          "name": "Brooch Price Text",
+                                          "fill": "$ink",
+                                          "content": "11",
+                                          "fontFamily": "$font-body",
+                                          "fontSize": 15,
+                                          "fontWeight": "900"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "zEUwh",
+                                  "x": 0,
+                                  "y": 44.282654901014325,
+                                  "name": "Brooch Title",
+                                  "enabled": false,
+                                  "fill": "$ink",
+                                  "content": "별빛 브로치",
+                                  "fontFamily": "$font-display",
+                                  "fontSize": 24,
+                                  "fontWeight": "900"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "KUPLe",
+                                  "x": 0,
+                                  "y": 82.28265490101433,
+                                  "name": "Brooch Line 1",
+                                  "enabled": false,
+                                  "fill": "$navy-wood",
+                                  "content": "조건 · 다른 부품 2종 방문 후 귀환",
+                                  "fontFamily": "$font-body",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "p09AUB",
+                                  "x": 0,
+                                  "y": 109.28265490101433,
+                                  "name": "Brooch Line 2",
+                                  "enabled": false,
+                                  "fill": "$red-dark",
+                                  "content": "효과 · 완성 타격 1회",
+                                  "fontFamily": "$font-body",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "AmIBK",
+                                  "name": "Brooch State Row",
+                                  "width": "fill_container",
+                                  "height": 1,
+                                  "justifyContent": "center",
+                                  "alignItems": "center"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "a8QfD",
+                          "name": "Gears / available",
+                          "width": 220,
+                          "height": "fill_container",
+                          "fill": "#00000000",
+                          "cornerRadius": 16,
+                          "stroke": "#00000000",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "padding": 14,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "WLJbH",
+                              "name": "Gears Art Well",
+                              "width": 176,
+                              "height": 176,
+                              "fill": "$cream-light",
+                              "cornerRadius": 13,
+                              "stroke": "$ink",
+                              "strokeWidth": 4,
+                              "layout": "vertical",
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "id": "QL6P8",
+                                  "type": "ref",
+                                  "ref": "mOPGa",
+                                  "name": "Gears Art",
+                                  "width": 148,
+                                  "height": 148
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "qWMmx",
+                              "name": "Gears Copy",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 6,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "X60Dg",
+                                  "name": "Gears Top Line",
+                                  "width": "fill_container",
+                                  "justifyContent": "center",
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "frame",
+                                      "id": "wa56A",
+                                      "x": 0,
+                                      "y": 5.141327450507163,
+                                      "name": "Gears Kind Tag",
+                                      "enabled": false,
+                                      "fill": "$gold",
+                                      "cornerRadius": 7,
+                                      "stroke": "$ink",
+                                      "strokeWidth": 3,
+                                      "padding": [
+                                        5,
+                                        8
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "c5BX1",
+                                          "name": "Gears Kind",
+                                          "fill": "$ink",
+                                          "content": "x2 · 폭주",
+                                          "fontFamily": "$font-body",
+                                          "fontSize": 11,
+                                          "fontWeight": "900"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "L4Kj6",
+                                      "name": "Gears Price",
+                                      "rotation": -2,
+                                      "fill": "$gold",
+                                      "cornerRadius": 9,
+                                      "stroke": "$ink",
+                                      "strokeWidth": 3,
+                                      "gap": 5,
+                                      "padding": [
+                                        5,
+                                        9
+                                      ],
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "id": "AuDcL",
+                                          "type": "ref",
+                                          "ref": "k2akJp",
+                                          "name": "Gears Coin",
+                                          "width": 24,
+                                          "height": 24
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "d1YYWb",
+                                          "name": "Gears Price Text",
+                                          "fill": "$ink",
+                                          "content": "12",
+                                          "fontFamily": "$font-body",
+                                          "fontSize": 15,
+                                          "fontWeight": "900"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "Gn690",
+                                  "x": 0,
+                                  "y": 44.282654901014325,
+                                  "name": "Gears Title",
+                                  "enabled": false,
+                                  "fill": "$ink",
+                                  "content": "황금 톱니바퀴",
+                                  "fontFamily": "$font-display",
+                                  "fontSize": 24,
+                                  "fontWeight": "900"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "VBXhK",
+                                  "x": 0,
+                                  "y": 82.28265490101433,
+                                  "name": "Gears Line 1",
+                                  "enabled": false,
+                                  "fill": "$navy-wood",
+                                  "content": "조건 · 접촉 3회째 과회전",
+                                  "fontFamily": "$font-body",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "ySTea",
+                                  "x": 0,
+                                  "y": 109.28265490101433,
+                                  "name": "Gears Line 2",
+                                  "enabled": false,
+                                  "fill": "$red-dark",
+                                  "content": "효과 · +90 / 과회전 +180px/s",
+                                  "fontFamily": "$font-body",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "HIuTF",
+                                  "name": "Gears State Row",
+                                  "width": "fill_container",
+                                  "height": 1,
+                                  "justifyContent": "center",
+                                  "alignItems": "center"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "F7QAP6",
+                          "name": "Bell / available",
+                          "width": 220,
+                          "height": "fill_container",
+                          "fill": "#00000000",
+                          "cornerRadius": 16,
+                          "stroke": "#00000000",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "padding": 14,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "EdDRw",
+                              "name": "Bell Art Well",
+                              "width": 176,
+                              "height": 176,
+                              "fill": "$cream-light",
+                              "cornerRadius": 13,
+                              "stroke": "$ink",
+                              "strokeWidth": 4,
+                              "layout": "vertical",
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "id": "iB8gW",
+                                  "type": "ref",
+                                  "ref": "g92GM",
+                                  "name": "Bell Art",
+                                  "width": 148,
+                                  "height": 148
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "p1ag3",
+                              "name": "Bell Copy",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 6,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "EeR7o",
+                                  "name": "Bell Top Line",
+                                  "width": "fill_container",
+                                  "justifyContent": "center",
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "frame",
+                                      "id": "uX4lh",
+                                      "x": 0,
+                                      "y": 4.984279715345906,
+                                      "name": "Bell Kind Tag",
+                                      "enabled": false,
+                                      "fill": "$gold",
+                                      "cornerRadius": 7,
+                                      "stroke": "$ink",
+                                      "strokeWidth": 3,
+                                      "padding": [
+                                        5,
+                                        8
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "LROSm",
+                                          "name": "Bell Kind",
+                                          "fill": "$ink",
+                                          "content": "x3 · 여운",
+                                          "fontFamily": "$font-body",
+                                          "fontSize": 11,
+                                          "fontWeight": "900"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "PIi9q",
+                                      "name": "Bell Price",
+                                      "rotation": -2,
+                                      "fill": "$gold",
+                                      "cornerRadius": 9,
+                                      "stroke": "$ink",
+                                      "strokeWidth": 3,
+                                      "gap": 5,
+                                      "padding": [
+                                        5,
+                                        9
+                                      ],
+                                      "alignItems": "center",
+                                      "children": [
+                                        {
+                                          "id": "ZjEXE",
+                                          "type": "ref",
+                                          "ref": "k2akJp",
+                                          "name": "Bell Coin",
+                                          "width": 24,
+                                          "height": 24
+                                        },
+                                        {
+                                          "type": "text",
+                                          "id": "A9wf6",
+                                          "name": "Bell Price Text",
+                                          "fill": "$ink",
+                                          "content": "9",
+                                          "fontFamily": "$font-body",
+                                          "fontSize": 15,
+                                          "fontWeight": "900"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "HoYSJ",
+                                  "x": 0,
+                                  "y": 43.96855943069181,
+                                  "name": "Bell Title",
+                                  "enabled": false,
+                                  "fill": "$ink",
+                                  "content": "잊혀진 별방울",
+                                  "fontFamily": "$font-display",
+                                  "fontSize": 24,
+                                  "fontWeight": "900"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "M44NC",
+                                  "x": 0,
+                                  "y": 81.96855943069181,
+                                  "name": "Bell Line 1",
+                                  "enabled": false,
+                                  "fill": "$navy-wood",
+                                  "content": "조건 · 접촉 0.60초 뒤",
+                                  "fontFamily": "$font-body",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "sVDSX",
+                                  "x": 0,
+                                  "y": 108.96855943069181,
+                                  "name": "Bell Line 2",
+                                  "enabled": false,
+                                  "fill": "$red-dark",
+                                  "content": "효과 · 콤보 유지 지연 타격",
+                                  "fontFamily": "$font-body",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "Uh1cb",
+                                  "name": "Bell State Row",
+                                  "width": "fill_container",
+                                  "height": 1,
+                                  "justifyContent": "center",
+                                  "alignItems": "center"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "TKxE4",
+                  "name": "Shop Footer",
+                  "width": "fill_container",
+                  "height": 94,
+                  "justifyContent": "end",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "s6VmZ",
+                      "name": "Proceed Button",
+                      "fill": "$cream",
+                      "cornerRadius": 15,
+                      "stroke": "$ink",
+                      "strokeWidth": 6,
+                      "effect": {
+                        "type": "shadow",
+                        "shadowType": "outer",
+                        "color": "#00000066",
+                        "offset": {
+                          "x": 7,
+                          "y": 8
+                        }
+                      },
+                      "gap": 10,
+                      "padding": [
+                        15,
+                        24
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "UIUNl",
+                          "name": "Proceed Button Text",
+                          "fill": "$ink",
+                          "content": "구매 없이 진행",
+                          "fontFamily": "$font-display",
+                          "fontSize": 20,
+                          "fontWeight": "900"
+                        },
+                        {
+                          "type": "icon",
+                          "id": "YmKFe",
+                          "name": "Proceed Arrow",
+                          "width": 28,
+                          "height": 28,
+                          "icon": "arrow_forward",
+                          "library": "Material Symbols Rounded",
+                          "weight": 700,
+                          "fill": "$red"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ],
   "variables": {

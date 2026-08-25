@@ -45,6 +45,10 @@ const ROW_TITLE_PADDING_HORIZONTAL := 18
 const ROW_TITLE_PADDING_VERTICAL := 8
 const OFFER_CARD_WIDTH := 220
 const OFFER_CARD_GAP := 32
+const MAX_VISIBLE_OFFERS_PER_PAGE := 4
+const PANEL_MIN_WIDTH := 1040
+const PANEL_MAX_WIDTH := 1240
+const PANEL_OFFER_ALLOWANCE := 160
 const OFFER_ART_WELL_SIZE := 176
 const BALL_ICON_SIZE := 148
 const PART_ICON_SIZE := 148
@@ -75,6 +79,7 @@ var _design_scale := 1.0
 
 var _panel: PanelContainer
 var _safe_margin: MarginContainer
+var _booth_decoration: Control
 var _summary_label: Label
 var _wave_badge_label: Label
 var _wallet_label: Label
@@ -84,6 +89,14 @@ var _ball_rule_label: Label
 var _part_rule_label: Label
 var _ball_row: HBoxContainer
 var _part_row: HBoxContainer
+var _ball_page_controls: HBoxContainer
+var _part_page_controls: HBoxContainer
+var _ball_previous_page_button: Button
+var _part_previous_page_button: Button
+var _ball_page_label: Label
+var _part_page_label: Label
+var _ball_next_page_button: Button
+var _part_next_page_button: Button
 var _proceed_button: Button
 var _detail_popup: PanelContainer
 var _detail_tag_panel: PanelContainer
@@ -102,6 +115,9 @@ var _card_views: Array[Dictionary] = []
 
 var _selected_index := -1
 var _hovered_card_index := -1
+var _ball_page := 0
+var _part_page := 0
+var _pagination_hint_played := false
 var _wave_result_text := ""
 var _next_wave_number := 2
 var _reward_destination_text := "다음 웨이브"
@@ -215,7 +231,8 @@ func _build_layout() -> void:
 
 	_panel = PanelContainer.new()
 	_panel.name = "ShopPanel"
-	_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_panel.custom_minimum_size.x = _d(PANEL_MIN_WIDTH)
+	_panel.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_panel.mouse_filter = Control.MOUSE_FILTER_PASS
 	var panel_style := _make_style(
@@ -234,11 +251,14 @@ func _build_layout() -> void:
 	_panel.add_theme_stylebox_override(&"panel", panel_style)
 	_safe_margin.add_child(_panel)
 
-	var booth_decoration := RewardBoothDecoration.new()
-	booth_decoration.name = "BoothBolts"
-	booth_decoration.design_scale = _design_scale
-	booth_decoration.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_safe_margin.add_child(booth_decoration)
+	_booth_decoration = RewardBoothDecoration.new()
+	_booth_decoration.name = "BoothBolts"
+	_booth_decoration.custom_minimum_size.x = _d(PANEL_MIN_WIDTH)
+	_booth_decoration.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_booth_decoration.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_booth_decoration.design_scale = _design_scale
+	_booth_decoration.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_safe_margin.add_child(_booth_decoration)
 
 	var column := VBoxContainer.new()
 	column.name = "ShopContent"
@@ -360,6 +380,190 @@ func _refresh_safe_margin() -> void:
 	_safe_margin.add_theme_constant_override(&"margin_right", horizontal)
 	_safe_margin.add_theme_constant_override(&"margin_top", vertical)
 	_safe_margin.add_theme_constant_override(&"margin_bottom", vertical)
+
+
+func _refresh_panel_width() -> void:
+	if _panel == null or _shop == null:
+		return
+	var largest_offer_count := maxi(
+		_shop.ball_offers.size(), _shop.part_offers.size()
+	)
+	var visible_offer_count := clampi(
+		largest_offer_count, 1, MAX_VISIBLE_OFFERS_PER_PAGE
+	)
+	var offer_span := (
+		visible_offer_count * OFFER_CARD_WIDTH
+		+ maxi(visible_offer_count - 1, 0) * OFFER_CARD_GAP
+	)
+	var target_width := clampf(
+		offer_span + PANEL_OFFER_ALLOWANCE,
+		PANEL_MIN_WIDTH,
+		PANEL_MAX_WIDTH
+	)
+	_panel.custom_minimum_size.x = _d(target_width)
+	if _booth_decoration != null:
+		_booth_decoration.custom_minimum_size.x = _d(target_width)
+
+
+func _refresh_pagination() -> void:
+	if _shop == null:
+		return
+	_ball_page = clampi(
+		_ball_page, 0, _page_count(_shop.ball_offers.size()) - 1
+	)
+	_part_page = clampi(
+		_part_page, 0, _page_count(_shop.part_offers.size()) - 1
+	)
+	_update_page_controls(RewardShopController.CATEGORY_BALL)
+	_update_page_controls(RewardShopController.CATEGORY_PART)
+	_apply_page_visibility()
+
+
+func _page_count(offer_count: int) -> int:
+	return maxi(1, ceili(
+		float(offer_count) / float(MAX_VISIBLE_OFFERS_PER_PAGE)
+	))
+
+
+func _update_page_controls(category: StringName) -> void:
+	var is_ball := category == RewardShopController.CATEGORY_BALL
+	var offer_count := (
+		_shop.ball_offers.size() if is_ball else _shop.part_offers.size()
+	)
+	var page := _ball_page if is_ball else _part_page
+	var total_pages := _page_count(offer_count)
+	var controls := _ball_page_controls if is_ball else _part_page_controls
+	var previous := (
+		_ball_previous_page_button if is_ball else _part_previous_page_button
+	)
+	var page_label := _ball_page_label if is_ball else _part_page_label
+	var next := _ball_next_page_button if is_ball else _part_next_page_button
+	if controls == null or previous == null or page_label == null or next == null:
+		return
+	controls.visible = total_pages > 1
+	previous.disabled = page <= 0
+	previous.tooltip_text = (
+		"이전 공 보상" if is_ball else "이전 수리 부품 보상"
+	)
+	page_label.text = "%d / %d" % [page + 1, total_pages]
+	var remaining := maxi(
+		offer_count - (page + 1) * MAX_VISIBLE_OFFERS_PER_PAGE, 0
+	)
+	next.disabled = page >= total_pages - 1
+	next.text = "→ +%d" % remaining if remaining > 0 else "→"
+	next.tooltip_text = (
+		"다음 공 보상 %d개" % remaining
+		if is_ball
+		else "다음 수리 부품 보상 %d개" % remaining
+	)
+
+
+func _apply_page_visibility() -> void:
+	for view in _card_views:
+		var card := view[&"button"] as Button
+		var category := view[&"category"] as StringName
+		var offer_index := int(view[&"offer_index"])
+		var page := (
+			_ball_page
+			if category == RewardShopController.CATEGORY_BALL
+			else _part_page
+		)
+		var first_visible := page * MAX_VISIBLE_OFFERS_PER_PAGE
+		var should_show := offer_index >= first_visible \
+			and offer_index < first_visible + MAX_VISIBLE_OFFERS_PER_PAGE
+		if card.has_focus() and not should_show:
+			card.release_focus()
+		card.visible = should_show
+
+
+func _change_category_page(category: StringName, step: int) -> void:
+	if _shop == null or step == 0:
+		return
+	var is_ball := category == RewardShopController.CATEGORY_BALL
+	var offer_count := (
+		_shop.ball_offers.size() if is_ball else _shop.part_offers.size()
+	)
+	var current_page := _ball_page if is_ball else _part_page
+	var next_page := clampi(
+		current_page + step, 0, _page_count(offer_count) - 1
+	)
+	if next_page == current_page:
+		return
+	if _selected_index >= 0 \
+			and _selected_index < _card_views.size() \
+			and _card_views[_selected_index][&"category"] == category:
+		_selected_index = -1
+	_hovered_card_index = -1
+	_hide_card_detail()
+	if is_ball:
+		_ball_page = next_page
+	else:
+		_part_page = next_page
+	_update_page_controls(category)
+	_apply_page_visibility()
+	_refresh_card_states()
+	call_deferred(&"_animate_page_in", category, signi(step))
+
+
+func _ensure_card_page_visible(card_index: int, direction: int) -> void:
+	if card_index < 0 or card_index >= _card_views.size():
+		return
+	var view := _card_views[card_index]
+	var category := view[&"category"] as StringName
+	var offer_index := int(view[&"offer_index"])
+	var target_page := floori(
+		float(offer_index) / float(MAX_VISIBLE_OFFERS_PER_PAGE)
+	)
+	var is_ball := category == RewardShopController.CATEGORY_BALL
+	var current_page := _ball_page if is_ball else _part_page
+	if target_page == current_page:
+		return
+	_hovered_card_index = -1
+	_hide_card_detail()
+	if is_ball:
+		_ball_page = target_page
+	else:
+		_part_page = target_page
+	_update_page_controls(category)
+	_apply_page_visibility()
+	call_deferred(&"_animate_page_in", category, signi(direction))
+
+
+func _animate_page_in(category: StringName, direction: int) -> void:
+	for view in _card_views:
+		if view[&"category"] != category:
+			continue
+		var card := view[&"button"] as Button
+		if card == null or not card.visible:
+			continue
+		var target_position := card.position
+		card.position.x += _d(18.0) * float(direction)
+		card.self_modulate.a = 0.0
+		var tween := card.create_tween().set_parallel(true)
+		tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		tween.tween_property(card, ^"position", target_position, 0.18)
+		tween.tween_property(card, ^"self_modulate:a", 1.0, 0.18)
+
+
+func _play_initial_pagination_hint() -> void:
+	if _pagination_hint_played:
+		return
+	var hint_buttons: Array[Button] = []
+	if _ball_page_controls != null and _ball_page_controls.visible \
+			and not _ball_next_page_button.disabled:
+		hint_buttons.append(_ball_next_page_button)
+	if _part_page_controls != null and _part_page_controls.visible \
+			and not _part_next_page_button.disabled:
+		hint_buttons.append(_part_next_page_button)
+	if hint_buttons.is_empty():
+		return
+	_pagination_hint_played = true
+	for button in hint_buttons:
+		button.pivot_offset = button.size * 0.5
+		var tween := button.create_tween().set_loops(2)
+		tween.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tween.tween_property(button, ^"scale", Vector2.ONE * 1.10, 0.12)
+		tween.tween_property(button, ^"scale", Vector2.ONE, 0.12)
 
 
 func _build_detail_popup() -> void:
@@ -698,9 +902,15 @@ func _make_row_header(
 ) -> HBoxContainer:
 	var row := HBoxContainer.new()
 	var category_name := "Ball" if title == BALL_ROW_TITLE else "Part"
+	var category := (
+		RewardShopController.CATEGORY_BALL
+		if title == BALL_ROW_TITLE
+		else RewardShopController.CATEGORY_PART
+	)
 	row.name = "%sShelfHeader" % category_name
 	row.custom_minimum_size.y = _d(ROW_HEADER_HEIGHT)
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override(&"separation", _di(8))
 
 	var ribbon := PanelContainer.new()
 	ribbon.name = "%sShelfRibbon" % category_name
@@ -725,6 +935,7 @@ func _make_row_header(
 	var spacer := Control.new()
 	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_child(spacer)
+	row.add_child(_make_page_controls(category, category_name, accent))
 	var note_panel := PanelContainer.new()
 	note_panel.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	var note_style := _make_style(
@@ -745,6 +956,77 @@ func _make_row_header(
 	return row
 
 
+func _make_page_controls(
+	category: StringName,
+	category_name: String,
+	accent: Color
+) -> HBoxContainer:
+	var controls := HBoxContainer.new()
+	controls.name = "%sPageControls" % category_name
+	controls.visible = false
+	controls.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	controls.alignment = BoxContainer.ALIGNMENT_CENTER
+	controls.add_theme_constant_override(&"separation", _di(5))
+
+	var previous := _make_page_button("←", accent, 48.0)
+	previous.name = "%sPreviousPageButton" % category_name
+	previous.pressed.connect(_change_category_page.bind(category, -1))
+	controls.add_child(previous)
+
+	var page_label := _make_label("1 / 1", _di(13), COLOR_CREAM_LIGHT, true)
+	page_label.name = "%sPageLabel" % category_name
+	page_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	page_label.custom_minimum_size.x = _d(48.0)
+	controls.add_child(page_label)
+
+	var next := _make_page_button("→", accent, 76.0)
+	next.name = "%sNextPageButton" % category_name
+	next.pressed.connect(_change_category_page.bind(category, 1))
+	controls.add_child(next)
+
+	if category == RewardShopController.CATEGORY_BALL:
+		_ball_page_controls = controls
+		_ball_previous_page_button = previous
+		_ball_page_label = page_label
+		_ball_next_page_button = next
+	else:
+		_part_page_controls = controls
+		_part_previous_page_button = previous
+		_part_page_label = page_label
+		_part_next_page_button = next
+	return controls
+
+
+func _make_page_button(text: String, accent: Color, width: float) -> Button:
+	var button := Button.new()
+	button.text = text
+	button.custom_minimum_size = Vector2(_d(width), _d(38.0))
+	button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	button.add_theme_font_override(&"font", _body_font_bold)
+	button.add_theme_font_size_override(&"font_size", _di(15))
+	button.add_theme_color_override(&"font_color", COLOR_INK)
+	button.add_theme_color_override(&"font_hover_color", COLOR_INK)
+	button.add_theme_color_override(&"font_pressed_color", COLOR_INK)
+	button.add_theme_color_override(&"font_disabled_color", COLOR_MUTED)
+	button.add_theme_stylebox_override(
+		&"normal", _make_style(accent, COLOR_INK, _di(3), _di(9), _di(5))
+	)
+	button.add_theme_stylebox_override(
+		&"hover",
+		_make_style(accent.lightened(0.10), COLOR_INK, _di(3), _di(9), _di(5))
+	)
+	button.add_theme_stylebox_override(
+		&"pressed",
+		_make_style(accent.darkened(0.08), COLOR_INK, _di(3), _di(9), _di(5))
+	)
+	button.add_theme_stylebox_override(
+		&"disabled",
+		_make_style(Color(COLOR_CREAM, 0.35), COLOR_MUTED, _di(2), _di(9), _di(5))
+	)
+	return button
+
+
 func _make_divider() -> ColorRect:
 	var divider := ColorRect.new()
 	divider.color = COLOR_INK
@@ -756,6 +1038,9 @@ func _make_divider() -> ColorRect:
 func _on_shop_opened(_wave_id: int) -> void:
 	_selected_index = -1
 	_hovered_card_index = -1
+	_ball_page = 0
+	_part_page = 0
+	_pagination_hint_played = false
 	_purchased_ball_id = &""
 	_purchased_part_id = &""
 	_handoff_in_progress = false
@@ -837,7 +1122,10 @@ func _rebuild_cards() -> void:
 		var card := _make_part_card(_shop.part_offers[offer_index], _cards.size())
 		_part_row.add_child(card)
 		_cards.append(card)
+	_refresh_panel_width()
+	_refresh_pagination()
 	_refresh_card_states()
+	call_deferred(&"_play_initial_pagination_hint")
 
 
 func _make_ball_card(offer: RewardBallOffer, card_index: int) -> Button:
@@ -869,6 +1157,7 @@ func _make_ball_card(offer: RewardBallOffer, card_index: int) -> Button:
 		&"title": offer.display_name,
 		&"bundle": 1,
 		&"category": RewardShopController.CATEGORY_BALL,
+		&"offer_index": card_index,
 		&"detail_tag": PERFORMANCE_NAMES[group_index],
 		&"detail_accent": COLOR_TEAL,
 		&"detail_primary": "+ " + offer.merit_text,
@@ -901,6 +1190,7 @@ func _make_part_card(offer: RepairPartOffer, card_index: int) -> Button:
 		&"title": offer.display_name,
 		&"bundle": offer.bundle_count,
 		&"category": RewardShopController.CATEGORY_PART,
+		&"offer_index": card_index - _shop.ball_offers.size(),
 		&"part_id": offer.part_id,
 		&"detail_tag": "x%d · %s" % [offer.bundle_count, offer.verb_text],
 		&"detail_accent": COLOR_GOLD,
@@ -1235,7 +1525,9 @@ func _part_bundle_count(part_id: StringName) -> int:
 func _move_selection(step: int) -> void:
 	if _cards.is_empty():
 		return
-	_selected_index = posmod(_selected_index + step, _cards.size())
+	var next_index := posmod(_selected_index + step, _cards.size())
+	_ensure_card_page_visible(next_index, step)
+	_selected_index = next_index
 	_refresh_card_states()
 	_cards[_selected_index].grab_focus()
 	_show_card_detail(_selected_index)
@@ -1427,6 +1719,8 @@ func _make_proceed_style(background: Color, pressed: bool) -> StyleBoxFlat:
 
 
 func _clear_cards() -> void:
+	_selected_index = -1
+	_hovered_card_index = -1
 	_hide_card_detail()
 	for card in _cards:
 		if card.get_parent() != null:
@@ -1434,8 +1728,6 @@ func _clear_cards() -> void:
 		card.queue_free()
 	_cards.clear()
 	_card_views.clear()
-	_selected_index = -1
-	_hovered_card_index = -1
 
 
 static func _make_style(
