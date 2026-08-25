@@ -11,8 +11,8 @@ const BALL_CASES: Array[Dictionary] = [
 	{
 		&"name": &"gel_ball",
 		&"scene_path": "res://Resources/Prefabs/balls/variants/reward/gel_ball.tscn",
-		&"expected_diameter": 34.0,
-		&"expected_safety_maximum": 3000.0,
+		&"expected_diameter": 64.0,
+		&"expected_safety_maximum": 5000.0,
 	},
 	{
 		&"name": &"normal_ball",

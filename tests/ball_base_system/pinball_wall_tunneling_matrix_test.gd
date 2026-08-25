@@ -22,11 +22,11 @@ const BALL_CASES: Array[Dictionary] = [
 	{
 		&"name": &"gel_ball",
 		&"scene_path": GEL_BALL_SCENE_PATH,
-		&"diameter": 34.0,
+		&"diameter": 64.0,
 		&"authored_maximum_speed": 3000.0,
 		&"configured_maximum_speed": 5000.0,
-		&"expected_effective_maximum_speed": 3000.0,
-		&"test_speed": 3000.0,
+		&"expected_effective_maximum_speed": 5000.0,
+		&"test_speed": 5000.0,
 	},
 	{
 		&"name": &"normal_ball",

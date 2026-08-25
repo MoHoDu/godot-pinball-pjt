@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" path="res://Resources/Art/balls/variants/Ball_Gel_Pupil.png" id="3_pupil"]
 
 [node name="PinballBall" instance=ExtResource("1_base")]
+ball_diameter = 64.0
 
 [node name="Sprite2D" parent="Visual" index="0"]
 texture = ExtResource("2_body")
