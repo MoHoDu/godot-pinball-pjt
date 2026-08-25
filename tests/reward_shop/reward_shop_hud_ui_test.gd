@@ -95,25 +95,25 @@ func _run() -> void:
 		ball_shelf.custom_minimum_size.y, 340.0 * design_scale
 	), "공 보상 선반 높이가 설계 비율과 같아야 한다.")
 	_expect(ball_shelf_header != null and is_equal_approx(
-		ball_shelf_header.custom_minimum_size.y, 56.0 * design_scale
-	), "공 보상 리본 헤더 높이가 확대된 설계 비율과 같아야 한다.")
+		ball_shelf_header.custom_minimum_size.y, 48.0 * design_scale
+	), "공 보상 리본 헤더 높이가 원래 설계 비율과 같아야 한다.")
 	_expect(ball_row != null and is_equal_approx(
-		ball_row.custom_minimum_size.y, 274.0 * design_scale
+		ball_row.custom_minimum_size.y, 282.0 * design_scale
 	), "공 카드 행 높이가 설계 비율과 같아야 한다.")
 	_expect(ball_shelf_title != null and ball_shelf_title.get_theme_font_size(
 		&"font_size"
-	) == roundi(24.0 * design_scale),
-		"공 보상 리본 글자가 확대된 설계 크기와 같아야 한다.")
+	) == roundi(21.0 * design_scale),
+		"공 보상 리본 글자가 원래 설계 크기와 같아야 한다.")
 	var ball_ribbon_style := (
 		ball_shelf_ribbon.get_theme_stylebox(&"panel") as StyleBoxFlat
 		if ball_shelf_ribbon != null
 		else null
 	)
 	_expect(ball_ribbon_style != null and is_equal_approx(
-		ball_ribbon_style.content_margin_left, 24.0 * design_scale
+		ball_ribbon_style.content_margin_left, 18.0 * design_scale
 	) and is_equal_approx(
-		ball_ribbon_style.content_margin_top, 10.0 * design_scale
-	), "공 보상 리본 내부 여백이 확대된 설계 비율과 같아야 한다.")
+		ball_ribbon_style.content_margin_top, roundi(8.0 * design_scale)
+	), "공 보상 리본 내부 여백이 원래 설계 비율과 같아야 한다.")
 	var part_shelf_header := hud.find_child(
 		"PartShelfHeader", true, false
 	) as Control
@@ -125,25 +125,25 @@ func _run() -> void:
 	) as Label
 	var part_row := hud.find_child("PartOfferRow", true, false) as Control
 	_expect(part_shelf_header != null and is_equal_approx(
-		part_shelf_header.custom_minimum_size.y, 56.0 * design_scale
-	), "수리 부품 리본 헤더 높이가 확대된 설계 비율과 같아야 한다.")
+		part_shelf_header.custom_minimum_size.y, 48.0 * design_scale
+	), "수리 부품 리본 헤더 높이가 원래 설계 비율과 같아야 한다.")
 	_expect(part_row != null and is_equal_approx(
-		part_row.custom_minimum_size.y, 264.0 * design_scale
+		part_row.custom_minimum_size.y, 272.0 * design_scale
 	), "수리 부품 카드 행 높이가 설계 비율과 같아야 한다.")
 	_expect(part_shelf_title != null and part_shelf_title.get_theme_font_size(
 		&"font_size"
-	) == roundi(24.0 * design_scale),
-		"수리 부품 리본 글자가 확대된 설계 크기와 같아야 한다.")
+	) == roundi(21.0 * design_scale),
+		"수리 부품 리본 글자가 원래 설계 크기와 같아야 한다.")
 	var part_ribbon_style := (
 		part_shelf_ribbon.get_theme_stylebox(&"panel") as StyleBoxFlat
 		if part_shelf_ribbon != null
 		else null
 	)
 	_expect(part_ribbon_style != null and is_equal_approx(
-		part_ribbon_style.content_margin_left, 24.0 * design_scale
+		part_ribbon_style.content_margin_left, 18.0 * design_scale
 	) and is_equal_approx(
-		part_ribbon_style.content_margin_top, 10.0 * design_scale
-	), "수리 부품 리본 내부 여백이 확대된 설계 비율과 같아야 한다.")
+		part_ribbon_style.content_margin_top, roundi(8.0 * design_scale)
+	), "수리 부품 리본 내부 여백이 원래 설계 비율과 같아야 한다.")
 	var shop_title := hud.find_child("ShopTitleLabel", true, false) as Label
 	var display_font := (
 		shop_title.get_theme_font(&"font") as FontVariation
@@ -178,13 +178,28 @@ func _run() -> void:
 	)
 	var first_art_well := hud.find_child("OfferArtWell", true, false) as Control
 	_expect(first_art_well != null and is_equal_approx(
-		first_art_well.custom_minimum_size.x, 128.0 * design_scale
-	), "카드 아트 슬롯 너비가 설계 비율과 같아야 한다.")
+		first_art_well.custom_minimum_size.x, 176.0 * design_scale
+	) and is_equal_approx(
+		first_art_well.custom_minimum_size.y, 176.0 * design_scale
+	), "카드 아트 슬롯이 확대된 정사각형 설계 비율과 같아야 한다.")
+	var first_offer_art := hud.find_child("OfferArt", true, false) as Control
+	_expect(first_offer_art != null and is_equal_approx(
+		first_offer_art.custom_minimum_size.x, roundi(148.0 * design_scale)
+	) and is_equal_approx(
+		first_offer_art.custom_minimum_size.y, roundi(148.0 * design_scale)
+	), "공·수리 부품 아이콘이 확대된 설계 비율과 같아야 한다.")
+	_expect(hud.find_child("OfferCopy", true, false) == null
+		and hud.find_child("OfferTitle", true, false) == null
+		and hud.find_child("OfferKindTag", true, false) == null,
+		"기본 카드에는 이름·유형·설명 정보를 노출하지 않아야 한다.")
+	var detail_popup := hud.find_child(
+		"RewardDetailPopup", true, false
+	) as PanelContainer
+	_expect(detail_popup != null and not detail_popup.visible,
+		"상세 팝오버는 기본 상태에서 숨겨져야 한다.")
 	for badge_node in hud.find_children("StateBadge", "PanelContainer", true, false):
 		_expect(not (badge_node as Control).visible,
 			"구매 가능한 기본 카드에는 설계에 없는 상태 배지를 표시하지 않아야 한다.")
-	_expect(hud.find_child("*Detail*", true, false) == null,
-		"하단 설명 노드는 없어야 한다.")
 	_expect(not _has_control_guide(hud), "조작키 가이드 문구는 없어야 한다.")
 
 	var proceed := hud.find_child("ProceedButton", true, false) as Button
@@ -222,6 +237,31 @@ func _run() -> void:
 	var cards := hud.find_children("OfferCard*", "Button", true, false)
 	_expect(cards.size() == 6, "상호작용 가능한 카드 버튼이 6개여야 한다.")
 	if not cards.is_empty():
+		(cards[0] as Button).mouse_entered.emit()
+		await process_frame
+		var detail_title := hud.find_child(
+			"RewardDetailTitle", true, false
+		) as Label
+		var detail_primary := hud.find_child(
+			"RewardDetailPrimary", true, false
+		) as Label
+		_expect(detail_popup != null and detail_popup.visible,
+			"카드 호버 시 상세 팝오버가 보여야 한다.")
+		_expect(detail_title != null and not detail_title.text.is_empty()
+			and detail_primary != null and not detail_primary.text.is_empty(),
+			"상세 팝오버에 이름과 핵심 설명이 표시되어야 한다.")
+		(cards[0] as Button).mouse_exited.emit()
+		await process_frame
+		_expect(detail_popup != null and not detail_popup.visible,
+			"선택 전 카드에서 마우스가 벗어나면 팝오버가 숨겨져야 한다.")
+		(cards[0] as Button).grab_focus()
+		await process_frame
+		_expect(detail_popup != null and detail_popup.visible,
+			"키보드·패드 포커스 시에도 상세 팝오버가 보여야 한다.")
+		(cards[0] as Button).release_focus()
+		await process_frame
+		_expect(detail_popup != null and not detail_popup.visible,
+			"선택 전 카드 포커스가 해제되면 팝오버가 숨겨져야 한다.")
 		(cards[0] as Button).pressed.emit()
 		_expect(_state_texts(hud).has("선택!"),
 			"카드 선택 시 설계와 같은 선택 도장이 보여야 한다.")

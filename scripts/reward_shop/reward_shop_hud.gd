@@ -42,12 +42,14 @@ const COLOR_LOCKED := Color("304a59")
 
 const CARD_RADIUS := 16
 const PANEL_RADIUS := 28
-const ROW_HEADER_HEIGHT := 56
-const ROW_TITLE_FONT_SIZE := 24
-const ROW_TITLE_PADDING_HORIZONTAL := 24
-const ROW_TITLE_PADDING_VERTICAL := 10
-const BALL_ICON_SIZE := 96
-const PART_ICON_SIZE := 96
+const ROW_HEADER_HEIGHT := 48
+const ROW_TITLE_FONT_SIZE := 21
+const ROW_TITLE_PADDING_HORIZONTAL := 18
+const ROW_TITLE_PADDING_VERTICAL := 8
+const OFFER_ART_WELL_SIZE := 176
+const BALL_ICON_SIZE := 148
+const PART_ICON_SIZE := 148
+const DETAIL_POPUP_WIDTH := 420
 const PERFORMANCE_NAMES: Array[String] = [
 	"안정형",
 	"완충형",
@@ -83,6 +85,12 @@ var _part_rule_label: Label
 var _ball_row: HBoxContainer
 var _part_row: HBoxContainer
 var _proceed_button: Button
+var _detail_popup: PanelContainer
+var _detail_tag_panel: PanelContainer
+var _detail_tag_label: Label
+var _detail_title_label: Label
+var _detail_primary_label: Label
+var _detail_secondary_label: Label
 var _handoff_overlay: Control
 var _handoff_wave_label: Label
 var _handoff_ball_label: Label
@@ -93,6 +101,7 @@ var _cards: Array[Button] = []
 var _card_views: Array[Dictionary] = []
 
 var _selected_index := -1
+var _hovered_card_index := -1
 var _wave_result_text := ""
 var _next_wave_number := 2
 var _reward_destination_text := "다음 웨이브"
@@ -253,7 +262,7 @@ func _build_layout() -> void:
 
 	_ball_row = HBoxContainer.new()
 	_ball_row.name = "BallOfferRow"
-	_ball_row.custom_minimum_size.y = _d(274.0)
+	_ball_row.custom_minimum_size.y = _d(282.0)
 	_ball_row.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_ball_row.add_theme_constant_override(&"separation", _di(16))
 	ball_shelf.add_child(_ball_row)
@@ -271,7 +280,7 @@ func _build_layout() -> void:
 
 	_part_row = HBoxContainer.new()
 	_part_row.name = "PartOfferRow"
-	_part_row.custom_minimum_size.y = _d(264.0)
+	_part_row.custom_minimum_size.y = _d(272.0)
 	_part_row.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_part_row.add_theme_constant_override(&"separation", _di(16))
 	part_shelf.add_child(_part_row)
@@ -306,6 +315,7 @@ func _build_layout() -> void:
 	proceed_arrow.set_anchor_and_offset(SIDE_BOTTOM, 0.5, _d(16.0))
 	proceed_arrow.set_anchor_and_offset(SIDE_TOP, 0.5, -_d(16.0))
 	_refresh_proceed_button()
+	_build_detail_popup()
 	_build_handoff_overlay()
 
 
@@ -320,10 +330,67 @@ func _refresh_safe_margin() -> void:
 	_safe_margin.add_theme_constant_override(&"margin_bottom", vertical)
 
 
+func _build_detail_popup() -> void:
+	_detail_popup = PanelContainer.new()
+	_detail_popup.name = "RewardDetailPopup"
+	_detail_popup.custom_minimum_size.x = _d(DETAIL_POPUP_WIDTH)
+	_detail_popup.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_detail_popup.z_index = 10
+	_detail_popup.visible = false
+	var popup_style := _make_style(
+		COLOR_CREAM,
+		COLOR_INK,
+		_di(6),
+		_di(16),
+		_di(18),
+		_di(8),
+		Vector2(_d(8.0), _d(10.0))
+	)
+	_detail_popup.add_theme_stylebox_override(&"panel", popup_style)
+	add_child(_detail_popup)
+
+	var column := VBoxContainer.new()
+	column.name = "RewardDetailContent"
+	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_theme_constant_override(&"separation", _di(8))
+	_detail_popup.add_child(column)
+
+	_detail_tag_panel = PanelContainer.new()
+	_detail_tag_panel.name = "RewardDetailTag"
+	_detail_tag_panel.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	_detail_tag_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_child(_detail_tag_panel)
+	_detail_tag_label = _make_label("유형", _di(12), COLOR_INK, true)
+	_detail_tag_label.name = "RewardDetailTagLabel"
+	_detail_tag_panel.add_child(_detail_tag_label)
+
+	_detail_title_label = _make_label("보상 이름", _di(24), COLOR_INK, true)
+	_detail_title_label.name = "RewardDetailTitle"
+	_detail_title_label.add_theme_font_override(&"font", DISPLAY_FONT)
+	column.add_child(_detail_title_label)
+
+	column.add_child(_make_divider())
+	_detail_primary_label = _make_detail_line("핵심 효과", COLOR_NAVY_WOOD)
+	_detail_primary_label.name = "RewardDetailPrimary"
+	column.add_child(_detail_primary_label)
+	_detail_secondary_label = _make_detail_line("주의 사항", COLOR_RED_DARK)
+	_detail_secondary_label.name = "RewardDetailSecondary"
+	column.add_child(_detail_secondary_label)
+
+
+func _make_detail_line(text: String, color: Color) -> Label:
+	var label := _make_label(text, _di(14), color, false)
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.custom_minimum_size.x = _d(DETAIL_POPUP_WIDTH - 48.0)
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return label
+
+
 func _build_handoff_overlay() -> void:
 	_handoff_overlay = Control.new()
 	_handoff_overlay.name = "HandoffOverlay"
 	_handoff_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	_handoff_overlay.z_index = 20
 	_handoff_overlay.visible = false
 	add_child(_handoff_overlay)
 	_handoff_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -656,6 +723,7 @@ func _make_divider() -> ColorRect:
 
 func _on_shop_opened(_wave_id: int) -> void:
 	_selected_index = -1
+	_hovered_card_index = -1
 	_purchased_ball_id = &""
 	_purchased_part_id = &""
 	_handoff_in_progress = false
@@ -669,6 +737,8 @@ func _on_shop_opened(_wave_id: int) -> void:
 
 func _on_shop_closed(_wave_id: int) -> void:
 	_handoff_in_progress = false
+	_hovered_card_index = -1
+	_hide_card_detail()
 	if _handoff_overlay != null:
 		_handoff_overlay.visible = false
 	visible = false
@@ -755,21 +825,9 @@ func _make_ball_card(offer: RewardBallOffer, card_index: int) -> Button:
 	art.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	art_well.add_child(art)
 
-	var copy := _make_card_copy(content)
 	var group_index := clampi(offer.performance_group, 0, PERFORMANCE_NAMES.size() - 1)
-	copy.add_child(_make_card_top_line(
-		PERFORMANCE_NAMES[group_index],
-		COLOR_TEAL,
-		offer.price
-	))
-	var title := _make_label(offer.display_name, _di(24), COLOR_INK, true)
-	title.name = "OfferTitle"
-	title.add_theme_font_override(&"font", DISPLAY_FONT)
-	copy.add_child(title)
-
-	copy.add_child(_make_body_label("+ " + offer.merit_text, COLOR_NAVY_WOOD))
-	copy.add_child(_make_body_label("− " + offer.cost_text, COLOR_RED_DARK))
-	var badge_data := _make_state_badge(copy)
+	content.add_child(_make_price_panel(offer.price))
+	var badge_data := _make_state_badge(content)
 	_card_views.append({
 		&"button": card,
 		&"badge": badge_data[0],
@@ -778,6 +836,10 @@ func _make_ball_card(offer: RewardBallOffer, card_index: int) -> Button:
 		&"title": offer.display_name,
 		&"bundle": 1,
 		&"category": RewardShopController.CATEGORY_BALL,
+		&"detail_tag": PERFORMANCE_NAMES[group_index],
+		&"detail_accent": COLOR_TEAL,
+		&"detail_primary": "+ " + offer.merit_text,
+		&"detail_secondary": "− " + offer.cost_text,
 	})
 	return card
 
@@ -795,20 +857,8 @@ func _make_part_card(offer: RepairPartOffer, card_index: int) -> Button:
 	art.set_part_id(offer.part_id)
 	art_well.add_child(art)
 
-	var copy := _make_card_copy(content)
-	copy.add_child(_make_card_top_line(
-		"x%d · %s" % [offer.bundle_count, offer.verb_text],
-		COLOR_GOLD,
-		offer.price
-	))
-	var title := _make_label(offer.display_name, _di(24), COLOR_INK, true)
-	title.name = "OfferTitle"
-	title.add_theme_font_override(&"font", DISPLAY_FONT)
-	copy.add_child(title)
-
-	copy.add_child(_make_body_label("조건 · " + offer.condition_text, COLOR_NAVY_WOOD))
-	copy.add_child(_make_body_label("효과 · " + offer.effect_text, COLOR_RED_DARK))
-	var badge_data := _make_state_badge(copy)
+	content.add_child(_make_price_panel(offer.price))
+	var badge_data := _make_state_badge(content)
 	_card_views.append({
 		&"button": card,
 		&"badge": badge_data[0],
@@ -818,6 +868,10 @@ func _make_part_card(offer: RepairPartOffer, card_index: int) -> Button:
 		&"bundle": offer.bundle_count,
 		&"category": RewardShopController.CATEGORY_PART,
 		&"part_id": offer.part_id,
+		&"detail_tag": "x%d · %s" % [offer.bundle_count, offer.verb_text],
+		&"detail_accent": COLOR_GOLD,
+		&"detail_primary": "조건 · " + offer.condition_text,
+		&"detail_secondary": "효과 · " + offer.effect_text,
 	})
 	return card
 
@@ -833,10 +887,14 @@ func _make_card_shell(card_index: int) -> Button:
 	card.size_flags_stretch_ratio = 1.0
 	card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	card.pressed.connect(_on_card_pressed.bind(card_index))
+	card.mouse_entered.connect(_on_card_mouse_entered.bind(card_index))
+	card.mouse_exited.connect(_on_card_mouse_exited.bind(card_index))
+	card.focus_entered.connect(_on_card_focus_entered.bind(card_index))
+	card.focus_exited.connect(_on_card_focus_exited.bind(card_index))
 	return card
 
 
-func _make_card_content(card: Button) -> HBoxContainer:
+func _make_card_content(card: Button) -> VBoxContainer:
 	var margin := MarginContainer.new()
 	margin.name = "CardMargin"
 	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -845,18 +903,23 @@ func _make_card_content(card: Button) -> HBoxContainer:
 		margin.add_theme_constant_override("margin_%s" % side, _di(14))
 	card.add_child(margin)
 
-	var content := HBoxContainer.new()
+	var content := VBoxContainer.new()
 	content.name = "CardContent"
 	content.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	content.add_theme_constant_override(&"separation", _di(14))
+	content.alignment = BoxContainer.ALIGNMENT_CENTER
+	content.add_theme_constant_override(&"separation", _di(8))
 	margin.add_child(content)
 	return content
 
 
-func _make_art_well(content: HBoxContainer) -> PanelContainer:
+func _make_art_well(content: VBoxContainer) -> PanelContainer:
 	var well := PanelContainer.new()
 	well.name = "OfferArtWell"
-	well.custom_minimum_size.x = _d(128.0)
+	well.custom_minimum_size = Vector2(
+		_d(OFFER_ART_WELL_SIZE), _d(OFFER_ART_WELL_SIZE)
+	)
+	well.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	well.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	well.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	well.add_theme_stylebox_override(
 		&"panel", _make_style(
@@ -867,44 +930,10 @@ func _make_art_well(content: HBoxContainer) -> PanelContainer:
 	return well
 
 
-func _make_card_copy(content: HBoxContainer) -> VBoxContainer:
-	var copy := VBoxContainer.new()
-	copy.name = "OfferCopy"
-	copy.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	copy.add_theme_constant_override(&"separation", _di(8))
-	copy.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	content.add_child(copy)
-	return copy
-
-
-func _make_card_top_line(tag_text: String, tag_color: Color, price: int) -> HBoxContainer:
-	var line := HBoxContainer.new()
-	line.name = "OfferTopLine"
-	line.alignment = BoxContainer.ALIGNMENT_CENTER
-	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
-
-	var tag := PanelContainer.new()
-	tag.name = "OfferKindTag"
-	var tag_style := _make_style(
-		tag_color, COLOR_INK, _di(3), _di(7), _di(5)
-	)
-	tag_style.content_margin_left = _d(8.0)
-	tag_style.content_margin_right = _d(8.0)
-	tag.add_theme_stylebox_override(&"panel", tag_style)
-	tag.add_child(_make_label(tag_text, _di(11), COLOR_INK, true))
-	line.add_child(tag)
-
-	var spacer := Control.new()
-	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	line.add_child(spacer)
-	line.add_child(_make_price_panel(price))
-	return line
-
-
 func _make_price_panel(price: int) -> PanelContainer:
 	var panel := PanelContainer.new()
 	panel.name = "OfferPrice"
+	panel.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var price_style := _make_style(
 		COLOR_GOLD, COLOR_INK, _di(3), _di(9), _di(5)
@@ -921,9 +950,9 @@ func _make_price_panel(price: int) -> PanelContainer:
 
 	var coin := RewardCoinIcon.new()
 	coin.name = "PriceCoinIcon"
-	coin.custom_minimum_size = Vector2(_d(24.0), _d(24.0))
+	coin.custom_minimum_size = Vector2(_d(28.0), _d(28.0))
 	row.add_child(coin)
-	row.add_child(_make_label(str(price), _di(15), COLOR_INK, true))
+	row.add_child(_make_label(str(price), _di(18), COLOR_INK, true))
 	return panel
 
 
@@ -944,16 +973,6 @@ func _make_state_badge(content: VBoxContainer) -> Array[Control]:
 	label.name = "StateLabel"
 	badge.add_child(label)
 	return [badge, label]
-
-
-func _make_body_label(text: String, color: Color) -> Label:
-	var label := _make_label(text, _di(13), color, false)
-	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	label.max_lines_visible = 1
-	label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	return label
 
 
 func _make_label(
@@ -995,6 +1014,86 @@ func _on_card_pressed(card_index: int) -> void:
 		return
 	_selected_index = card_index
 	_refresh_card_states()
+	_show_card_detail(card_index)
+
+
+func _on_card_mouse_entered(card_index: int) -> void:
+	_hovered_card_index = card_index
+	_show_card_detail(card_index)
+
+
+func _on_card_mouse_exited(card_index: int) -> void:
+	if _hovered_card_index == card_index:
+		_hovered_card_index = -1
+	_restore_active_card_detail()
+
+
+func _on_card_focus_entered(card_index: int) -> void:
+	_show_card_detail(card_index)
+
+
+func _on_card_focus_exited(_card_index: int) -> void:
+	_restore_active_card_detail()
+
+
+func _restore_active_card_detail() -> void:
+	if _hovered_card_index >= 0:
+		_show_card_detail(_hovered_card_index)
+	elif _selected_index >= 0:
+		_show_card_detail(_selected_index)
+	else:
+		_hide_card_detail()
+
+
+func _show_card_detail(card_index: int) -> void:
+	if _detail_popup == null or card_index < 0 \
+			or card_index >= _card_views.size():
+		return
+	var view := _card_views[card_index]
+	_detail_tag_label.text = String(view[&"detail_tag"])
+	_detail_title_label.text = String(view[&"title"])
+	_detail_primary_label.text = String(view[&"detail_primary"])
+	_detail_secondary_label.text = String(view[&"detail_secondary"])
+	_detail_tag_panel.add_theme_stylebox_override(
+		&"panel",
+		_make_style(
+			view[&"detail_accent"] as Color,
+			COLOR_INK,
+			_di(3),
+			_di(8),
+			_di(6)
+		)
+	)
+	_detail_popup.visible = true
+	call_deferred(&"_position_card_detail", card_index)
+
+
+func _position_card_detail(card_index: int) -> void:
+	if _detail_popup == null or not _detail_popup.visible \
+			or card_index < 0 or card_index >= _card_views.size():
+		return
+	var card := _card_views[card_index][&"button"] as Button
+	if card == null or not is_instance_valid(card):
+		return
+	var card_rect := card.get_global_rect()
+	var hud_origin := get_global_rect().position
+	var local_card_position := card_rect.position - hud_origin
+	var popup_size := _detail_popup.size
+	var x := local_card_position.x + (card_rect.size.x - popup_size.x) * 0.5
+	var card_center_y := local_card_position.y + card_rect.size.y * 0.5
+	var y := (
+		local_card_position.y + card_rect.size.y + _d(10.0)
+		if card_center_y < size.y * 0.55
+		else local_card_position.y - popup_size.y - _d(10.0)
+	)
+	x = clampf(x, _d(20.0), size.x - popup_size.x - _d(20.0))
+	y = clampf(y, _d(20.0), size.y - popup_size.y - _d(20.0))
+	_detail_popup.position = Vector2(x, y)
+
+
+func _hide_card_detail() -> void:
+	if _detail_popup != null:
+		_detail_popup.visible = false
 
 
 func _on_proceed_pressed() -> void:
@@ -1010,6 +1109,7 @@ func _on_proceed_pressed() -> void:
 
 func _play_handoff_then_proceed() -> void:
 	_handoff_in_progress = true
+	_hide_card_detail()
 	_refresh_handoff_summary()
 	_handoff_overlay.modulate = Color(1.0, 1.0, 1.0, 0.0)
 	_handoff_overlay.visible = true
@@ -1080,6 +1180,8 @@ func _move_selection(step: int) -> void:
 		return
 	_selected_index = posmod(_selected_index + step, _cards.size())
 	_refresh_card_states()
+	_cards[_selected_index].grab_focus()
+	_show_card_detail(_selected_index)
 
 
 func _confirm_selected() -> void:
@@ -1267,6 +1369,7 @@ func _make_proceed_style(background: Color, pressed: bool) -> StyleBoxFlat:
 
 
 func _clear_cards() -> void:
+	_hide_card_detail()
 	for card in _cards:
 		if card.get_parent() != null:
 			card.get_parent().remove_child(card)
@@ -1274,6 +1377,7 @@ func _clear_cards() -> void:
 	_cards.clear()
 	_card_views.clear()
 	_selected_index = -1
+	_hovered_card_index = -1
 
 
 static func _make_style(
