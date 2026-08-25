@@ -81,13 +81,69 @@ func _run() -> void:
 		"설계에 없는 영문 카테고리 보조 배지는 없어야 한다.")
 	var design_scale := minf(hud.size.x / 1920.0, hud.size.y / 1080.0)
 	var ball_shelf := hud.find_child("BallShelf", true, false) as Control
+	var ball_shelf_header := hud.find_child(
+		"BallShelfHeader", true, false
+	) as Control
+	var ball_shelf_ribbon := hud.find_child(
+		"BallShelfRibbon", true, false
+	) as PanelContainer
+	var ball_shelf_title := hud.find_child(
+		"BallShelfTitle", true, false
+	) as Label
 	var ball_row := hud.find_child("BallOfferRow", true, false) as Control
 	_expect(ball_shelf != null and is_equal_approx(
 		ball_shelf.custom_minimum_size.y, 340.0 * design_scale
 	), "공 보상 선반 높이가 설계 비율과 같아야 한다.")
+	_expect(ball_shelf_header != null and is_equal_approx(
+		ball_shelf_header.custom_minimum_size.y, 56.0 * design_scale
+	), "공 보상 리본 헤더 높이가 확대된 설계 비율과 같아야 한다.")
 	_expect(ball_row != null and is_equal_approx(
-		ball_row.custom_minimum_size.y, 282.0 * design_scale
+		ball_row.custom_minimum_size.y, 274.0 * design_scale
 	), "공 카드 행 높이가 설계 비율과 같아야 한다.")
+	_expect(ball_shelf_title != null and ball_shelf_title.get_theme_font_size(
+		&"font_size"
+	) == roundi(24.0 * design_scale),
+		"공 보상 리본 글자가 확대된 설계 크기와 같아야 한다.")
+	var ball_ribbon_style := (
+		ball_shelf_ribbon.get_theme_stylebox(&"panel") as StyleBoxFlat
+		if ball_shelf_ribbon != null
+		else null
+	)
+	_expect(ball_ribbon_style != null and is_equal_approx(
+		ball_ribbon_style.content_margin_left, 24.0 * design_scale
+	) and is_equal_approx(
+		ball_ribbon_style.content_margin_top, 10.0 * design_scale
+	), "공 보상 리본 내부 여백이 확대된 설계 비율과 같아야 한다.")
+	var part_shelf_header := hud.find_child(
+		"PartShelfHeader", true, false
+	) as Control
+	var part_shelf_ribbon := hud.find_child(
+		"PartShelfRibbon", true, false
+	) as PanelContainer
+	var part_shelf_title := hud.find_child(
+		"PartShelfTitle", true, false
+	) as Label
+	var part_row := hud.find_child("PartOfferRow", true, false) as Control
+	_expect(part_shelf_header != null and is_equal_approx(
+		part_shelf_header.custom_minimum_size.y, 56.0 * design_scale
+	), "수리 부품 리본 헤더 높이가 확대된 설계 비율과 같아야 한다.")
+	_expect(part_row != null and is_equal_approx(
+		part_row.custom_minimum_size.y, 264.0 * design_scale
+	), "수리 부품 카드 행 높이가 설계 비율과 같아야 한다.")
+	_expect(part_shelf_title != null and part_shelf_title.get_theme_font_size(
+		&"font_size"
+	) == roundi(24.0 * design_scale),
+		"수리 부품 리본 글자가 확대된 설계 크기와 같아야 한다.")
+	var part_ribbon_style := (
+		part_shelf_ribbon.get_theme_stylebox(&"panel") as StyleBoxFlat
+		if part_shelf_ribbon != null
+		else null
+	)
+	_expect(part_ribbon_style != null and is_equal_approx(
+		part_ribbon_style.content_margin_left, 24.0 * design_scale
+	) and is_equal_approx(
+		part_ribbon_style.content_margin_top, 10.0 * design_scale
+	), "수리 부품 리본 내부 여백이 확대된 설계 비율과 같아야 한다.")
 	var shop_title := hud.find_child("ShopTitleLabel", true, false) as Label
 	var display_font := (
 		shop_title.get_theme_font(&"font") as FontVariation

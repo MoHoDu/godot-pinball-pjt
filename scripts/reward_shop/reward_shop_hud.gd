@@ -42,6 +42,10 @@ const COLOR_LOCKED := Color("304a59")
 
 const CARD_RADIUS := 16
 const PANEL_RADIUS := 28
+const ROW_HEADER_HEIGHT := 56
+const ROW_TITLE_FONT_SIZE := 24
+const ROW_TITLE_PADDING_HORIZONTAL := 24
+const ROW_TITLE_PADDING_VERTICAL := 10
 const BALL_ICON_SIZE := 96
 const PART_ICON_SIZE := 96
 const PERFORMANCE_NAMES: Array[String] = [
@@ -249,7 +253,7 @@ func _build_layout() -> void:
 
 	_ball_row = HBoxContainer.new()
 	_ball_row.name = "BallOfferRow"
-	_ball_row.custom_minimum_size.y = _d(282.0)
+	_ball_row.custom_minimum_size.y = _d(274.0)
 	_ball_row.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_ball_row.add_theme_constant_override(&"separation", _di(16))
 	ball_shelf.add_child(_ball_row)
@@ -267,7 +271,7 @@ func _build_layout() -> void:
 
 	_part_row = HBoxContainer.new()
 	_part_row.name = "PartOfferRow"
-	_part_row.custom_minimum_size.y = _d(272.0)
+	_part_row.custom_minimum_size.y = _d(264.0)
 	_part_row.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_part_row.add_theme_constant_override(&"separation", _di(16))
 	part_shelf.add_child(_part_row)
@@ -594,18 +598,28 @@ func _make_row_header(
 	accent: Color
 ) -> HBoxContainer:
 	var row := HBoxContainer.new()
-	row.custom_minimum_size.y = _d(48.0)
+	var category_name := "Ball" if title == BALL_ROW_TITLE else "Part"
+	row.name = "%sShelfHeader" % category_name
+	row.custom_minimum_size.y = _d(ROW_HEADER_HEIGHT)
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
 
 	var ribbon := PanelContainer.new()
+	ribbon.name = "%sShelfRibbon" % category_name
 	ribbon.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	var ribbon_style := _make_style(
-		accent, COLOR_INK, _di(4), _di(10), _di(8)
+		accent,
+		COLOR_INK,
+		_di(4),
+		_di(10),
+		_di(ROW_TITLE_PADDING_VERTICAL)
 	)
-	ribbon_style.content_margin_left = _d(18.0)
-	ribbon_style.content_margin_right = _d(18.0)
+	ribbon_style.content_margin_left = _d(ROW_TITLE_PADDING_HORIZONTAL)
+	ribbon_style.content_margin_right = _d(ROW_TITLE_PADDING_HORIZONTAL)
 	ribbon.add_theme_stylebox_override(&"panel", ribbon_style)
-	var ribbon_text := _make_label(title, _di(21), COLOR_INK, true)
+	var ribbon_text := _make_label(
+		title, _di(ROW_TITLE_FONT_SIZE), COLOR_INK, true
+	)
+	ribbon_text.name = "%sShelfTitle" % category_name
 	ribbon_text.add_theme_font_override(&"font", DISPLAY_FONT)
 	ribbon.add_child(ribbon_text)
 	row.add_child(ribbon)
