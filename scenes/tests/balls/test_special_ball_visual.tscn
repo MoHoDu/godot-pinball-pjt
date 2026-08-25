@@ -1,0 +1,139 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://tests/ball_base_system/test_special_ball_visual.gd" id="1_ctrl"]
+[ext_resource type="PackedScene" uid="uid://bhh5qyc3llygr" path="res://Resources/Prefabs/balls/base/base_ball.tscn" id="2_base"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/balls/variants/reward/clockwork_ball.tscn" id="3_clockwork"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/balls/variants/reward/rubber_ball.tscn" id="4_rubber"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/balls/variants/reward/gel_ball.tscn" id="5_gel"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/balls/variants/reward/lead_ball.tscn" id="6_lead"]
+[ext_resource type="PackedScene" path="res://Resources/Prefabs/balls/variants/reward/hollow_bell_ball.tscn" id="7_hollow_bell"]
+[ext_resource type="Texture2D" uid="uid://d355bdkm1nv2g" path="res://Resources/ui/icon.svg" id="8_wall"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_floor"]
+size = Vector2(127.799995, 127.50001)
+
+[node name="TestSpecialBallVisual" type="Node2D"]
+script = ExtResource("1_ctrl")
+ball_diameter = 64.0
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="Balls" type="Node2D" parent="."]
+
+[node name="BaseBall" parent="Balls" instance=ExtResource("2_base")]
+position = Vector2(-500, -250)
+
+[node name="ClockworkBall" parent="Balls" instance=ExtResource("3_clockwork")]
+position = Vector2(-300, -250)
+
+[node name="RubberBall" parent="Balls" instance=ExtResource("4_rubber")]
+position = Vector2(-100, -250)
+
+[node name="GelBall" parent="Balls" instance=ExtResource("5_gel")]
+position = Vector2(100, -250)
+
+[node name="LeadBall" parent="Balls" instance=ExtResource("6_lead")]
+position = Vector2(300, -250)
+
+[node name="HollowBellBall" parent="Balls" instance=ExtResource("7_hollow_bell")]
+position = Vector2(500, -250)
+
+[node name="Walls" type="Node2D" parent="."]
+
+[node name="Wall" type="StaticBody2D" parent="Walls"]
+position = Vector2(0, 250)
+
+[node name="Sprite2D" type="Sprite2D" parent="Walls/Wall"]
+texture = ExtResource("8_wall")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Wall"]
+shape = SubResource("RectangleShape2D_floor")
+
+[node name="Wall2" type="StaticBody2D" parent="Walls"]
+position = Vector2(130, 250)
+
+[node name="Sprite2D" type="Sprite2D" parent="Walls/Wall2"]
+texture = ExtResource("8_wall")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Wall2"]
+shape = SubResource("RectangleShape2D_floor")
+
+[node name="Wall3" type="StaticBody2D" parent="Walls"]
+position = Vector2(-130, 250)
+
+[node name="Sprite2D" type="Sprite2D" parent="Walls/Wall3"]
+texture = ExtResource("8_wall")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Wall3"]
+shape = SubResource("RectangleShape2D_floor")
+
+[node name="Wall4" type="StaticBody2D" parent="Walls"]
+position = Vector2(260, 250)
+
+[node name="Sprite2D" type="Sprite2D" parent="Walls/Wall4"]
+texture = ExtResource("8_wall")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Wall4"]
+shape = SubResource("RectangleShape2D_floor")
+
+[node name="Wall5" type="StaticBody2D" parent="Walls"]
+position = Vector2(-260, 250)
+
+[node name="Sprite2D" type="Sprite2D" parent="Walls/Wall5"]
+texture = ExtResource("8_wall")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Wall5"]
+shape = SubResource("RectangleShape2D_floor")
+
+[node name="Wall6" type="StaticBody2D" parent="Walls"]
+position = Vector2(390, 250)
+
+[node name="Sprite2D" type="Sprite2D" parent="Walls/Wall6"]
+texture = ExtResource("8_wall")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Wall6"]
+shape = SubResource("RectangleShape2D_floor")
+
+[node name="Wall7" type="StaticBody2D" parent="Walls"]
+position = Vector2(-390, 250)
+
+[node name="Sprite2D" type="Sprite2D" parent="Walls/Wall7"]
+texture = ExtResource("8_wall")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Wall7"]
+shape = SubResource("RectangleShape2D_floor")
+
+[node name="Wall8" type="StaticBody2D" parent="Walls"]
+position = Vector2(520, 250)
+
+[node name="Sprite2D" type="Sprite2D" parent="Walls/Wall8"]
+texture = ExtResource("8_wall")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Wall8"]
+shape = SubResource("RectangleShape2D_floor")
+
+[node name="Wall9" type="StaticBody2D" parent="Walls"]
+position = Vector2(-520, 250)
+
+[node name="Sprite2D" type="Sprite2D" parent="Walls/Wall9"]
+texture = ExtResource("8_wall")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Wall9"]
+shape = SubResource("RectangleShape2D_floor")
+
+[node name="BallSwitchGuide" type="CanvasLayer" parent="."]
+
+[node name="Panel" type="Panel" parent="BallSwitchGuide"]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 470.0
+offset_bottom = 310.0
+
+[node name="GuideLabel" type="Label" parent="BallSwitchGuide/Panel"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 434.0
+offset_bottom = 278.0
+theme_override_font_sizes/font_size = 16
+text = "특수 공 검수 로딩 중..."
